@@ -202,5 +202,14 @@
     "password": "C1CD@ut0mat3!",
     "dateJoined": "2024-01-11T16:44:37Z",
     "biography": "DevOps engineer specializing in containerization, orchestration, and infrastructure as code. Making deployment smooth and reliable."
+  },
+  "recruiter1": {
+    "username": "recruiter1",
+    "password": "Recruit3rPass!",
+    "dateJoined": "2024-06-01T10:00:00Z",
+    "biography": "Lead HR recruiter for ACME Corp.",
+    "company": "ACME Corp",
+    "jobPostings": [],
+    "role": "Recruiter"
   }
 }
