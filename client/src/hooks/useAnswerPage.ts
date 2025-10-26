@@ -83,7 +83,7 @@ const useAnswerPage = () => {
 
     // eslint-disable-next-line no-console
     fetchData().catch(e => console.log(e));
-  }, [questionID, user.username]);
+  }, [questionID, user.username, question?.comments]);
 
   useEffect(() => {
     /**
