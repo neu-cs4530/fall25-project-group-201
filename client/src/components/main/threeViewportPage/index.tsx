@@ -1,7 +1,7 @@
 import useThreeViewportPage from "../../../hooks/useThreeViewportPage";
 
-const ThreeViewportCard = () => {
-  const { containerRef } = useThreeViewportPage('/models/Avocado.glb');
+const ThreeViewport = () => {
+  const { containerRef } = useThreeViewportPage('/models/Duck.glb');
 
   return (
     <div
@@ -32,4 +32,4 @@ const ThreeViewportCard = () => {
   );
 };
 
-export default ThreeViewportCard;
+export default ThreeViewport;
