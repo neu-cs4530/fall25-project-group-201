@@ -5,6 +5,7 @@ import { getMetaData } from '../../../tool';
 import { Comment, DatabaseComment } from '../../../types/types';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
+import { FaLink } from 'react-icons/fa';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -29,6 +30,7 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
   const [textErr, setTextErr] = useState<string>('');
   const [showComments, setShowComments] = useState<boolean>(false);
   const [mediaUrl, setMediaUrl] = useState<string>('');
+  const [showMediaInput, setShowMediaInput] = useState(false);
 
   /**
    * Function to handle the addition of a new comment.
@@ -132,16 +134,45 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
                 onChange={e => setText(e.target.value)}
                 className='comment-textarea'
               />
-              <div className='input-row'>
-                <input
-                  type='text'
-                  placeholder='Optional media URL (image, YouTube, Vimeo)'
-                  value={mediaUrl}
-                  onChange={e => setMediaUrl(e.target.value)}
-                  className='comment-media-input'
-                />
-              </div>
 
+              {/* Media button */}
+              <div className="media-button-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+                <button
+                  type="button"
+                  className="media-button"
+                  onClick={() => setShowMediaInput(!showMediaInput)}
+                >
+                  <FaLink />
+                </button>
+
+                {/* Popup input above button */}
+                {showMediaInput && (
+                  <div
+                    className="media-popup"
+                    style={{
+                      position: 'absolute',
+                      bottom: '100%', // popup above the button
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      marginBottom: '8px',
+                      backgroundColor: 'white',
+                      padding: '6px',
+                      borderRadius: '4px',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                      zIndex: 10,
+                    }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Paste image/YouTube/Vimeo link"
+                      value={mediaUrl}
+                      onChange={e => setMediaUrl(e.target.value)}
+                      className="comment-media-input"
+                      style={{ width: '200px', padding: '4px' }}
+                    />
+                  </div>
+                )}
+              </div>
 
               <button className='add-comment-button' onClick={handleAddCommentClick}>
                 Add Comment
