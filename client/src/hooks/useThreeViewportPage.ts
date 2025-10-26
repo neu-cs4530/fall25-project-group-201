@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
-// test comment
 const useThreeViewportPage = (modelPath: string) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -12,7 +11,11 @@ const useThreeViewportPage = (modelPath: string) => {
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+
+    // Add subtle gradient-like background using a large hemisphere light
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xbebebe, 1.0);
+    scene.add(hemiLight);
+    scene.background = new THREE.Color(0xf5f5f5);
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -26,15 +29,33 @@ const useThreeViewportPage = (modelPath: string) => {
       containerRef.current.clientWidth,
       containerRef.current.clientHeight
     );
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     containerRef.current.appendChild(renderer.domElement);
 
     // --- Lighting ---
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(2, 2, 5);
-    scene.add(light);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(3, 5, 5);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(2048, 2048);
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 20;
+    scene.add(dirLight);
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambient);
+
+    // --- Ground Plane ---
+    const groundGeo = new THREE.PlaneGeometry(20, 20, 1, 1);
+    const groundMat = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      shininess: 10,
+    });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    ground.position.y = -0.5; // will adjust once model loads
+    scene.add(ground);
 
     // --- Loader setup ---
     const loader = new GLTFLoader();
@@ -46,6 +67,12 @@ const useThreeViewportPage = (modelPath: string) => {
       modelPath,
       (gltf) => {
         const model = gltf.scene;
+        model.traverse((child: any) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = false;
+          }
+        });
         scene.add(model);
 
         // --- Center and scale model ---
@@ -56,21 +83,27 @@ const useThreeViewportPage = (modelPath: string) => {
         // Center model at origin
         model.position.sub(center);
 
-        // Scale model to fit in a fixed "unit" size
+        // Scale model to fit in view
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 1.5 / maxDim; // adjust 1.5 to change how large it appears
+        const scale = 1.5 / maxDim;
         model.scale.setScalar(scale);
+
+        // Adjust so the model rests on the ground plane
+        box.setFromObject(model);
+        const newSize = box.getSize(new THREE.Vector3());
+        const newMin = box.min;
+        model.position.y -= newMin.y; // lift model so its lowest point touches y=0
+
+        ground.position.y = 0;
 
         // --- Frame model with camera ---
         const boundingSphere = box.getBoundingSphere(new THREE.Sphere());
-        const radius = boundingSphere.radius * scale;
-
-        // Compute distance from camera to fit object in view
+        const radius = boundingSphere.radius;
         const fov = camera.fov * (Math.PI / 180);
         const cameraZ = radius / Math.sin(fov / 2);
 
-        camera.position.set(0, radius * 0.5, cameraZ * 1.1); // slight offset in Y and Z
-        camera.lookAt(0, 0, 0);
+        camera.position.set(0, radius * 0.8, cameraZ * 1.2);
+        camera.lookAt(0, radius * 0.3, 0);
       },
       undefined,
       (error) => {
