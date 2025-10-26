@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
+// test comment
 const useThreeViewportPage = (modelPath: string) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
