@@ -31,6 +31,39 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
   const [showComments, setShowComments] = useState<boolean>(false);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [showMediaInput, setShowMediaInput] = useState(false);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+
+  /**
+   * Validate whether a string is a valid media URL.
+   * Supports image URLs, YouTube, and Vimeo links.
+   */
+  function isValidMediaUrl(url: string): boolean {
+    if (!url) return false;
+
+    try {
+      const parsed = new URL(url);
+
+      // Allowed protocols
+      if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+
+      // Image file extensions
+      const imagePattern = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i;
+      if (imagePattern.test(parsed.pathname)) return true;
+
+      // YouTube URL patterns
+      const youtubePattern =
+        /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)/i;
+      if (youtubePattern.test(url)) return true;
+
+      // Vimeo URL pattern
+      const vimeoPattern = /^(?:https?:\/\/)?(?:www\.)?vimeo\.com\/\d+/i;
+      if (vimeoPattern.test(url)) return true;
+
+      return false;
+    } catch {
+      return false;
+    }
+  }
 
   /**
    * Function to handle the addition of a new comment.
@@ -38,6 +71,11 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
   const handleAddCommentClick = () => {
     if (text.trim() === '' || user.username.trim() === '') {
       setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
+      return;
+    }
+
+    if (!isValidMediaUrl(mediaUrl)) {
+      setMediaError('Media URL is invalid')
       return;
     }
 
@@ -52,6 +90,7 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
     setText('');
     setTextErr('');
     setMediaUrl('');
+    setMediaError(null);
   };
 
   // Function to detect Image, YouTube or Vimeo URLs and return embed iframe
@@ -178,6 +217,7 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
                 Add Comment
               </button>
             </div>
+            {mediaError && <small className='error'>{mediaError}</small>}
             {textErr && <small className='error'>{textErr}</small>}
           </div>
         </div>
