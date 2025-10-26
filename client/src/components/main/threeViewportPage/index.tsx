@@ -1,7 +1,7 @@
 import useThreeViewportPage from "../../../hooks/useThreeViewportPage";
 
 const ThreeViewportCard = () => {
-  const { containerRef } = useThreeViewportPage('/models/duck.glb');
+  const { containerRef } = useThreeViewportPage('/models/Avocado.glb');
 
   return (
     <div
@@ -17,7 +17,7 @@ const ThreeViewportCard = () => {
         flexDirection: 'column',
       }}
     >
-      <h2 style={{ margin: '8px', textAlign: 'center' }}>Test Duck</h2>
+      <h2 style={{ margin: '8px', textAlign: 'center' }}>Dapper Avocado</h2>
       <div
         ref={containerRef}
         style={{

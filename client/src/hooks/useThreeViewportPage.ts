@@ -19,7 +19,7 @@ const useThreeViewportPage = (modelPath: string) => {
       0.1,
       1000
     );
-    camera.position.set(0, 2, 3);
+    camera.position.set(0, 0.75, 3);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(
