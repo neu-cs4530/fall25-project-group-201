@@ -42,7 +42,7 @@ const useAnswerPage = () => {
     formData.append('file', file);
     formData.append('filepathLocation', file.name);
 
-    const newMedia = await addMedia(formData); // your service now accepts FormData
+    const newMedia = await addMedia(user.username, formData); // your service now accepts FormData
     console.log('Media added successfully:', newMedia);
   } catch (err) {
     console.error('Error adding media:', err);

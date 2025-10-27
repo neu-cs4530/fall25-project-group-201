@@ -11,7 +11,7 @@ const mediaController = (socket: FakeSOSocket) => {
   router.post('/create', upload.single('file'), async (req: Request, res: Response) => {
     try {
       const file = req.file;
-      const { filepathLocation } = req.body;
+      const { user, filepathLocation } = req.body;
 
       if (!file) {
         return res.status(400).json({ error: 'No file uploaded' });
@@ -20,7 +20,7 @@ const mediaController = (socket: FakeSOSocket) => {
       const media: Media = {
         filepathLocation,
         fileBuffer: file.buffer,
-        user: "user123"
+        user
       };
 
       const newMedia = await addMedia(media);
