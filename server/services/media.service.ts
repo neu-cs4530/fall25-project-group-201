@@ -7,7 +7,16 @@ export const addMedia = async (media: Media) => {
   try {
     console.log("addMedia in service layer");
 
-    const destPath = path.resolve(__dirname, '../uploads', media.filepathLocation);
+    const userDir = path.resolve(__dirname, `../userData/${media.user}`);
+
+    // Ensure the directory exists
+    if (!fs.existsSync(userDir)) {
+      fs.mkdirSync(userDir, { recursive: true }); 
+    }
+
+    // Then save the file inside that directory
+    const destPath = path.join(userDir, media.filepathLocation);
+
 
     fs.writeFileSync(destPath, media.fileBuffer); // write file to disk
 
