@@ -14,8 +14,7 @@ export const addMedia = async (media: Media) => {
     // Only store metadata + path in MongoDB
     const mediaToSave = {
       filepathLocation: destPath, // path on disk
-      fileSize: media.fileSize,
-      fileType: media.fileType,
+      user: media.user
     };
 
     const newMedia = await MediaModel.create(mediaToSave);

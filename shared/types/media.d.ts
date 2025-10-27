@@ -5,8 +5,7 @@ import { Media } from './media';
 export interface Media {
   filepathLocation: string;
   fileBuffer?: base64;
-  fileSize?: number;
-  fileType?: string;
+  user: string;
 }
 
 

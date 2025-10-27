@@ -4,8 +4,7 @@ const mediaSchema: Schema = new Schema(
   {
     filepathLocation: String,
     fileBuffer: String,
-    fileSize: Number,
-    fileType: String,
+    user: String
   },
   { collection: 'Media' },
 );

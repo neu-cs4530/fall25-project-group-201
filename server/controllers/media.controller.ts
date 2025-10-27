@@ -20,8 +20,7 @@ const mediaController = (socket: FakeSOSocket) => {
       const media: Media = {
         filepathLocation,
         fileBuffer: file.buffer,
-        fileSize: file.size,
-        fileType: file.mimetype,
+        user: "user123"
       };
 
       const newMedia = await addMedia(media);
