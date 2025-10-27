@@ -5,7 +5,7 @@ const mediaSchema: Schema = new Schema(
     text: {
       filepathLocation: String,
     },
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Media' }],
   },
   { collection: 'Media' },
 );
