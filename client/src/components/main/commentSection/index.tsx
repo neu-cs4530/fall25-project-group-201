@@ -168,6 +168,10 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentS
      handleAddMedia(file);
   };
 
+  const isVideo = (mediaPath: string)  => {
+    return mediaPath.endsWith('.mp4');
+  }
+
   return (
     <div className='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
@@ -183,7 +187,22 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentS
                   <div className='comment-text'>
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
-                    {comment.mediaPath && <img src="/userData/user123/IMG_1046.jpeg" alt={comment.mediaPath} className="comment-image" />}
+                    {comment.mediaPath && (
+                      isVideo(comment.mediaPath) ? (
+                        <video
+                          src={comment.mediaPath}
+                          controls
+                          className="comment-media"
+                        />
+                      ) : (
+                        <img
+                          src={comment.mediaPath}
+                          alt="comment media"
+                          className="comment-media"
+                        />
+                      )
+                    )}
+
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
