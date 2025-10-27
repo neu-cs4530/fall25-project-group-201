@@ -3,33 +3,28 @@ import { Media, MediaResponse } from '../types/types';
 import fs from 'fs';
 import path from 'path';
 
-export const addMedia = async (media: Media): Promise<MediaResponse> => {
+export const addMedia = async (media: Media) => {
   try {
-    console.log("addMedia in service layer")
-    if (!media.fileBuffer) {
-      throw new Error('No file buffer provided');
-    }
+    console.log("addMedia in service layer");
 
-    // Decide where to copy the file inside your project
     const destPath = path.resolve(__dirname, '../uploads', media.filepathLocation);
 
-    const buffer = Buffer.from(media.fileBuffer, 'base64');
-    fs.writeFileSync(destPath, buffer);
+    fs.writeFileSync(destPath, media.fileBuffer); // write file to disk
 
-    // Update the filepathLocation to the destination path
+    // Only store metadata + path in MongoDB
     const mediaToSave = {
-      ...media,
-      filepathLocation: destPath,
+      filepathLocation: destPath, // path on disk
+      fileSize: media.fileSize,
+      fileType: media.fileType,
     };
 
     const newMedia = await MediaModel.create(mediaToSave);
 
-    if (!newMedia) {
-      throw new Error('Failed to create collection');
-    }
+    if (!newMedia) throw new Error('Failed to create media');
 
     return newMedia;
   } catch (error) {
     return { error: (error as Error).message };
   }
 };
+

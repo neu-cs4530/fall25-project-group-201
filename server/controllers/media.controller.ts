@@ -1,48 +1,35 @@
 import express, { Response, Request } from 'express';
 import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
 import { addMedia } from '../services/media.service';
 import { Media, FakeSOSocket } from '../types/types';
 
-const upload = multer({ dest: './uploads/tmp/' }); // temporary storage
+const upload = multer({ storage: multer.memoryStorage() }); // memory storage
 
 const mediaController = (socket: FakeSOSocket) => {
   const router = express.Router();
 
-  const addMediaRoute = async (req: Request, res: Response) => {
+  router.post('/create', upload.single('file'), async (req: Request, res: Response) => {
     try {
-      // Wrap Multer in the route
-      upload.single('file')(req, res, async (err: any) => {
-        if (err) {
-          return res.status(500).send(`Upload error: ${err.message}`);
-        }
+      const file = req.file;
+      const { filepathLocation } = req.body;
 
-        const file = req.file;
-        const { filepathLocation } = req.body;
+      if (!file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
 
-        if (!file) {
-          throw new Error('No file uploaded');
-        }
+      const media: Media = {
+        filepathLocation,
+        fileBuffer: file.buffer,
+        fileSize: file.size,
+        fileType: file.mimetype,
+      };
 
-        const fileBuffer = fs.readFileSync(file.path);
-
-        const media: Media = {
-          filepathLocation,
-          fileBuffer,
-          fileSize: file.size,
-          fileType: file.mimetype,
-        };
-
-        const newMedia = await addMedia(media);
-        res.status(200).json(newMedia);
-      });
+      const newMedia = await addMedia(media);
+      res.status(200).json(newMedia);
     } catch (err: unknown) {
-      res.status(500).send(`Error when creating collection: ${(err as Error).message}`);
+      res.status(500).json({ error: (err as Error).message });
     }
-  };
-
-  router.post('/create', addMediaRoute);
+  });
 
   return router;
 };
