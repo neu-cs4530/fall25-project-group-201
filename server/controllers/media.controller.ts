@@ -1,30 +1,42 @@
-import express, { Response } from 'express';
-import {
-  CreateMediaRequest,
-  FakeSOSocket,
-} from '../types/types';
-import {
-  addMedia
-} from '../services/media.service';
+import express, { Response, Request } from 'express';
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import { addMedia } from '../services/media.service';
+import { Media, FakeSOSocket } from '../types/types';
+
+const upload = multer({ dest: './uploads/tmp/' }); // temporary storage
 
 const mediaController = (socket: FakeSOSocket) => {
   const router = express.Router();
 
-  const addMediaRoute = async (
-    req: CreateMediaRequest,
-    res: Response,
-  ): Promise<void> => {
+  const addMediaRoute = async (req: Request, res: Response) => {
     try {
-      const { filepathLocation } = req.body;
-      const media = await addMedia({
-        filepathLocation
+      // Wrap Multer in the route
+      upload.single('file')(req, res, async (err: any) => {
+        if (err) {
+          return res.status(500).send(`Upload error: ${err.message}`);
+        }
+
+        const file = req.file;
+        const { filepathLocation } = req.body;
+
+        if (!file) {
+          throw new Error('No file uploaded');
+        }
+
+        const fileBuffer = fs.readFileSync(file.path);
+
+        const media: Media = {
+          filepathLocation,
+          fileBuffer,
+          fileSize: file.size,
+          fileType: file.mimetype,
+        };
+
+        const newMedia = await addMedia(media);
+        res.status(200).json(newMedia);
       });
-
-      if ('error' in media) {
-        throw new Error(media.error as string);
-      }
-
-      res.status(200).json(media);
     } catch (err: unknown) {
       res.status(500).send(`Error when creating collection: ${(err as Error).message}`);
     }

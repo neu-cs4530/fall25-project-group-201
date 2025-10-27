@@ -16,6 +16,7 @@ import { FaLink } from 'react-icons/fa';
 interface CommentSectionProps {
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
+  handleAddMedia: (file: File) => void;
 }
 
 /**
@@ -24,7 +25,7 @@ interface CommentSectionProps {
  * @param comments: an array of Comment objects
  * @param handleAddComment: function to handle the addition of a new comment
  */
-const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => {
+const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentSectionProps) => {
   const { user } = useUserContext();
   const [text, setText] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
@@ -139,6 +140,20 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
     return null;
   };
 
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]); // store the selected file
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+     handleAddMedia(file);
+  };
+
   return (
     <div className='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
@@ -215,6 +230,12 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
 
               <button className='add-comment-button' onClick={handleAddCommentClick}>
                 Add Comment
+              </button>
+            </div>
+            <div>
+              <input type="file" onChange={handleFileChange} />
+              <button onClick={handleUpload} disabled={!file}>
+                Upload
               </button>
             </div>
             {mediaError && <small className='error'>{mediaError}</small>}

@@ -4,7 +4,11 @@ import { Media } from './media';
 
 export interface Media {
   filepathLocation: string;
+  fileBuffer?: base64;
+  fileSize?: number;
+  fileType?: string;
 }
+
 
 export interface DatabaseMedia extends Media {
   _id: ObjectId;

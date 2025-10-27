@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
+  Media,
   Comment,
   VoteUpdatePayload,
   PopulatedDatabaseQuestion,
@@ -10,6 +11,7 @@ import {
 import useUserContext from './useUserContext';
 import addComment from '../services/commentService';
 import { getQuestionById } from '../services/questionService';
+import { addMedia } from '../services/mediaService';
 
 /**
  * Custom hook for managing the answer page's state, navigation, and real-time updates.
@@ -33,6 +35,19 @@ const useAnswerPage = () => {
   const handleNewAnswer = () => {
     navigate(`/new/answer/${questionID}`);
   };
+
+  const handleAddMedia = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('filepathLocation', file.name);
+
+    const newMedia = await addMedia(formData); // your service now accepts FormData
+    console.log('Media added successfully:', newMedia);
+  } catch (err) {
+    console.error('Error adding media:', err);
+  }
+};
 
   useEffect(() => {
     if (!qid) {
@@ -190,6 +205,7 @@ const useAnswerPage = () => {
     question,
     handleNewComment,
     handleNewAnswer,
+    handleAddMedia
   };
 };
 
