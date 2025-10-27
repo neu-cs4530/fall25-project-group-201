@@ -75,19 +75,33 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentS
       return;
     }
 
-    if (!isValidMediaUrl(mediaUrl)) {
-      setMediaError('Media URL is invalid')
-      return;
+    if (mediaUrl.length > 0) {
+      if (!isValidMediaUrl(mediaUrl)) {
+        setMediaError('Media URL is invalid')
+        return;
+      }
+
+      const newComment: Comment = {
+        text,
+        commentBy: user.username,
+        commentDateTime: new Date(),
+        mediaUrl
+      };
+
+      handleAddComment(newComment);
     }
+    else {
+      const newComment: Comment = {
+        text,
+        commentBy: user.username,
+        commentDateTime: new Date(),
+      };
 
-    const newComment: Comment = {
-      text,
-      commentBy: user.username,
-      commentDateTime: new Date(),
-      mediaUrl
-    };
+      handleAddComment(newComment);
+    }
+    
 
-    handleAddComment(newComment);
+    
     setText('');
     setTextErr('');
     setMediaUrl('');
@@ -169,6 +183,7 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentS
                   <div className='comment-text'>
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
+                    {comment.mediaPath && <img src="/userData/user123/IMG_1046.jpeg" alt={comment.mediaPath} className="comment-image" />}
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}

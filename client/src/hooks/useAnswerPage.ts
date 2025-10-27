@@ -28,6 +28,7 @@ const useAnswerPage = () => {
   const { user, socket } = useUserContext();
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
+  const [mediaPath, setMediaPath ] = useState<string>('');
 
   /**
    * Function to handle navigation to the "New Answer" page.
@@ -43,6 +44,7 @@ const useAnswerPage = () => {
     formData.append('filepathLocation', file.name);
 
     const newMedia = await addMedia(user.username, formData); // your service now accepts FormData
+    setMediaPath(newMedia.filepathLocation);
     console.log('Media added successfully:', newMedia);
   } catch (err) {
     console.error('Error adding media:', err);
@@ -75,6 +77,13 @@ const useAnswerPage = () => {
         throw new Error('No target ID provided.');
       }
 
+      if (mediaPath && mediaPath.trim() !== '') {
+        comment ={
+          ...comment,
+          mediaPath 
+        }
+      }
+      
       await addComment(targetId, targetType, comment);
     } catch (error) {
       // eslint-disable-next-line no-console

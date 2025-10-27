@@ -23,6 +23,9 @@ const commentSchema: Schema = new Schema(
     mediaUrl: {
       type: String,
     },
+    mediaPath: {
+      type: String,
+    },
   },
   { collection: 'Comment' },
 );

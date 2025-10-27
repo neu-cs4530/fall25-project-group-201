@@ -7,22 +7,26 @@ export const addMedia = async (media: Media) => {
   try {
     console.log("addMedia in service layer");
 
-    const userDir = path.resolve(__dirname, `../userData/${media.user}`);
+    const userDir = path.resolve(__dirname, '../../client/public/userData', media.user);
 
-    // Ensure the directory exists
+    // Make sure the directory exists
     if (!fs.existsSync(userDir)) {
-      fs.mkdirSync(userDir, { recursive: true }); 
+      fs.mkdirSync(userDir, { recursive: true });
     }
 
-    // Then save the file inside that directory
-    const destPath = path.join(userDir, media.filepathLocation);
+    // Extract the filename
+    const filename = media.filepathLocation; // just the file name
 
+    // Then save the file inside that directory
+    const destPath = path.join(userDir, filename);
+
+    console.log("destPath ", destPath)
 
     fs.writeFileSync(destPath, media.fileBuffer); // write file to disk
 
-    // Only store metadata + path in MongoDB
+    // Only store metadata + path in MongoDB (relative path for browser)
     const mediaToSave = {
-      filepathLocation: destPath, // path on disk
+      filepathLocation: `/userData/${media.user}/${filename}`,
       user: media.user
     };
 
