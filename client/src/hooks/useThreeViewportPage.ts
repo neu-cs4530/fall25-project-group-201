@@ -5,6 +5,8 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 const useThreeViewportPage = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
 
   useEffect(() => {
     if (!containerRef.current || !modelPath) return;
@@ -23,6 +25,15 @@ const useThreeViewportPage = (modelPath: string | null) => {
       0.1,
       1000
     );
+
+    cameraRef.current = camera;
+
+    // --- Camera controls (zoom in/zoom out) ---
+    const moveSpeed = 0.05;
+    const handleWheel = (event: WheelEvent) => {
+      camera.position.z += event.deltaY * moveSpeed;
+    };
+    window.addEventListener('wheel', handleWheel);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(
