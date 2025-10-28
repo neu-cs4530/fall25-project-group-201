@@ -69,44 +69,51 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentS
   /**
    * Function to handle the addition of a new comment.
    */
-  const handleAddCommentClick = () => {
-    if (text.trim() === '' || user.username.trim() === '') {
-      setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
+  const handleAddCommentClick = async () => {
+  if (text.trim() === '' || user.username.trim() === '') {
+    setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
+    return;
+  }
+
+  setTextErr('');
+  setMediaError(null);
+
+  let mediaPathOrUrl: string | undefined;
+
+  // Upload file if present
+  if (file) {
+    mediaPathOrUrl = await handleAddMedia(file);
+    if (!mediaPathOrUrl) {
+      setMediaError('Failed to upload media');
       return;
     }
-
-    if (mediaUrl.length > 0) {
-      if (!isValidMediaUrl(mediaUrl)) {
-        setMediaError('Media URL is invalid')
-        return;
-      }
-
-      const newComment: Comment = {
-        text,
-        commentBy: user.username,
-        commentDateTime: new Date(),
-        mediaUrl
-      };
-
-      handleAddComment(newComment);
+  } else if (mediaUrl) {
+    if (!isValidMediaUrl(mediaUrl)) {
+      setMediaError('Media URL is invalid');
+      return;
     }
-    else {
-      const newComment: Comment = {
-        text,
-        commentBy: user.username,
-        commentDateTime: new Date(),
-      };
+    mediaPathOrUrl = mediaUrl;
+  }
 
-      handleAddComment(newComment);
-    }
-    
-
-    
-    setText('');
-    setTextErr('');
-    setMediaUrl('');
-    setMediaError(null);
+  const newComment: Comment = {
+    text,
+    commentBy: user.username,
+    commentDateTime: new Date(),
+    ...(mediaPathOrUrl
+      ? file
+        ? { mediaPath: mediaPathOrUrl }
+        : { mediaUrl: mediaPathOrUrl }
+      : {}),
   };
+
+  handleAddComment(newComment);
+
+  setText('');
+  setMediaUrl('');
+  setFile(null);
+};
+
+
 
   // Function to detect Image, YouTube or Vimeo URLs and return embed iframe
   const renderEmbeddedMedia = (text: string) => {
@@ -268,9 +275,6 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentS
             </div>
             <div>
               <input type="file" onChange={handleFileChange} />
-              <button onClick={handleUpload} disabled={!file}>
-                Upload
-              </button>
             </div>
             {mediaError && <small className='error'>{mediaError}</small>}
             {textErr && <small className='error'>{textErr}</small>}

@@ -37,17 +37,19 @@ const useAnswerPage = () => {
     navigate(`/new/answer/${questionID}`);
   };
 
-  const handleAddMedia = async (file: File) => {
+  const handleAddMedia = async (file: File): Promise<string | undefined> => {
   try {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('filepathLocation', file.name);
 
-    const newMedia = await addMedia(user.username, formData); // your service now accepts FormData
-    setMediaPath(newMedia.filepathLocation);
+    const newMedia = await addMedia(user.username, formData);
     console.log('Media added successfully:', newMedia);
+
+    return newMedia.filepathLocation;
   } catch (err) {
     console.error('Error adding media:', err);
+    return undefined;
   }
 };
 
