@@ -6,13 +6,46 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 const useThreeViewportPage = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
+  let isDragging = false;
+  let previousMouseX = 0;
+  let previousMouseY = 0;
 
   useEffect(() => {
     if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
+
+    // --- Mouse controls for rotating the scene around the model ---
+    const handleMouseDown = (event: MouseEvent) => {
+      isDragging = true;
+      previousMouseX = event.clientX;
+      previousMouseY = event.clientY;
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+    if (!isDragging) return;
+
+    const deltaX = event.clientX - previousMouseX;
+    const deltaY = event.clientY - previousMouseY;
+
+    const sensitivity = 0.005; // adjust this for faster/slower rotation
+
+    scene.rotation.y += deltaX * sensitivity; // left/right
+    scene.rotation.x += deltaY * sensitivity; // up/down
+
+
+    previousMouseX = event.clientX;
+    previousMouseY = event.clientY;
+  };
+
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
 
     // Add subtle gradient-like background using a large hemisphere light
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xbebebe, 1.0);
