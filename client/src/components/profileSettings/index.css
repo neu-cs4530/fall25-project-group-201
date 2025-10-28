@@ -148,3 +148,138 @@
   gap: 1rem;
   margin-top: 1.5rem;
 }
+
+/* ===== PROFILE ENHANCEMENT SECTIONS (Sprint 1 Skeleton) ===== */
+
+.profile-settings .profile-header-section {
+  margin: 2rem 0;
+  position: relative;
+  margin-bottom: 4rem;
+}
+
+.profile-settings .profile-banner-placeholder {
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.profile-settings .profile-picture-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  border: 4px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  position: absolute;
+  bottom: -40px;
+  left: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-settings .external-links-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.profile-settings .link-placeholder {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  border: 1px dashed #d1d5db;
+}
+
+.profile-settings .skills-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  align-items: center;
+}
+
+.profile-settings .skill-placeholder {
+  padding: 0.5rem 1rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.profile-settings .portfolio-grid-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.profile-settings .portfolio-placeholder {
+  aspect-ratio: 1;
+  background: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.profile-settings .placeholder-text {
+  font-size: 2rem;
+}
+
+.profile-settings .resume-section {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-settings .theme-preview-section {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.profile-settings .theme-color-box {
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+  min-width: 150px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-settings .placeholder-note {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.profile-settings button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

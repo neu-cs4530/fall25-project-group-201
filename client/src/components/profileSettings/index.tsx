@@ -45,6 +45,20 @@ const ProfileSettings: React.FC = () => {
       <div className='profile-card'>
         <h2>Profile</h2>
 
+        {/* ---- NEW SECTIONS START HERE ---- */}
+
+        {/* Banner & Profile Picture Section */}
+        <div className='profile-header-section'>
+          <div className='profile-banner-placeholder'>
+            <span>Banner Image (Coming Soon)</span>
+          </div>
+          <div className='profile-picture-placeholder'>
+            <span>Profile Picture</span>
+          </div>
+        </div>
+
+        {/* ---- NEW SECTIONS END HERE ---- */}
+
         {successMessage && <p className='success-message'>{successMessage}</p>}
         {errorMessage && <p className='error-message'>{errorMessage}</p>}
 
@@ -100,6 +114,72 @@ const ProfileSettings: React.FC = () => {
               <strong>Date Joined:</strong>{' '}
               {userData.dateJoined ? new Date(userData.dateJoined).toLocaleDateString() : 'N/A'}
             </p>
+
+            {/* ---- NEW SECTIONS START HERE ---- */}
+
+            {/* External Links Section */}
+            <h4>External Links</h4>
+            <div className='external-links-section'>
+              <div className='link-placeholder'>🔗 GitHub (Add link in Sprint 2)</div>
+              <div className='link-placeholder'>🎨 ArtStation (Add link in Sprint 2)</div>
+              <div className='link-placeholder'>💼 LinkedIn (Add link in Sprint 2)</div>
+              <div className='link-placeholder'>🌐 Personal Website (Add link in Sprint 2)</div>
+            </div>
+
+            {/* Skills Section */}
+            <h4>Software Expertise</h4>
+            <div className='skills-section'>
+              <div className='skill-placeholder'>Maya</div>
+              <div className='skill-placeholder'>Blender</div>
+              <div className='skill-placeholder'>ZBrush</div>
+              <div className='skill-placeholder'>Substance Painter</div>
+              <div className='skill-placeholder'>Unreal Engine</div>
+              <div className='skill-placeholder'>Unity</div>
+              <span className='placeholder-note'>(Editable in Sprint 2)</span>
+            </div>
+
+            {/* Portfolio Grid Section */}
+            <h4>Portfolio</h4>
+            <div className='portfolio-grid-section'>
+              <div className='portfolio-placeholder'>
+                <div className='placeholder-text'>📦 3D Model Viewer</div>
+                <span>Upload models in Sprint 2</span>
+              </div>
+              <div className='portfolio-placeholder'>
+                <div className='placeholder-text'>📦 3D Model Viewer</div>
+                <span>Upload models in Sprint 2</span>
+              </div>
+              <div className='portfolio-placeholder'>
+                <div className='placeholder-text'>📦 3D Model Viewer</div>
+                <span>Upload models in Sprint 2</span>
+              </div>
+            </div>
+
+            {/* Resume Section */}
+            <h4>Resume / CV</h4>
+            <div className='resume-section'>
+              <button className='button button-secondary' disabled>
+                📄 Download Resume (Upload in Sprint 2)
+              </button>
+              <span className='placeholder-note'>Upload your CV to enable downloads</span>
+            </div>
+
+            {/* Theme Customization Preview */}
+            <h4>Theme Preview</h4>
+            <div className='theme-preview-section'>
+              <div className='theme-color-box' style={{ backgroundColor: '#2563eb' }}>
+                Primary Color
+              </div>
+              <div className='theme-color-box' style={{ backgroundColor: '#16a34a' }}>
+                Accent Color
+              </div>
+              <div className='theme-color-box' style={{ backgroundColor: '#f2f4f7' }}>
+                Background Color
+              </div>
+              <span className='placeholder-note'>(Customizable in Sprint 2)</span>
+            </div>
+
+            {/* ---- NEW SECTIONS END HERE ---- */}
 
             <button className='button button-primary' onClick={handleViewCollectionsPage}>
               View Collections
