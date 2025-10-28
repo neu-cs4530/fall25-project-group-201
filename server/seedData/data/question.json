@@ -135,7 +135,7 @@
     "views": ["user123", "user234", "user345"],
     "upVotes": ["user123", "user234"],
     "downVotes": [],
-    "comments": ["comment2"],
+    "comments": ["comment2", "comment21", "comment22"],
     "community": "community1"
   }
 }
