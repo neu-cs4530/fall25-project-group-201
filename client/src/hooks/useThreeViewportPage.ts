@@ -197,6 +197,17 @@ const useThreeViewportPage = (modelPath: string | null) => {
     }
   };
 
+  // for handling all key strokes
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'r') {
+        handleResetCamera();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+  });
+
   return { containerRef, handleResetCamera };
 };
 
