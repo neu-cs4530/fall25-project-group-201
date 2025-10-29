@@ -21,6 +21,7 @@ export interface UserCredentials {
 export interface User extends UserCredentials {
   dateJoined: Date;
   biography?: string;
+  skills?: string[];
   profilePicture?: string;     // profile image
   bannerImage?: string;         // banner image  
   resumeFile?: string;          // downloadable CV/resume

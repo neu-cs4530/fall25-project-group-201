@@ -39,6 +39,10 @@ const userSchema: Schema = new Schema(
       type: String,
       default: '',
     },
+    skills: {
+      type: [String],
+      default: [],
+    },
     bannerImage: {
       type: String,
       default: '',

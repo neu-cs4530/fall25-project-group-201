@@ -18,6 +18,11 @@ const ProfileSettings: React.FC = () => {
     pendingAction,
     canEditProfile,
     showPassword,
+    editSkillsMode,
+    selectedSkills,
+    toggleSkill,
+    setEditSkillsMode,
+    handleUpdateSkills,
     togglePasswordVisibility,
     setEditBioMode,
     setNewBio,
@@ -128,15 +133,115 @@ const ProfileSettings: React.FC = () => {
 
             {/* Skills Section */}
             <h4>Software Expertise</h4>
-            <div className='skills-section'>
-              <div className='skill-placeholder'>Maya</div>
-              <div className='skill-placeholder'>Blender</div>
-              <div className='skill-placeholder'>ZBrush</div>
-              <div className='skill-placeholder'>Substance Painter</div>
-              <div className='skill-placeholder'>Unreal Engine</div>
-              <div className='skill-placeholder'>Unity</div>
-              <span className='placeholder-note'>(Editable in Sprint 2)</span>
-            </div>
+
+            {!editSkillsMode && (
+              <>
+                <div className='skills-section'>
+                  {userData.skills && userData.skills.length > 0 ? (
+                    userData.skills.map(skill => (
+                      <div key={skill} className='skill-placeholder'>
+                        {skill}
+                      </div>
+                    ))
+                  ) : (
+                    <span className='placeholder-note'>No skills added yet.</span>
+                  )}
+                </div>
+                {canEditProfile && (
+                  <button
+                    className='button button-primary'
+                    onClick={() => setEditSkillsMode(true)}
+                    style={{ marginTop: '0.5rem' }}>
+                    Edit Skills
+                  </button>
+                )}
+              </>
+            )}
+
+            {editSkillsMode && canEditProfile && (
+              <div className='skills-edit-section'>
+                <p style={{ marginBottom: '1rem', color: '#6b7280' }}>
+                  Select your software expertise:
+                </p>
+
+                {/* 3D Software */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>3D Software:</strong>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    {['Maya', 'Blender', '3ds Max', 'ZBrush', 'Houdini', 'Cinema 4D'].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Texturing/Materials */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>Texturing & Materials:</strong>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    {['Substance Painter', 'Substance Designer', 'Mari'].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Game Engines */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>Game Engines:</strong>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    {['Unreal Engine', 'Unity', 'Godot'].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Programming */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>Programming Languages:</strong>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    {['Python', 'C++', 'C#', 'JavaScript', 'MEL', 'React', 'MySQL', 'Unreal Engine Blueprints'].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                  <button className='button button-primary' onClick={handleUpdateSkills}>
+                    Save Skills
+                  </button>
+                  <button className='button button-danger' onClick={() => setEditSkillsMode(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Portfolio Grid Section */}
             <h4>Portfolio</h4>

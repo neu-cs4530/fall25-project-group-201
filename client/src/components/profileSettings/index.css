@@ -149,7 +149,7 @@
   margin-top: 1.5rem;
 }
 
-/* ===== PROFILE ENHANCEMENT SECTIONS (Sprint 1 Skeleton) ===== */
+/* ===== PROFILE ENHANCEMENT SECTIONS ===== */
 
 .profile-settings .profile-header-section {
   margin: 2rem 0;
@@ -282,4 +282,39 @@
 .profile-settings button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Skills Edit Section */
+.profile-settings .skills-edit-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+}
+
+.profile-settings .skill-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-settings .skill-checkbox-label:hover {
+  background: #f3f4f6;
+  border-color: #2563eb;
+}
+
+.profile-settings .skill-checkbox-label input[type='checkbox'] {
+  cursor: pointer;
+}
+
+.profile-settings .skill-checkbox-label input[type='checkbox']:checked + span {
+  font-weight: 600;
+  color: #2563eb;
 }

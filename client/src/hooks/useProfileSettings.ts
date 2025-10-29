@@ -5,6 +5,7 @@ import {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateSkills,
 } from '../services/userService';
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
@@ -26,6 +27,8 @@ const useProfileSettings = () => {
   const [newBio, setNewBio] = useState('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [editSkillsMode, setEditSkillsMode] = useState(false);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
   // For delete-user confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -44,6 +47,7 @@ const useProfileSettings = () => {
         setLoading(true);
         const data = await getUserByUsername(username);
         setUserData(data);
+        setSelectedSkills(data.skills || []); // intialize skills
       } catch (error) {
         setErrorMessage('Error fetching user profile');
         setUserData(null);
@@ -144,6 +148,39 @@ const useProfileSettings = () => {
     return;
   };
 
+  /**
+ * Handler for updating user skills
+ */
+const handleUpdateSkills = async () => {
+  if (!username) return;
+  try {
+    const updatedUser = await updateSkills(username, selectedSkills);
+    
+    await new Promise(resolve => {
+      setUserData(updatedUser);
+      setEditSkillsMode(false);
+      resolve(null);
+    });
+
+    setSuccessMessage('Skills updated!');
+    setErrorMessage(null);
+  } catch (error) {
+    setErrorMessage('Failed to update skills.');
+    setSuccessMessage(null);
+  }
+};
+
+/**
+ * Toggles a skill in the selected skills array
+ */
+const toggleSkill = (skill: string) => {
+  setSelectedSkills(prev => 
+    prev.includes(skill) 
+      ? prev.filter(s => s !== skill)  // Remove if already selected
+      : [...prev, skill]                // Add if not selected
+  );
+};
+
   return {
     userData,
     newPassword,
@@ -155,6 +192,12 @@ const useProfileSettings = () => {
     setEditBioMode,
     newBio,
     setNewBio,
+    // edit skills
+    editSkillsMode,
+    setEditSkillsMode,
+    selectedSkills,
+    toggleSkill,
+    handleUpdateSkills,
     successMessage,
     errorMessage,
     showConfirmation,
