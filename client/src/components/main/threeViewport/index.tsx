@@ -6,7 +6,7 @@ const ThreeViewport = () => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } =
     useModelUpload();
 
-  const { containerRef } = useThreeViewportPage(modelUrl);
+  const { containerRef, handleResetCamera } = useThreeViewportPage(modelUrl);
 
   return (
     <div className="viewport-card">
@@ -23,6 +23,9 @@ const ThreeViewport = () => {
         <button onClick={triggerFileUpload} className="upload-button">
           Upload Model (.glb)
         </button>
+        {modelUrl && <button onClick={handleResetCamera} className="reset-camera">
+          Reset Camera
+        </button>}
       </div>
     </div>
   );
