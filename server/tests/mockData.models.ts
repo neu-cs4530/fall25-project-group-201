@@ -48,7 +48,7 @@ export const comWithMediaPath: DatabaseComment = {
   text: 'comWithMediaPath',
   commentBy: 'comWithMediaPath',
   commentDateTime: new Date('2023-12-18T09:25:00'),
-  mediaPath: "/userData/user123/287709df-a49f-4e02-bdf7-d7207bd34d76.jpg"
+  mediaPath: '/userData/user123/287709df-a49f-4e02-bdf7-d7207bd34d76.jpg',
 };
 
 export const comWithMediaUrl: DatabaseComment = {
@@ -56,17 +56,16 @@ export const comWithMediaUrl: DatabaseComment = {
   text: 'comWithMediaUrl',
   commentBy: 'comWithMediaUrl',
   commentDateTime: new Date('2021-12-18T09:25:00'),
-  mediaUrl: "https://www.youtube.com/watch?v=qERgb3pWfu0"
+  mediaUrl: 'https://www.youtube.com/watch?v=qERgb3pWfu0',
 };
-
 
 export const comWithMediaPathAndUrl: DatabaseComment = {
   _id: new ObjectId('67e9b87310afe6b09fabb6de'),
   text: 'comWithMediaPathAndUrl',
   commentBy: 'comWithMediaPathAndUrl',
   commentDateTime: new Date('2002-10-18T09:25:00'),
-  mediaUrl: "https://www.youtube.com/watch?v=qERgb3pWfu0",
-  mediaPath: "/userData/user123/287709df-a49f-4e02-bdf7-d7207bd34d76.jpg"
+  mediaUrl: 'https://www.youtube.com/watch?v=qERgb3pWfu0',
+  mediaPath: '/userData/user123/287709df-a49f-4e02-bdf7-d7207bd34d76.jpg',
 };
 
 export const ans1: DatabaseAnswer = {

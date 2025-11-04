@@ -81,7 +81,7 @@ describe('POST /addComment', () => {
         text: 'This is a test comment',
         commentBy: '65e9b716ff0e892116b2de01',
         commentDateTime: new Date('2024-06-03'),
-        mediaUrl: 'https://some/media/url'
+        mediaUrl: 'https://some/media/url',
       },
     };
 
@@ -90,7 +90,7 @@ describe('POST /addComment', () => {
       text: 'This is a test comment',
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: new Date('2024-06-03'),
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     };
 
     saveCommentSpy.mockResolvedValueOnce(mockComment);
@@ -106,7 +106,7 @@ describe('POST /addComment', () => {
       downVotes: [],
       answers: [],
       comments: [mockComment._id],
-      community: null
+      community: null,
     });
 
     popDocSpy.mockResolvedValueOnce({
@@ -132,7 +132,7 @@ describe('POST /addComment', () => {
       text: 'This is a test comment',
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: mockComment.commentDateTime.toISOString(),
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     });
   });
 
@@ -146,7 +146,7 @@ describe('POST /addComment', () => {
         text: 'This is a test comment',
         commentBy: '65e9b716ff0e892116b2de01',
         commentDateTime: new Date('2024-06-03'),
-        mediaPath: 'some/media/url'
+        mediaPath: 'some/media/url',
       },
     };
 
@@ -155,7 +155,7 @@ describe('POST /addComment', () => {
       text: 'This is a test comment',
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: new Date('2024-06-03'),
-      mediaPath: 'some/media/url'
+      mediaPath: 'some/media/url',
     };
 
     saveCommentSpy.mockResolvedValueOnce(mockComment);
@@ -171,7 +171,7 @@ describe('POST /addComment', () => {
       downVotes: [],
       answers: [],
       comments: [mockComment._id],
-      community: null
+      community: null,
     });
 
     popDocSpy.mockResolvedValueOnce({
@@ -212,7 +212,7 @@ describe('POST /addComment', () => {
         commentBy: '65e9b716ff0e892116b2de01',
         commentDateTime: new Date('2024-06-03'),
         mediaPath: 'some/media/url',
-        mediaUrl: 'https://some/media/url'
+        mediaUrl: 'https://some/media/url',
       },
     };
 
@@ -222,7 +222,7 @@ describe('POST /addComment', () => {
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: new Date('2024-06-03'),
       mediaPath: 'some/media/url',
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     };
 
     saveCommentSpy.mockResolvedValueOnce(mockComment);
@@ -238,7 +238,7 @@ describe('POST /addComment', () => {
       downVotes: [],
       answers: [],
       comments: [mockComment._id],
-      community: null
+      community: null,
     });
 
     popDocSpy.mockResolvedValueOnce({
@@ -265,7 +265,7 @@ describe('POST /addComment', () => {
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: mockComment.commentDateTime.toISOString(),
       mediaPath: 'some/media/url',
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     });
   });
 
@@ -380,7 +380,7 @@ describe('POST /addComment', () => {
         text: 'This is a test comment',
         commentBy: '65e9b716ff0e892116b2de01',
         commentDateTime: new Date('2024-06-03'),
-        mediaUrl: 'https://some/media/url'
+        mediaUrl: 'https://some/media/url',
       },
     };
 
@@ -389,7 +389,7 @@ describe('POST /addComment', () => {
       text: 'This is a test comment',
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: new Date('2024-06-03'),
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     };
 
     saveCommentSpy.mockResolvedValueOnce(mockComment);
@@ -418,7 +418,7 @@ describe('POST /addComment', () => {
       text: 'This is a test comment',
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: mockComment.commentDateTime.toISOString(),
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     });
   });
 
@@ -433,7 +433,7 @@ describe('POST /addComment', () => {
         commentBy: '65e9b716ff0e892116b2de01',
         commentDateTime: new Date('2024-06-03'),
         mediaPath: 'some/media/url',
-        mediaUrl: 'https://some/media/url'
+        mediaUrl: 'https://some/media/url',
       },
     };
 
@@ -443,7 +443,7 @@ describe('POST /addComment', () => {
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: new Date('2024-06-03'),
       mediaPath: 'some/media/url',
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     };
 
     saveCommentSpy.mockResolvedValueOnce(mockComment);
@@ -473,7 +473,7 @@ describe('POST /addComment', () => {
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: mockComment.commentDateTime.toISOString(),
       mediaPath: 'some/media/url',
-      mediaUrl: 'https://some/media/url'
+      mediaUrl: 'https://some/media/url',
     });
   });
 

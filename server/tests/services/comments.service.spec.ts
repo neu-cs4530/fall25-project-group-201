@@ -3,7 +3,14 @@ import QuestionModel from '../../models/questions.model';
 import { saveComment, addComment } from '../../services/comment.service';
 import { DatabaseComment, DatabaseQuestion, DatabaseAnswer } from '../../types/types';
 import AnswerModel from '../../models/answers.model';
-import { QUESTIONS, ans1, com1, comWithMediaPath, comWithMediaUrl, comWithMediaPathAndUrl} from '../mockData.models';
+import {
+  QUESTIONS,
+  ans1,
+  com1,
+  comWithMediaPath,
+  comWithMediaUrl,
+  comWithMediaPathAndUrl,
+} from '../mockData.models';
 import CommentModel from '../../models/comments.model';
 
 describe('Comment model', () => {
@@ -34,7 +41,7 @@ describe('Comment model', () => {
       expect(result.mediaPath).toEqual(comWithMediaPath.mediaPath);
     });
 
-     test('saveComment with mediaUrl should return the saved comment with mediaUrl', async () => {
+    test('saveComment with mediaUrl should return the saved comment with mediaUrl', async () => {
       jest
         .spyOn(CommentModel, 'create')
         .mockResolvedValue(comWithMediaUrl as unknown as ReturnType<typeof CommentModel.create>);
@@ -49,7 +56,9 @@ describe('Comment model', () => {
     test('saveComment with mediaUrl and mediaPath should return the saved comment with mediaUrl', async () => {
       jest
         .spyOn(CommentModel, 'create')
-        .mockResolvedValue(comWithMediaPathAndUrl as unknown as ReturnType<typeof CommentModel.create>);
+        .mockResolvedValue(
+          comWithMediaPathAndUrl as unknown as ReturnType<typeof CommentModel.create>,
+        );
       const result = (await saveComment(comWithMediaPathAndUrl)) as DatabaseComment;
       expect(result._id).toBeDefined();
       expect(result.text).toEqual(comWithMediaPathAndUrl.text);

@@ -9,9 +9,9 @@ describe('Add media', () => {
   });
 
   const mockMediaInput: Media = {
-      filepathLocation: "/test/hogwarts-example.png",
-      user: "media1_uploader",
-      fileBuffer: "dummy_file_buffer"
+    filepathLocation: '/test/hogwarts-example.png',
+    user: 'media1_uploader',
+    fileBuffer: 'dummy_file_buffer',
   };
 
   describe('addMedia', () => {

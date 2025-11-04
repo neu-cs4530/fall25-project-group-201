@@ -5,10 +5,6 @@ import { DatabaseMedia } from '../types/types';
 /**
  * Mongoose model for the Media collection.
  */
-const MediaModel: Model<DatabaseMedia> = mongoose.model<DatabaseMedia>(
-  'Media',
-  mediaSchema,
-);
+const MediaModel: Model<DatabaseMedia> = mongoose.model<DatabaseMedia>('Media', mediaSchema);
 
 export default MediaModel;
-
