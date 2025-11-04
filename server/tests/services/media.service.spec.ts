@@ -1,5 +1,5 @@
 import MediaModel from '../../models/media.model';
-import { addMedia } from '../../services/media.service';
+import mediaService from '../../services/media.service';
 import { Media } from '../../types/types';
 
 describe('Add media', () => {
@@ -25,7 +25,7 @@ describe('Add media', () => {
       const saveMock = jest.fn().mockResolvedValueOnce(savedMedia);
       jest.spyOn(MediaModel.prototype, 'save').mockImplementation(saveMock);
 
-      const result = await addMedia(mockMediaInput);
+      const result = await mediaService.addMedia(mockMediaInput);
 
       expect(result).toEqual(savedMedia);
       expect(saveMock).toHaveBeenCalled();
@@ -33,7 +33,7 @@ describe('Add media', () => {
 
     test('addMedia should return an object with error if create throws an error', async () => {
       jest.spyOn(MediaModel.prototype, 'save').mockRejectedValue(new Error('Error from db query'));
-      const result = await addMedia(mockMediaInput);
+      const result = await mediaService.addMedia(mockMediaInput);
       expect(result).toEqual({ error: 'Error from db query' });
     });
   });

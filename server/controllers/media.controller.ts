@@ -1,6 +1,6 @@
 import express, { Response, Request } from 'express';
 import multer from 'multer';
-import { addMedia } from '../services/media.service';
+import mediaService from '../services/media.service';
 import { Media, FakeSOSocket } from '../types/types';
 
 const upload = multer({ storage: multer.memoryStorage() }); // memory storage
@@ -27,7 +27,7 @@ const mediaController = (socket: FakeSOSocket) => {
         user,
       };
 
-      const newMedia = await addMedia(media);
+      const newMedia = await mediaService.addMedia(media);
 
       if ('error' in newMedia) {
         throw new Error(newMedia.error);

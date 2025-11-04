@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../../app';
-import * as mediaService from '../../services/media.service';
+import mediaService from '../../services/media.service';
 import { DatabaseMedia } from '../../types/types';
 
 // Service method spies

@@ -3,7 +3,7 @@ import { Media, MediaResponse } from '../types/types';
 import fs from 'fs';
 import path from 'path';
 
-export const addMedia = async (media: Media): Promise<MediaResponse> => {
+const addMedia = async (media: Media): Promise<MediaResponse> => {
   try {
     const userDir = path.resolve(__dirname, '../../client/public/userData', media.user);
 
@@ -32,3 +32,5 @@ export const addMedia = async (media: Media): Promise<MediaResponse> => {
     return { error: (error as Error).message };
   }
 };
+
+export default { addMedia };

@@ -10,7 +10,7 @@ import {
 import useUserContext from './useUserContext';
 import addComment from '../services/commentService';
 import { getQuestionById } from '../services/questionService';
-import { addMedia } from '../services/mediaService';
+import mediaService from '../services/mediaService';
 
 /**
  * Custom hook for managing the answer page's state, navigation, and real-time updates.
@@ -61,7 +61,7 @@ const useAnswerPage = () => {
       formData.append('file', file);
       formData.append('filepathLocation', file.name);
 
-      const newMedia = await addMedia(user.username, formData);
+      const newMedia = await mediaService.addMedia(user.username, formData);
 
       return newMedia.filepathLocation;
     } catch (err) {
