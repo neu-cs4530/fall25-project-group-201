@@ -171,12 +171,6 @@ const CommentSection = ({
     }
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
-
-    handleAddMedia(file);
-  };
-
   const isVideo = (mediaPath: string) => {
     return mediaPath.endsWith('.mp4');
   };

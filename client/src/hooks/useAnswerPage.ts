@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
-  Media,
   Comment,
   VoteUpdatePayload,
   PopulatedDatabaseQuestion,
@@ -66,7 +65,6 @@ const useAnswerPage = () => {
 
       return newMedia.filepathLocation;
     } catch (err) {
-      console.error('Error adding media:', err);
       return undefined;
     }
   };
