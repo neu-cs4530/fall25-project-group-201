@@ -71,6 +71,204 @@ describe('POST /addComment', () => {
     });
   });
 
+  it('should add a new comment with mediaUrl to the question', async () => {
+    const validQid = new mongoose.Types.ObjectId();
+    const validCid = new mongoose.Types.ObjectId();
+    const mockReqBody = {
+      id: validQid.toString(),
+      type: 'question',
+      comment: {
+        text: 'This is a test comment',
+        commentBy: '65e9b716ff0e892116b2de01',
+        commentDateTime: new Date('2024-06-03'),
+        mediaUrl: 'https://some/media/url'
+      },
+    };
+
+    const mockComment = {
+      _id: validCid,
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: new Date('2024-06-03'),
+      mediaUrl: 'https://some/media/url'
+    };
+
+    saveCommentSpy.mockResolvedValueOnce(mockComment);
+    addCommentSpy.mockResolvedValueOnce({
+      _id: validQid,
+      title: 'This is a test question',
+      text: 'This is a test question',
+      tags: [],
+      askedBy: '65e9b716ff0e892116b2de01',
+      askDateTime: new Date('2024-06-03'),
+      views: [],
+      upVotes: [],
+      downVotes: [],
+      answers: [],
+      comments: [mockComment._id],
+      community: null
+    });
+
+    popDocSpy.mockResolvedValueOnce({
+      _id: validQid,
+      title: 'This is a test question',
+      text: 'This is a test question',
+      tags: [],
+      askedBy: '65e9b716ff0e892116b2de01',
+      askDateTime: new Date('2024-06-03'),
+      views: [],
+      upVotes: [],
+      downVotes: [],
+      answers: [],
+      comments: [mockComment],
+      community: null,
+    });
+
+    const response = await supertest(app).post('/api/comment/addComment').send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      _id: validCid.toString(),
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: mockComment.commentDateTime.toISOString(),
+      mediaUrl: 'https://some/media/url'
+    });
+  });
+
+  it('should add a new comment with mediaPath to the question', async () => {
+    const validQid = new mongoose.Types.ObjectId();
+    const validCid = new mongoose.Types.ObjectId();
+    const mockReqBody = {
+      id: validQid.toString(),
+      type: 'question',
+      comment: {
+        text: 'This is a test comment',
+        commentBy: '65e9b716ff0e892116b2de01',
+        commentDateTime: new Date('2024-06-03'),
+        mediaPath: 'some/media/url'
+      },
+    };
+
+    const mockComment = {
+      _id: validCid,
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: new Date('2024-06-03'),
+      mediaPath: 'some/media/url'
+    };
+
+    saveCommentSpy.mockResolvedValueOnce(mockComment);
+    addCommentSpy.mockResolvedValueOnce({
+      _id: validQid,
+      title: 'This is a test question',
+      text: 'This is a test question',
+      tags: [],
+      askedBy: '65e9b716ff0e892116b2de01',
+      askDateTime: new Date('2024-06-03'),
+      views: [],
+      upVotes: [],
+      downVotes: [],
+      answers: [],
+      comments: [mockComment._id],
+      community: null
+    });
+
+    popDocSpy.mockResolvedValueOnce({
+      _id: validQid,
+      title: 'This is a test question',
+      text: 'This is a test question',
+      tags: [],
+      askedBy: '65e9b716ff0e892116b2de01',
+      askDateTime: new Date('2024-06-03'),
+      views: [],
+      upVotes: [],
+      downVotes: [],
+      answers: [],
+      comments: [mockComment],
+      community: null,
+    });
+
+    const response = await supertest(app).post('/api/comment/addComment').send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      _id: validCid.toString(),
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: mockComment.commentDateTime.toISOString(),
+      mediaPath: 'some/media/url',
+    });
+  });
+
+  it('should add a new comment with mediaPath and mediaUrl to the question', async () => {
+    const validQid = new mongoose.Types.ObjectId();
+    const validCid = new mongoose.Types.ObjectId();
+    const mockReqBody = {
+      id: validQid.toString(),
+      type: 'question',
+      comment: {
+        text: 'This is a test comment',
+        commentBy: '65e9b716ff0e892116b2de01',
+        commentDateTime: new Date('2024-06-03'),
+        mediaPath: 'some/media/url',
+        mediaUrl: 'https://some/media/url'
+      },
+    };
+
+    const mockComment = {
+      _id: validCid,
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: new Date('2024-06-03'),
+      mediaPath: 'some/media/url',
+      mediaUrl: 'https://some/media/url'
+    };
+
+    saveCommentSpy.mockResolvedValueOnce(mockComment);
+    addCommentSpy.mockResolvedValueOnce({
+      _id: validQid,
+      title: 'This is a test question',
+      text: 'This is a test question',
+      tags: [],
+      askedBy: '65e9b716ff0e892116b2de01',
+      askDateTime: new Date('2024-06-03'),
+      views: [],
+      upVotes: [],
+      downVotes: [],
+      answers: [],
+      comments: [mockComment._id],
+      community: null
+    });
+
+    popDocSpy.mockResolvedValueOnce({
+      _id: validQid,
+      title: 'This is a test question',
+      text: 'This is a test question',
+      tags: [],
+      askedBy: '65e9b716ff0e892116b2de01',
+      askDateTime: new Date('2024-06-03'),
+      views: [],
+      upVotes: [],
+      downVotes: [],
+      answers: [],
+      comments: [mockComment],
+      community: null,
+    });
+
+    const response = await supertest(app).post('/api/comment/addComment').send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      _id: validCid.toString(),
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: mockComment.commentDateTime.toISOString(),
+      mediaPath: 'some/media/url',
+      mediaUrl: 'https://some/media/url'
+    });
+  });
+
   it('should add a new comment to the answer', async () => {
     const validAid = new mongoose.Types.ObjectId();
     const validCid = new mongoose.Types.ObjectId();
@@ -117,6 +315,165 @@ describe('POST /addComment', () => {
       text: 'This is a test comment',
       commentBy: '65e9b716ff0e892116b2de01',
       commentDateTime: mockComment.commentDateTime.toISOString(),
+    });
+  });
+
+  it('should add a new comment with mediaPath to the answer', async () => {
+    const validAid = new mongoose.Types.ObjectId();
+    const validCid = new mongoose.Types.ObjectId();
+    const mockReqBody = {
+      id: validAid.toString(),
+      type: 'answer',
+      comment: {
+        text: 'This is a test comment',
+        commentBy: '65e9b716ff0e892116b2de01',
+        commentDateTime: new Date('2024-06-03'),
+        mediaPath: 'some/media/url',
+      },
+    };
+
+    const mockComment = {
+      _id: validCid,
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: new Date('2024-06-03'),
+      mediaPath: 'some/media/url',
+    };
+
+    saveCommentSpy.mockResolvedValueOnce(mockComment);
+
+    addCommentSpy.mockResolvedValueOnce({
+      _id: validAid,
+      text: 'This is a test answer',
+      ansBy: '65e9b716ff0e892116b2de01',
+      ansDateTime: new Date('2024-06-03'),
+      comments: [mockComment._id],
+    });
+
+    popDocSpy.mockResolvedValueOnce({
+      _id: validAid,
+      text: 'This is a test answer',
+      ansBy: '65e9b716ff0e892116b2de01',
+      ansDateTime: new Date('2024-06-03'),
+      comments: [mockComment],
+    });
+
+    const response = await supertest(app).post('/api/comment/addComment').send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      _id: validCid.toString(),
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: mockComment.commentDateTime.toISOString(),
+      mediaPath: 'some/media/url',
+    });
+  });
+
+  it('should add a new comment with mediaUrl to the answer', async () => {
+    const validAid = new mongoose.Types.ObjectId();
+    const validCid = new mongoose.Types.ObjectId();
+    const mockReqBody = {
+      id: validAid.toString(),
+      type: 'answer',
+      comment: {
+        text: 'This is a test comment',
+        commentBy: '65e9b716ff0e892116b2de01',
+        commentDateTime: new Date('2024-06-03'),
+        mediaUrl: 'https://some/media/url'
+      },
+    };
+
+    const mockComment = {
+      _id: validCid,
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: new Date('2024-06-03'),
+      mediaUrl: 'https://some/media/url'
+    };
+
+    saveCommentSpy.mockResolvedValueOnce(mockComment);
+
+    addCommentSpy.mockResolvedValueOnce({
+      _id: validAid,
+      text: 'This is a test answer',
+      ansBy: '65e9b716ff0e892116b2de01',
+      ansDateTime: new Date('2024-06-03'),
+      comments: [mockComment._id],
+    });
+
+    popDocSpy.mockResolvedValueOnce({
+      _id: validAid,
+      text: 'This is a test answer',
+      ansBy: '65e9b716ff0e892116b2de01',
+      ansDateTime: new Date('2024-06-03'),
+      comments: [mockComment],
+    });
+
+    const response = await supertest(app).post('/api/comment/addComment').send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      _id: validCid.toString(),
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: mockComment.commentDateTime.toISOString(),
+      mediaUrl: 'https://some/media/url'
+    });
+  });
+
+  it('should add a new comment with mediaPath and mediaUrl to the answer', async () => {
+    const validAid = new mongoose.Types.ObjectId();
+    const validCid = new mongoose.Types.ObjectId();
+    const mockReqBody = {
+      id: validAid.toString(),
+      type: 'answer',
+      comment: {
+        text: 'This is a test comment',
+        commentBy: '65e9b716ff0e892116b2de01',
+        commentDateTime: new Date('2024-06-03'),
+        mediaPath: 'some/media/url',
+        mediaUrl: 'https://some/media/url'
+      },
+    };
+
+    const mockComment = {
+      _id: validCid,
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: new Date('2024-06-03'),
+      mediaPath: 'some/media/url',
+      mediaUrl: 'https://some/media/url'
+    };
+
+    saveCommentSpy.mockResolvedValueOnce(mockComment);
+
+    addCommentSpy.mockResolvedValueOnce({
+      _id: validAid,
+      text: 'This is a test answer',
+      ansBy: '65e9b716ff0e892116b2de01',
+      ansDateTime: new Date('2024-06-03'),
+      comments: [mockComment._id],
+    });
+
+    popDocSpy.mockResolvedValueOnce({
+      _id: validAid,
+      text: 'This is a test answer',
+      ansBy: '65e9b716ff0e892116b2de01',
+      ansDateTime: new Date('2024-06-03'),
+      comments: [mockComment],
+    });
+
+    const response = await supertest(app).post('/api/comment/addComment').send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      _id: validCid.toString(),
+      text: 'This is a test comment',
+      commentBy: '65e9b716ff0e892116b2de01',
+      commentDateTime: mockComment.commentDateTime.toISOString(),
+      mediaPath: 'some/media/url',
+      mediaUrl: 'https://some/media/url'
     });
   });
 
