@@ -1,16 +1,51 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { Object3D, Mesh } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 const useThreeViewportPage = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
+    let isDragging = false;
+    let previousMouseX = 0;
+    let previousMouseY = 0;
+
+    // --- Mouse controls for rotating the scene around the model ---
+    const handleMouseDown = (event: MouseEvent) => {
+      isDragging = true;
+      previousMouseX = event.clientX;
+      previousMouseY = event.clientY;
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!isDragging) return;
+
+      const deltaX = event.clientX - previousMouseX;
+      const deltaY = event.clientY - previousMouseY;
+
+      const sensitivity = 0.005; // adjust this for faster/slower rotation
+
+      scene.rotation.y += deltaX * sensitivity; // left/right
+      scene.rotation.x += deltaY * sensitivity; // up/down
+
+      previousMouseX = event.clientX;
+      previousMouseY = event.clientY;
+    };
+
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
 
     // Add subtle gradient-like background using a large hemisphere light
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xbebebe, 1.0);
@@ -21,14 +56,20 @@ const useThreeViewportPage = (modelPath: string | null) => {
       45,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
-      1000
+      1000,
     );
 
+    cameraRef.current = camera;
+
+    // --- Camera controls (zoom in/zoom out) ---
+    const moveSpeed = 0.05;
+    const handleWheel = (event: WheelEvent) => {
+      camera.position.z += event.deltaY * moveSpeed;
+    };
+    window.addEventListener('wheel', handleWheel);
+
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(
-      containerRef.current.clientWidth,
-      containerRef.current.clientHeight
-    );
+    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     containerRef.current.appendChild(renderer.domElement);
@@ -65,10 +106,10 @@ const useThreeViewportPage = (modelPath: string | null) => {
 
     loader.load(
       modelPath,
-      (gltf) => {
+      gltf => {
         const model = gltf.scene;
-        model.traverse((child: any) => {
-          if (child.isMesh) {
+        model.traverse((child: Object3D) => {
+          if (child instanceof Mesh) {
             child.castShadow = true;
             child.receiveShadow = false;
           }
@@ -90,7 +131,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
 
         // Adjust so the model rests on the ground plane
         box.setFromObject(model);
-        const newSize = box.getSize(new THREE.Vector3());
+        //const newSize = box.getSize(new THREE.Vector3());
         const newMin = box.min;
         model.position.y -= newMin.y; // lift model so its lowest point touches y=0
 
@@ -106,21 +147,18 @@ const useThreeViewportPage = (modelPath: string | null) => {
         camera.lookAt(0, radius * 0.3, 0);
       },
       undefined,
-      (error) => {
+      /*
+      error => {
         console.error(`Error loading model (${modelPath}):`, error);
-      }
+      },*/
     );
 
     // --- Handle window resize ---
     const handleResize = () => {
       if (!containerRef.current) return;
-      camera.aspect =
-        containerRef.current.clientWidth / containerRef.current.clientHeight;
+      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(
-        containerRef.current.clientWidth,
-        containerRef.current.clientHeight
-      );
+      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     };
     window.addEventListener('resize', handleResize);
 

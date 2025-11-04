@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef } from 'react';
 
 const useModelUpload = () => {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
@@ -6,11 +6,11 @@ const useModelUpload = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.name.toLowerCase().endsWith(".glb")) {
+    if (file && file.name.toLowerCase().endsWith('.glb')) {
       const url = URL.createObjectURL(file);
       setModelUrl(url);
     } else {
-      alert("Please upload a valid .glb file.");
+      alert('Please upload a valid .glb file.');
     }
   };
 
