@@ -4,7 +4,7 @@ import { Media, DatabaseMedia } from '../types/types';
 const MEDIA_API_URL = '/api/media';
 
 const addMedia = async (user: string, formData: FormData): Promise<DatabaseMedia> => {
-  formData.append('user', user); 
+  formData.append('user', user);
 
   const res = await axios.post(`${MEDIA_API_URL}/create`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -17,6 +17,4 @@ const addMedia = async (user: string, formData: FormData): Promise<DatabaseMedia
   return res.data;
 };
 
-export {
-  addMedia
-};
+export { addMedia };

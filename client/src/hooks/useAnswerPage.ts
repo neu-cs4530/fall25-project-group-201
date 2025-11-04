@@ -28,7 +28,7 @@ const useAnswerPage = () => {
   const { user, socket } = useUserContext();
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
-  const [mediaPath, setMediaPath ] = useState<string>('');
+  const [mediaPath, setMediaPath] = useState<string>('');
   const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
 
   /**
@@ -39,7 +39,6 @@ const useAnswerPage = () => {
   };
 
   const handleAddMedia = async (file: File): Promise<string | undefined> => {
-
     if (!file || !file.name) {
       setHandleAddMediaError('File with valid path is required');
       return;
@@ -70,7 +69,7 @@ const useAnswerPage = () => {
       console.error('Error adding media:', err);
       return undefined;
     }
-};
+  };
 
   useEffect(() => {
     if (!qid) {
@@ -99,12 +98,12 @@ const useAnswerPage = () => {
       }
 
       if (mediaPath && mediaPath.trim() !== '') {
-        comment ={
+        comment = {
           ...comment,
-          mediaPath 
-        }
+          mediaPath,
+        };
       }
-      
+
       await addComment(targetId, targetType, comment);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -236,7 +235,7 @@ const useAnswerPage = () => {
     handleNewComment,
     handleNewAnswer,
     handleAddMedia,
-    handleAddMediaError
+    handleAddMediaError,
   };
 };
 

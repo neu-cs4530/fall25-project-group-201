@@ -26,7 +26,12 @@ interface CommentSectionProps {
  * @param comments: an array of Comment objects
  * @param handleAddComment: function to handle the addition of a new comment
  */
-const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddMediaError }: CommentSectionProps) => {
+const CommentSection = ({
+  comments,
+  handleAddComment,
+  handleAddMedia,
+  handleAddMediaError,
+}: CommentSectionProps) => {
   const { user } = useUserContext();
   const [text, setText] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
@@ -53,8 +58,7 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
       if (imagePattern.test(parsed.pathname)) return true;
 
       // YouTube URL patterns
-      const youtubePattern =
-        /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)/i;
+      const youtubePattern = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)/i;
       if (youtubePattern.test(url)) return true;
 
       // Vimeo URL pattern
@@ -71,50 +75,48 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
    * Function to handle the addition of a new comment.
    */
   const handleAddCommentClick = async () => {
-  if (text.trim() === '' || user.username.trim() === '') {
-    setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
-    return;
-  }
-
-  setTextErr('');
-  setMediaError(null);
-
-  let mediaPathOrUrl: string | undefined;
-
-  // Upload file if present
-  if (file) {
-    mediaPathOrUrl = await handleAddMedia(file);
-    if (!mediaPathOrUrl) {
-      setMediaError('Failed to upload media');
+    if (text.trim() === '' || user.username.trim() === '') {
+      setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
       return;
     }
-  } else if (mediaUrl) {
-    if (!isValidMediaUrl(mediaUrl)) {
-      setMediaError('Media URL is invalid');
-      return;
-    }
-    mediaPathOrUrl = mediaUrl;
-  }
 
-  const newComment: Comment = {
-    text,
-    commentBy: user.username,
-    commentDateTime: new Date(),
-    ...(mediaPathOrUrl
-      ? file
-        ? { mediaPath: mediaPathOrUrl }
-        : { mediaUrl: mediaPathOrUrl }
-      : {}),
+    setTextErr('');
+    setMediaError(null);
+
+    let mediaPathOrUrl: string | undefined;
+
+    // Upload file if present
+    if (file) {
+      mediaPathOrUrl = await handleAddMedia(file);
+      if (!mediaPathOrUrl) {
+        setMediaError('Failed to upload media');
+        return;
+      }
+    } else if (mediaUrl) {
+      if (!isValidMediaUrl(mediaUrl)) {
+        setMediaError('Media URL is invalid');
+        return;
+      }
+      mediaPathOrUrl = mediaUrl;
+    }
+
+    const newComment: Comment = {
+      text,
+      commentBy: user.username,
+      commentDateTime: new Date(),
+      ...(mediaPathOrUrl
+        ? file
+          ? { mediaPath: mediaPathOrUrl }
+          : { mediaUrl: mediaPathOrUrl }
+        : {}),
+    };
+
+    handleAddComment(newComment);
+
+    setText('');
+    setMediaUrl('');
+    setFile(null);
   };
-
-  handleAddComment(newComment);
-
-  setText('');
-  setMediaUrl('');
-  setFile(null);
-};
-
-
 
   // Function to detect Image, YouTube or Vimeo URLs and return embed iframe
   const renderEmbeddedMedia = (text: string) => {
@@ -122,23 +124,23 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
     const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i;
     const imageMatch = text.match(imageRegex);
     if (imageMatch) {
-      return <img src={imageMatch[0]} alt="user-uploaded" className="comment-image" />;
+      return <img src={imageMatch[0]} alt='user-uploaded' className='comment-image' />;
     }
 
     // YouTube URL
-    const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const ytRegex =
+      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const ytMatch = text.match(ytRegex);
     if (ytMatch) {
       return (
         <iframe
-          width="560"
-          height="315"
+          width='560'
+          height='315'
           src={`https://www.youtube.com/embed/${ytMatch[1]}`}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+          title='YouTube video player'
+          frameBorder='0'
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+          allowFullScreen></iframe>
       );
     }
 
@@ -149,19 +151,16 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
       return (
         <iframe
           src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
-          width="560"
-          height="315"
-          frameBorder="0"
-          allow="autoplay; fullscreen; picture-in-picture"
+          width='560'
+          height='315'
+          frameBorder='0'
+          allow='autoplay; fullscreen; picture-in-picture'
           allowFullScreen
-          title="Vimeo video player"
-        ></iframe>
+          title='Vimeo video player'></iframe>
       );
     }
 
-    return (
-      <div className='comment-media'>Error embedding URL: {text}</div>
-    );
+    return <div className='comment-media'>Error embedding URL: {text}</div>;
   };
 
   const [file, setFile] = useState<File | null>(null);
@@ -175,12 +174,12 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
   const handleUpload = async () => {
     if (!file) return;
 
-     handleAddMedia(file);
+    handleAddMedia(file);
   };
 
-  const isVideo = (mediaPath: string)  => {
+  const isVideo = (mediaPath: string) => {
     return mediaPath.endsWith('.mp4');
-  }
+  };
 
   return (
     <div className='comment-section'>
@@ -197,22 +196,16 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
                   <div className='comment-text'>
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
-                    {comment.mediaPath && (
-                      isVideo(comment.mediaPath) ? (
-                        <video
-                          src={comment.mediaPath}
-                          controls
-                          className="comment-media"
-                        />
+                    {comment.mediaPath &&
+                      (isVideo(comment.mediaPath) ? (
+                        <video src={comment.mediaPath} controls className='comment-media' />
                       ) : (
                         <img
                           src={comment.mediaPath}
-                          alt="Media is missing. If this is a mistake, contact customer support"
-                          className="comment-media"
+                          alt='Media is missing. If this is a mistake, contact customer support'
+                          className='comment-media'
                         />
-                      )
-                    )}
-
+                      ))}
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
@@ -234,19 +227,20 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
               />
 
               {/* Media button */}
-              <div className="media-button-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+              <div
+                className='media-button-wrapper'
+                style={{ position: 'relative', display: 'inline-block' }}>
                 <button
-                  type="button"
-                  className="media-button"
-                  onClick={() => setShowMediaInput(!showMediaInput)}
-                >
+                  type='button'
+                  className='media-button'
+                  onClick={() => setShowMediaInput(!showMediaInput)}>
                   <FaLink />
                 </button>
 
                 {/* Popup input above button */}
                 {showMediaInput && (
                   <div
-                    className="media-popup"
+                    className='media-popup'
                     style={{
                       position: 'absolute',
                       bottom: '100%', // popup above the button
@@ -258,14 +252,13 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
                       borderRadius: '4px',
                       boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                       zIndex: 10,
-                    }}
-                  >
+                    }}>
                     <input
-                      type="text"
-                      placeholder="Paste image/YouTube/Vimeo link"
+                      type='text'
+                      placeholder='Paste image/YouTube/Vimeo link'
                       value={mediaUrl}
                       onChange={e => setMediaUrl(e.target.value)}
-                      className="comment-media-input"
+                      className='comment-media-input'
                       style={{ width: '200px', padding: '4px' }}
                     />
                   </div>
@@ -277,7 +270,7 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
               </button>
             </div>
             <div>
-              <input type="file" onChange={handleFileChange} />
+              <input type='file' onChange={handleFileChange} />
             </div>
             {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
             {mediaError && <small className='error'>{mediaError}</small>}
