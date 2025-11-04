@@ -27,7 +27,7 @@ const useAnswerPage = () => {
   const { user, socket } = useUserContext();
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
-  const [mediaPath, setMediaPath] = useState<string>('');
+  const mediaPath: string = '';
   const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
 
   /**
@@ -95,14 +95,16 @@ const useAnswerPage = () => {
         throw new Error('No target ID provided.');
       }
 
+      let updatedComment = comment;
+
       if (mediaPath && mediaPath.trim() !== '') {
-        comment = {
+        updatedComment = {
           ...comment,
           mediaPath,
         };
       }
 
-      await addComment(targetId, targetType, comment);
+      await addComment(targetId, targetType, updatedComment);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error adding comment:', error);

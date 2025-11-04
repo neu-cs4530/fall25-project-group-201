@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Media, DatabaseMedia } from '../types/types';
+import { DatabaseMedia } from '../types/types';
 
 const MEDIA_API_URL = '/api/media';
 
@@ -17,4 +17,4 @@ const addMedia = async (user: string, formData: FormData): Promise<DatabaseMedia
   return res.data;
 };
 
-export { addMedia };
+export default { addMedia };
