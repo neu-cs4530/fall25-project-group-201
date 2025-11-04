@@ -67,17 +67,6 @@ describe('POST /create', () => {
   });
 
   test('should return 500 when service returns error', async () => {
-    const mockReqBody = {
-      filepathLocation: 'New Media',
-      user: 'media1_uploader',
-      fileBuffer: Buffer.from('dummy file content'),
-    };
-
-    const createdCommunity: DatabaseMedia = {
-      ...mockReqBody,
-      _id: new mongoose.Types.ObjectId(),
-    };
-
     addMediaSpy.mockResolvedValueOnce({ error: 'Database error' });
 
     const response = await supertest(app)

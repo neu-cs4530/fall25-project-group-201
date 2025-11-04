@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
 import MediaModel from '../../models/media.model';
 import { addMedia } from '../../services/media.service';
-import { Media, DatabaseMedia } from '../../types/types';
+import { Media } from '../../types/types';
 
 describe('Add media', () => {
   beforeEach(() => {
