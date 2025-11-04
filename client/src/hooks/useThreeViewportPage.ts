@@ -7,15 +7,15 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 const useThreeViewportPage = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  let isDragging = false;
-  let previousMouseX = 0;
-  let previousMouseY = 0;
 
   useEffect(() => {
     if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
+    let isDragging = false;
+    let previousMouseX = 0;
+    let previousMouseY = 0;
 
     // --- Mouse controls for rotating the scene around the model ---
     const handleMouseDown = (event: MouseEvent) => {
