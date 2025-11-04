@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { Object3D, Mesh } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
@@ -107,8 +108,8 @@ const useThreeViewportPage = (modelPath: string | null) => {
       modelPath,
       gltf => {
         const model = gltf.scene;
-        model.traverse((child: any) => {
-          if (child.isMesh) {
+        model.traverse((child: Object3D) => {
+          if (child instanceof Mesh) {
             child.castShadow = true;
             child.receiveShadow = false;
           }
