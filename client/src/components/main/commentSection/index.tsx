@@ -159,7 +159,9 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
       );
     }
 
-    return null;
+    return (
+      <div className='comment-media'>Error embedding URL: {text}</div>
+    );
   };
 
   const [file, setFile] = useState<File | null>(null);
@@ -205,7 +207,7 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddM
                       ) : (
                         <img
                           src={comment.mediaPath}
-                          alt="comment media"
+                          alt="Media is missing. If this is a mistake, contact customer support"
                           className="comment-media"
                         />
                       )
