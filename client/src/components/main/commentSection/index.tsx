@@ -17,6 +17,7 @@ interface CommentSectionProps {
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
   handleAddMedia: (file: File) => void;
+  handleAddMediaError: string;
 }
 
 /**
@@ -25,7 +26,7 @@ interface CommentSectionProps {
  * @param comments: an array of Comment objects
  * @param handleAddComment: function to handle the addition of a new comment
  */
-const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentSectionProps) => {
+const CommentSection = ({ comments, handleAddComment, handleAddMedia, handleAddMediaError }: CommentSectionProps) => {
   const { user } = useUserContext();
   const [text, setText] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
@@ -276,6 +277,7 @@ const CommentSection = ({ comments, handleAddComment, handleAddMedia }: CommentS
             <div>
               <input type="file" onChange={handleFileChange} />
             </div>
+            {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
             {mediaError && <small className='error'>{mediaError}</small>}
             {textErr && <small className='error'>{textErr}</small>}
           </div>

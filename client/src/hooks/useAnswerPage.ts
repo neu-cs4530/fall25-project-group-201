@@ -29,6 +29,7 @@ const useAnswerPage = () => {
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
   const [mediaPath, setMediaPath ] = useState<string>('');
+  const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
 
   /**
    * Function to handle navigation to the "New Answer" page.
@@ -38,19 +39,37 @@ const useAnswerPage = () => {
   };
 
   const handleAddMedia = async (file: File): Promise<string | undefined> => {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('filepathLocation', file.name);
 
-    const newMedia = await addMedia(user.username, formData);
-    console.log('Media added successfully:', newMedia);
+    if (!file || !file.name) {
+      setHandleAddMediaError('File with valid path is required');
+      return;
+    }
 
-    return newMedia.filepathLocation;
-  } catch (err) {
-    console.error('Error adding media:', err);
-    return undefined;
-  }
+    if (!user.username) {
+      setHandleAddMediaError('User is required');
+      return;
+    }
+
+    const allowedExtensions = ['.png', '.jpeg', '.jpg', '.mp4'];
+    const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      setHandleAddMediaError('Only .png, .jpeg, .jpg, and .mp4 files are allowed');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filepathLocation', file.name);
+
+      const newMedia = await addMedia(user.username, formData);
+
+      return newMedia.filepathLocation;
+    } catch (err) {
+      console.error('Error adding media:', err);
+      return undefined;
+    }
 };
 
   useEffect(() => {
@@ -216,7 +235,8 @@ const useAnswerPage = () => {
     question,
     handleNewComment,
     handleNewAnswer,
-    handleAddMedia
+    handleAddMedia,
+    handleAddMediaError
   };
 };
 
