@@ -130,7 +130,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
 
         // Adjust so the model rests on the ground plane
         box.setFromObject(model);
-        const newSize = box.getSize(new THREE.Vector3());
+        //const newSize = box.getSize(new THREE.Vector3());
         const newMin = box.min;
         model.position.y -= newMin.y; // lift model so its lowest point touches y=0
 
@@ -146,9 +146,10 @@ const useThreeViewportPage = (modelPath: string | null) => {
         camera.lookAt(0, radius * 0.3, 0);
       },
       undefined,
+      /*
       error => {
         console.error(`Error loading model (${modelPath}):`, error);
-      },
+      },*/
     );
 
     // --- Handle window resize ---
