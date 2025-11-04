@@ -1,12 +1,12 @@
 import MediaModel from '../models/media.model';
-import { Media, MediaResponse } from '../types/types';
+import { Media, DatabaseMedia, MediaResponse } from '../types/types';
 import fs from 'fs';
 import path from 'path';
 
-export const addMedia = async (media: Media) => {
-  try {
-    console.log("addMedia in service layer");
+export const addMedia = async (media: Media): Promise<MediaResponse> => {
+  console.log("addMedia in service layer");
 
+  try {
     const userDir = path.resolve(__dirname, '../../client/public/userData', media.user);
 
     // Make sure the directory exists
@@ -15,28 +15,26 @@ export const addMedia = async (media: Media) => {
     }
 
     // Extract the filename
-    const filename = media.filepathLocation; // just the file name
+    const filename = media.filepathLocation;
 
-    // Then save the file inside that directory
+    // Save the file inside that directory
     const destPath = path.join(userDir, filename);
+    console.log("destPath ", destPath);
+    fs.writeFileSync(destPath, media.fileBuffer);
 
-    console.log("destPath ", destPath)
-
-    fs.writeFileSync(destPath, media.fileBuffer); // write file to disk
-
-    // Only store metadata + path in MongoDB (relative path for browser)
+    // Only store metadata + path in MongoDB
     const mediaToSave = {
       filepathLocation: `/userData/${media.user}/${filename}`,
-      user: media.user
+      user: media.user,
     };
 
-    const newMedia = await MediaModel.create(mediaToSave);
+    const mediaDoc = new MediaModel(mediaToSave);
+    const savedMedia = await mediaDoc.save();
+    return savedMedia;
 
-    if (!newMedia) throw new Error('Failed to create media');
-
-    return newMedia;
   } catch (error) {
     return { error: (error as Error).message };
   }
 };
+
 
