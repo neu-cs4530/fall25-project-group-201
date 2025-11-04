@@ -28,20 +28,19 @@ const useThreeViewportPage = (modelPath: string | null) => {
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-    if (!isDragging) return;
+      if (!isDragging) return;
 
-    const deltaX = event.clientX - previousMouseX;
-    const deltaY = event.clientY - previousMouseY;
+      const deltaX = event.clientX - previousMouseX;
+      const deltaY = event.clientY - previousMouseY;
 
-    const sensitivity = 0.005; // adjust this for faster/slower rotation
+      const sensitivity = 0.005; // adjust this for faster/slower rotation
 
-    scene.rotation.y += deltaX * sensitivity; // left/right
-    scene.rotation.x += deltaY * sensitivity; // up/down
+      scene.rotation.y += deltaX * sensitivity; // left/right
+      scene.rotation.x += deltaY * sensitivity; // up/down
 
-
-    previousMouseX = event.clientX;
-    previousMouseY = event.clientY;
-  };
+      previousMouseX = event.clientX;
+      previousMouseY = event.clientY;
+    };
 
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mousedown', handleMouseDown);
@@ -56,7 +55,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
       45,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
-      1000
+      1000,
     );
 
     cameraRef.current = camera;
@@ -69,10 +68,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
     window.addEventListener('wheel', handleWheel);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(
-      containerRef.current.clientWidth,
-      containerRef.current.clientHeight
-    );
+    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     containerRef.current.appendChild(renderer.domElement);
@@ -109,7 +105,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
 
     loader.load(
       modelPath,
-      (gltf) => {
+      gltf => {
         const model = gltf.scene;
         model.traverse((child: any) => {
           if (child.isMesh) {
@@ -150,21 +146,17 @@ const useThreeViewportPage = (modelPath: string | null) => {
         camera.lookAt(0, radius * 0.3, 0);
       },
       undefined,
-      (error) => {
+      error => {
         console.error(`Error loading model (${modelPath}):`, error);
-      }
+      },
     );
 
     // --- Handle window resize ---
     const handleResize = () => {
       if (!containerRef.current) return;
-      camera.aspect =
-        containerRef.current.clientWidth / containerRef.current.clientHeight;
+      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(
-        containerRef.current.clientWidth,
-        containerRef.current.clientHeight
-      );
+      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     };
     window.addEventListener('resize', handleResize);
 
