@@ -36,92 +36,59 @@ describe('POST /create', () => {
         fileBuffer: Buffer.from('dummy file content')
       });
     });
-
-    /*
-    test('should create community with default visibility when not provided', async () => {
-      const mockReqBody = {
-        name: 'New Community',
-        description: 'New Description',
-        admin: 'new_admin',
-      };
-
-      const createdCommunity: DatabaseCommunity = {
-        ...mockReqBody,
-        _id: new mongoose.Types.ObjectId(),
-        participants: ['new_admin'],
-        visibility: 'PUBLIC',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      createCommunitySpy.mockResolvedValueOnce(createdCommunity);
-
-      const response = await supertest(app).post('/api/community/create').send(mockReqBody);
-
-      expect(response.status).toBe(200);
-      expect(createCommunitySpy).toHaveBeenCalledWith({
-        name: mockReqBody.name,
-        description: mockReqBody.description,
-        admin: mockReqBody.admin,
-        participants: ['new_admin'],
-        visibility: 'PUBLIC',
-      });
+    
+    test('should return 400 when missing filepathLocation', async () => {
+      const response2 = await supertest(app)
+         .post('/api/media/create')
+        .field('user', 'media1_uploader')
+        .attach('file', Buffer.from('dummy file content'), 'dummy.txt');
+        
+      expect(response2.status).toBe(400);
+      expect(response2.body.error).toBe('Filepath missing');
     });
 
-    test('should return 400 when missing name', async () => {
-      const mockReqBody = {
-        description: 'New Description',
-        admin: 'new_admin',
-      };
-
-      const response = await supertest(app).post('/api/community/create').send(mockReqBody);
-
-      const openApiError = JSON.parse(response.text);
-
-      expect(response.status).toBe(400);
-      expect(openApiError.errors[0].path).toBe('/body/name');
+    test('should return 400 when missing file', async () => {
+      const response3 = await supertest(app)
+        .post('/api/media/create')
+        .field('filepathLocation', 'New Media')
+        .field('user', 'media1_uploader')
+        
+      expect(response3.status).toBe(400);
+      expect(response3.body.error).toBe('File missing');
     });
 
-    test('should return 400 when missing description', async () => {
-      const mockReqBody = {
-        name: 'New Community',
-        admin: 'new_admin',
-      };
-
-      const response = await supertest(app).post('/api/community/create').send(mockReqBody);
-
-      const openApiError = JSON.parse(response.text);
-
-      expect(response.status).toBe(400);
-      expect(openApiError.errors[0].path).toBe('/body/description');
-    });
-
-    test('should return 400 when missing admin', async () => {
-      const mockReqBody = {
-        name: 'New Community',
-        description: 'New Description',
-      };
-
-      const response = await supertest(app).post('/api/community/create').send(mockReqBody);
-
-      const openApiError = JSON.parse(response.text);
-
-      expect(response.status).toBe(400);
-      expect(openApiError.errors[0].path).toBe('/body/admin');
+    test('should return 400 when missing user', async () => {
+      const response4 = await supertest(app)
+        .post('/api/media/create')
+        .field('filepathLocation', 'New Media')
+        .attach('file', Buffer.from('dummy file content'), 'dummy.txt');
+        
+      expect(response4.status).toBe(400);
+      expect(response4.body.error).toBe('User missing');
     });
 
     test('should return 500 when service returns error', async () => {
       const mockReqBody = {
-        name: 'New Community',
-        description: 'New Description',
-        admin: 'new_admin',
+        filepathLocation: "New Media",
+        user: "media1_uploader",
+        fileBuffer: Buffer.from('dummy file content'),
       };
 
-      createCommunitySpy.mockResolvedValueOnce({ error: 'Database error' });
+      const createdCommunity: DatabaseMedia = {
+        ...mockReqBody,
+        _id: new mongoose.Types.ObjectId(),
+      };
 
-      const response = await supertest(app).post('/api/community/create').send(mockReqBody);
+      addMediaSpy.mockResolvedValueOnce({ error: 'Database error' });
+
+      const response = await supertest(app)
+        .post('/api/media/create')
+        .field('filepathLocation', 'New Media')
+        .field('user', 'media1_uploader')
+        .attach('file', Buffer.from('dummy file content'), 'dummy.txt');
+
 
       expect(response.status).toBe(500);
-      expect(response.text).toContain('Error creating a community: Database error');
-    });*/
+      expect(response.text).toContain('Database error');
+    });
   });

@@ -14,7 +14,13 @@ const mediaController = (socket: FakeSOSocket) => {
       const { user, filepathLocation } = req.body;
 
       if (!file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+        return res.status(400).json({ error: 'File missing' });
+      }
+      else if (!user) {
+        return res.status(400).json({ error: 'User missing' });
+      }
+      else if (!filepathLocation) {
+        return res.status(400).json({ error: 'Filepath missing' });
       }
 
       const media: Media = {
@@ -24,6 +30,11 @@ const mediaController = (socket: FakeSOSocket) => {
       };
 
       const newMedia = await addMedia(media);
+
+      if ('error' in newMedia) {
+        throw new Error(newMedia.error);
+      }
+
       res.status(200).json(newMedia);
     } catch (err: unknown) {
       res.status(500).json({ error: (err as Error).message });
