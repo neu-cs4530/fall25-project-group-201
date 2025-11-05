@@ -33,7 +33,15 @@ interface AnswerProps {
  * @param comments An array of comments associated with the answer.
  * @param handleAddComment Function to handle adding a new comment.
  */
-const AnswerView = ({ text, ansBy, meta, comments, handleAddComment, handleAddMedia, handleAddMediaError }: AnswerProps) => (
+const AnswerView = ({
+  text,
+  ansBy,
+  meta,
+  comments,
+  handleAddComment,
+  handleAddMedia,
+  handleAddMediaError,
+}: AnswerProps) => (
   <div className='answer right_padding'>
     <div id='answerText' className='answerText'>
       {<Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
@@ -42,7 +50,7 @@ const AnswerView = ({ text, ansBy, meta, comments, handleAddComment, handleAddMe
       <div className='answer_author'>{ansBy}</div>
       <div className='answer_question_meta'>{meta}</div>
     </div>
-    <CommentSection 
+    <CommentSection
       comments={comments}
       handleAddComment={handleAddComment}
       handleAddMedia={handleAddMedia}
