@@ -193,11 +193,7 @@ const CommentSection = ({
                       (isVideo(comment.mediaPath) ? (
                         <video src={comment.mediaPath} controls className='comment-media' />
                       ) : (
-                        <img
-                          src={comment.mediaPath}
-                          alt='Loading...'
-                          className='comment-media'
-                        />
+                        <img src={comment.mediaPath} alt='Loading...' className='comment-media' />
                       ))}
                   </div>
                   <small className='comment-meta'>
