@@ -195,7 +195,7 @@ const CommentSection = ({
                       ) : (
                         <img
                           src={comment.mediaPath}
-                          alt='Media is missing. If this is a mistake, contact customer support'
+                          alt='Loading...'
                           className='comment-media'
                         />
                       ))}
