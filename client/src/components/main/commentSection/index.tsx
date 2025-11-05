@@ -114,7 +114,6 @@ const CommentSection = ({
 
     setText('');
     setMediaUrl('');
-    setFile(null);
   };
 
   // Function to detect Image, YouTube or Vimeo URLs and return embed iframe

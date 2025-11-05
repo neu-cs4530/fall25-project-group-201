@@ -43,6 +43,12 @@ const useAnswerPage = () => {
       return;
     }
 
+    const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
+    if (file.size > maxSize) {
+      setHandleAddMediaError('File size cannot exceed 2 MB');
+      return;
+    }
+
     if (!user.username) {
       setHandleAddMediaError('User is required');
       return;
