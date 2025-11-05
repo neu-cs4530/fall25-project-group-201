@@ -16,8 +16,8 @@ import { FaLink } from 'react-icons/fa';
 interface CommentSectionProps {
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
-  handleAddMedia: (file: File) => string | undefined;
-  handleAddMediaError: string;
+  handleAddMedia: (file: File) => Promise<string | undefined>;
+  handleAddMediaError: string | null;
 }
 
 /**
