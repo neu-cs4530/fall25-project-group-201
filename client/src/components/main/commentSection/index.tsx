@@ -16,7 +16,7 @@ import { FaLink } from 'react-icons/fa';
 interface CommentSectionProps {
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
-  handleAddMedia: (file: File) => void;
+  handleAddMedia: (file: File) => string | undefined;
   handleAddMediaError: string;
 }
 
@@ -36,7 +36,7 @@ const CommentSection = ({
   const [text, setText] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
   const [showComments, setShowComments] = useState<boolean>(false);
-  const [mediaUrl, setMediaUrl] = useState<string>('');
+  const [mediaUrl, setMediaUrl] = useState<string>(''); // for embedded links
   const [showMediaInput, setShowMediaInput] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
 
@@ -83,32 +83,31 @@ const CommentSection = ({
     setTextErr('');
     setMediaError(null);
 
-    let mediaPathOrUrl: string | undefined;
+    let tempMediaPath: string | undefined;
 
     // Upload file if present
     if (file) {
-      mediaPathOrUrl = await handleAddMedia(file);
-      if (!mediaPathOrUrl) {
+      tempMediaPath = await handleAddMedia(file);
+      if (!tempMediaPath) {
         setMediaError('Failed to upload media');
         return;
       }
-    } else if (mediaUrl) {
+    }
+
+    if (mediaUrl) {
       if (!isValidMediaUrl(mediaUrl)) {
         setMediaError('Media URL is invalid');
         return;
       }
-      mediaPathOrUrl = mediaUrl;
+      setMediaUrl(mediaUrl);
     }
 
     const newComment: Comment = {
       text,
       commentBy: user.username,
       commentDateTime: new Date(),
-      ...(mediaPathOrUrl
-        ? file
-          ? { mediaPath: mediaPathOrUrl }
-          : { mediaUrl: mediaPathOrUrl }
-        : {}),
+      ...(file ? { mediaPath: tempMediaPath } : {}),
+      ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
     };
 
     handleAddComment(newComment);
