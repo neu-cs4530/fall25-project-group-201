@@ -52,6 +52,8 @@ const AnswerPage = () => {
           handleAddComment={(comment: Comment) =>
             handleNewComment(comment, 'answer', String(a._id))
           }
+          handleAddMedia={handleAddMedia}
+          handleAddMediaError={handleAddMediaError}
         />
       ))}
       <button
