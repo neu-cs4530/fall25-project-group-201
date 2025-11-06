@@ -144,6 +144,20 @@ const updateSkills = async (
   return res.data;
 };
 
+const updateExternalLinks = async (
+  username: string,
+  externalLinks: { github?: string; artstation?: string; linkedin?: string; website?: string },
+): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateExternalLinks`, {
+    username,
+    externalLinks,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating external links');
+  }
+  return res.data;
+};
+
 export {
   getUsers,
   getUserByUsername,
@@ -153,4 +167,6 @@ export {
   resetPassword,
   updateBiography,
   updateSkills,
+  updateExternalLinks,
 };
+

@@ -220,6 +220,33 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+ * Updates a user's external links.
+ * @param req The request containing the username and externalLinks object in the body.
+ * @param res The response, either confirming the update or returning an error.
+ * @returns A promise resolving to void.
+ */
+  const updateExternalLinks = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, externalLinks } = req.body;
+
+      const updatedUser = await updateUser(username, { externalLinks });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating external links: ${error}`);
+    }
+  };
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -229,6 +256,7 @@ const userController = (socket: FakeSOSocket) => {
   router.delete('/deleteUser/:username', deleteUser);
   router.patch('/updateBiography', updateBiography);
   router.patch('/updateSkills', updateSkills);
+  router.patch('/updateExternalLinks', updateExternalLinks);
   return router;
 };
 
