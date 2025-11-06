@@ -7,40 +7,42 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 const useThreeViewportPage = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const isDragging = useRef<boolean>(false);
+  const previousMouseX = useRef<number>(0);
+  const previousMouseY = useRef<number>(0);
 
   useEffect(() => {
     if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
-    let isDragging = false;
-    let previousMouseX = 0;
-    let previousMouseY = 0;
+    sceneRef.current = scene;
 
     // --- Mouse controls for rotating the scene around the model ---
     const handleMouseDown = (event: MouseEvent) => {
-      isDragging = true;
-      previousMouseX = event.clientX;
-      previousMouseY = event.clientY;
+      isDragging.current = true;
+      previousMouseX.current = event.clientX;
+      previousMouseY.current = event.clientY;
     };
 
     const handleMouseUp = () => {
-      isDragging = false;
+      isDragging.current = false;
     };
 
     const handleMouseMove = (event: MouseEvent) => {
       if (!isDragging) return;
 
-      const deltaX = event.clientX - previousMouseX;
-      const deltaY = event.clientY - previousMouseY;
+      const deltaX = event.clientX - Number(previousMouseX.current);
+      const deltaY = event.clientY - Number(previousMouseY.current);
 
       const sensitivity = 0.005; // adjust this for faster/slower rotation
 
       scene.rotation.y += deltaX * sensitivity; // left/right
       scene.rotation.x += deltaY * sensitivity; // up/down
 
-      previousMouseX = event.clientX;
-      previousMouseY = event.clientY;
+      previousMouseX.current = event.clientX;
+      previousMouseY.current = event.clientY;
     };
 
     window.addEventListener('mouseup', handleMouseUp);
@@ -181,7 +183,26 @@ const useThreeViewportPage = (modelPath: string | null) => {
     };
   }, [modelPath]);
 
-  return { containerRef };
+  const handleResetCamera = () => {
+    const scene = sceneRef.current;
+
+    if (scene) {
+      scene.rotation.set(0, 0, 0);
+    }
+  };
+
+  // for handling all key strokes
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'r') {
+        handleResetCamera();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+  });
+
+  return { containerRef, handleResetCamera };
 };
 
 export default useThreeViewportPage;
