@@ -68,7 +68,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
     const handleWheel = (event: WheelEvent) => {
       camera.position.z += event.deltaY * moveSpeed;
     };
-    window.addEventListener('wheel', handleWheel);
+    containerRef.current.addEventListener('wheel', handleWheel);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
