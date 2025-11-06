@@ -30,6 +30,14 @@
   margin: 0;
 }
 
+.comment-media {
+  max-width: 500px;
+  max-height: auto;
+  width: auto;
+  height: auto;
+  color: red;
+}
+
 .comment-item {
   background-color: #fff;
   padding: 0.5em;

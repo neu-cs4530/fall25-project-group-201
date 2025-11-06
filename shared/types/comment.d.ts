@@ -11,6 +11,8 @@ export interface Comment {
   text: string;
   commentBy: string;
   commentDateTime: Date;
+  mediaUrl?: string;
+  mediaPath?: string;
 }
 
 /**

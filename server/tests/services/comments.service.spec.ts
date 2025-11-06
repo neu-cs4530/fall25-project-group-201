@@ -3,7 +3,14 @@ import QuestionModel from '../../models/questions.model';
 import { saveComment, addComment } from '../../services/comment.service';
 import { DatabaseComment, DatabaseQuestion, DatabaseAnswer } from '../../types/types';
 import AnswerModel from '../../models/answers.model';
-import { QUESTIONS, ans1, com1 } from '../mockData.models';
+import {
+  QUESTIONS,
+  ans1,
+  com1,
+  comWithMediaPath,
+  comWithMediaUrl,
+  comWithMediaPathAndUrl,
+} from '../mockData.models';
 import CommentModel from '../../models/comments.model';
 
 describe('Comment model', () => {
@@ -20,6 +27,45 @@ describe('Comment model', () => {
       expect(result.text).toEqual(com1.text);
       expect(result.commentBy).toEqual(com1.commentBy);
       expect(result.commentDateTime).toEqual(com1.commentDateTime);
+    });
+
+    test('saveComment with mediaPath should return the saved comment with mediaPath', async () => {
+      jest
+        .spyOn(CommentModel, 'create')
+        .mockResolvedValue(comWithMediaPath as unknown as ReturnType<typeof CommentModel.create>);
+      const result = (await saveComment(comWithMediaPath)) as DatabaseComment;
+      expect(result._id).toBeDefined();
+      expect(result.text).toEqual(comWithMediaPath.text);
+      expect(result.commentBy).toEqual(comWithMediaPath.commentBy);
+      expect(result.commentDateTime).toEqual(comWithMediaPath.commentDateTime);
+      expect(result.mediaPath).toEqual(comWithMediaPath.mediaPath);
+    });
+
+    test('saveComment with mediaUrl should return the saved comment with mediaUrl', async () => {
+      jest
+        .spyOn(CommentModel, 'create')
+        .mockResolvedValue(comWithMediaUrl as unknown as ReturnType<typeof CommentModel.create>);
+      const result = (await saveComment(comWithMediaUrl)) as DatabaseComment;
+      expect(result._id).toBeDefined();
+      expect(result.text).toEqual(comWithMediaUrl.text);
+      expect(result.commentBy).toEqual(comWithMediaUrl.commentBy);
+      expect(result.commentDateTime).toEqual(comWithMediaUrl.commentDateTime);
+      expect(result.mediaUrl).toEqual(comWithMediaUrl.mediaUrl);
+    });
+
+    test('saveComment with mediaUrl and mediaPath should return the saved comment with mediaUrl', async () => {
+      jest
+        .spyOn(CommentModel, 'create')
+        .mockResolvedValue(
+          comWithMediaPathAndUrl as unknown as ReturnType<typeof CommentModel.create>,
+        );
+      const result = (await saveComment(comWithMediaPathAndUrl)) as DatabaseComment;
+      expect(result._id).toBeDefined();
+      expect(result.text).toEqual(comWithMediaPathAndUrl.text);
+      expect(result.commentBy).toEqual(comWithMediaPathAndUrl.commentBy);
+      expect(result.commentDateTime).toEqual(comWithMediaPathAndUrl.commentDateTime);
+      expect(result.mediaUrl).toEqual(comWithMediaPathAndUrl.mediaUrl);
+      expect(result.mediaPath).toEqual(comWithMediaPathAndUrl.mediaPath);
     });
 
     test('saveComment should return an object with error if create throws an error', async () => {
