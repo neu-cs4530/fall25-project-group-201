@@ -198,7 +198,10 @@ const useThreeViewportPage = (modelPath: string | null) => {
       );
       camera.projectionMatrix.copy(orthoMatrix);
       camera.projectionMatrixInverse.copy(orthoMatrix.clone().invert());
-      camera.position.copy(init.position);
+      const target = new THREE.Vector3(0, 0, 0);
+      const dir = init.position.clone().sub(target);
+      dir.multiplyScalar(0.1);
+      camera.position.copy(dir);
       camera.rotation.copy(init.rotation);
 
       setIsPerspective(false);
