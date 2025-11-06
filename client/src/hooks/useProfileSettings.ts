@@ -133,8 +133,8 @@ const useProfileSettings = () => {
   };
 
   /**
- * Handler for updating external links
- */
+   * Handler for updating external links
+   */
   const handleUpdateExternalLinks = async () => {
     if (!username) return;
     try {
@@ -188,8 +188,8 @@ const useProfileSettings = () => {
   };
 
   /**
- * Handler for updating user skills
- */
+   * Handler for updating user skills
+   */
   const handleUpdateSkills = async () => {
     if (!username) return;
     try {
@@ -213,10 +213,11 @@ const useProfileSettings = () => {
    * Toggles a skill in the selected skills array
    */
   const toggleSkill = (skill: string) => {
-    setSelectedSkills(prev =>
-      prev.includes(skill)
-        ? prev.filter(s => s !== skill)  // Remove if already selected
-        : [...prev, skill]                // Add if not selected
+    setSelectedSkills(
+      prev =>
+        prev.includes(skill)
+          ? prev.filter(s => s !== skill) // Remove if already selected
+          : [...prev, skill], // Add if not selected
     );
   };
 

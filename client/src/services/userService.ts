@@ -130,10 +130,7 @@ const updateBiography = async (
  * @returns A promise resolving to the updated user
  * @throws Error if the request fails
  */
-const updateSkills = async (
-  username: string,
-  skills: string[],
-): Promise<SafeDatabaseUser> => {
+const updateSkills = async (username: string, skills: string[]): Promise<SafeDatabaseUser> => {
   const res = await api.patch(`${USER_API_URL}/updateSkills`, {
     username,
     skills,
@@ -169,4 +166,3 @@ export {
   updateSkills,
   updateExternalLinks,
 };
-
