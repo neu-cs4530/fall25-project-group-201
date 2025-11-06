@@ -64,11 +64,13 @@ const ProfileSettings: React.FC = () => {
     return (
       <div
         className='profile-settings'
-        style={{
-          '--color-primary': userData?.customColors?.primary || '#2563eb',
-          '--color-accent': userData?.customColors?.accent || '#16a34a',
-          '--color-bg': userData?.customColors?.background || '#f2f4f7',
-        } as React.CSSProperties}>
+        style={
+          {
+            '--color-primary': userData?.customColors?.primary || '#2563eb',
+            '--color-accent': userData?.customColors?.accent || '#16a34a',
+            '--color-bg': userData?.customColors?.background || '#f2f4f7',
+          } as React.CSSProperties
+        }>
         <div className='profile-card'>
           <h2>Loading user data...</h2>
         </div>
@@ -79,11 +81,13 @@ const ProfileSettings: React.FC = () => {
   return (
     <div
       className='profile-settings'
-      style={{
-        '--color-primary': userData?.customColors?.primary || '#2563eb',
-        '--color-accent': userData?.customColors?.accent || '#16a34a',
-        '--color-bg': userData?.customColors?.background || '#f2f4f7',
-      } as React.CSSProperties}>
+      style={
+        {
+          '--color-primary': userData?.customColors?.primary || '#2563eb',
+          '--color-accent': userData?.customColors?.accent || '#16a34a',
+          '--color-bg': userData?.customColors?.background || '#f2f4f7',
+        } as React.CSSProperties
+      }>
       <div className='profile-card'>
         <h2>Profile</h2>
 
@@ -91,11 +95,15 @@ const ProfileSettings: React.FC = () => {
         <div className='profile-header-section'>
           <div
             className='profile-banner-placeholder'
-            style={userData?.bannerImage ? {
-              backgroundImage: `url(${userData.bannerImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            } : {}}>
+            style={
+              userData?.bannerImage
+                ? {
+                    backgroundImage: `url(${userData.bannerImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
+                : {}
+            }>
             {!userData?.bannerImage && <span>Banner Image</span>}
             {canEditProfile && (
               <label className='upload-overlay-label'>
@@ -103,7 +111,7 @@ const ProfileSettings: React.FC = () => {
                   type='file'
                   accept='image/*'
                   style={{ display: 'none' }}
-                  onChange={(e) => {
+                  onChange={e => {
                     const file = e.target.files?.[0];
                     if (file) handleUploadBannerImage(file);
                   }}
@@ -115,11 +123,15 @@ const ProfileSettings: React.FC = () => {
 
           <div
             className='profile-picture-placeholder'
-            style={userData?.profilePicture ? {
-              backgroundImage: `url(${userData.profilePicture})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            } : {}}>
+            style={
+              userData?.profilePicture
+                ? {
+                    backgroundImage: `url(${userData.profilePicture})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
+                : {}
+            }>
             {!userData?.profilePicture && <span>Profile Picture</span>}
             {canEditProfile && (
               <label className='upload-overlay-label-small'>
@@ -127,7 +139,7 @@ const ProfileSettings: React.FC = () => {
                   type='file'
                   accept='image/*'
                   style={{ display: 'none' }}
-                  onChange={(e) => {
+                  onChange={e => {
                     const file = e.target.files?.[0];
                     if (file) handleUploadProfilePicture(file);
                   }}
@@ -492,7 +504,7 @@ const ProfileSettings: React.FC = () => {
                     type='file'
                     accept='.glb,.gltf'
                     style={{ display: 'none' }}
-                    onChange={(e) => {
+                    onChange={e => {
                       const file = e.target.files?.[0];
                       if (file) handleUploadPortfolioModel(file);
                     }}
@@ -518,12 +530,14 @@ const ProfileSettings: React.FC = () => {
                     📄 Download Resume
                   </a>
                   {canEditProfile && (
-                    <label className='button button-secondary' style={{ marginLeft: '0.5rem', cursor: 'pointer' }}>
+                    <label
+                      className='button button-secondary'
+                      style={{ marginLeft: '0.5rem', cursor: 'pointer' }}>
                       <input
                         type='file'
                         accept='.pdf'
                         style={{ display: 'none' }}
-                        onChange={(e) => {
+                        onChange={e => {
                           const file = e.target.files?.[0];
                           if (file) handleUploadResume(file);
                         }}
@@ -540,7 +554,7 @@ const ProfileSettings: React.FC = () => {
                         type='file'
                         accept='.pdf'
                         style={{ display: 'none' }}
-                        onChange={(e) => {
+                        onChange={e => {
                           const file = e.target.files?.[0];
                           if (file) handleUploadResume(file);
                         }}
@@ -576,7 +590,7 @@ const ProfileSettings: React.FC = () => {
                         className='theme-color-box'
                         style={{
                           backgroundColor: userData.customColors?.background || '#f2f4f7',
-                          color: '#1f2937'
+                          color: '#1f2937',
                         }}>
                         Background Color
                       </div>
@@ -596,12 +610,24 @@ const ProfileSettings: React.FC = () => {
                       <label>
                         <strong>Primary Color:</strong>
                       </label>
-                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '1rem',
+                          alignItems: 'center',
+                          marginTop: '0.5rem',
+                        }}>
                         <input
                           type='color'
                           value={primaryColor}
                           onChange={e => setPrimaryColor(e.target.value)}
-                          style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                          style={{
+                            width: '60px',
+                            height: '40px',
+                            cursor: 'pointer',
+                            border: '2px solid #d1d5db',
+                            borderRadius: '0.5rem',
+                          }}
                         />
                         <input
                           className='input-text'
@@ -618,12 +644,24 @@ const ProfileSettings: React.FC = () => {
                       <label>
                         <strong>Accent Color:</strong>
                       </label>
-                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '1rem',
+                          alignItems: 'center',
+                          marginTop: '0.5rem',
+                        }}>
                         <input
                           type='color'
                           value={accentColor}
                           onChange={e => setAccentColor(e.target.value)}
-                          style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                          style={{
+                            width: '60px',
+                            height: '40px',
+                            cursor: 'pointer',
+                            border: '2px solid #d1d5db',
+                            borderRadius: '0.5rem',
+                          }}
                         />
                         <input
                           className='input-text'
@@ -640,12 +678,24 @@ const ProfileSettings: React.FC = () => {
                       <label>
                         <strong>Background Color:</strong>
                       </label>
-                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '1rem',
+                          alignItems: 'center',
+                          marginTop: '0.5rem',
+                        }}>
                         <input
                           type='color'
                           value={backgroundColor}
                           onChange={e => setBackgroundColor(e.target.value)}
-                          style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                          style={{
+                            width: '60px',
+                            height: '40px',
+                            cursor: 'pointer',
+                            border: '2px solid #d1d5db',
+                            borderRadius: '0.5rem',
+                          }}
                         />
                         <input
                           className='input-text'
@@ -662,7 +712,9 @@ const ProfileSettings: React.FC = () => {
                       <button className='button button-primary' onClick={handleUpdateCustomColors}>
                         Save Colors
                       </button>
-                      <button className='button button-danger' onClick={() => setEditColorsMode(false)}>
+                      <button
+                        className='button button-danger'
+                        onClick={() => setEditColorsMode(false)}>
                         Cancel
                       </button>
                     </div>

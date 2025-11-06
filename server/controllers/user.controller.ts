@@ -250,11 +250,11 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Updates a user's custom theme colors.
- * @param req The request containing the username and customColors object in the body.
- * @param res The response, either confirming the update or returning an error.
- * @returns A promise resolving to void.
- */
+   * Updates a user's custom theme colors.
+   * @param req The request containing the username and customColors object in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
   const updateCustomColors = async (req: Request, res: Response): Promise<void> => {
     try {
       const { username, customColors } = req.body;
@@ -277,8 +277,8 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Uploads a profile picture for a user.
- */
+   * Uploads a profile picture for a user.
+   */
   const uploadProfilePicture = async (req: Request, res: Response): Promise<void> => {
     try {
       const file = req.file;
@@ -387,8 +387,8 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Uploads a portfolio model for a user.
- */
+   * Uploads a portfolio model for a user.
+   */
   const uploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
     try {
       const file = req.file;

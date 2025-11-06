@@ -9,14 +9,14 @@ const PortfolioModelViewer = ({ modelUrl }: PortfolioModelViewerProps) => {
   const { containerRef } = useThreeViewportPage(modelUrl);
 
   return (
-    <div 
-      ref={containerRef} 
-      style={{ 
-        width: '100%', 
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
         height: '100%',
         background: '#f5f5f5',
-        borderRadius: '0.75rem'
-      }} 
+        borderRadius: '0.75rem',
+      }}
     />
   );
 };

@@ -174,8 +174,8 @@ const useProfileSettings = () => {
   };
 
   /**
- * Handler for updating custom colors
- */
+   * Handler for updating custom colors
+   */
   const handleUpdateCustomColors = async () => {
     if (!username) return;
     try {
@@ -188,7 +188,7 @@ const useProfileSettings = () => {
       const updatedUser = await updateCustomColors(username, customColors);
 
       await new Promise(resolve => {
-        setUserData({ ...updatedUser });  // ← ONLY THIS ONE (with spread)
+        setUserData({ ...updatedUser }); // ← ONLY THIS ONE (with spread)
         setEditColorsMode(false);
         resolve(null);
       });
@@ -202,8 +202,8 @@ const useProfileSettings = () => {
   };
 
   /**
- * Handler for uploading profile picture
- */
+   * Handler for uploading profile picture
+   */
   const handleUploadProfilePicture = async (file: File) => {
     if (!username) return;
     try {
@@ -250,8 +250,8 @@ const useProfileSettings = () => {
   };
 
   /**
- * Handler for uploading portfolio models
- */
+   * Handler for uploading portfolio models
+   */
   const handleUploadPortfolioModel = async (file: File) => {
     if (!username) return;
     try {

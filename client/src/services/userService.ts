@@ -175,10 +175,7 @@ const updateCustomColors = async (
 /**
  * Uploads a profile picture for a user.
  */
-const uploadProfilePicture = async (
-  username: string,
-  file: File,
-): Promise<SafeDatabaseUser> => {
+const uploadProfilePicture = async (username: string, file: File): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
@@ -196,10 +193,7 @@ const uploadProfilePicture = async (
 /**
  * Uploads a banner image for a user.
  */
-const uploadBannerImage = async (
-  username: string,
-  file: File,
-): Promise<SafeDatabaseUser> => {
+const uploadBannerImage = async (username: string, file: File): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
@@ -217,10 +211,7 @@ const uploadBannerImage = async (
 /**
  * Uploads a resume file for a user.
  */
-const uploadResume = async (
-  username: string,
-  file: File,
-): Promise<SafeDatabaseUser> => {
+const uploadResume = async (username: string, file: File): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
@@ -238,10 +229,7 @@ const uploadResume = async (
 /**
  * Uploads a portfolio model for a user.
  */
-const uploadPortfolioModel = async (
-  username: string,
-  file: File,
-): Promise<SafeDatabaseUser> => {
+const uploadPortfolioModel = async (username: string, file: File): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
