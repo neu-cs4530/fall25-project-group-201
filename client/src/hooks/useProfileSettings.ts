@@ -7,6 +7,10 @@ import {
   updateBiography,
   updateSkills,
   updateExternalLinks,
+  updateCustomColors,
+  uploadProfilePicture,
+  uploadBannerImage,
+  uploadResume,
 } from '../services/userService';
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
@@ -35,6 +39,10 @@ const useProfileSettings = () => {
   const [artstationLink, setArtstationLink] = useState('');
   const [linkedinLink, setLinkedinLink] = useState('');
   const [websiteLink, setWebsiteLink] = useState('');
+  const [editColorsMode, setEditColorsMode] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState('#2563eb');
+  const [accentColor, setAccentColor] = useState('#16a34a');
+  const [backgroundColor, setBackgroundColor] = useState('#f2f4f7');
 
   // For delete-user confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -58,6 +66,9 @@ const useProfileSettings = () => {
         setArtstationLink(data.externalLinks?.artstation || '');
         setLinkedinLink(data.externalLinks?.linkedin || '');
         setWebsiteLink(data.externalLinks?.website || '');
+        setPrimaryColor(data.customColors?.primary || '#2563eb');
+        setAccentColor(data.customColors?.accent || '#16a34a');
+        setBackgroundColor(data.customColors?.background || '#f2f4f7');
       } catch (error) {
         setErrorMessage('Error fetching user profile');
         setUserData(null);
@@ -162,6 +173,82 @@ const useProfileSettings = () => {
   };
 
   /**
+ * Handler for updating custom colors
+ */
+  const handleUpdateCustomColors = async () => {
+    if (!username) return;
+    try {
+      const customColors = {
+        primary: primaryColor,
+        accent: accentColor,
+        background: backgroundColor,
+      };
+
+      const updatedUser = await updateCustomColors(username, customColors);
+
+      await new Promise(resolve => {
+        setUserData({ ...updatedUser });  // ← ONLY THIS ONE (with spread)
+        setEditColorsMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('Theme colors updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update colors.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+ * Handler for uploading profile picture
+ */
+  const handleUploadProfilePicture = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadProfilePicture(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Profile picture updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload profile picture.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Handler for uploading banner image
+   */
+  const handleUploadBannerImage = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadBannerImage(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Banner image updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload banner image.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Handler for uploading resume
+   */
+  const handleUploadResume = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadResume(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Resume uploaded!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload resume.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
    * Handler for deleting the user (triggers confirmation modal)
    */
   const handleDeleteUser = () => {
@@ -250,6 +337,20 @@ const useProfileSettings = () => {
     websiteLink,
     setWebsiteLink,
     handleUpdateExternalLinks,
+    // color customization
+    editColorsMode,
+    setEditColorsMode,
+    primaryColor,
+    setPrimaryColor,
+    accentColor,
+    setAccentColor,
+    backgroundColor,
+    setBackgroundColor,
+    handleUpdateCustomColors,
+    // uploads
+    handleUploadProfilePicture,
+    handleUploadBannerImage,
+    handleUploadResume,
     successMessage,
     errorMessage,
     showConfirmation,

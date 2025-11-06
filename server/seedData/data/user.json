@@ -3,204 +3,532 @@
     "username": "user123",
     "password": "securePass123!",
     "dateJoined": "2024-07-15T08:24:13Z",
-    "biography": "Full-stack developer with 5 years of experience. Passionate about React, Node.js, and building scalable web applications."
+    "biography": "Full-stack developer with 5 years of experience. Passionate about React, Node.js, and building scalable web applications.",
+    "skills": ["React", "JavaScript", "Python", "MySQL"],
+    "externalLinks": {
+      "github": "https://github.com/user123",
+      "linkedin": "https://linkedin.com/in/user123"
+    },
+    "customColors": {
+      "primary": "#3b82f6",
+      "accent": "#8b5cf6",
+      "background": "#f0f9ff"
+    }
   },
   "user234": {
     "username": "user234",
     "password": "strongP@ss234",
     "dateJoined": "2024-08-22T14:36:42Z",
-    "biography": ""
+    "biography": "",
+    "skills": ["Blender", "Maya", "Substance Painter"],
+    "externalLinks": {
+      "artstation": "https://artstation.com/user234"
+    },
+    "customColors": {
+      "primary": "#ec4899",
+      "accent": "#f59e0b",
+      "background": "#fdf2f8"
+    }
   },
   "user345": {
     "username": "user345",
     "password": "P@ssw0rd345",
     "dateJoined": "2024-09-10T09:12:55Z",
-    "biography": "Frontend developer focusing on React and TypeScript. Always looking to improve UI/UX and performance."
+    "biography": "Frontend developer focusing on React and TypeScript. Always looking to improve UI/UX and performance.",
+    "skills": ["React", "JavaScript", "C#"],
+    "externalLinks": {
+      "github": "https://github.com/user345",
+      "website": "https://user345portfolio.com"
+    },
+    "customColors": {
+      "primary": "#10b981",
+      "accent": "#06b6d4",
+      "background": "#ecfdf5"
+    }
   },
   "user456": {
     "username": "user456",
     "password": "C0mplexP@ss456",
     "dateJoined": "2024-10-05T11:47:33Z",
-    "biography": "Data scientist with a background in Python and machine learning. I enjoy solving complex problems with data."
+    "biography": "Data scientist with a background in Python and machine learning. I enjoy solving complex problems with data.",
+    "skills": ["Python", "C++", "MySQL"],
+    "externalLinks": {
+      "github": "https://github.com/user456",
+      "linkedin": "https://linkedin.com/in/user456"
+    },
+    "customColors": {
+      "primary": "#8b5cf6",
+      "accent": "#ec4899",
+      "background": "#faf5ff"
+    }
   },
   "user567": {
     "username": "user567",
     "password": "Sup3rS3cure567!",
     "dateJoined": "2024-11-12T15:28:09Z",
-    "biography": "Backend developer specializing in microservices architecture. Java enthusiast and open source contributor."
+    "biography": "Backend developer specializing in microservices architecture. Java enthusiast and open source contributor.",
+    "skills": ["C++", "Python", "MySQL"],
+    "externalLinks": {
+      "github": "https://github.com/user567"
+    },
+    "customColors": {
+      "primary": "#dc2626",
+      "accent": "#f97316",
+      "background": "#fef2f2"
+    }
   },
   "user678": {
     "username": "user678",
     "password": "P@ssw0rd678!",
     "dateJoined": "2024-12-03T17:52:21Z",
-    "biography": ""
+    "biography": "",
+    "skills": ["ZBrush", "Blender", "Unreal Engine"],
+    "externalLinks": {
+      "artstation": "https://artstation.com/user678",
+      "website": "https://user678.art"
+    },
+    "customColors": {
+      "primary": "#0891b2",
+      "accent": "#06b6d4",
+      "background": "#cffafe"
+    }
   },
   "user789": {
     "username": "user789",
     "password": "SecretP@ss789",
     "dateJoined": "2025-01-18T20:14:39Z",
-    "biography": "Mobile app developer working with React Native. Creating cross-platform experiences is my passion."
+    "biography": "Mobile app developer working with React Native. Creating cross-platform experiences is my passion.",
+    "skills": ["React", "JavaScript", "C#"],
+    "externalLinks": {
+      "github": "https://github.com/user789",
+      "linkedin": "https://linkedin.com/in/user789"
+    },
+    "customColors": {
+      "primary": "#f59e0b",
+      "accent": "#eab308",
+      "background": "#fffbeb"
+    }
   },
   "user890": {
     "username": "user890",
     "password": "P@ssword890!",
     "dateJoined": "2025-02-07T13:09:27Z",
-    "biography": "Database administrator with extensive experience in PostgreSQL and MySQL optimization. Performance tuning expert."
+    "biography": "Database administrator with extensive experience in PostgreSQL and MySQL optimization. Performance tuning expert.",
+    "skills": ["MySQL", "Python"],
+    "externalLinks": {
+      "linkedin": "https://linkedin.com/in/user890",
+      "website": "https://dbexpert890.dev"
+    },
+    "customColors": {
+      "primary": "#6366f1",
+      "accent": "#a855f7",
+      "background": "#eef2ff"
+    }
   },
   "user101": {
     "username": "user101",
     "password": "S3cureP@ss101",
     "dateJoined": "2024-06-30T10:42:18Z",
-    "biography": "Cloud architect specializing in multi-cloud deployments. AWS certified and passionate about serverless technologies."
+    "biography": "Cloud architect specializing in multi-cloud deployments. AWS certified and passionate about serverless technologies.",
+    "skills": ["Python", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/user101",
+      "linkedin": "https://linkedin.com/in/user101"
+    },
+    "customColors": {
+      "primary": "#14b8a6",
+      "accent": "#06b6d4",
+      "background": "#f0fdfa"
+    }
   },
   "user202": {
     "username": "user202",
     "password": "C0mplexP@ss202!",
     "dateJoined": "2024-08-08T16:37:52Z",
-    "biography": "Security engineer focusing on application security and penetration testing. Bug bounty hunter in spare time."
+    "biography": "Security engineer focusing on application security and penetration testing. Bug bounty hunter in spare time.",
+    "skills": ["Python", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/user202",
+      "website": "https://securityblog202.com"
+    },
+    "customColors": {
+      "primary": "#dc2626",
+      "accent": "#991b1b",
+      "background": "#fee2e2"
+    }
   },
   "jsdev123": {
     "username": "jsdev123",
     "password": "JavaScr1pt!23",
     "dateJoined": "2024-05-15T08:24:13Z",
-    "biography": "JavaScript developer with a focus on modern ES6+ features and async programming patterns. I love helping others level up their JS skills."
+    "biography": "JavaScript developer with a focus on modern ES6+ features and async programming patterns. I love helping others level up their JS skills.",
+    "skills": ["JavaScript", "React", "Python"],
+    "externalLinks": {
+      "github": "https://github.com/jsdev123"
+    },
+    "customColors": {
+      "primary": "#eab308",
+      "accent": "#f59e0b",
+      "background": "#fefce8"
+    }
   },
   "reactninja": {
     "username": "reactninja",
     "password": "R3@ctHooks!",
     "dateJoined": "2024-06-18T14:36:42Z",
-    "biography": "React specialist with 6 years of experience. Core contributor to several popular React libraries and passionate about component design."
+    "biography": "React specialist with 6 years of experience. Core contributor to several popular React libraries and passionate about component design.",
+    "skills": ["React", "JavaScript", "Unity"],
+    "externalLinks": {
+      "github": "https://github.com/reactninja",
+      "linkedin": "https://linkedin.com/in/reactninja",
+      "website": "https://reactninja.dev"
+    },
+    "customColors": {
+      "primary": "#06b6d4",
+      "accent": "#0891b2",
+      "background": "#ecfeff"
+    }
   },
   "webpackwizard": {
     "username": "webpackwizard",
     "password": "Bundl3M@ster!",
     "dateJoined": "2024-07-20T09:12:55Z",
-    "biography": "Frontend tooling expert specializing in webpack, babel, and modern build pipelines. I help teams optimize their build processes."
+    "biography": "Frontend tooling expert specializing in webpack, babel, and modern build pipelines. I help teams optimize their build processes.",
+    "skills": ["JavaScript", "React"],
+    "externalLinks": {
+      "github": "https://github.com/webpackwizard"
+    },
+    "customColors": {
+      "primary": "#a855f7",
+      "accent": "#d946ef",
+      "background": "#faf5ff"
+    }
   },
   "typescriptfan": {
     "username": "typescriptfan",
     "password": "Typ3S@fety!",
     "dateJoined": "2024-08-22T11:47:33Z",
-    "biography": "TypeScript evangelist and static typing enthusiast. I believe in catching errors at compile time, not runtime."
+    "biography": "TypeScript evangelist and static typing enthusiast. I believe in catching errors at compile time, not runtime.",
+    "skills": ["JavaScript", "React", "Python"],
+    "externalLinks": {
+      "github": "https://github.com/typescriptfan",
+      "linkedin": "https://linkedin.com/in/typescriptfan"
+    },
+    "customColors": {
+      "primary": "#2563eb",
+      "accent": "#3b82f6",
+      "background": "#eff6ff"
+    }
   },
   "perfoptimizer": {
     "username": "perfoptimizer",
     "password": "F@stL0ad!ng",
     "dateJoined": "2024-09-25T15:28:09Z",
-    "biography": "Web performance specialist focusing on core web vitals and page speed optimization. Every millisecond counts!"
+    "biography": "Web performance specialist focusing on core web vitals and page speed optimization. Every millisecond counts!",
+    "skills": ["JavaScript", "React", "Python"],
+    "externalLinks": {
+      "github": "https://github.com/perfoptimizer",
+      "website": "https://webperf.expert"
+    },
+    "customColors": {
+      "primary": "#f97316",
+      "accent": "#ea580c",
+      "background": "#fff7ed"
+    }
   },
   "docreader": {
     "username": "docreader",
     "password": "ReadTh3D0cs!",
     "dateJoined": "2024-10-27T17:52:21Z",
-    "biography": "Software engineer who believes in thoroughly reading documentation before asking questions. I enjoy helping others understand complex APIs."
+    "biography": "Software engineer who believes in thoroughly reading documentation before asking questions. I enjoy helping others understand complex APIs.",
+    "skills": ["Python", "JavaScript", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/docreader"
+    },
+    "customColors": {
+      "primary": "#059669",
+      "accent": "#10b981",
+      "background": "#f0fdf4"
+    }
   },
   "dbmaster": {
     "username": "dbmaster",
     "password": "Qu3ryN1nja!",
     "dateJoined": "2024-11-30T20:14:39Z",
-    "biography": "Database performance tuning expert with 12 years of experience across SQL and NoSQL technologies. I optimize queries for a living."
+    "biography": "Database performance tuning expert with 12 years of experience across SQL and NoSQL technologies. I optimize queries for a living.",
+    "skills": ["MySQL", "Python", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/dbmaster",
+      "linkedin": "https://linkedin.com/in/dbmaster",
+      "website": "https://dbperformance.pro"
+    },
+    "customColors": {
+      "primary": "#7c3aed",
+      "accent": "#a78bfa",
+      "background": "#f5f3ff"
+    }
   },
   "edgecaseexpert": {
     "username": "edgecaseexpert",
     "password": "H@ndleAllC@ses!",
     "dateJoined": "2024-12-02T13:09:27Z",
-    "biography": "Software engineer obsessed with robustness and handling all possible edge cases. If there's a way code can break, I'll find it."
+    "biography": "Software engineer obsessed with robustness and handling all possible edge cases. If there's a way code can break, I'll find it.",
+    "skills": ["Python", "JavaScript", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/edgecaseexpert"
+    },
+    "customColors": {
+      "primary": "#be123c",
+      "accent": "#e11d48",
+      "background": "#fff1f2"
+    }
   },
   "frontenddev": {
     "username": "frontenddev",
     "password": "CSSm@ster!",
     "dateJoined": "2025-01-05T10:42:18Z",
-    "biography": "Frontend developer specializing in responsive design and cross-browser compatibility. I make websites look good on all devices."
+    "biography": "Frontend developer specializing in responsive design and cross-browser compatibility. I make websites look good on all devices.",
+    "skills": ["React", "JavaScript", "Maya"],
+    "externalLinks": {
+      "github": "https://github.com/frontenddev",
+      "website": "https://frontendportfolio.dev"
+    },
+    "customColors": {
+      "primary": "#0d9488",
+      "accent": "#14b8a6",
+      "background": "#f0fdfa"
+    }
   },
   "cleancodefan": {
     "username": "cleancodefan",
     "password": "R3factor!ng",
     "dateJoined": "2025-02-08T16:37:52Z",
-    "biography": "Software engineer passionate about clean code, SOLID principles, and maintainable architecture. Code quality advocate."
+    "biography": "Software engineer passionate about clean code, SOLID principles, and maintainable architecture. Code quality advocate.",
+    "skills": ["Python", "C++", "JavaScript"],
+    "externalLinks": {
+      "github": "https://github.com/cleancodefan",
+      "linkedin": "https://linkedin.com/in/cleancodefan"
+    },
+    "customColors": {
+      "primary": "#4f46e5",
+      "accent": "#6366f1",
+      "background": "#eef2ff"
+    }
   },
   "newbiereactdev": {
     "username": "newbiereactdev",
     "password": "L3arningR3act!",
     "dateJoined": "2024-12-15T07:42:18Z",
-    "biography": "Junior developer learning React and modern frontend development. Eager to learn and improve my skills through the community."
+    "biography": "Junior developer learning React and modern frontend development. Eager to learn and improve my skills through the community.",
+    "skills": ["React", "JavaScript"],
+    "externalLinks": {
+      "github": "https://github.com/newbiereactdev"
+    },
+    "customColors": {
+      "primary": "#84cc16",
+      "accent": "#a3e635",
+      "background": "#f7fee7"
+    }
   },
   "serverdev": {
     "username": "serverdev",
     "password": "B@ckendPr0!",
     "dateJoined": "2024-11-18T11:19:44Z",
-    "biography": "Backend developer working with Node.js and Express. Focusing on building scalable and reliable API services."
+    "biography": "Backend developer working with Node.js and Express. Focusing on building scalable and reliable API services.",
+    "skills": ["Python", "C++", "MySQL"],
+    "externalLinks": {
+      "github": "https://github.com/serverdev",
+      "linkedin": "https://linkedin.com/in/serverdev"
+    },
+    "customColors": {
+      "primary": "#0369a1",
+      "accent": "#0284c7",
+      "background": "#e0f2fe"
+    }
   },
   "webpacknewbie": {
     "username": "webpacknewbie",
     "password": "C0nfigH3lp!",
     "dateJoined": "2024-12-20T08:36:51Z",
-    "biography": "Frontend developer struggling with webpack configuration. Learning build tools and modern JavaScript development."
+    "biography": "Frontend developer struggling with webpack configuration. Learning build tools and modern JavaScript development.",
+    "skills": ["JavaScript", "React"],
+    "externalLinks": {
+      "github": "https://github.com/webpacknewbie"
+    },
+    "customColors": {
+      "primary": "#fb923c",
+      "accent": "#fdba74",
+      "background": "#ffedd5"
+    }
   },
   "dbnovice": {
     "username": "dbnovice",
     "password": "L3arnSQL!",
     "dateJoined": "2025-01-30T15:21:38Z",
-    "biography": "Software developer getting into database optimization. Currently working on improving my SQL skills and query performance."
+    "biography": "Software developer getting into database optimization. Currently working on improving my SQL skills and query performance.",
+    "skills": ["MySQL", "Python"],
+    "externalLinks": {
+      "linkedin": "https://linkedin.com/in/dbnovice"
+    },
+    "customColors": {
+      "primary": "#be185d",
+      "accent": "#db2777",
+      "background": "#fce7f3"
+    }
   },
   "jsdeveloper": {
     "username": "jsdeveloper",
     "password": "JavaScr1pt!",
     "dateJoined": "2025-01-02T09:18:27Z",
-    "biography": "JavaScript developer with a focus on functional programming and clean code practices. I enjoy solving complex problems with elegant solutions."
+    "biography": "JavaScript developer with a focus on functional programming and clean code practices. I enjoy solving complex problems with elegant solutions.",
+    "skills": ["JavaScript", "React", "MEL"],
+    "externalLinks": {
+      "github": "https://github.com/jsdeveloper",
+      "website": "https://jsfunctional.dev"
+    },
+    "customColors": {
+      "primary": "#d97706",
+      "accent": "#f59e0b",
+      "background": "#fef3c7"
+    }
   },
   "frontendnewbie": {
     "username": "frontendnewbie",
     "password": "L3arnCSS!",
     "dateJoined": "2025-02-05T08:15:44Z",
-    "biography": "Junior frontend developer learning the ropes of modern web development. React enthusiast and CSS battler."
+    "biography": "Junior frontend developer learning the ropes of modern web development. React enthusiast and CSS battler.",
+    "skills": ["React", "JavaScript"],
+    "externalLinks": {},
+    "customColors": {
+      "primary": "#65a30d",
+      "accent": "#84cc16",
+      "background": "#f7fee7"
+    }
   },
   "pythonuser": {
     "username": "pythonuser",
     "password": "Pyth0nR0cks!",
     "dateJoined": "2025-02-08T13:47:22Z",
-    "biography": "Python developer working with data processing and analysis. Always looking for ways to optimize my code."
+    "biography": "Python developer working with data processing and analysis. Always looking for ways to optimize my code.",
+    "skills": ["Python", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/pythonuser"
+    },
+    "customColors": {
+      "primary": "#0369a1",
+      "accent": "#0284c7",
+      "background": "#e0f2fe"
+    }
   },
   "dockerbeginner": {
     "username": "dockerbeginner",
     "password": "C0ntainer!ze",
     "dateJoined": "2025-03-10T10:22:36Z",
-    "biography": "Developer new to containerization and Docker. Learning how to build and deploy applications using containers."
+    "biography": "Developer new to containerization and Docker. Learning how to build and deploy applications using containers.",
+    "skills": ["Python", "JavaScript"],
+    "externalLinks": {
+      "github": "https://github.com/dockerbeginner"
+    },
+    "customColors": {
+      "primary": "#1d4ed8",
+      "accent": "#2563eb",
+      "background": "#dbeafe"
+    }
   },
   "promisenovice": {
     "username": "promisenovice",
     "password": "AsyncAw@it!",
     "dateJoined": "2025-03-14T09:38:52Z",
-    "biography": "JavaScript developer learning the nuances of asynchronous programming. Looking to master promises and async/await."
+    "biography": "JavaScript developer learning the nuances of asynchronous programming. Looking to master promises and async/await.",
+    "skills": ["JavaScript", "React"],
+    "externalLinks": {
+      "github": "https://github.com/promisenovice"
+    },
+    "customColors": {
+      "primary": "#c026d3",
+      "accent": "#d946ef",
+      "background": "#fae8ff"
+    }
   },
   "reactlearner": {
     "username": "reactlearner",
     "password": "H00ksL3arner!",
     "dateJoined": "2025-03-17T11:27:09Z",
-    "biography": "Developer learning React and component lifecycle management. Trying to understand hooks and prevent memory leaks."
+    "biography": "Developer learning React and component lifecycle management. Trying to understand hooks and prevent memory leaks.",
+    "skills": ["React", "JavaScript"],
+    "externalLinks": {
+      "github": "https://github.com/reactlearner"
+    },
+    "customColors": {
+      "primary": "#15803d",
+      "accent": "#16a34a",
+      "background": "#f0fdf4"
+    }
   },
   "reactexpert": {
     "username": "reactexpert",
     "password": "R3@ctM@ster!",
     "dateJoined": "2023-06-16T10:45:32Z",
-    "biography": "Senior React developer with 8+ years of experience. Specializing in performance optimization and state management solutions."
+    "biography": "Senior React developer with 8+ years of experience. Specializing in performance optimization and state management solutions.",
+    "skills": ["React", "JavaScript", "Unreal Engine", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/reactexpert",
+      "linkedin": "https://linkedin.com/in/reactexpert",
+      "website": "https://reactmastery.io"
+    },
+    "customColors": {
+      "primary": "#4338ca",
+      "accent": "#6366f1",
+      "background": "#e0e7ff"
+    }
   },
   "nodejsdev": {
     "username": "nodejsdev",
     "password": "N0d3Exper7!",
     "dateJoined": "2023-08-19T13:27:56Z",
-    "biography": "Node.js developer focusing on scalable backend architecture. Experienced in handling high-traffic applications and microservices."
+    "biography": "Node.js developer focusing on scalable backend architecture. Experienced in handling high-traffic applications and microservices.",
+    "skills": ["JavaScript", "Python", "MySQL"],
+    "externalLinks": {
+      "github": "https://github.com/nodejsdev",
+      "linkedin": "https://linkedin.com/in/nodejsdev"
+    },
+    "customColors": {
+      "primary": "#047857",
+      "accent": "#059669",
+      "background": "#d1fae5"
+    }
   },
   "datascientist": {
     "username": "datascientist",
     "password": "D@taAn@lyst!",
     "dateJoined": "2023-11-09T12:03:19Z",
-    "biography": "Data scientist with expertise in Python, NumPy, and pandas. I help companies make sense of their data through efficient algorithms."
+    "biography": "Data scientist with expertise in Python, NumPy, and pandas. I help companies make sense of their data through efficient algorithms.",
+    "skills": ["Python", "C++", "MySQL"],
+    "externalLinks": {
+      "github": "https://github.com/datascientist",
+      "linkedin": "https://linkedin.com/in/datascientist",
+      "website": "https://datascience.expert"
+    },
+    "customColors": {
+      "primary": "#7c2d12",
+      "accent": "#9a3412",
+      "background": "#fed7aa"
+    }
   },
   "devopsengineer": {
     "username": "devopsengineer",
     "password": "C1CD@ut0mat3!",
     "dateJoined": "2024-01-11T16:44:37Z",
-    "biography": "DevOps engineer specializing in containerization, orchestration, and infrastructure as code. Making deployment smooth and reliable."
+    "biography": "DevOps engineer specializing in containerization, orchestration, and infrastructure as code. Making deployment smooth and reliable.",
+    "skills": ["Python", "C++"],
+    "externalLinks": {
+      "github": "https://github.com/devopsengineer",
+      "linkedin": "https://linkedin.com/in/devopsengineer"
+    },
+    "customColors": {
+      "primary": "#0f766e",
+      "accent": "#14b8a6",
+      "background": "#ccfbf1"
+    }
   }
 }

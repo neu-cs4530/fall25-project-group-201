@@ -155,6 +155,86 @@ const updateExternalLinks = async (
   return res.data;
 };
 
+/**
+ * Updates theme colors for a user.
+ */
+const updateCustomColors = async (
+  username: string,
+  customColors: { primary?: string; accent?: string; background?: string },
+): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateCustomColors`, {
+    username,
+    customColors,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating custom colors');
+  }
+  return res.data;
+};
+
+/**
+ * Uploads a profile picture for a user.
+ */
+const uploadProfilePicture = async (
+  username: string,
+  file: File,
+): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadProfilePicture`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading profile picture');
+  }
+  return res.data;
+};
+
+/**
+ * Uploads a banner image for a user.
+ */
+const uploadBannerImage = async (
+  username: string,
+  file: File,
+): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadBannerImage`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading banner image');
+  }
+  return res.data;
+};
+
+/**
+ * Uploads a resume file for a user.
+ */
+const uploadResume = async (
+  username: string,
+  file: File,
+): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadResume`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading resume');
+  }
+  return res.data;
+};
+
 export {
   getUsers,
   getUserByUsername,
@@ -165,4 +245,8 @@ export {
   updateBiography,
   updateSkills,
   updateExternalLinks,
+  updateCustomColors,
+  uploadProfilePicture,
+  uploadBannerImage,
+  uploadResume,
 };

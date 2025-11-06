@@ -34,6 +34,18 @@ const ProfileSettings: React.FC = () => {
     websiteLink,
     setWebsiteLink,
     handleUpdateExternalLinks,
+    editColorsMode,
+    setEditColorsMode,
+    primaryColor,
+    setPrimaryColor,
+    accentColor,
+    setAccentColor,
+    backgroundColor,
+    setBackgroundColor,
+    handleUpdateCustomColors,
+    handleUploadProfilePicture,
+    handleUploadBannerImage,
+    handleUploadResume,
     togglePasswordVisibility,
     setEditBioMode,
     setNewBio,
@@ -48,7 +60,13 @@ const ProfileSettings: React.FC = () => {
 
   if (loading) {
     return (
-      <div className='profile-settings'>
+      <div
+        className='profile-settings'
+        style={{
+          '--color-primary': userData?.customColors?.primary || '#2563eb',
+          '--color-accent': userData?.customColors?.accent || '#16a34a',
+          '--color-bg': userData?.customColors?.background || '#f2f4f7',
+        } as React.CSSProperties}>
         <div className='profile-card'>
           <h2>Loading user data...</h2>
         </div>
@@ -57,23 +75,66 @@ const ProfileSettings: React.FC = () => {
   }
 
   return (
-    <div className='profile-settings'>
+    <div
+      className='profile-settings'
+      style={{
+        '--color-primary': userData?.customColors?.primary || '#2563eb',
+        '--color-accent': userData?.customColors?.accent || '#16a34a',
+        '--color-bg': userData?.customColors?.background || '#f2f4f7',
+      } as React.CSSProperties}>
       <div className='profile-card'>
         <h2>Profile</h2>
 
-        {/* ---- NEW SECTIONS START HERE ---- */}
-
-        {/* Banner & Profile Picture Section */}
+        {/* Banner & Profile Picture Section - INTERACTIVE */}
         <div className='profile-header-section'>
-          <div className='profile-banner-placeholder'>
-            <span>Banner Image (Coming Soon)</span>
+          <div
+            className='profile-banner-placeholder'
+            style={userData?.bannerImage ? {
+              backgroundImage: `url(${userData.bannerImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            } : {}}>
+            {!userData?.bannerImage && <span>Banner Image</span>}
+            {canEditProfile && (
+              <label className='upload-overlay-label'>
+                <input
+                  type='file'
+                  accept='image/*'
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleUploadBannerImage(file);
+                  }}
+                />
+                <span className='upload-button-overlay'>📷 Upload Banner</span>
+              </label>
+            )}
           </div>
-          <div className='profile-picture-placeholder'>
-            <span>Profile Picture</span>
+
+          <div
+            className='profile-picture-placeholder'
+            style={userData?.profilePicture ? {
+              backgroundImage: `url(${userData.profilePicture})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            } : {}}>
+            {!userData?.profilePicture && <span>Profile Picture</span>}
+            {canEditProfile && (
+              <label className='upload-overlay-label-small'>
+                <input
+                  type='file'
+                  accept='image/*'
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleUploadProfilePicture(file);
+                  }}
+                />
+                <span className='upload-button-small'>📷</span>
+              </label>
+            )}
           </div>
         </div>
-
-        {/* ---- NEW SECTIONS END HERE ---- */}
 
         {successMessage && <p className='success-message'>{successMessage}</p>}
         {errorMessage && <p className='error-message'>{errorMessage}</p>}
@@ -422,29 +483,169 @@ const ProfileSettings: React.FC = () => {
               </div>
             </div>
 
-            {/* Resume Section */}
+            {/* Resume Section - INTERACTIVE */}
             <h4>Resume / CV</h4>
             <div className='resume-section'>
-              <button className='button button-secondary' disabled>
-                📄 Download Resume (Upload in Sprint 2)
-              </button>
-              <span className='placeholder-note'>Upload your CV to enable downloads</span>
+              {userData.resumeFile ? (
+                <>
+                  <a
+                    href={userData.resumeFile}
+                    download='resume.pdf'
+                    className='button button-primary'
+                    style={{ textDecoration: 'none', display: 'inline-block' }}>
+                    📄 Download Resume
+                  </a>
+                  {canEditProfile && (
+                    <label className='button button-secondary' style={{ marginLeft: '0.5rem', cursor: 'pointer' }}>
+                      <input
+                        type='file'
+                        accept='.pdf'
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleUploadResume(file);
+                        }}
+                      />
+                      🔄 Replace Resume
+                    </label>
+                  )}
+                </>
+              ) : (
+                <>
+                  {canEditProfile ? (
+                    <label className='button button-primary' style={{ cursor: 'pointer' }}>
+                      <input
+                        type='file'
+                        accept='.pdf'
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleUploadResume(file);
+                        }}
+                      />
+                      📄 Upload Resume
+                    </label>
+                  ) : (
+                    <span className='placeholder-note'>No resume uploaded yet.</span>
+                  )}
+                </>
+              )}
             </div>
 
-            {/* Theme Customization Preview */}
-            <h4>Theme Preview</h4>
-            <div className='theme-preview-section'>
-              <div className='theme-color-box' style={{ backgroundColor: '#2563eb' }}>
-                Primary Color
+            {/* Theme Customization - INTERACTIVE */}
+            <h4>Theme Colors</h4>
+
+            {!editColorsMode && (
+              <>
+                <div className='theme-preview-section'>
+                  <div
+                    className='theme-color-box'
+                    style={{ backgroundColor: userData.customColors?.primary || '#2563eb' }}>
+                    Primary Color
+                  </div>
+                  <div
+                    className='theme-color-box'
+                    style={{ backgroundColor: userData.customColors?.accent || '#16a34a' }}>
+                    Accent Color
+                  </div>
+                  <div
+                    className='theme-color-box'
+                    style={{
+                      backgroundColor: userData.customColors?.background || '#f2f4f7',
+                      color: '#1f2937'
+                    }}>
+                    Background Color
+                  </div>
+                </div>
+                {canEditProfile && (
+                  <button
+                    className='button button-primary'
+                    onClick={() => setEditColorsMode(true)}
+                    style={{ marginTop: '0.5rem' }}>
+                    Edit Colors
+                  </button>
+                )}
+              </>
+            )}
+
+            {editColorsMode && canEditProfile && (
+              <div className='colors-edit-section'>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label>
+                    <strong>Primary Color:</strong>
+                  </label>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                    <input
+                      type='color'
+                      value={primaryColor}
+                      onChange={e => setPrimaryColor(e.target.value)}
+                      style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                    />
+                    <input
+                      className='input-text'
+                      type='text'
+                      value={primaryColor}
+                      onChange={e => setPrimaryColor(e.target.value)}
+                      placeholder='#2563eb'
+                      style={{ flex: 1 }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <label>
+                    <strong>Accent Color:</strong>
+                  </label>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                    <input
+                      type='color'
+                      value={accentColor}
+                      onChange={e => setAccentColor(e.target.value)}
+                      style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                    />
+                    <input
+                      className='input-text'
+                      type='text'
+                      value={accentColor}
+                      onChange={e => setAccentColor(e.target.value)}
+                      placeholder='#16a34a'
+                      style={{ flex: 1 }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <label>
+                    <strong>Background Color:</strong>
+                  </label>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                    <input
+                      type='color'
+                      value={backgroundColor}
+                      onChange={e => setBackgroundColor(e.target.value)}
+                      style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                    />
+                    <input
+                      className='input-text'
+                      type='text'
+                      value={backgroundColor}
+                      onChange={e => setBackgroundColor(e.target.value)}
+                      placeholder='#f2f4f7'
+                      style={{ flex: 1 }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                  <button className='button button-primary' onClick={handleUpdateCustomColors}>
+                    Save Colors
+                  </button>
+                  <button className='button button-danger' onClick={() => setEditColorsMode(false)}>
+                    Cancel
+                  </button>
+                </div>
               </div>
-              <div className='theme-color-box' style={{ backgroundColor: '#16a34a' }}>
-                Accent Color
-              </div>
-              <div className='theme-color-box' style={{ backgroundColor: '#f2f4f7' }}>
-                Background Color
-              </div>
-              <span className='placeholder-note'>(Customizable in Sprint 2)</span>
-            </div>
+            )}
 
             {/* ---- NEW SECTIONS END HERE ---- */}
 

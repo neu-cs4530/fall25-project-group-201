@@ -1,4 +1,5 @@
 import express, { Request, Response, Router } from 'express';
+import multer from 'multer';
 import {
   UserRequest,
   User,
@@ -18,6 +19,7 @@ import {
 
 const userController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
+  const upload = multer({ storage: multer.memoryStorage() });
 
   /**
    * Handles the creation of a new user account.
@@ -247,6 +249,143 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+ * Updates a user's custom theme colors.
+ * @param req The request containing the username and customColors object in the body.
+ * @param res The response, either confirming the update or returning an error.
+ * @returns A promise resolving to void.
+ */
+  const updateCustomColors = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, customColors } = req.body;
+
+      const updatedUser = await updateUser(username, { customColors });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating custom colors: ${error}`);
+    }
+  };
+
+  /**
+ * Uploads a profile picture for a user.
+ */
+  const uploadProfilePicture = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const file = req.file;
+      const { username } = req.body;
+
+      if (!file) {
+        res.status(400).json({ error: 'File missing' });
+        return;
+      }
+      if (!username) {
+        res.status(400).json({ error: 'Username missing' });
+        return;
+      }
+
+      // Convert buffer to base64 string for storage
+      const base64Image = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+      const updatedUser = await updateUser(username, { profilePicture: base64Image });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error uploading profile picture: ${error}`);
+    }
+  };
+
+  /**
+   * Uploads a banner image for a user.
+   */
+  const uploadBannerImage = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const file = req.file;
+      const { username } = req.body;
+
+      if (!file) {
+        res.status(400).json({ error: 'File missing' });
+        return;
+      }
+      if (!username) {
+        res.status(400).json({ error: 'Username missing' });
+        return;
+      }
+
+      const base64Image = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+      const updatedUser = await updateUser(username, { bannerImage: base64Image });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error uploading banner image: ${error}`);
+    }
+  };
+
+  /**
+   * Uploads a resume file for a user.
+   */
+  const uploadResume = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const file = req.file;
+      const { username } = req.body;
+
+      if (!file) {
+        res.status(400).json({ error: 'File missing' });
+        return;
+      }
+      if (!username) {
+        res.status(400).json({ error: 'Username missing' });
+        return;
+      }
+
+      // For PDFs, store as base64
+      const base64File = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+      const updatedUser = await updateUser(username, { resumeFile: base64File });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error uploading resume: ${error}`);
+    }
+  };
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -257,6 +396,10 @@ const userController = (socket: FakeSOSocket) => {
   router.patch('/updateBiography', updateBiography);
   router.patch('/updateSkills', updateSkills);
   router.patch('/updateExternalLinks', updateExternalLinks);
+  router.patch('/updateCustomColors', updateCustomColors);
+  router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
+  router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
+  router.post('/uploadResume', upload.single('file'), uploadResume);
   return router;
 };
 
