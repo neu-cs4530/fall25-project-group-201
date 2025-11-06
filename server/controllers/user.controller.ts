@@ -194,11 +194,11 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
-    * Updates a user's list of skills.
-    * @param req The request containing the username and skills array in the body.
-    * @param res The response, either confirming the update or returning an error.
-    * @returns A promise resolving to void.
-    */
+   * Updates a user's list of skills.
+   * @param req The request containing the username and skills array in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
   const updateSkills = async (req: Request, res: Response): Promise<void> => {
     try {
       const { username, skills } = req.body;
@@ -221,11 +221,11 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Updates a user's external links.
- * @param req The request containing the username and externalLinks object in the body.
- * @param res The response, either confirming the update or returning an error.
- * @returns A promise resolving to void.
- */
+   * Updates a user's external links.
+   * @param req The request containing the username and externalLinks object in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
   const updateExternalLinks = async (req: Request, res: Response): Promise<void> => {
     try {
       const { username, externalLinks } = req.body;
