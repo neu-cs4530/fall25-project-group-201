@@ -123,6 +123,38 @@ const updateBiography = async (
   return res.data;
 };
 
+/**
+ * Updates the user's skill list.
+ * @param username The unique username of the user
+ * @param skills The list of skills for this user
+ * @returns A promise resolving to the updated user
+ * @throws Error if the request fails
+ */
+const updateSkills = async (username: string, skills: string[]): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateSkills`, {
+    username,
+    skills,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating skills');
+  }
+  return res.data;
+};
+
+const updateExternalLinks = async (
+  username: string,
+  externalLinks: { github?: string; artstation?: string; linkedin?: string; website?: string },
+): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateExternalLinks`, {
+    username,
+    externalLinks,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating external links');
+  }
+  return res.data;
+};
+
 export {
   getUsers,
   getUserByUsername,
@@ -131,4 +163,6 @@ export {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateSkills,
+  updateExternalLinks,
 };

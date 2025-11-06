@@ -18,6 +18,22 @@ const ProfileSettings: React.FC = () => {
     pendingAction,
     canEditProfile,
     showPassword,
+    editSkillsMode,
+    selectedSkills,
+    toggleSkill,
+    setEditSkillsMode,
+    handleUpdateSkills,
+    editLinksMode,
+    setEditLinksMode,
+    githubLink,
+    setGithubLink,
+    artstationLink,
+    setArtstationLink,
+    linkedinLink,
+    setLinkedinLink,
+    websiteLink,
+    setWebsiteLink,
+    handleUpdateExternalLinks,
     togglePasswordVisibility,
     setEditBioMode,
     setNewBio,
@@ -44,6 +60,20 @@ const ProfileSettings: React.FC = () => {
     <div className='profile-settings'>
       <div className='profile-card'>
         <h2>Profile</h2>
+
+        {/* ---- NEW SECTIONS START HERE ---- */}
+
+        {/* Banner & Profile Picture Section */}
+        <div className='profile-header-section'>
+          <div className='profile-banner-placeholder'>
+            <span>Banner Image (Coming Soon)</span>
+          </div>
+          <div className='profile-picture-placeholder'>
+            <span>Profile Picture</span>
+          </div>
+        </div>
+
+        {/* ---- NEW SECTIONS END HERE ---- */}
 
         {successMessage && <p className='success-message'>{successMessage}</p>}
         {errorMessage && <p className='error-message'>{errorMessage}</p>}
@@ -100,6 +130,323 @@ const ProfileSettings: React.FC = () => {
               <strong>Date Joined:</strong>{' '}
               {userData.dateJoined ? new Date(userData.dateJoined).toLocaleDateString() : 'N/A'}
             </p>
+
+            {/* ---- NEW SECTIONS START HERE ---- */}
+
+            {/* External Links Section */}
+
+            <h4>External Links</h4>
+
+            {!editLinksMode && (
+              <>
+                <div className='external-links-section'>
+                  {userData.externalLinks?.github && (
+                    <a
+                      href={userData.externalLinks.github}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='link-display'>
+                      🔗 GitHub
+                    </a>
+                  )}
+                  {userData.externalLinks?.artstation && (
+                    <a
+                      href={userData.externalLinks.artstation}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='link-display'>
+                      🎨 ArtStation
+                    </a>
+                  )}
+                  {userData.externalLinks?.linkedin && (
+                    <a
+                      href={userData.externalLinks.linkedin}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='link-display'>
+                      💼 LinkedIn
+                    </a>
+                  )}
+                  {userData.externalLinks?.website && (
+                    <a
+                      href={userData.externalLinks.website}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='link-display'>
+                      🌐 Personal Website
+                    </a>
+                  )}
+                  {!userData.externalLinks?.github &&
+                    !userData.externalLinks?.artstation &&
+                    !userData.externalLinks?.linkedin &&
+                    !userData.externalLinks?.website && (
+                      <span className='placeholder-note'>No external links added yet.</span>
+                    )}
+                </div>
+
+                {canEditProfile && (
+                  <button
+                    className='button button-primary'
+                    onClick={() => setEditLinksMode(true)}
+                    style={{ marginTop: '0.5rem' }}>
+                    Edit Links
+                  </button>
+                )}
+              </>
+            )}
+
+            {editLinksMode && canEditProfile && (
+              <div className='links-edit-section'>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label>
+                    <strong>🔗 GitHub:</strong>
+                  </label>
+                  <input
+                    className='input-text'
+                    type='url'
+                    placeholder='https://github.com/yourusername'
+                    value={githubLink ?? ''}
+                    onChange={e => setGithubLink(e.target.value)}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <label>
+                    <strong>🎨 ArtStation:</strong>
+                  </label>
+                  <input
+                    className='input-text'
+                    type='url'
+                    placeholder='https://www.artstation.com/yourusername'
+                    value={artstationLink ?? ''}
+                    onChange={e => setArtstationLink(e.target.value)}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <label>
+                    <strong>💼 LinkedIn:</strong>
+                  </label>
+                  <input
+                    className='input-text'
+                    type='url'
+                    placeholder='https://www.linkedin.com/in/yourusername'
+                    value={linkedinLink ?? ''}
+                    onChange={e => setLinkedinLink(e.target.value)}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <label>
+                    <strong>🌐 Personal Website:</strong>
+                  </label>
+                  <input
+                    className='input-text'
+                    type='url'
+                    placeholder='https://yourportfolio.com'
+                    value={websiteLink ?? ''}
+                    onChange={e => setWebsiteLink(e.target.value)}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                  <button className='button button-primary' onClick={handleUpdateExternalLinks}>
+                    Save Links
+                  </button>
+                  <button className='button button-danger' onClick={() => setEditLinksMode(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Skills Section */}
+            <h4>Software Expertise</h4>
+
+            {!editSkillsMode && (
+              <>
+                <div className='skills-section'>
+                  {userData.skills && userData.skills.length > 0 ? (
+                    userData.skills.map(skill => (
+                      <div key={skill} className='skill-placeholder'>
+                        {skill}
+                      </div>
+                    ))
+                  ) : (
+                    <span className='placeholder-note'>No skills added yet.</span>
+                  )}
+                </div>
+                {canEditProfile && (
+                  <button
+                    className='button button-primary'
+                    onClick={() => setEditSkillsMode(true)}
+                    style={{ marginTop: '0.5rem' }}>
+                    Edit Skills
+                  </button>
+                )}
+              </>
+            )}
+
+            {editSkillsMode && canEditProfile && (
+              <div className='skills-edit-section'>
+                <p style={{ marginBottom: '1rem', color: '#6b7280' }}>
+                  Select your software expertise:
+                </p>
+
+                {/* 3D Software */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>3D Software:</strong>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                      marginTop: '0.5rem',
+                    }}>
+                    {['Maya', 'Blender', '3ds Max', 'ZBrush', 'Houdini', 'Cinema 4D'].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Texturing/Materials */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>Texturing & Materials:</strong>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                      marginTop: '0.5rem',
+                    }}>
+                    {['Substance Painter', 'Substance Designer', 'Mari'].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Game Engines */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>Game Engines:</strong>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                      marginTop: '0.5rem',
+                    }}>
+                    {['Unreal Engine', 'Unity', 'Godot'].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Programming */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <strong>Programming Languages:</strong>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                      marginTop: '0.5rem',
+                    }}>
+                    {[
+                      'Python',
+                      'C++',
+                      'C#',
+                      'JavaScript',
+                      'MEL',
+                      'React',
+                      'MySQL',
+                      'Unreal Engine Blueprints',
+                    ].map(skill => (
+                      <label key={skill} className='skill-checkbox-label'>
+                        <input
+                          type='checkbox'
+                          checked={selectedSkills.includes(skill)}
+                          onChange={() => toggleSkill(skill)}
+                        />
+                        <span>{skill}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                  <button className='button button-primary' onClick={handleUpdateSkills}>
+                    Save Skills
+                  </button>
+                  <button className='button button-danger' onClick={() => setEditSkillsMode(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Portfolio Grid Section */}
+            <h4>Portfolio</h4>
+            <div className='portfolio-grid-section'>
+              <div className='portfolio-placeholder'>
+                <div className='placeholder-text'>📦 3D Model Viewer</div>
+                <span>Upload models in Sprint 2</span>
+              </div>
+              <div className='portfolio-placeholder'>
+                <div className='placeholder-text'>📦 3D Model Viewer</div>
+                <span>Upload models in Sprint 2</span>
+              </div>
+              <div className='portfolio-placeholder'>
+                <div className='placeholder-text'>📦 3D Model Viewer</div>
+                <span>Upload models in Sprint 2</span>
+              </div>
+            </div>
+
+            {/* Resume Section */}
+            <h4>Resume / CV</h4>
+            <div className='resume-section'>
+              <button className='button button-secondary' disabled>
+                📄 Download Resume (Upload in Sprint 2)
+              </button>
+              <span className='placeholder-note'>Upload your CV to enable downloads</span>
+            </div>
+
+            {/* Theme Customization Preview */}
+            <h4>Theme Preview</h4>
+            <div className='theme-preview-section'>
+              <div className='theme-color-box' style={{ backgroundColor: '#2563eb' }}>
+                Primary Color
+              </div>
+              <div className='theme-color-box' style={{ backgroundColor: '#16a34a' }}>
+                Accent Color
+              </div>
+              <div className='theme-color-box' style={{ backgroundColor: '#f2f4f7' }}>
+                Background Color
+              </div>
+              <span className='placeholder-note'>(Customizable in Sprint 2)</span>
+            </div>
+
+            {/* ---- NEW SECTIONS END HERE ---- */}
 
             <button className='button button-primary' onClick={handleViewCollectionsPage}>
               View Collections

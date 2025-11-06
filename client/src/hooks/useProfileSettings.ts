@@ -5,6 +5,8 @@ import {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateSkills,
+  updateExternalLinks,
 } from '../services/userService';
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
@@ -26,6 +28,13 @@ const useProfileSettings = () => {
   const [newBio, setNewBio] = useState('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [editSkillsMode, setEditSkillsMode] = useState(false);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [editLinksMode, setEditLinksMode] = useState(false);
+  const [githubLink, setGithubLink] = useState('');
+  const [artstationLink, setArtstationLink] = useState('');
+  const [linkedinLink, setLinkedinLink] = useState('');
+  const [websiteLink, setWebsiteLink] = useState('');
 
   // For delete-user confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -44,6 +53,11 @@ const useProfileSettings = () => {
         setLoading(true);
         const data = await getUserByUsername(username);
         setUserData(data);
+        setSelectedSkills(data.skills || []); // intialize skills
+        setGithubLink(data.externalLinks?.github || '');
+        setArtstationLink(data.externalLinks?.artstation || '');
+        setLinkedinLink(data.externalLinks?.linkedin || '');
+        setWebsiteLink(data.externalLinks?.website || '');
       } catch (error) {
         setErrorMessage('Error fetching user profile');
         setUserData(null);
@@ -119,6 +133,35 @@ const useProfileSettings = () => {
   };
 
   /**
+   * Handler for updating external links
+   */
+  const handleUpdateExternalLinks = async () => {
+    if (!username) return;
+    try {
+      const externalLinks = {
+        github: githubLink,
+        artstation: artstationLink,
+        linkedin: linkedinLink,
+        website: websiteLink,
+      };
+
+      const updatedUser = await updateExternalLinks(username, externalLinks);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setEditLinksMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('External links updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update external links.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
    * Handler for deleting the user (triggers confirmation modal)
    */
   const handleDeleteUser = () => {
@@ -144,6 +187,40 @@ const useProfileSettings = () => {
     return;
   };
 
+  /**
+   * Handler for updating user skills
+   */
+  const handleUpdateSkills = async () => {
+    if (!username) return;
+    try {
+      const updatedUser = await updateSkills(username, selectedSkills);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setEditSkillsMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('Skills updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update skills.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Toggles a skill in the selected skills array
+   */
+  const toggleSkill = (skill: string) => {
+    setSelectedSkills(
+      prev =>
+        prev.includes(skill)
+          ? prev.filter(s => s !== skill) // Remove if already selected
+          : [...prev, skill], // Add if not selected
+    );
+  };
+
   return {
     userData,
     newPassword,
@@ -155,6 +232,24 @@ const useProfileSettings = () => {
     setEditBioMode,
     newBio,
     setNewBio,
+    // edit skills
+    editSkillsMode,
+    setEditSkillsMode,
+    selectedSkills,
+    toggleSkill,
+    handleUpdateSkills,
+    editLinksMode,
+    // edit links
+    setEditLinksMode,
+    githubLink,
+    setGithubLink,
+    artstationLink,
+    setArtstationLink,
+    linkedinLink,
+    setLinkedinLink,
+    websiteLink,
+    setWebsiteLink,
+    handleUpdateExternalLinks,
     successMessage,
     errorMessage,
     showConfirmation,
