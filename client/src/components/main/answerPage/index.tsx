@@ -13,7 +13,14 @@ import useAnswerPage from '../../../hooks/useAnswerPage';
  * It also includes the functionality to vote, ask a new question, and post a new answer.
  */
 const AnswerPage = () => {
-  const { questionID, question, handleNewComment, handleNewAnswer } = useAnswerPage();
+  const {
+    questionID,
+    question,
+    handleNewComment,
+    handleNewAnswer,
+    handleAddMedia,
+    handleAddMediaError,
+  } = useAnswerPage();
 
   if (!question) {
     return null;
@@ -32,6 +39,8 @@ const AnswerPage = () => {
       <CommentSection
         comments={question.comments}
         handleAddComment={(comment: Comment) => handleNewComment(comment, 'question', questionID)}
+        handleAddMedia={(file: File) => handleAddMedia(file)}
+        handleAddMediaError={handleAddMediaError}
       />
       {question.answers.map(a => (
         <AnswerView
@@ -43,6 +52,8 @@ const AnswerPage = () => {
           handleAddComment={(comment: Comment) =>
             handleNewComment(comment, 'answer', String(a._id))
           }
+          handleAddMedia={handleAddMedia}
+          handleAddMediaError={handleAddMediaError}
         />
       ))}
       <button

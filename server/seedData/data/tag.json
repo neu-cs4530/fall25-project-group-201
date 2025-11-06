@@ -38,5 +38,13 @@
   "tag10": {
     "name": "git",
     "description": "A distributed version control system to track changes in source code during software development."
+  },
+  "tag11": {
+    "name": "computer_graphics",
+    "description": "The field of computing focused on creating, rendering, and manipulating visual images and 3D scenes using algorithms and hardware acceleration."
+  },
+  "tag12": {
+    "name": "3D_design",
+    "description": "The process of creating and refining three-dimensional digital models for use in art, games, animation, and product visualization."
   }
 }
