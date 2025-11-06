@@ -98,5 +98,17 @@
     "text": "Great explanation! You might also want to mention useCallback for memoizing event handlers when they're passed to child components to prevent unnecessary re-renders.",
     "commentBy": "reactninja",
     "commentDateTime": "2025-04-18T15:27:38Z"
+  },
+  "comment21": {
+    "text": "Check out this video! This helped me solve memory leak issues with my web application!",
+    "commentBy": "user123",
+    "commentDateTime": "2025-10-27T20:54:51Z",
+    "mediaUrl": "https://www.youtube.com/watch?v=qERgb3pWfu0"
+  },
+  "comment22": {
+    "text": "I'm running into a similar issue with leaks. Does anyone know what this means?",
+    "commentBy": "user345",
+    "commentDateTime": "2025-10-27T20:54:51Z",
+    "mediaUrl": "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*dJnQhLO6aY4q3qz9iRlgrw.png"
   }
 }

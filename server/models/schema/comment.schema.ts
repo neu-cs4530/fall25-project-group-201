@@ -20,6 +20,12 @@ const commentSchema: Schema = new Schema(
     commentDateTime: {
       type: Date,
     },
+    mediaUrl: {
+      type: String,
+    },
+    mediaPath: {
+      type: String,
+    },
   },
   { collection: 'Comment' },
 );

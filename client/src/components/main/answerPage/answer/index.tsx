@@ -19,6 +19,8 @@ interface AnswerProps {
   meta: string;
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
+  handleAddMedia: (file: File) => Promise<string | undefined>;
+  handleAddMediaError: string | null;
 }
 
 /**
@@ -31,7 +33,15 @@ interface AnswerProps {
  * @param comments An array of comments associated with the answer.
  * @param handleAddComment Function to handle adding a new comment.
  */
-const AnswerView = ({ text, ansBy, meta, comments, handleAddComment }: AnswerProps) => (
+const AnswerView = ({
+  text,
+  ansBy,
+  meta,
+  comments,
+  handleAddComment,
+  handleAddMedia,
+  handleAddMediaError,
+}: AnswerProps) => (
   <div className='answer right_padding'>
     <div id='answerText' className='answerText'>
       {<Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
@@ -40,7 +50,12 @@ const AnswerView = ({ text, ansBy, meta, comments, handleAddComment }: AnswerPro
       <div className='answer_author'>{ansBy}</div>
       <div className='answer_question_meta'>{meta}</div>
     </div>
-    <CommentSection comments={comments} handleAddComment={handleAddComment} />
+    <CommentSection
+      comments={comments}
+      handleAddComment={handleAddComment}
+      handleAddMedia={handleAddMedia}
+      handleAddMediaError={handleAddMediaError}
+    />
   </div>
 );
 
