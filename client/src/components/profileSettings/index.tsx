@@ -533,193 +533,195 @@ const ProfileSettings: React.FC = () => {
             </div>
 
             {/* Theme Customization - INTERACTIVE */}
-            <h4>Theme Colors</h4>
 
-            {!editColorsMode && (
+            {canEditProfile && (
               <>
-                <div className='theme-preview-section'>
-                  <div
-                    className='theme-color-box'
-                    style={{ backgroundColor: userData.customColors?.primary || '#2563eb' }}>
-                    Primary Color
+                <h4>Theme Colors</h4>
+                {!editColorsMode && (
+                  <>
+                    <div className='theme-preview-section'>
+                      <div
+                        className='theme-color-box'
+                        style={{ backgroundColor: userData.customColors?.primary || '#2563eb' }}>
+                        Primary Color
+                      </div>
+                      <div
+                        className='theme-color-box'
+                        style={{ backgroundColor: userData.customColors?.accent || '#16a34a' }}>
+                        Accent Color
+                      </div>
+                      <div
+                        className='theme-color-box'
+                        style={{
+                          backgroundColor: userData.customColors?.background || '#f2f4f7',
+                          color: '#1f2937'
+                        }}>
+                        Background Color
+                      </div>
+                    </div>
+                    <button
+                      className='button button-primary'
+                      onClick={() => setEditColorsMode(true)}
+                      style={{ marginTop: '0.5rem' }}>
+                      Edit Colors
+                    </button>
+                  </>
+                )}
+
+                {editColorsMode && canEditProfile && (
+                  <div className='colors-edit-section'>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label>
+                        <strong>Primary Color:</strong>
+                      </label>
+                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                        <input
+                          type='color'
+                          value={primaryColor}
+                          onChange={e => setPrimaryColor(e.target.value)}
+                          style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                        />
+                        <input
+                          className='input-text'
+                          type='text'
+                          value={primaryColor}
+                          onChange={e => setPrimaryColor(e.target.value)}
+                          placeholder='#2563eb'
+                          style={{ flex: 1 }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label>
+                        <strong>Accent Color:</strong>
+                      </label>
+                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                        <input
+                          type='color'
+                          value={accentColor}
+                          onChange={e => setAccentColor(e.target.value)}
+                          style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                        />
+                        <input
+                          className='input-text'
+                          type='text'
+                          value={accentColor}
+                          onChange={e => setAccentColor(e.target.value)}
+                          placeholder='#16a34a'
+                          style={{ flex: 1 }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label>
+                        <strong>Background Color:</strong>
+                      </label>
+                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                        <input
+                          type='color'
+                          value={backgroundColor}
+                          onChange={e => setBackgroundColor(e.target.value)}
+                          style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
+                        />
+                        <input
+                          className='input-text'
+                          type='text'
+                          value={backgroundColor}
+                          onChange={e => setBackgroundColor(e.target.value)}
+                          placeholder='#f2f4f7'
+                          style={{ flex: 1 }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                      <button className='button button-primary' onClick={handleUpdateCustomColors}>
+                        Save Colors
+                      </button>
+                      <button className='button button-danger' onClick={() => setEditColorsMode(false)}>
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <div
-                    className='theme-color-box'
-                    style={{ backgroundColor: userData.customColors?.accent || '#16a34a' }}>
-                    Accent Color
-                  </div>
-                  <div
-                    className='theme-color-box'
-                    style={{
-                      backgroundColor: userData.customColors?.background || '#f2f4f7',
-                      color: '#1f2937'
-                    }}>
-                    Background Color
-                  </div>
-                </div>
+                )}
+                </>
+            )}
+
+                {/* ---- NEW SECTIONS END HERE ---- */}
+
+                <button className='button button-primary' onClick={handleViewCollectionsPage}>
+                  View Collections
+                </button>
+
+                {/* ---- Reset Password Section ---- */}
                 {canEditProfile && (
-                  <button
-                    className='button button-primary'
-                    onClick={() => setEditColorsMode(true)}
-                    style={{ marginTop: '0.5rem' }}>
-                    Edit Colors
-                  </button>
+                  <>
+                    <h4>Reset Password</h4>
+                    <input
+                      className='input-text'
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder='New Password'
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                    />
+                    <input
+                      className='input-text'
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder='Confirm New Password'
+                      value={confirmNewPassword}
+                      onChange={e => setConfirmNewPassword(e.target.value)}
+                    />
+                    <div className='password-actions'>
+                      <button className='button button-secondary' onClick={togglePasswordVisibility}>
+                        {showPassword ? 'Hide Passwords' : 'Show Passwords'}
+                      </button>
+                      <button className='button button-primary' onClick={handleResetPassword}>
+                        Reset
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {/* ---- Danger Zone (Delete User) ---- */}
+                {canEditProfile && (
+                  <>
+                    <h4>Danger Zone</h4>
+                    <button className='button button-danger' onClick={handleDeleteUser}>
+                      Delete This User
+                    </button>
+                  </>
                 )}
               </>
-            )}
-
-            {editColorsMode && canEditProfile && (
-              <div className='colors-edit-section'>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label>
-                    <strong>Primary Color:</strong>
-                  </label>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                    <input
-                      type='color'
-                      value={primaryColor}
-                      onChange={e => setPrimaryColor(e.target.value)}
-                      style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
-                    />
-                    <input
-                      className='input-text'
-                      type='text'
-                      value={primaryColor}
-                      onChange={e => setPrimaryColor(e.target.value)}
-                      placeholder='#2563eb'
-                      style={{ flex: 1 }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                  <label>
-                    <strong>Accent Color:</strong>
-                  </label>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                    <input
-                      type='color'
-                      value={accentColor}
-                      onChange={e => setAccentColor(e.target.value)}
-                      style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
-                    />
-                    <input
-                      className='input-text'
-                      type='text'
-                      value={accentColor}
-                      onChange={e => setAccentColor(e.target.value)}
-                      placeholder='#16a34a'
-                      style={{ flex: 1 }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                  <label>
-                    <strong>Background Color:</strong>
-                  </label>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                    <input
-                      type='color'
-                      value={backgroundColor}
-                      onChange={e => setBackgroundColor(e.target.value)}
-                      style={{ width: '60px', height: '40px', cursor: 'pointer', border: '2px solid #d1d5db', borderRadius: '0.5rem' }}
-                    />
-                    <input
-                      className='input-text'
-                      type='text'
-                      value={backgroundColor}
-                      onChange={e => setBackgroundColor(e.target.value)}
-                      placeholder='#f2f4f7'
-                      style={{ flex: 1 }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                  <button className='button button-primary' onClick={handleUpdateCustomColors}>
-                    Save Colors
-                  </button>
-                  <button className='button button-danger' onClick={() => setEditColorsMode(false)}>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ---- NEW SECTIONS END HERE ---- */}
-
-            <button className='button button-primary' onClick={handleViewCollectionsPage}>
-              View Collections
-            </button>
-
-            {/* ---- Reset Password Section ---- */}
-            {canEditProfile && (
-              <>
-                <h4>Reset Password</h4>
-                <input
-                  className='input-text'
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder='New Password'
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                />
-                <input
-                  className='input-text'
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder='Confirm New Password'
-                  value={confirmNewPassword}
-                  onChange={e => setConfirmNewPassword(e.target.value)}
-                />
-                <div className='password-actions'>
-                  <button className='button button-secondary' onClick={togglePasswordVisibility}>
-                    {showPassword ? 'Hide Passwords' : 'Show Passwords'}
-                  </button>
-                  <button className='button button-primary' onClick={handleResetPassword}>
-                    Reset
-                  </button>
-                </div>
-              </>
-            )}
-
-            {/* ---- Danger Zone (Delete User) ---- */}
-            {canEditProfile && (
-              <>
-                <h4>Danger Zone</h4>
-                <button className='button button-danger' onClick={handleDeleteUser}>
-                  Delete This User
-                </button>
-              </>
-            )}
-          </>
-        ) : (
-          <p>No user data found. Make sure the username parameter is correct.</p>
+            ) : (
+            <p>No user data found. Make sure the username parameter is correct.</p>
         )}
 
-        {/* ---- Confirmation Modal for Delete ---- */}
-        {showConfirmation && (
-          <div className='modal'>
-            <div className='modal-content'>
-              <p>
-                Are you sure you want to delete user <strong>{userData?.username}</strong>? This
-                action cannot be undone.
-              </p>
-              <div className='modal-actions'>
-                <button className='button button-danger' onClick={() => pendingAction?.()}>
-                  Confirm
-                </button>
-                <button
-                  className='button button-secondary'
-                  onClick={() => setShowConfirmation(false)}>
-                  Cancel
-                </button>
+            {/* ---- Confirmation Modal for Delete ---- */}
+            {showConfirmation && (
+              <div className='modal'>
+                <div className='modal-content'>
+                  <p>
+                    Are you sure you want to delete user <strong>{userData?.username}</strong>? This
+                    action cannot be undone.
+                  </p>
+                  <div className='modal-actions'>
+                    <button className='button button-danger' onClick={() => pendingAction?.()}>
+                      Confirm
+                    </button>
+                    <button
+                      className='button button-secondary'
+                      onClick={() => setShowConfirmation(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
       </div>
-    </div>
-  );
+      );
 };
 
-export default ProfileSettings;
+      export default ProfileSettings;
