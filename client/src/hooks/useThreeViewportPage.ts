@@ -7,12 +7,14 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 const useThreeViewportPage = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
+    sceneRef.current = scene;
     let isDragging = false;
     let previousMouseX = 0;
     let previousMouseY = 0;
@@ -181,7 +183,15 @@ const useThreeViewportPage = (modelPath: string | null) => {
     };
   }, [modelPath]);
 
-  return { containerRef };
+  const handleResetCamera = () => {
+    const scene = sceneRef.current;
+
+    if (scene) {
+      scene.rotation.set(0, 0, 0);
+    }
+  };
+
+  return { containerRef, handleResetCamera };
 };
 
 export default useThreeViewportPage;
