@@ -3,6 +3,7 @@ import useModelUpload from '../../../hooks/useModelUpload';
 import './index.css';
 import orthoIcon from '/icons/orthoIcon.png';
 import perspIcon from '/icons/perspIcon.png';
+import cameraIcon from '/icons/cameraIcon.png';
 import { useState } from 'react';
 
 const ThreeViewport = () => {
@@ -35,9 +36,12 @@ const ThreeViewport = () => {
 
           {modelUrl && (
             <>
-              <button onClick={handleResetCamera} className='reset-camera'>
-                Reset Camera
-              </button>
+              <img
+                src={cameraIcon}
+                alt='Reset Camera'
+                className='icon-button'
+                onClick={handleResetCamera}
+              />
               <img
                 src={isOrthoCameraMode ? perspIcon : orthoIcon}
                 alt='Toggle View'
