@@ -389,7 +389,7 @@ const userController = (socket: FakeSOSocket) => {
   /**
    * Uploads a portfolio model for a user.
    */
-  const uploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
+  const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
     try {
       const file = req.file;
       const { username } = req.body;
@@ -404,7 +404,7 @@ const userController = (socket: FakeSOSocket) => {
       }
 
       // Convert .glb to base64
-      const base64Model = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+      const Base64Model = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
 
       // Get current user
       const user = await getUserByUsername(username);
@@ -414,7 +414,7 @@ const userController = (socket: FakeSOSocket) => {
 
       // Add to portfolioModels array
       const currentModels = user.portfolioModels || [];
-      const updatedModels = [...currentModels, base64Model];
+      const updatedModels = [...currentModels, Base64Model];
 
       const updatedUser = await updateUser(username, { portfolioModels: updatedModels });
 
@@ -447,7 +447,7 @@ const userController = (socket: FakeSOSocket) => {
   router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
   router.post('/uploadResume', upload.single('file'), uploadResume);
-  router.post('/uploadPortfolioModel', upload.single('file'), uploadPortfolioModel);
+  router.post('/uploadPortfolioModel', upload.single('file'), UploadPortfolioModel);
   return router;
 };
 

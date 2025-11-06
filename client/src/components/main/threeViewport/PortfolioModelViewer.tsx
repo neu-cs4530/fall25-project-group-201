@@ -1,4 +1,3 @@
-import { useRef, useEffect } from 'react';
 import useThreeViewportPage from '../../../hooks/useThreeViewportPage';
 
 interface PortfolioModelViewerProps {
