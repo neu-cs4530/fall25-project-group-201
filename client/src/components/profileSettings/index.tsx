@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './index.css';
 import useProfileSettings from '../../hooks/useProfileSettings';
+import PortfolioModelViewer from '../main/threeViewport/PortfolioModelViewer';
 
 const ProfileSettings: React.FC = () => {
   const {
@@ -46,6 +47,7 @@ const ProfileSettings: React.FC = () => {
     handleUploadProfilePicture,
     handleUploadBannerImage,
     handleUploadResume,
+    handleUploadPortfolioModel,
     togglePasswordVisibility,
     setEditBioMode,
     setNewBio,
@@ -466,21 +468,41 @@ const ProfileSettings: React.FC = () => {
               </div>
             )}
 
-            {/* Portfolio Grid Section */}
+            {/* Portfolio Grid Section - INTERACTIVE */}
             <h4>Portfolio</h4>
             <div className='portfolio-grid-section'>
-              <div className='portfolio-placeholder'>
-                <div className='placeholder-text'>📦 3D Model Viewer</div>
-                <span>Upload models in Sprint 2</span>
-              </div>
-              <div className='portfolio-placeholder'>
-                <div className='placeholder-text'>📦 3D Model Viewer</div>
-                <span>Upload models in Sprint 2</span>
-              </div>
-              <div className='portfolio-placeholder'>
-                <div className='placeholder-text'>📦 3D Model Viewer</div>
-                <span>Upload models in Sprint 2</span>
-              </div>
+              {userData.portfolioModels && userData.portfolioModels.length > 0 ? (
+                userData.portfolioModels.map((modelUrl, index) => (
+                  <div key={index} className='portfolio-model-item'>
+                    <div style={{ width: '100%', height: '200px' }}>
+                      <PortfolioModelViewer modelUrl={modelUrl} />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className='portfolio-placeholder'>
+                  <div className='placeholder-text'>📦</div>
+                  <span>No models uploaded yet</span>
+                </div>
+              )}
+
+              {canEditProfile && (
+                <label className='portfolio-upload-box'>
+                  <input
+                    type='file'
+                    accept='.glb,.gltf'
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleUploadPortfolioModel(file);
+                    }}
+                  />
+                  <div className='upload-placeholder'>
+                    <div style={{ fontSize: '3rem' }}>➕</div>
+                    <span>Upload Model</span>
+                  </div>
+                </label>
+              )}
             </div>
 
             {/* Resume Section - INTERACTIVE */}
@@ -646,82 +668,80 @@ const ProfileSettings: React.FC = () => {
                     </div>
                   </div>
                 )}
-                </>
+              </>
             )}
 
-                {/* ---- NEW SECTIONS END HERE ---- */}
+            <button className='button button-primary' onClick={handleViewCollectionsPage}>
+              View Collections
+            </button>
 
-                <button className='button button-primary' onClick={handleViewCollectionsPage}>
-                  View Collections
-                </button>
-
-                {/* ---- Reset Password Section ---- */}
-                {canEditProfile && (
-                  <>
-                    <h4>Reset Password</h4>
-                    <input
-                      className='input-text'
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder='New Password'
-                      value={newPassword}
-                      onChange={e => setNewPassword(e.target.value)}
-                    />
-                    <input
-                      className='input-text'
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder='Confirm New Password'
-                      value={confirmNewPassword}
-                      onChange={e => setConfirmNewPassword(e.target.value)}
-                    />
-                    <div className='password-actions'>
-                      <button className='button button-secondary' onClick={togglePasswordVisibility}>
-                        {showPassword ? 'Hide Passwords' : 'Show Passwords'}
-                      </button>
-                      <button className='button button-primary' onClick={handleResetPassword}>
-                        Reset
-                      </button>
-                    </div>
-                  </>
-                )}
-
-                {/* ---- Danger Zone (Delete User) ---- */}
-                {canEditProfile && (
-                  <>
-                    <h4>Danger Zone</h4>
-                    <button className='button button-danger' onClick={handleDeleteUser}>
-                      Delete This User
-                    </button>
-                  </>
-                )}
+            {/* ---- Reset Password Section ---- */}
+            {canEditProfile && (
+              <>
+                <h4>Reset Password</h4>
+                <input
+                  className='input-text'
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='New Password'
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                />
+                <input
+                  className='input-text'
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='Confirm New Password'
+                  value={confirmNewPassword}
+                  onChange={e => setConfirmNewPassword(e.target.value)}
+                />
+                <div className='password-actions'>
+                  <button className='button button-secondary' onClick={togglePasswordVisibility}>
+                    {showPassword ? 'Hide Passwords' : 'Show Passwords'}
+                  </button>
+                  <button className='button button-primary' onClick={handleResetPassword}>
+                    Reset
+                  </button>
+                </div>
               </>
-            ) : (
-            <p>No user data found. Make sure the username parameter is correct.</p>
+            )}
+
+            {/* ---- Danger Zone (Delete User) ---- */}
+            {canEditProfile && (
+              <>
+                <h4>Danger Zone</h4>
+                <button className='button button-danger' onClick={handleDeleteUser}>
+                  Delete This User
+                </button>
+              </>
+            )}
+          </>
+        ) : (
+          <p>No user data found. Make sure the username parameter is correct.</p>
         )}
 
-            {/* ---- Confirmation Modal for Delete ---- */}
-            {showConfirmation && (
-              <div className='modal'>
-                <div className='modal-content'>
-                  <p>
-                    Are you sure you want to delete user <strong>{userData?.username}</strong>? This
-                    action cannot be undone.
-                  </p>
-                  <div className='modal-actions'>
-                    <button className='button button-danger' onClick={() => pendingAction?.()}>
-                      Confirm
-                    </button>
-                    <button
-                      className='button button-secondary'
-                      onClick={() => setShowConfirmation(false)}>
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+        {/* ---- Confirmation Modal for Delete ---- */}
+        {showConfirmation && (
+          <div className='modal'>
+            <div className='modal-content'>
+              <p>
+                Are you sure you want to delete user <strong>{userData?.username}</strong>? This
+                action cannot be undone.
+              </p>
+              <div className='modal-actions'>
+                <button className='button button-danger' onClick={() => pendingAction?.()}>
+                  Confirm
+                </button>
+                <button
+                  className='button button-secondary'
+                  onClick={() => setShowConfirmation(false)}>
+                  Cancel
+                </button>
               </div>
-            )}
+            </div>
           </div>
+        )}
       </div>
-      );
+    </div>
+  );
 };
 
-      export default ProfileSettings;
+export default ProfileSettings;

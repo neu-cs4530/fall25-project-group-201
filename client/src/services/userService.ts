@@ -235,6 +235,27 @@ const uploadResume = async (
   return res.data;
 };
 
+/**
+ * Uploads a portfolio model for a user.
+ */
+const uploadPortfolioModel = async (
+  username: string,
+  file: File,
+): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadPortfolioModel`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading portfolio model');
+  }
+  return res.data;
+};
+
 export {
   getUsers,
   getUserByUsername,
@@ -249,4 +270,5 @@ export {
   uploadProfilePicture,
   uploadBannerImage,
   uploadResume,
+  uploadPortfolioModel,
 };

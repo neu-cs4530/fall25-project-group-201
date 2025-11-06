@@ -11,6 +11,7 @@ import {
   uploadProfilePicture,
   uploadBannerImage,
   uploadResume,
+  uploadPortfolioModel,
 } from '../services/userService';
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
@@ -249,6 +250,22 @@ const useProfileSettings = () => {
   };
 
   /**
+ * Handler for uploading portfolio models
+ */
+  const handleUploadPortfolioModel = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadPortfolioModel(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Portfolio model uploaded!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload portfolio model.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
    * Handler for deleting the user (triggers confirmation modal)
    */
   const handleDeleteUser = () => {
@@ -351,6 +368,7 @@ const useProfileSettings = () => {
     handleUploadProfilePicture,
     handleUploadBannerImage,
     handleUploadResume,
+    handleUploadPortfolioModel,
     successMessage,
     errorMessage,
     showConfirmation,

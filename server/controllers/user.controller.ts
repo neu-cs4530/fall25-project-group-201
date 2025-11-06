@@ -386,6 +386,53 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+ * Uploads a portfolio model for a user.
+ */
+  const uploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const file = req.file;
+      const { username } = req.body;
+
+      if (!file) {
+        res.status(400).json({ error: 'File missing' });
+        return;
+      }
+      if (!username) {
+        res.status(400).json({ error: 'Username missing' });
+        return;
+      }
+
+      // Convert .glb to base64
+      const base64Model = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+      // Get current user
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        throw new Error('User not found');
+      }
+
+      // Add to portfolioModels array
+      const currentModels = user.portfolioModels || [];
+      const updatedModels = [...currentModels, base64Model];
+
+      const updatedUser = await updateUser(username, { portfolioModels: updatedModels });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error uploading portfolio model: ${error}`);
+    }
+  };
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -400,6 +447,7 @@ const userController = (socket: FakeSOSocket) => {
   router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
   router.post('/uploadResume', upload.single('file'), uploadResume);
+  router.post('/uploadPortfolioModel', upload.single('file'), uploadPortfolioModel);
   return router;
 };
 
