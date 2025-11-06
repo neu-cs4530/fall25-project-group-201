@@ -39,7 +39,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaUrl, mediaPath }: Questio
 
   /**
    * Renders the given url as either an image, youtube video, or vimeo video
-   * @param url 
+   * @param url
    * @returns the rendered embedded media
    */
   const renderEmbeddedMedia = (url: string) => {
@@ -48,21 +48,21 @@ const QuestionBody = ({ views, text, askby, meta, mediaUrl, mediaPath }: Questio
 
       // Images
       if (isImage(parsed.pathname)) {
-        return <img src={url} alt="Embedded media" className="question-media" />;
+        return <img src={url} alt='Embedded media' className='question-media' />;
       }
 
       // YouTube
       const ytMatch = url.match(
-        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
       );
       if (ytMatch) {
         return (
-          <div className="iframe-wrapper">
+          <div className='iframe-wrapper'>
             <iframe
               src={`https://www.youtube.com/embed/${ytMatch[1]}`}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              title='YouTube video player'
+              frameBorder='0'
+              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
               allowFullScreen
             />
           </div>
@@ -73,42 +73,42 @@ const QuestionBody = ({ views, text, askby, meta, mediaUrl, mediaPath }: Questio
       const vimeoMatch = url.match(/https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/);
       if (vimeoMatch) {
         return (
-          <div className="iframe-wrapper">
+          <div className='iframe-wrapper'>
             <iframe
               src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
-              frameBorder="0"
-              allow="autoplay; fullscreen; picture-in-picture"
+              frameBorder='0'
+              allow='autoplay; fullscreen; picture-in-picture'
               allowFullScreen
-              title="Vimeo video player"
+              title='Vimeo video player'
             />
           </div>
         );
       }
     } catch {
-      return <div className="question-media">Invalid media URL</div>;
+      return <div className='question-media'>Invalid media URL</div>;
     }
 
-    return <div className="question-media">Unsupported media type</div>;
+    return <div className='question-media'>Unsupported media type</div>;
   };
 
   return (
-    <div id="questionBody" className="questionBody right_padding">
-      <div className="bold_title answer_question_view">{views} views</div>
-      <div className="answer_question_text">
+    <div id='questionBody' className='questionBody right_padding'>
+      <div className='bold_title answer_question_view'>{views} views</div>
+      <div className='answer_question_text'>
         <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
 
         {mediaUrl && renderEmbeddedMedia(mediaUrl)}
 
         {mediaPath &&
           (isVideo(mediaPath) ? (
-            <video src={mediaPath} controls className="question-media" />
+            <video src={mediaPath} controls className='question-media' />
           ) : (
-            <img src={mediaPath} alt="Uploaded media" className="question-media" />
+            <img src={mediaPath} alt='Uploaded media' className='question-media' />
           ))}
       </div>
-      <div className="answer_question_right">
-        <div className="question_author">{askby}</div>
-        <div className="answer_question_meta">asked {meta}</div>
+      <div className='answer_question_right'>
+        <div className='question_author'>{askby}</div>
+        <div className='answer_question_meta'>asked {meta}</div>
       </div>
     </div>
   );

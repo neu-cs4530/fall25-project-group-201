@@ -116,7 +116,6 @@ const useNewQuestion = () => {
         navigate('/home');
       }
     } catch (err) {
-      console.error('Error posting question:', err);
       setMediaErr('Failed to post question');
     }
   };
@@ -168,6 +167,7 @@ const useNewQuestion = () => {
     textErr,
     tagErr,
     mediaErr,
+    setMediaErr,
     mediaUrl,
     setMediaUrl,
     mediaPath,

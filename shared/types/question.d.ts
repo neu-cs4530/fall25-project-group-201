@@ -51,7 +51,7 @@ export interface Question {
  * - `_id`: Unique identifier for the question.
  * - `tags`: An array of ObjectIds referencing tags associated with the question.
  * - `answers`: An array of ObjectIds referencing answers associated with the question.
- * - `comments`: An array of ObjectIds referencing comments associated with the question. 
+ * - `comments`: An array of ObjectIds referencing comments associated with the question.
  * - 'community': The populated community object or null.
  * - 'mediaUrl': Optional URL of an embedded media file.
  * - 'mediaPath': Optional file path of an uploaded media file.
