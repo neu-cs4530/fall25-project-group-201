@@ -191,6 +191,10 @@ const useThreeViewportPage = (modelPath: string | null) => {
     }
   };
 
+  const handleToggleOrthographicPerspective = () => {
+    
+  }
+
   return { containerRef, handleResetCamera };
 };
 
