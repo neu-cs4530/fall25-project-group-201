@@ -7,15 +7,10 @@ import { DatabaseCommunity, Question } from '../types/types';
 import { getCommunities } from '../services/communityService';
 
 /**
- * Custom hook to handle question submission and form validation
+ * Custom hook for managing a new question form, including state, validation,
+ * file handling, media, and submission logic.
  *
- * @returns title - The current value of the title input.
- * @returns text - The current value of the text input.
- * @returns tagNames - The current value of the tags input.
- * @returns titleErr - Error message for the title field, if any.
- * @returns textErr - Error message for the text field, if any.
- * @returns tagErr - Error message for the tag field, if any.
- * @returns postQuestion - Function to validate the form and submit a new question.
+ * @returns Object - Form state, error messages, handlers, and submission function
  */
 const useNewQuestion = () => {
   const navigate = useNavigate();
@@ -28,6 +23,10 @@ const useNewQuestion = () => {
   const [titleErr, setTitleErr] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
   const [tagErr, setTagErr] = useState<string>('');
+
+  const [mediaErr, setMediaErr] = useState<string | null>(null);
+  const [mediaUrl, setMediaUrl] = useState<string>('');
+  const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
 
   const [communityList, setCommunityList] = useState<DatabaseCommunity[]>([]);
 
@@ -107,23 +106,46 @@ const useNewQuestion = () => {
       views: [],
       comments: [],
       community: community ? community._id : null,
+      ...(mediaUrl ? { mediaUrl } : {}),
+      ...(mediaPath ? { mediaPath } : {}),
     };
 
-    const res = await addQuestion(question);
-
-    if (res && res._id) {
-      navigate('/home');
+    try {
+      const res = await addQuestion(question);
+      if (res && res._id) {
+        navigate('/home');
+      }
+    } catch (err) {
+      console.error('Error posting question:', err);
+      setMediaErr('Failed to post question');
     }
   };
 
+  /**
+   * Handles changes to the community select dropdown
+   *
+   * @param {ChangeEvent<HTMLSelectElement>} event - The change event
+   */
   const handleDropdownChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedCommunity = communityList.find(com => com._id.toString() === event.target.value);
-
-    if (selectedCommunity) {
-      setCommunity(selectedCommunity);
-    }
+    if (selectedCommunity) setCommunity(selectedCommunity);
   };
 
+  /**
+   * Handles a file input change event by setting the uploaded media path
+   * @param {ChangeEvent<HTMLInputElement>} e - The file input change event
+   */
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadedMediaPath(`userData/${user.username}/${file.name}`); // Path used in backend
+  };
+
+  /**
+   * Fetches the list of communities the user is a participant in
+   * and sets the community list state
+   */
   useEffect(() => {
     const fetchCommunities = async () => {
       const allCommunities = await getCommunities();
@@ -145,9 +167,15 @@ const useNewQuestion = () => {
     titleErr,
     textErr,
     tagErr,
+    mediaErr,
+    mediaUrl,
+    setMediaUrl,
+    mediaPath,
+    setUploadedMediaPath,
     postQuestion,
     communityList,
     handleDropdownChange,
+    handleFileChange,
   };
 };
 

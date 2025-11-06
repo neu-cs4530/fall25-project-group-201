@@ -26,6 +26,9 @@ export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed';
  * - `upVotes`: An array of usernames who have upvoted the question.
  * - `downVotes`: An array of usernames who have downvoted the question.
  * - `comments`: An array of comments related to the question.
+ * - 'community': The community the question is under.
+ * - 'mediaUrl': The url string of the embedded media file.
+ * - 'mediaPath': The file path of the uploaded media file.
  */
 export interface Question {
   title: string;
@@ -39,6 +42,8 @@ export interface Question {
   downVotes: string[];
   comments: Comment[];
   community: ObjectId | null;
+  mediaUrl?: string;
+  mediaPath?: string;
 }
 
 /**
@@ -46,7 +51,10 @@ export interface Question {
  * - `_id`: Unique identifier for the question.
  * - `tags`: An array of ObjectIds referencing tags associated with the question.
  * - `answers`: An array of ObjectIds referencing answers associated with the question.
- * - `comments`: An array of ObjectIds referencing comments associated with the question.
+ * - `comments`: An array of ObjectIds referencing comments associated with the question. 
+ * - 'community': The populated community object or null.
+ * - 'mediaUrl': Optional URL of an embedded media file.
+ * - 'mediaPath': Optional file path of an uploaded media file.
  */
 export interface DatabaseQuestion
   extends Omit<Question, 'tags' | 'answers' | 'comments' | 'community'> {
@@ -55,6 +63,8 @@ export interface DatabaseQuestion
   answers: ObjectId[];
   comments: ObjectId[];
   community: ObjectId | null;
+  mediaUrl?: string;
+  mediaPath?: string;
 }
 
 /**
@@ -62,6 +72,9 @@ export interface DatabaseQuestion
  * - `tags`: An array of populated `DatabaseTag` objects.
  * - `answers`: An array of populated `PopulatedDatabaseAnswer` objects.
  * - `comments`: An array of populated `DatabaseComment` objects.
+ * - 'community': The populated community object or null.
+ * - 'mediaUrl': Optional URL of an embedded media file.
+ * - 'mediaPath': Optional file path of an uploaded media file.
  */
 export interface PopulatedDatabaseQuestion
   extends Omit<DatabaseQuestion, 'tags' | 'answers' | 'comments' | 'community'> {
@@ -69,6 +82,8 @@ export interface PopulatedDatabaseQuestion
   answers: PopulatedDatabaseAnswer[];
   comments: DatabaseComment[];
   community: DatabaseCommunity | null;
+  mediaUrl?: string;
+  mediaPath?: string;
 }
 
 /**
