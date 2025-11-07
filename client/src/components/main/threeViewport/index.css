@@ -17,10 +17,16 @@
 }
 
 .upload-section {
+  position: absolute; /* ← change this */
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
   padding: 10px;
-  text-align: center;
-  background: #fafafa;
-  border-top: 1px solid #e0e0e0;
+  border-radius: 8px;
+  z-index: 10; /* ensures it's on top of the canvas */
 }
 
 .upload-button {
@@ -36,3 +42,33 @@
 .upload-button:hover {
   background: #0056b3;
 }
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px; /* space between the three items */
+}
+
+.upload-button,
+.reset-camera {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.icon-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.icon-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+

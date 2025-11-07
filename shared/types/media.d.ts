@@ -8,7 +8,6 @@ export interface Media {
   user: string;
 }
 
-
 export interface DatabaseMedia extends Media {
   _id: ObjectId;
 }

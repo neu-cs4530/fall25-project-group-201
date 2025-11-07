@@ -8,6 +8,14 @@ import { Schema } from 'mongoose';
  * - `username`: The username of the user.
  * - `password`: The encrypted password securing the user's account.
  * - `dateJoined`: The date the user joined the platform.
+ * - `biography`: The user's bio/about me section.
+ * - `profilePicture`: URL to the user's profile picture.
+ * - `bannerImage`: URL to the user's banner image.
+ * - `resumeFile`: URL to the user's downloadable resume/CV.
+ * - `portfolioModels`: Array of URLs to user's 3D model files.
+ * - `externalLinks`: Links to external profiles (GitHub, ArtStation, LinkedIn, etc.).
+ * - `customColors`: User's custom theme colors.
+ * - `customFont`: User's custom font selection.
  */
 const userSchema: Schema = new Schema(
   {
@@ -23,6 +31,48 @@ const userSchema: Schema = new Schema(
       type: Date,
     },
     biography: {
+      type: String,
+      default: '',
+    },
+    // profile customization fields for sprint 1
+    profilePicture: {
+      type: String,
+      default: '',
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    bannerImage: {
+      type: String,
+      default: '',
+    },
+    resumeFile: {
+      type: String,
+      default: '',
+    },
+    portfolioModels: {
+      type: [String],
+      default: [],
+    },
+    externalLinks: {
+      type: {
+        github: { type: String, default: '' },
+        artstation: { type: String, default: '' },
+        linkedin: { type: String, default: '' },
+        website: { type: String, default: '' },
+      },
+      default: {},
+    },
+    customColors: {
+      type: {
+        primary: { type: String, default: '' },
+        accent: { type: String, default: '' },
+        background: { type: String, default: '' },
+      },
+      default: {},
+    },
+    customFont: {
       type: String,
       default: '',
     },

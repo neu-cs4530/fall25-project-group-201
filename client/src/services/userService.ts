@@ -123,6 +123,127 @@ const updateBiography = async (
   return res.data;
 };
 
+/**
+ * Updates the user's skill list.
+ * @param username The unique username of the user
+ * @param skills The list of skills for this user
+ * @returns A promise resolving to the updated user
+ * @throws Error if the request fails
+ */
+const updateSkills = async (username: string, skills: string[]): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateSkills`, {
+    username,
+    skills,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating skills');
+  }
+  return res.data;
+};
+
+const updateExternalLinks = async (
+  username: string,
+  externalLinks: { github?: string; artstation?: string; linkedin?: string; website?: string },
+): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateExternalLinks`, {
+    username,
+    externalLinks,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating external links');
+  }
+  return res.data;
+};
+
+/**
+ * Updates theme colors for a user.
+ */
+const updateCustomColors = async (
+  username: string,
+  customColors: { primary?: string; accent?: string; background?: string },
+): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateCustomColors`, {
+    username,
+    customColors,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating custom colors');
+  }
+  return res.data;
+};
+
+/**
+ * Uploads a profile picture for a user.
+ */
+const uploadProfilePicture = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadProfilePicture`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading profile picture');
+  }
+  return res.data;
+};
+
+/**
+ * Uploads a banner image for a user.
+ */
+const uploadBannerImage = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadBannerImage`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading banner image');
+  }
+  return res.data;
+};
+
+/**
+ * Uploads a resume file for a user.
+ */
+const uploadResume = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadResume`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading resume');
+  }
+  return res.data;
+};
+
+/**
+ * Uploads a portfolio model for a user.
+ */
+const uploadPortfolioModel = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('username', username);
+
+  const res = await api.post(`${USER_API_URL}/uploadPortfolioModel`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading portfolio model');
+  }
+  return res.data;
+};
+
 export {
   getUsers,
   getUserByUsername,
@@ -131,4 +252,11 @@ export {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateSkills,
+  updateExternalLinks,
+  updateCustomColors,
+  uploadProfilePicture,
+  uploadBannerImage,
+  uploadResume,
+  uploadPortfolioModel,
 };

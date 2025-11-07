@@ -1,10 +1,19 @@
 import { Schema } from 'mongoose';
 
-const mediaSchema: Schema = new Schema(
+const mediaSchema = new Schema(
   {
-    filepathLocation: String,
-    fileBuffer: String,
-    user: String
+    filepathLocation: {
+      type: String,
+      required: true,
+    },
+    fileBuffer: {
+      type: String,
+      required: false,
+    },
+    user: {
+      type: String,
+      required: true,
+    },
   },
   { collection: 'Media' },
 );

@@ -1,5 +1,6 @@
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import ThreeViewport from '../../threeViewport';
 import './index.css';
 
 /**
@@ -9,12 +10,16 @@ import './index.css';
  * - text - The content of the question, which may contain hyperlinks.
  * - askby - The username of the user who asked the question.
  * - meta - Additional metadata related to the question, such as the date and time it was asked.
+ * - mediaUrl: The url string of the embedded media file.
+ * - mediaPath: The file path of the uploaded media file.
  */
 interface QuestionBodyProps {
   views: number;
   text: string;
   askby: string;
   meta: string;
+  mediaPath?: string;
+  mediaUrl?: string;
 }
 
 /**
@@ -26,18 +31,81 @@ interface QuestionBodyProps {
  * @param text The content of the question.
  * @param askby The username of the question's author.
  * @param meta Additional metadata related to the question.
+ * @param mediaPath File path to the uploaded media
+ * @param mediaUrl Url to the attached media
  */
-const QuestionBody = ({ views, text, askby, meta }: QuestionBodyProps) => (
-  <div id='questionBody' className='questionBody right_padding'>
-    <div className='bold_title answer_question_view'>{views} views</div>
-    <div className='answer_question_text'>
-      <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
+const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: QuestionBodyProps) => {
+  const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
+  const isVideo = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
+  const isImage = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
+
+  return (
+    <div id='questionBody' className='questionBody right_padding'>
+      <div className='bold_title answer_question_view'>{views} views</div>
+
+      <div className='answer_question_text'>
+        <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
+
+        {isGLB && (
+          <div className='three-wrapper'>
+            <ThreeViewport key={mediaPath} modelPath={mediaPath!} />
+          </div>
+        )}
+
+        {mediaPath && !isGLB && (
+          <div className='question-media'>
+            <img src={`/${mediaPath}`} alt='uploaded media' />
+          </div>
+        )}
+
+        {mediaUrl && (
+          <div className='question-media'>
+            {isVideo ? (
+              <video controls>
+                <source src={mediaUrl} />
+                Your browser does not support video.
+              </video>
+            ) : isImage ? (
+              <img src={mediaUrl} alt='embedded media' />
+            ) : (
+              (() => {
+                let embedUrl = mediaUrl;
+
+                const youtubeMatch = mediaUrl.match(
+                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/,
+                );
+                if (youtubeMatch) {
+                  embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+                }
+
+                const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
+                if (vimeoMatch) {
+                  embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+                }
+
+                return (
+                  <div className='iframe-wrapper'>
+                    <iframe
+                      src={embedUrl}
+                      title='embedded content'
+                      frameBorder='0'
+                      allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                      allowFullScreen
+                    />
+                  </div>
+                );
+              })()
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className='answer_question_right'>
+        <div className='question_author'>{askby}</div>
+        <div className='answer_question_meta'>asked {meta}</div>
+      </div>
     </div>
-    <div className='answer_question_right'>
-      <div className='question_author'>{askby}</div>
-      <div className='answer_question_meta'>asked {meta}</div>
-    </div>
-  </div>
-);
+  );
+};
 
 export default QuestionBody;

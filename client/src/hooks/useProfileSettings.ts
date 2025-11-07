@@ -5,6 +5,13 @@ import {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateSkills,
+  updateExternalLinks,
+  updateCustomColors,
+  uploadProfilePicture,
+  uploadBannerImage,
+  uploadResume,
+  uploadPortfolioModel,
 } from '../services/userService';
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
@@ -26,6 +33,17 @@ const useProfileSettings = () => {
   const [newBio, setNewBio] = useState('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [editSkillsMode, setEditSkillsMode] = useState(false);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [editLinksMode, setEditLinksMode] = useState(false);
+  const [githubLink, setGithubLink] = useState('');
+  const [artstationLink, setArtstationLink] = useState('');
+  const [linkedinLink, setLinkedinLink] = useState('');
+  const [websiteLink, setWebsiteLink] = useState('');
+  const [editColorsMode, setEditColorsMode] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState('#2563eb');
+  const [accentColor, setAccentColor] = useState('#16a34a');
+  const [backgroundColor, setBackgroundColor] = useState('#f2f4f7');
 
   // For delete-user confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -44,6 +62,14 @@ const useProfileSettings = () => {
         setLoading(true);
         const data = await getUserByUsername(username);
         setUserData(data);
+        setSelectedSkills(data.skills || []); // intialize skills
+        setGithubLink(data.externalLinks?.github || '');
+        setArtstationLink(data.externalLinks?.artstation || '');
+        setLinkedinLink(data.externalLinks?.linkedin || '');
+        setWebsiteLink(data.externalLinks?.website || '');
+        setPrimaryColor(data.customColors?.primary || '#2563eb');
+        setAccentColor(data.customColors?.accent || '#16a34a');
+        setBackgroundColor(data.customColors?.background || '#f2f4f7');
       } catch (error) {
         setErrorMessage('Error fetching user profile');
         setUserData(null);
@@ -119,6 +145,127 @@ const useProfileSettings = () => {
   };
 
   /**
+   * Handler for updating external links
+   */
+  const handleUpdateExternalLinks = async () => {
+    if (!username) return;
+    try {
+      const externalLinks = {
+        github: githubLink,
+        artstation: artstationLink,
+        linkedin: linkedinLink,
+        website: websiteLink,
+      };
+
+      const updatedUser = await updateExternalLinks(username, externalLinks);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setEditLinksMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('External links updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update external links.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Handler for updating custom colors
+   */
+  const handleUpdateCustomColors = async () => {
+    if (!username) return;
+    try {
+      const customColors = {
+        primary: primaryColor,
+        accent: accentColor,
+        background: backgroundColor,
+      };
+
+      const updatedUser = await updateCustomColors(username, customColors);
+
+      await new Promise(resolve => {
+        setUserData({ ...updatedUser }); // ← ONLY THIS ONE (with spread)
+        setEditColorsMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('Theme colors updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update colors.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Handler for uploading profile picture
+   */
+  const handleUploadProfilePicture = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadProfilePicture(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Profile picture updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload profile picture.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Handler for uploading banner image
+   */
+  const handleUploadBannerImage = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadBannerImage(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Banner image updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload banner image.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Handler for uploading resume
+   */
+  const handleUploadResume = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadResume(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Resume uploaded!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload resume.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Handler for uploading portfolio models
+   */
+  const handleUploadPortfolioModel = async (file: File) => {
+    if (!username) return;
+    try {
+      const updatedUser = await uploadPortfolioModel(username, file);
+      setUserData(updatedUser);
+      setSuccessMessage('Portfolio model uploaded!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to upload portfolio model.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
    * Handler for deleting the user (triggers confirmation modal)
    */
   const handleDeleteUser = () => {
@@ -144,6 +291,40 @@ const useProfileSettings = () => {
     return;
   };
 
+  /**
+   * Handler for updating user skills
+   */
+  const handleUpdateSkills = async () => {
+    if (!username) return;
+    try {
+      const updatedUser = await updateSkills(username, selectedSkills);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setEditSkillsMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('Skills updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update skills.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
+   * Toggles a skill in the selected skills array
+   */
+  const toggleSkill = (skill: string) => {
+    setSelectedSkills(
+      prev =>
+        prev.includes(skill)
+          ? prev.filter(s => s !== skill) // Remove if already selected
+          : [...prev, skill], // Add if not selected
+    );
+  };
+
   return {
     userData,
     newPassword,
@@ -155,6 +336,39 @@ const useProfileSettings = () => {
     setEditBioMode,
     newBio,
     setNewBio,
+    // edit skills
+    editSkillsMode,
+    setEditSkillsMode,
+    selectedSkills,
+    toggleSkill,
+    handleUpdateSkills,
+    editLinksMode,
+    // edit links
+    setEditLinksMode,
+    githubLink,
+    setGithubLink,
+    artstationLink,
+    setArtstationLink,
+    linkedinLink,
+    setLinkedinLink,
+    websiteLink,
+    setWebsiteLink,
+    handleUpdateExternalLinks,
+    // color customization
+    editColorsMode,
+    setEditColorsMode,
+    primaryColor,
+    setPrimaryColor,
+    accentColor,
+    setAccentColor,
+    backgroundColor,
+    setBackgroundColor,
+    handleUpdateCustomColors,
+    // uploads
+    handleUploadProfilePicture,
+    handleUploadBannerImage,
+    handleUploadResume,
+    handleUploadPortfolioModel,
     successMessage,
     errorMessage,
     showConfirmation,

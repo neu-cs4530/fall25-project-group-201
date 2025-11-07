@@ -10,6 +10,7 @@ import {
 import useUserContext from './useUserContext';
 import addComment from '../services/commentService';
 import { getQuestionById } from '../services/questionService';
+import mediaService from '../services/mediaService';
 
 /**
  * Custom hook for managing the answer page's state, navigation, and real-time updates.
@@ -26,12 +27,52 @@ const useAnswerPage = () => {
   const { user, socket } = useUserContext();
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
+  const mediaPath: string = '';
+  const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
 
   /**
    * Function to handle navigation to the "New Answer" page.
    */
   const handleNewAnswer = () => {
     navigate(`/new/answer/${questionID}`);
+  };
+
+  const handleAddMedia = async (file: File): Promise<string | undefined> => {
+    if (!file || !file.name) {
+      setHandleAddMediaError('File with valid path is required');
+      return;
+    }
+
+    const maxSize = 20 * 1024 * 1024; // 20 MB in bytes
+    if (file.size > maxSize) {
+      setHandleAddMediaError('File size cannot exceed 2 MB');
+      return;
+    }
+
+    if (!user.username) {
+      setHandleAddMediaError('User is required');
+      return;
+    }
+
+    const allowedExtensions = ['.png', '.jpeg', '.jpg', '.mp4', '.glb'];
+    const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      setHandleAddMediaError('Only .png, .jpeg, .jpg, and .mp4 files are allowed');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filepathLocation', file.name);
+
+      const newMedia = await mediaService.addMedia(user.username, formData);
+
+      return newMedia.filepathLocation;
+    } catch (err) {
+      return undefined;
+    }
   };
 
   useEffect(() => {
@@ -60,7 +101,16 @@ const useAnswerPage = () => {
         throw new Error('No target ID provided.');
       }
 
-      await addComment(targetId, targetType, comment);
+      let updatedComment = comment;
+
+      if (mediaPath && mediaPath.trim() !== '') {
+        updatedComment = {
+          ...comment,
+          mediaPath,
+        };
+      }
+
+      await addComment(targetId, targetType, updatedComment);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error adding comment:', error);
@@ -101,8 +151,7 @@ const useAnswerPage = () => {
       if (String(id) === questionID) {
         setQuestion(prevQuestion =>
           prevQuestion
-            ? // Creates a new Question object with the new answer appended to the end
-              { ...prevQuestion, answers: [...prevQuestion.answers, answer] }
+            ? { ...prevQuestion, answers: [...prevQuestion.answers, answer] }
             : prevQuestion,
         );
       }
@@ -130,8 +179,7 @@ const useAnswerPage = () => {
       } else if (type === 'answer') {
         setQuestion(prevQuestion =>
           prevQuestion
-            ? // Updates answers with a matching object ID, and creates a new Question object
-              {
+            ? {
                 ...prevQuestion,
                 answers: prevQuestion.answers.map(a =>
                   a._id === result._id ? (result as PopulatedDatabaseAnswer) : a,
@@ -190,6 +238,8 @@ const useAnswerPage = () => {
     question,
     handleNewComment,
     handleNewAnswer,
+    handleAddMedia,
+    handleAddMediaError,
   };
 };
 

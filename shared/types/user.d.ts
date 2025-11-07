@@ -21,6 +21,25 @@ export interface UserCredentials {
 export interface User extends UserCredentials {
   dateJoined: Date;
   biography?: string;
+  skills?: string[];
+  profilePicture?: string; // profile image
+  bannerImage?: string; // banner image
+  resumeFile?: string; // downloadable CV/resume
+  portfolioModels?: string[]; // URLs to 3D models
+  externalLinks?: {
+    // TODO: Object storing external profile links, can add more/less
+    github?: string;
+    artstation?: string;
+    linkedin?: string;
+    website?: string;
+  };
+  customColors?: {
+    // Object for theme customization
+    primary?: string;
+    accent?: string;
+    background?: string;
+  };
+  customFont?: string; // Font family name
 }
 
 /**
