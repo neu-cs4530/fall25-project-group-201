@@ -151,8 +151,7 @@ const useAnswerPage = () => {
       if (String(id) === questionID) {
         setQuestion(prevQuestion =>
           prevQuestion
-            ? // Creates a new Question object with the new answer appended to the end
-              { ...prevQuestion, answers: [...prevQuestion.answers, answer] }
+            ? { ...prevQuestion, answers: [...prevQuestion.answers, answer] }
             : prevQuestion,
         );
       }
@@ -180,7 +179,7 @@ const useAnswerPage = () => {
       } else if (type === 'answer') {
         setQuestion(prevQuestion =>
           prevQuestion
-            ? // Updates answers with a matching object ID, and creates a new Question object
+            ?
               {
                 ...prevQuestion,
                 answers: prevQuestion.answers.map(a =>
