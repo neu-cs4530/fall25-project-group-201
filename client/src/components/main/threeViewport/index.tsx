@@ -8,11 +8,12 @@ import { useState } from 'react';
 
 const ThreeViewport = () => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
-  const { containerRef, handleResetCamera, handleTogglePerspective } = useThreeViewportPage(modelUrl);
-  const [ isOrthoCameraMode, setIsOrthoCameraMode ] = useState<boolean>(true); // initially, camera mode is orthographic
+  const { containerRef, handleResetCamera, handleTogglePerspective } =
+    useThreeViewportPage(modelUrl);
+  const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true); // initially, camera mode is orthographic
 
   const handleCameraModeToggle = () => {
-    let updatedCameraMode = !isOrthoCameraMode;
+    const updatedCameraMode = !isOrthoCameraMode;
     setIsOrthoCameraMode(updatedCameraMode);
     handleTogglePerspective();
   };
@@ -51,7 +52,6 @@ const ThreeViewport = () => {
             </>
           )}
         </div>
-        
       </div>
     </div>
   );

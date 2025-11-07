@@ -4,16 +4,35 @@ import { Object3D, Mesh } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
-const createOrthographicMatrix = (left: number, right: number, top: number, bottom: number, near: number, far: number) => {
+const createOrthographicMatrix = (
+  left: number,
+  right: number,
+  top: number,
+  bottom: number,
+  near: number,
+  far: number,
+) => {
   const lr = 1 / (right - left);
   const bt = 1 / (top - bottom);
   const nf = 1 / (far - near);
   const m = new THREE.Matrix4();
   m.set(
-    2 * lr, 0, 0, 0,
-    0, 2 * bt, 0, 0,
-    0, 0, -2 * nf, 0,
-    -(right + left) * lr, -(top + bottom) * bt, -(far + near) * nf, 1
+    2 * lr,
+    0,
+    0,
+    0,
+    0,
+    2 * bt,
+    0,
+    0,
+    0,
+    0,
+    -2 * nf,
+    0,
+    -(right + left) * lr,
+    -(top + bottom) * bt,
+    -(far + near) * nf,
+    1,
   );
   return m;
 };
@@ -120,18 +139,16 @@ const useThreeViewportPage = (modelPath: string | null) => {
     ground.receiveShadow = true;
     scene.add(ground);
 
-     // --- Loader setup ---
+    // --- Loader setup ---
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
     loader.setDRACOLoader(dracoLoader);
 
-    loader.load(
-      modelPath,
-      gltf => {
+    loader.load(modelPath, gltf => {
       const model = gltf.scene;
       model.traverse((child: Object3D) => {
-         if (child instanceof Mesh) {
+        if (child instanceof Mesh) {
           child.castShadow = true;
         }
       });
@@ -142,7 +159,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
 
-       // Center model at origin
+      // Center model at origin
       model.position.sub(center);
 
       // Scale model to fit in view
@@ -228,7 +245,14 @@ const useThreeViewportPage = (modelPath: string | null) => {
 
     if (isPerspective) {
       const scale = 2.0;
-      const orthoMatrix = createOrthographicMatrix(-scale * aspect, scale * aspect, scale, -scale, 0.1, 1000);
+      const orthoMatrix = createOrthographicMatrix(
+        -scale * aspect,
+        scale * aspect,
+        scale,
+        -scale,
+        0.1,
+        1000,
+      );
       camera.projectionMatrix.copy(orthoMatrix);
       camera.projectionMatrixInverse.copy(orthoMatrix.clone().invert());
       const target = new THREE.Vector3(0, 0, 0);
