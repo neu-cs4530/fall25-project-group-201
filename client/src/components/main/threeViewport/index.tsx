@@ -1,9 +1,9 @@
 import useThreeViewportPage from '../../../hooks/useThreeViewportPage';
 import useModelUpload from '../../../hooks/useModelUpload';
 import './index.css';
-import orthoIcon from '/icons/orthoIcon.png';
-import perspIcon from '/icons/perspIcon.png';
-import cameraIcon from '/icons/cameraIcon.png';
+import orthoIcon from '../../../../public/icons/orthoIcon.png';
+import perspIcon from '../../../../public/icons/perspIcon.png';
+import cameraIcon from '../../../../public/icons/cameraIcon.png';
 import { useState } from 'react';
 
 const ThreeViewport = () => {
