@@ -1,11 +1,22 @@
 import useThreeViewportPage from '../../../hooks/useThreeViewportPage';
 import useModelUpload from '../../../hooks/useModelUpload';
 import './index.css';
+import orthoIcon from '../../../../public/icons/orthoIcon.png';
+import perspIcon from '../../../../public/icons/perspIcon.png';
+import cameraIcon from '../../../../public/icons/cameraIcon.png';
+import { useState } from 'react';
 
 const ThreeViewport = () => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
+  const { containerRef, handleResetCamera, handleTogglePerspective } =
+    useThreeViewportPage(modelUrl);
+  const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true); // initially, camera mode is orthographic
 
-  const { containerRef, handleResetCamera } = useThreeViewportPage(modelUrl);
+  const handleCameraModeToggle = () => {
+    const updatedCameraMode = !isOrthoCameraMode;
+    setIsOrthoCameraMode(updatedCameraMode);
+    handleTogglePerspective();
+  };
 
   return (
     <div className='viewport-card'>
@@ -19,14 +30,28 @@ const ThreeViewport = () => {
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
-        <button onClick={triggerFileUpload} className='upload-button'>
-          Upload Model (.glb)
-        </button>
-        {modelUrl && (
-          <button onClick={handleResetCamera} className='reset-camera'>
-            Reset Camera
+        <div className='button-group'>
+          <button onClick={triggerFileUpload} className='upload-button'>
+            Upload Model (.glb)
           </button>
-        )}
+
+          {modelUrl && (
+            <>
+              <img
+                src={cameraIcon}
+                alt='Reset Camera'
+                className='icon-button'
+                onClick={handleResetCamera}
+              />
+              <img
+                src={isOrthoCameraMode ? perspIcon : orthoIcon}
+                alt='Toggle View'
+                className='icon-button'
+                onClick={handleCameraModeToggle}
+              />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
