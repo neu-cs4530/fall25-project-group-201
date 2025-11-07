@@ -30,39 +30,41 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     <div className='viewport-card'>
       <div ref={containerRef} className='viewport-canvas' />
 
-        <div className='upload-section'>
-          {allowUpload && (
+      <div className='upload-section'>
+        {allowUpload && (
           <input
             type='file'
             accept='.glb'
             ref={fileInputRef}
             style={{ display: 'none' }}
             onChange={handleFileChange}
-          />)}
-          <div className='button-group'>
-            {allowUpload && (
+          />
+        )}
+        <div className='button-group'>
+          {allowUpload && (
             <button onClick={triggerFileUpload} className='upload-button'>
               Upload Model (.glb)
-            </button>)}
+            </button>
+          )}
 
-            {activeModel && (
-              <>
-                <img
-                  src={cameraIcon}
-                  alt='Reset Camera'
-                  className='icon-button'
-                  onClick={handleResetCamera}
-                />
-                <img
-                  src={isOrthoCameraMode ? perspIcon : orthoIcon}
-                  alt='Toggle View'
-                  className='icon-button'
-                  onClick={handleCameraModeToggle}
-                />
-              </>
-            )}
-          </div>
+          {activeModel && (
+            <>
+              <img
+                src={cameraIcon}
+                alt='Reset Camera'
+                className='icon-button'
+                onClick={handleResetCamera}
+              />
+              <img
+                src={isOrthoCameraMode ? perspIcon : orthoIcon}
+                alt='Toggle View'
+                className='icon-button'
+                onClick={handleCameraModeToggle}
+              />
+            </>
+          )}
         </div>
+      </div>
     </div>
   );
 };
