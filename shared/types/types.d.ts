@@ -10,3 +10,4 @@ export * from './user';
 export * from './collection';
 export * from './community';
 export * from './media';
+export * from './gallerypost';
