@@ -22,9 +22,7 @@ const AnswerPage = () => {
     handleAddMediaError,
   } = useAnswerPage();
 
-  if (!question) {
-    return null;
-  }
+  if (!question) return null;
 
   return (
     <>

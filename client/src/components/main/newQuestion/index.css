@@ -120,3 +120,8 @@ textarea {
 .submit-btn:hover {
   background-color: #2563eb;
 }
+
+.model-preview {
+  width: 50%;
+  margin-bottom: 0.5rem;
+}

@@ -43,7 +43,7 @@ const useAnswerPage = () => {
       return;
     }
 
-    const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
+    const maxSize = 20 * 1024 * 1024; // 20 MB in bytes
     if (file.size > maxSize) {
       setHandleAddMediaError('File size cannot exceed 2 MB');
       return;
@@ -54,7 +54,7 @@ const useAnswerPage = () => {
       return;
     }
 
-    const allowedExtensions = ['.png', '.jpeg', '.jpg', '.mp4'];
+    const allowedExtensions = ['.png', '.jpeg', '.jpg', '.mp4', '.glb'];
     const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
 
     if (!allowedExtensions.includes(fileExtension)) {

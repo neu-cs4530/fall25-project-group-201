@@ -6,6 +6,7 @@ import { Comment, DatabaseComment } from '../../../types/types';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import { FaLink } from 'react-icons/fa';
+import ThreeViewport from '../threeViewport';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -188,12 +189,28 @@ const CommentSection = ({
                   <div className='comment-text'>
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
-                    {comment.mediaPath &&
-                      (isVideo(comment.mediaPath) ? (
-                        <video src={comment.mediaPath} controls className='comment-media' />
-                      ) : (
-                        <img src={comment.mediaPath} alt='Loading...' className='comment-media' />
-                      ))}
+
+                    {comment.mediaPath && (
+                      (() => {
+                        const path = comment.mediaPath.toLowerCase();
+
+                        if (path.endsWith('.glb')) {
+                          // 3D model viewport
+                          return (
+                            <div className="comment-model-wrapper" style={{ width: '100%', height: '400px', marginTop: '1rem' }}>
+                              <ThreeViewport key={comment.mediaPath} modelPath={comment.mediaPath} />
+                            </div>
+                          );
+                        } else if (path.endsWith('.mp4') || path.endsWith('.webm') || path.endsWith('.ogg')) {
+                          // Video file
+                          return <video src={comment.mediaPath} controls className='comment-media' />;
+                        } else {
+                          // Image file
+                          return <img src={comment.mediaPath} alt='Loading...' className='comment-media' />;
+                        }
+                      })()
+                    )}
+
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}

@@ -2,6 +2,7 @@ import { ChangeEvent } from 'react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
+import ThreeViewport from '../threeViewport';
 
 /**
  * NewQuestion component allows users to submit a new question with:
@@ -72,6 +73,13 @@ const NewQuestion = () => {
 
     handleFileChange(e);
 
+    const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
+    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      setMediaErr('Unsupported file type');
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -86,6 +94,7 @@ const NewQuestion = () => {
 
       if (data?.filepathLocation) {
         setUploadedMediaPath(data.filepathLocation);
+        setMediaErr(null);
       } else {
         setMediaErr('Upload failed');
       }
@@ -93,6 +102,7 @@ const NewQuestion = () => {
       setMediaErr('Error uploading file');
     }
   };
+
 
   return (
     <div className='new-question-container'>
@@ -164,7 +174,7 @@ const NewQuestion = () => {
         </div>
 
         <div className='file-upload'>
-          <input type='file' accept='image/*,video/*,audio/*' onChange={handleFileUpload} />
+          <input type='file' accept='image/*,video/*,.glb' onChange={handleFileUpload} />
         </div>
 
         {mediaErr && <p className='error'>{mediaErr}</p>}
@@ -172,29 +182,49 @@ const NewQuestion = () => {
         <div className='media-preview'>
           {mediaUrl && (
             <div className='embed-preview'>
-              <p>Embed Preview:</p>
+              <p>Preview:</p>
               {mediaUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
                 <img src={mediaUrl} alt='Embedded media' />
               ) : (
-                <iframe
-                  src={mediaUrl}
-                  title='media-embed'
-                  frameBorder='0'
-                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                  allowFullScreen
-                />
+                (() => {
+                  let embedUrl = mediaUrl;
+
+                  const youtubeMatch = mediaUrl.match(
+                    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/
+                  );
+                  if (youtubeMatch) {
+                    embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+                  }
+                  
+                  const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
+                  if (vimeoMatch) {
+                    embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+                  }
+
+                  return (
+                    <iframe
+                      src={embedUrl}
+                      title='media-embed'
+                      frameBorder='0'
+                      allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                      allowFullScreen
+                    />
+                  );
+                })()
               )}
+
             </div>
           )}
 
-          {mediaPath && (
-            <div className='upload-preview'>
-              <p>Uploaded File:</p>
-              <a href={mediaPath} target='_blank' rel='noopener noreferrer'>
-                {mediaPath}
-              </a>
+          {mediaPath?.endsWith('.glb') && (
+            <div className='model-preview'>
+              <p>3D Model Preview:</p>
+              <div>
+                <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+              </div>
             </div>
           )}
+
         </div>
       </div>
 

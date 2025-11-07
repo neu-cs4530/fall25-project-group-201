@@ -1,5 +1,6 @@
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import ThreeViewport from '../../threeViewport';
 import './index.css';
 
 /**
@@ -17,8 +18,8 @@ interface QuestionBodyProps {
   text: string;
   askby: string;
   meta: string;
-  mediaUrl?: string;
   mediaPath?: string;
+  mediaUrl?: string;
 }
 
 /**
@@ -30,82 +31,76 @@ interface QuestionBodyProps {
  * @param text The content of the question.
  * @param askby The username of the question's author.
  * @param meta Additional metadata related to the question.
- * @param mediaUrl Url to the attached media
  * @param mediaPath File path to the uploaded media
+ * @param mediaUrl Url to the attached media
  */
-const QuestionBody = ({ views, text, askby, meta, mediaUrl, mediaPath }: QuestionBodyProps) => {
-  const isVideo = (path: string) => path.match(/\.(mp4|webm|ogg)$/i);
-  const isImage = (path: string) => path.match(/\.(jpeg|jpg|gif|png|webp)$/i);
-
-  /**
-   * Renders the given url as either an image, youtube video, or vimeo video
-   * @param url
-   * @returns the rendered embedded media
-   */
-  const renderEmbeddedMedia = (url: string) => {
-    try {
-      const parsed = new URL(url);
-
-      // Images
-      if (isImage(parsed.pathname)) {
-        return <img src={url} alt='Embedded media' className='question-media' />;
-      }
-
-      // YouTube
-      const ytMatch = url.match(
-        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-      );
-      if (ytMatch) {
-        return (
-          <div className='iframe-wrapper'>
-            <iframe
-              src={`https://www.youtube.com/embed/${ytMatch[1]}`}
-              title='YouTube video player'
-              frameBorder='0'
-              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-              allowFullScreen
-            />
-          </div>
-        );
-      }
-
-      // Vimeo
-      const vimeoMatch = url.match(/https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/);
-      if (vimeoMatch) {
-        return (
-          <div className='iframe-wrapper'>
-            <iframe
-              src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
-              frameBorder='0'
-              allow='autoplay; fullscreen; picture-in-picture'
-              allowFullScreen
-              title='Vimeo video player'
-            />
-          </div>
-        );
-      }
-    } catch {
-      return <div className='question-media'>Invalid media URL</div>;
-    }
-
-    return <div className='question-media'>Unsupported media type</div>;
-  };
+const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: QuestionBodyProps) => {
+  const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
+  const isVideo = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
+  const isImage = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
       <div className='bold_title answer_question_view'>{views} views</div>
+
       <div className='answer_question_text'>
         <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
 
-        {mediaUrl && renderEmbeddedMedia(mediaUrl)}
+        {isGLB && (
+          <div className="three-wrapper">
+            <ThreeViewport key={mediaPath} modelPath={mediaPath!} />
+          </div>
+        )}
 
-        {mediaPath &&
-          (isVideo(mediaPath) ? (
-            <video src={mediaPath} controls className='question-media' />
-          ) : (
-            <img src={mediaPath} alt='Uploaded media' className='question-media' />
-          ))}
+        {mediaPath && !isGLB && (
+          <div className='question-media'>
+            <img src={`/${mediaPath}`} alt='uploaded media' />
+          </div>
+        )}
+
+        {mediaUrl && (
+          <div className='question-media'>
+            {isVideo ? (
+              <video controls>
+                <source src={mediaUrl} />
+                Your browser does not support video.
+              </video>
+            ) : isImage ? (
+              <img src={mediaUrl} alt='embedded media' />
+            ) : (
+              (() => {
+                let embedUrl = mediaUrl;
+
+                const youtubeMatch = mediaUrl.match(
+                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/
+                );
+                if (youtubeMatch) {
+                  embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+                }
+
+                const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
+                if (vimeoMatch) {
+                  embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+                }
+
+                return (
+                  <div className='iframe-wrapper'>
+                    <iframe
+                      src={embedUrl}
+                      title='embedded content'
+                      frameBorder='0'
+                      allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                      allowFullScreen
+                    />
+                  </div>
+                );
+              })()
+            )}
+          </div>
+        )}
+
       </div>
+
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
