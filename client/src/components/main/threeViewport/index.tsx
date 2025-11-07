@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import useThreeViewportPage from '../../../hooks/useThreeViewportPage';
 import useModelUpload from '../../../hooks/useModelUpload';
 import './index.css';
+import orthoIcon from '../../../../public/icons/orthoIcon.png';
+import perspIcon from '../../../../public/icons/perspIcon.png';
+import cameraIcon from '../../../../public/icons/cameraIcon.png';
 
 interface ThreeViewportProps {
   modelPath?: string | null;
@@ -10,7 +14,17 @@ interface ThreeViewportProps {
 const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
-  const { containerRef, handleResetCamera } = useThreeViewportPage(activeModel);
+
+  const { containerRef, handleResetCamera, handleTogglePerspective } =
+    useThreeViewportPage(activeModel);
+
+  const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true);
+
+  const handleCameraModeToggle = () => {
+    const updatedCameraMode = !isOrthoCameraMode;
+    setIsOrthoCameraMode(updatedCameraMode);
+    handleTogglePerspective();
+  };
 
   return (
     <div className='viewport-card'>
@@ -25,14 +39,28 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
             style={{ display: 'none' }}
             onChange={handleFileChange}
           />
-          <button onClick={triggerFileUpload} className='upload-button'>
-            Upload Model (.glb)
-          </button>
-          {activeModel && (
-            <button onClick={handleResetCamera} className='reset-camera'>
-              Reset Camera
+          <div className='button-group'>
+            <button onClick={triggerFileUpload} className='upload-button'>
+              Upload Model (.glb)
             </button>
-          )}
+
+            {activeModel && (
+              <>
+                <img
+                  src={cameraIcon}
+                  alt='Reset Camera'
+                  className='icon-button'
+                  onClick={handleResetCamera}
+                />
+                <img
+                  src={isOrthoCameraMode ? perspIcon : orthoIcon}
+                  alt='Toggle View'
+                  className='icon-button'
+                  onClick={handleCameraModeToggle}
+                />
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
