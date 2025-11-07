@@ -43,7 +43,7 @@ const useAnswerPage = () => {
       return;
     }
 
-    const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
+    const maxSize = 20 * 1024 * 1024; // 20 MB in bytes
     if (file.size > maxSize) {
       setHandleAddMediaError('File size cannot exceed 2 MB');
       return;
@@ -54,7 +54,7 @@ const useAnswerPage = () => {
       return;
     }
 
-    const allowedExtensions = ['.png', '.jpeg', '.jpg', '.mp4'];
+    const allowedExtensions = ['.png', '.jpeg', '.jpg', '.mp4', '.glb'];
     const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
 
     if (!allowedExtensions.includes(fileExtension)) {
@@ -151,8 +151,7 @@ const useAnswerPage = () => {
       if (String(id) === questionID) {
         setQuestion(prevQuestion =>
           prevQuestion
-            ? // Creates a new Question object with the new answer appended to the end
-              { ...prevQuestion, answers: [...prevQuestion.answers, answer] }
+            ? { ...prevQuestion, answers: [...prevQuestion.answers, answer] }
             : prevQuestion,
         );
       }
@@ -180,8 +179,7 @@ const useAnswerPage = () => {
       } else if (type === 'answer') {
         setQuestion(prevQuestion =>
           prevQuestion
-            ? // Updates answers with a matching object ID, and creates a new Question object
-              {
+            ? {
                 ...prevQuestion,
                 answers: prevQuestion.answers.map(a =>
                   a._id === result._id ? (result as PopulatedDatabaseAnswer) : a,

@@ -22,9 +22,7 @@ const AnswerPage = () => {
     handleAddMediaError,
   } = useAnswerPage();
 
-  if (!question) {
-    return null;
-  }
+  if (!question) return null;
 
   return (
     <>
@@ -35,6 +33,8 @@ const AnswerPage = () => {
         text={question.text}
         askby={question.askedBy}
         meta={getMetaData(new Date(question.askDateTime))}
+        mediaPath={question.mediaPath}
+        mediaUrl={question.mediaUrl}
       />
       <CommentSection
         comments={question.comments}

@@ -1,16 +1,24 @@
+import { useState } from 'react';
 import useThreeViewportPage from '../../../hooks/useThreeViewportPage';
 import useModelUpload from '../../../hooks/useModelUpload';
 import './index.css';
 import orthoIcon from '../../../../public/icons/orthoIcon.png';
 import perspIcon from '../../../../public/icons/perspIcon.png';
 import cameraIcon from '../../../../public/icons/cameraIcon.png';
-import { useState } from 'react';
 
-const ThreeViewport = () => {
+interface ThreeViewportProps {
+  modelPath?: string | null;
+  allowUpload?: boolean;
+}
+
+const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
+  const activeModel = modelPath || modelUrl;
+
   const { containerRef, handleResetCamera, handleTogglePerspective } =
-    useThreeViewportPage(modelUrl);
-  const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true); // initially, camera mode is orthographic
+    useThreeViewportPage(activeModel);
+
+  const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true);
 
   const handleCameraModeToggle = () => {
     const updatedCameraMode = !isOrthoCameraMode;
@@ -22,37 +30,39 @@ const ThreeViewport = () => {
     <div className='viewport-card'>
       <div ref={containerRef} className='viewport-canvas' />
 
-      <div className='upload-section'>
-        <input
-          type='file'
-          accept='.glb'
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
-        <div className='button-group'>
-          <button onClick={triggerFileUpload} className='upload-button'>
-            Upload Model (.glb)
-          </button>
+      {allowUpload && (
+        <div className='upload-section'>
+          <input
+            type='file'
+            accept='.glb'
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          <div className='button-group'>
+            <button onClick={triggerFileUpload} className='upload-button'>
+              Upload Model (.glb)
+            </button>
 
-          {modelUrl && (
-            <>
-              <img
-                src={cameraIcon}
-                alt='Reset Camera'
-                className='icon-button'
-                onClick={handleResetCamera}
-              />
-              <img
-                src={isOrthoCameraMode ? perspIcon : orthoIcon}
-                alt='Toggle View'
-                className='icon-button'
-                onClick={handleCameraModeToggle}
-              />
-            </>
-          )}
+            {activeModel && (
+              <>
+                <img
+                  src={cameraIcon}
+                  alt='Reset Camera'
+                  className='icon-button'
+                  onClick={handleResetCamera}
+                />
+                <img
+                  src={isOrthoCameraMode ? perspIcon : orthoIcon}
+                  alt='Toggle View'
+                  className='icon-button'
+                  onClick={handleCameraModeToggle}
+                />
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
