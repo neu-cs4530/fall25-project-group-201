@@ -17,10 +17,16 @@
 }
 
 .upload-section {
+  position: absolute; /* ← change this */
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
   padding: 10px;
-  text-align: center;
-  background: #fafafa;
-  border-top: 1px solid #e0e0e0;
+  border-radius: 8px;
+  z-index: 10; /* ensures it's on top of the canvas */
 }
 
 .upload-button {

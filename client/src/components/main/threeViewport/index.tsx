@@ -30,19 +30,20 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     <div className='viewport-card'>
       <div ref={containerRef} className='viewport-canvas' />
 
-      {allowUpload && (
         <div className='upload-section'>
+          {allowUpload && (
           <input
             type='file'
             accept='.glb'
             ref={fileInputRef}
             style={{ display: 'none' }}
             onChange={handleFileChange}
-          />
+          />)}
           <div className='button-group'>
+            {allowUpload && (
             <button onClick={triggerFileUpload} className='upload-button'>
               Upload Model (.glb)
-            </button>
+            </button>)}
 
             {activeModel && (
               <>
@@ -62,7 +63,6 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
             )}
           </div>
         </div>
-      )}
     </div>
   );
 };
