@@ -70,7 +70,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
       45,
       container.clientWidth / container.clientHeight,
       0.1,
-      1000
+      1000,
     );
     cameraRef.current = camera;
 
@@ -176,9 +176,8 @@ const useThreeViewportPage = (modelPath: string | null) => {
       if (renderer.domElement.parentNode) {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
-  };
-}, [modelPath]);
-
+    };
+  }, [modelPath]);
 
   const handleResetCamera = () => {
     const scene = sceneRef.current;

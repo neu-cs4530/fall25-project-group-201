@@ -170,10 +170,6 @@ const CommentSection = ({
     }
   };
 
-  const isVideo = (mediaPath: string) => {
-    return mediaPath.endsWith('.mp4');
-  };
-
   return (
     <div className='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
@@ -190,27 +186,42 @@ const CommentSection = ({
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
 
-                    {comment.mediaPath && (
+                    {comment.mediaPath &&
                       (() => {
                         const path = comment.mediaPath.toLowerCase();
 
                         if (path.endsWith('.glb')) {
                           // 3D model viewport
                           return (
-                            <div className="comment-model-wrapper" style={{ width: '100%', height: '400px', marginTop: '1rem' }}>
-                              <ThreeViewport key={comment.mediaPath} modelPath={comment.mediaPath} />
+                            <div
+                              className='comment-model-wrapper'
+                              style={{ width: '100%', height: '400px', marginTop: '1rem' }}>
+                              <ThreeViewport
+                                key={comment.mediaPath}
+                                modelPath={comment.mediaPath}
+                              />
                             </div>
                           );
-                        } else if (path.endsWith('.mp4') || path.endsWith('.webm') || path.endsWith('.ogg')) {
+                        } else if (
+                          path.endsWith('.mp4') ||
+                          path.endsWith('.webm') ||
+                          path.endsWith('.ogg')
+                        ) {
                           // Video file
-                          return <video src={comment.mediaPath} controls className='comment-media' />;
+                          return (
+                            <video src={comment.mediaPath} controls className='comment-media' />
+                          );
                         } else {
                           // Image file
-                          return <img src={comment.mediaPath} alt='Loading...' className='comment-media' />;
+                          return (
+                            <img
+                              src={comment.mediaPath}
+                              alt='Loading...'
+                              className='comment-media'
+                            />
+                          );
                         }
-                      })()
-                    )}
-
+                      })()}
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}

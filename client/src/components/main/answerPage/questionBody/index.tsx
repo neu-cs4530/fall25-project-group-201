@@ -47,7 +47,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
         <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
 
         {isGLB && (
-          <div className="three-wrapper">
+          <div className='three-wrapper'>
             <ThreeViewport key={mediaPath} modelPath={mediaPath!} />
           </div>
         )}
@@ -72,7 +72,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
                 let embedUrl = mediaUrl;
 
                 const youtubeMatch = mediaUrl.match(
-                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/
+                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/,
                 );
                 if (youtubeMatch) {
                   embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
@@ -98,7 +98,6 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
             )}
           </div>
         )}
-
       </div>
 
       <div className='answer_question_right'>

@@ -103,7 +103,6 @@ const NewQuestion = () => {
     }
   };
 
-
   return (
     <div className='new-question-container'>
       <h2>Ask a New Question</h2>
@@ -190,12 +189,12 @@ const NewQuestion = () => {
                   let embedUrl = mediaUrl;
 
                   const youtubeMatch = mediaUrl.match(
-                    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/
+                    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/,
                   );
                   if (youtubeMatch) {
                     embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
                   }
-                  
+
                   const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
                   if (vimeoMatch) {
                     embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
@@ -212,7 +211,6 @@ const NewQuestion = () => {
                   );
                 })()
               )}
-
             </div>
           )}
 
@@ -224,7 +222,6 @@ const NewQuestion = () => {
               </div>
             </div>
           )}
-
         </div>
       </div>
 
