@@ -1,5 +1,5 @@
-import { DatabaseGalleryPost, GalleryPost, GalleryPostResponse } from "@fake-stack-overflow/shared";
-import GalleryPostModel from "../models/gallerypost.model";
+import { DatabaseGalleryPost, GalleryPost, GalleryPostResponse } from '@fake-stack-overflow/shared';
+import GalleryPostModel from '../models/gallerypost.model';
 
 export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { error: string }> => {
   try {
@@ -8,7 +8,7 @@ export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { er
   } catch (err) {
     return { error: (err as Error).message };
   }
-}
+};
 
 export const createGalleryPost = async (galleryPost: GalleryPost): Promise<GalleryPostResponse> => {
   try {
@@ -22,17 +22,15 @@ export const createGalleryPost = async (galleryPost: GalleryPost): Promise<Galle
   } catch (error) {
     return { error: (error as Error).message };
   }
-}
+};
 
 /**
  * Retrieves a gallery post by id.
- * 
- * @param id 
- * @returns 
+ *
+ * @param id
+ * @returns
  */
-export const getGalleryPostById = async (
-  id: string,
-): Promise<GalleryPostResponse> => {
+export const getGalleryPostById = async (id: string): Promise<GalleryPostResponse> => {
   try {
     const galleryPost = await GalleryPostModel.findById(id);
 
@@ -44,4 +42,4 @@ export const getGalleryPostById = async (
   } catch (error) {
     return { error: (error as Error).message };
   }
-}
+};

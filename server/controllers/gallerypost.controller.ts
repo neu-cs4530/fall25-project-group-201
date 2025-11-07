@@ -1,14 +1,11 @@
 import express, { Response } from 'express';
-import { 
-  CreateGalleryPostRequest, 
-  DatabaseGalleryPost, 
-  FakeSOSocket, 
-  GalleryPostResponse 
-} from "../types/types"
-import { 
-  createGalleryPost, 
-  getAllGalleryPosts 
-} from '../services/gallerypost.service';
+import {
+  CreateGalleryPostRequest,
+  // DatabaseGalleryPost,
+  FakeSOSocket,
+  // GalleryPostResponse,
+} from '../types/types';
+import { createGalleryPost, getAllGalleryPosts } from '../services/gallerypost.service';
 
 const galleryPostController = (socket: FakeSOSocket) => {
   const router = express.Router();
@@ -31,7 +28,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const {title, description, author, model, postedAt} = req.body;
+    const { title, description, author, model, postedAt } = req.body;
 
     try {
       const savedGalleryPost = await createGalleryPost({
@@ -58,6 +55,6 @@ const galleryPostController = (socket: FakeSOSocket) => {
   router.post('/create', createGalleryPostRoute);
 
   return router;
-}
+};
 
 export default galleryPostController;

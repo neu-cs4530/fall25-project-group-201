@@ -27,9 +27,9 @@ const galleryPostSchema: Schema = new Schema(
     },
     postDateTime: {
       type: Date,
-    }
+    },
   },
   { collection: 'GalleryPost' },
-)
+);
 
 export default galleryPostSchema;
