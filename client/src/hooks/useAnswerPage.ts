@@ -179,8 +179,7 @@ const useAnswerPage = () => {
       } else if (type === 'answer') {
         setQuestion(prevQuestion =>
           prevQuestion
-            ?
-              {
+            ? {
                 ...prevQuestion,
                 answers: prevQuestion.answers.map(a =>
                   a._id === result._id ? (result as PopulatedDatabaseAnswer) : a,
