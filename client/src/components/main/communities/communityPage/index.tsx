@@ -30,7 +30,7 @@ const CommunityPage = () => {
               <div style={{ fontSize: '3rem' }}>➕</div>
               <span>Upload Project</span>
           </div>
-          <GalleryComponent/>         
+          <GalleryComponent communityID={community._id.toString()}/>         
         </main>
 
         <main className='questions-section'>

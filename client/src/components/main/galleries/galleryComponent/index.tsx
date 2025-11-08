@@ -1,58 +1,63 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "./index.css";
+import useGalleryComponentPage from "../../../../hooks/useGalleryComponentPage";
 
-const GalleryComponent = () => {
-  const items = [
-    { type: "image", src: "/icons/orthoIcon.png", alt: "First image" },
-    { type: "image", src: "/icons/perspIcon.png", alt: "Second image" },
-    { type: "image", src: "/icons/cameraIcon.png", alt: "Third image" },
-    { type: "image", src: "/icons/orthoIcon.png", alt: "Fourth image" },
-    { type: "image", src: "/icons/perspIcon.png", alt: "Fifth image" },
-    { type: "image", src: "/icons/cameraIcon.png", alt: "Sixth image" },
-    { type: "embed", src: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-  ];
+type GalleryComponentProps = {
+  communityID: string;
+};
+
+const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
+  const { filteredGalleryPosts, error } = useGalleryComponentPage(communityID);
 
   const [startIndex, setStartIndex] = useState(0);
   const visibleCount = 2;
 
   const next = () => {
     setStartIndex((prev) =>
-      prev + visibleCount >= items.length ? 0 : prev + visibleCount
+      prev + visibleCount >= filteredGalleryPosts.length ? 0 : prev + visibleCount
     );
   };
 
   const prev = () => {
     setStartIndex((prev) =>
       prev - visibleCount < 0
-        ? Math.max(items.length - visibleCount, 0)
+        ? Math.max(filteredGalleryPosts.length - visibleCount, 0)
         : prev - visibleCount
     );
   };
 
-  const visibleItems = items.slice(startIndex, startIndex + visibleCount);
+  const visibleItems = filteredGalleryPosts.slice(startIndex, startIndex + visibleCount);
 
   return (
     <div className="relative w-full h-[300px] flex items-center justify-center bg-black/90 rounded-2xl overflow-hidden">
       {/* Grid of visible items */}
       <div className="flex w-full h-full justify-center items-center space-x-4 px-6 transition-all duration-300">
-        {visibleItems.map((item, i) =>
-          item.type === "image" ? (
-            <img
-              key={i}
-              src={item.src}
-              alt={item.alt}
-              className="galleryMedia"
-            />
-          ) : (
-            <iframe
-              key={i}
-              src={item.src}
-              className="galleryMedia"
-              allow="autoplay; fullscreen"
-            />
-          )
-        )}
+        {visibleItems.map((item, i) => {
+          const ext = item.media.split(".").pop()?.toLowerCase();
+
+          if (ext && ["mp4", "webm", "mov"].includes(ext)) {
+            // Render video
+            return (
+              <video
+                key={i}
+                src={item.media}
+                controls
+                className="galleryMedia"
+              />
+            );
+          } else {
+            // Render image
+            return (
+              <img
+                key={i}
+                src={item.media}
+                alt={`Gallery item ${i}`}
+                className="galleryMedia"
+              />
+            );
+          }
+        })}
       </div>
 
       {/* Navigation arrows */}
