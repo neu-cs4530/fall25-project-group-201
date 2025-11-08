@@ -2,6 +2,7 @@ import useCommunityPage from '../../../../hooks/useCommunityPage';
 import QuestionView from '../../questionPage/question';
 import CommunityMembershipButton from '../communityMembershipButton';
 import './index.css';
+import GalleryComponent from '../../galleryComponent/'
 
 /**
  * This component displays the details of a specific community, including its name, description,
@@ -15,6 +16,10 @@ const CommunityPage = () => {
   }
 
   return (
+    <>
+    <h3 className='section-heading'>Gallery</h3>
+    <GalleryComponent/>
+
     <div className='community-page-layout'>
       <main className='questions-section'>
         <h3 className='section-heading'>Questions</h3>
@@ -45,6 +50,7 @@ const CommunityPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
