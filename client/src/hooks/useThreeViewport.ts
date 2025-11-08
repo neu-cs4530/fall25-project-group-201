@@ -41,6 +41,7 @@ const useThreeViewport = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
+  const targetZRef = useRef<number>(5);
 
   const [isPerspective, setIsPerspective] = useState(true);
 
@@ -108,14 +109,13 @@ const useThreeViewport = (modelPath: string | null) => {
     cameraRef.current = camera;
 
     // --- Camera controls (zoom in/zoom out) ---
-    let targetZ = 5;
     const moveSpeed = 0.005;
 
     const handleWheel = (event: WheelEvent) => {
-      event.preventDefault(); // stop scrolling
-      event.stopPropagation(); // ✅ prevent bubbling to page scroll
-      targetZ += event.deltaY * moveSpeed;
-      targetZ = THREE.MathUtils.clamp(targetZ, 1, 100);
+      event.preventDefault();
+      event.stopPropagation();
+      targetZRef.current += event.deltaY * moveSpeed;
+      targetZRef.current = THREE.MathUtils.clamp(targetZRef.current, 1, 100);
     };
     containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
 
@@ -175,7 +175,6 @@ const useThreeViewport = (modelPath: string | null) => {
 
       // Adjust so the model rests on the ground plane
       box.setFromObject(model);
-      //const newSize = box.getSize(new THREE.Vector3());
       const newMin = box.min;
       model.position.y -= newMin.y; // lift model so its lowest point touches y=0
 
@@ -213,7 +212,7 @@ const useThreeViewport = (modelPath: string | null) => {
     // --- Animation loop ---
     const animate = () => {
       requestAnimationFrame(animate);
-      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.1);
+      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZRef.current, 0.1);
       renderer.render(scene, camera);
     };
     animate();
@@ -236,10 +235,18 @@ const useThreeViewport = (modelPath: string | null) => {
 
   const handleResetCamera = () => {
     const scene = sceneRef.current;
+    const camera = cameraRef.current;
+    const init = initialCameraState.current;
+    if (!scene || !camera || !init) return;
 
-    if (scene) {
-      scene.rotation.set(0, 0, 0);
-    }
+    scene.rotation.set(0, 0, 0);
+
+    // Reset camera position and zoom
+    camera.position.copy(init.position);
+    camera.rotation.copy(init.rotation);
+
+    // Reset the zoom lerp target
+    targetZRef.current = init.position.z;
   };
 
   const handleTogglePerspective = () => {
