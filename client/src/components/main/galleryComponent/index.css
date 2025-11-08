@@ -1,4 +1,11 @@
 .galleryMedia {
     height: 300px;
     width: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.galleryMedia:hover {
+  transform: scale(1.05);
 }

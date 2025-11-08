@@ -1,39 +1,57 @@
 import { useState } from "react";
-import useThreeViewportPage from "../../../hooks/useThreeViewportPage";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import './index.css';
+import "./index.css";
 
 const GalleryComponent = () => {
   const items = [
     { type: "image", src: "/icons/orthoIcon.png", alt: "First image" },
-    { type: "image", src: "/icons/orthoIcon.png", alt: "Second image" },
+    { type: "image", src: "/icons/perspIcon.png", alt: "Second image" },
+    { type: "image", src: "/icons/cameraIcon.png", alt: "Third image" },
+    { type: "image", src: "/icons/orthoIcon.png", alt: "Fourth image" },
+    { type: "image", src: "/icons/perspIcon.png", alt: "Fifth image" },
+    { type: "image", src: "/icons/cameraIcon.png", alt: "Sixth image" },
     { type: "embed", src: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-    { type: "image", src: "/icons/orthoIcon.png", alt: "Third image" },
   ];
 
-  const [index, setIndex] = useState(0);
+  const [startIndex, setStartIndex] = useState(0);
+  const visibleCount = 4;
 
-  const next = () => setIndex((prev) => (prev + 1) % items.length);
-  const prev = () => setIndex((prev) => (prev - 1 + items.length) % items.length);
+  const next = () => {
+    setStartIndex((prev) =>
+      prev + visibleCount >= items.length ? 0 : prev + visibleCount
+    );
+  };
 
-  const current = items[index];
+  const prev = () => {
+    setStartIndex((prev) =>
+      prev - visibleCount < 0
+        ? Math.max(items.length - visibleCount, 0)
+        : prev - visibleCount
+    );
+  };
+
+  const visibleItems = items.slice(startIndex, startIndex + visibleCount);
 
   return (
-    <div className="relative w-full h-[500px] flex items-center justify-center bg-black/90 rounded-2xl overflow-hidden">
-      {/* Display item */}
-      <div className="w-full h-full flex items-center justify-center">
-        {current.type === "image" ? (
-          <img
-            src={current.src}
-            alt={current.alt}
-            className="galleryMedia"
-          />
-        ) : (
-          <iframe
-            src={current.src}
-            className="galleryMedia"
-            allow="autoplay; fullscreen"
-          />
+    <div className="relative w-full h-[300px] flex items-center justify-center bg-black/90 rounded-2xl overflow-hidden">
+      {/* Grid of visible items */}
+      <div className="flex w-full h-full justify-center items-center space-x-4 px-6 transition-all duration-300">
+        {visibleItems.map((item, i) =>
+          item.type === "image" ? (
+            <img
+              key={i}
+              src={item.src}
+              alt={item.alt}
+              className="galleryMedia"
+            />
+          ) : (
+            <iframe
+              key={i}
+              src={item.src}
+              className="galleryMedia"
+              allow="autoplay; fullscreen"
+            />
+          )
         )}
       </div>
 

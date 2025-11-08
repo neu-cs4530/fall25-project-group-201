@@ -17,7 +17,7 @@ const CommunityPage = () => {
 
   return (
     <>
-    <h3 className='section-heading'>Gallery</h3>
+    <h3 className='gallery-heading'>Gallery</h3>
     <GalleryComponent/>
 
     <div className='community-page-layout'>

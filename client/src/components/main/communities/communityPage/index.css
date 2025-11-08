@@ -9,6 +9,14 @@
   background-color: #ffffff;
 }
 
+.gallery-heading{
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
 /* Main questions section */
 .questions-section {
   flex: 1;
