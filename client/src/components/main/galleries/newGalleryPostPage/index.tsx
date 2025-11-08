@@ -14,6 +14,7 @@ const NewGalleryPostPage = () => {
     textErr,
     mediaErr,
     setMediaErr,
+    communityErr,
     mediaUrl,
     setMediaUrl,
     mediaPath,
@@ -89,7 +90,7 @@ const NewGalleryPostPage = () => {
   return (
     <div className='new-question-container'>
       <h2>Create A New Gallery Post</h2>
-
+      {communityErr && <p className='error'>{communityErr}</p>}
       <div className='form-section'>
         <label htmlFor='title'>Title</label>
         <input

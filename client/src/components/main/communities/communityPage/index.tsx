@@ -18,7 +18,7 @@ const CommunityPage = () => {
   }
 
   const handleNewGalleryPost = () => {
-    navigate('/new/galleryPost');
+    navigate(`/new/galleryPost/${community._id}`);
   }
 
   return (

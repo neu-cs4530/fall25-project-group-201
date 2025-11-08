@@ -25,6 +25,9 @@ const galleryPostSchema: Schema = new Schema(
     media: {
       type: String,
     },
+    community: {
+      type: String,
+    },
     postDateTime: {
       type: Date,
     },

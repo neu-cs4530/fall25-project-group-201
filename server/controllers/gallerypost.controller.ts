@@ -28,7 +28,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const { title, description, user, media, postedAt } = req.body;
+    const { title, description, user, media, community, postedAt} = req.body;
 
     try {
       const savedGalleryPost = await createGalleryPost({
@@ -37,6 +37,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
         user,
         media,
         postDateTime: postedAt,
+        community
       });
 
       if ('error' in savedGalleryPost) {

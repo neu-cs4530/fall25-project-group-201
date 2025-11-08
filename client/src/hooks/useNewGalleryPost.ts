@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { validateHyperlink } from '../tool';
 import { addGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
@@ -19,10 +19,12 @@ const useNewGalleryPost = () => {
 
   const [titleErr, setTitleErr] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
+  const [communityErr, setCommunityErr] = useState<string>('');
 
   const [mediaErr, setMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
+  const { communityID } = useParams<{ communityID: string }>();
 
   /**
    * Function to validate the form before submitting the question.
@@ -59,6 +61,13 @@ const useNewGalleryPost = () => {
       setMediaErr('');
     }
 
+    if (!communityID) {
+      setCommunityErr('Error: Community for this project is not defined');
+      isValid = false;
+    } else {
+      setCommunityErr('');
+    }
+
     return isValid;
   };
 
@@ -76,6 +85,7 @@ const useNewGalleryPost = () => {
       user: user.username,
       media: (mediaUrl || mediaPath)!,
       postDateTime:  new Date(),
+      community: communityID!
     };
 
     try {
@@ -111,6 +121,7 @@ const useNewGalleryPost = () => {
     setMediaErr,
     mediaUrl,
     setMediaUrl,
+    communityErr,
     mediaPath,
     setUploadedMediaPath,
     postGalleryPost,
