@@ -3,9 +3,9 @@
     width: auto;
     object-fit: contain;
     border-radius: 8px;
-    transition: transform 0.2s ease-in-out;
+    opacity: 70%;
 }
 
 .galleryMedia:hover {
-  transform: scale(1.05);
+  opacity: 100%;
 }

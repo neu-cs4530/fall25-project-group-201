@@ -17,9 +17,15 @@ const CommunityPage = () => {
 
   return (
     <>
-    <h3 className='gallery-heading'>Gallery</h3>
+    <div className="gallery-header-row">
+      <h3 className='gallery-heading'>Gallery</h3>
+      <div className='upload-placeholder'>
+          <div style={{ fontSize: '3rem' }}>➕</div>
+          <span>Upload Project</span>
+      </div>
+    </div>
     <GalleryComponent/>
-
+    
     <div className='community-page-layout'>
       <main className='questions-section'>
         <h3 className='section-heading'>Questions</h3>

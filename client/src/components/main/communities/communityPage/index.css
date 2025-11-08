@@ -9,14 +9,6 @@
   background-color: #ffffff;
 }
 
-.gallery-heading{
-  padding: 2rem;
-  font-family: Arial, sans-serif;
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-  color: #1f2937;
-}
-
 /* Main questions section */
 .questions-section {
   flex: 1;
@@ -106,4 +98,37 @@
 
 .delete-community-btn:active {
   background-color: #991b1b; /* Red-800 */
+}
+
+/* Gallery Section */
+
+.gallery-header-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gallery-heading{
+  padding-left: 2rem;
+  font-family: Arial, sans-serif;
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.upload-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-weight: 500;
+  border: 2px dashed #888;    
+  border-radius: 10px;         
+  padding: 2rem;              
+  text-align: center;          
+  color: #888;                
+  cursor: pointer;     
+  margin: 3px;
+  width: 200px;
+  height: 50px       
 }
