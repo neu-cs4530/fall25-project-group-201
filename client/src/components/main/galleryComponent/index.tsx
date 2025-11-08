@@ -14,7 +14,7 @@ const GalleryComponent = () => {
   ];
 
   const [startIndex, setStartIndex] = useState(0);
-  const visibleCount = 4;
+  const visibleCount = 2;
 
   const next = () => {
     setStartIndex((prev) =>

@@ -16,22 +16,23 @@ const CommunityPage = () => {
   }
 
   return (
-    <>
-    <div className="gallery-header-row">
-      <h3 className='gallery-heading'>Gallery</h3>
-      <div className='upload-placeholder'>
-          <div style={{ fontSize: '3rem' }}>➕</div>
-          <span>Upload Project</span>
-      </div>
-    </div>
-    <GalleryComponent/>
-    
     <div className='community-page-layout'>
-      <main className='questions-section'>
-        <h3 className='section-heading'>Questions</h3>
-        {communityQuestions.map(q => (
-          <QuestionView question={q} key={q._id.toString()} />
-        ))}
+      <main className='questions-and-gallery-section'>
+        <main className='gallery-section'>
+          <h3 className='gallery-heading'>Gallery</h3>
+          <div className='upload-placeholder'>
+              <div style={{ fontSize: '3rem' }}>➕</div>
+              <span>Upload Project</span>
+          </div>
+          <GalleryComponent/>         
+        </main>
+
+        <main className='questions-section'>
+          <h3 className='section-heading'>Questions</h3>
+          {communityQuestions.map(q => (
+            <QuestionView question={q} key={q._id.toString()} />
+          ))}
+        </main>
       </main>
 
       <div className='community-sidebar'>
@@ -56,7 +57,6 @@ const CommunityPage = () => {
         </div>
       </div>
     </div>
-    </>
   );
 };
 
