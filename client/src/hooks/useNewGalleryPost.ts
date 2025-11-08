@@ -92,7 +92,7 @@ const useNewGalleryPost = () => {
         console.log("trying...")
       const res = await addGalleryPost(gallerypost);
       if (res && res._id) {
-        navigate('/home');
+        navigate(`/communities/${communityID}`);
       }
     } catch (err) {
       setMediaErr('Failed to post question');
