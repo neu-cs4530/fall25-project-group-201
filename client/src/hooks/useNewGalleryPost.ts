@@ -71,8 +71,8 @@ const useNewGalleryPost = () => {
     const gallerypost: GalleryPost = {
       title,
       description: text,
-      author: user.username,
-      model: mediaUrl || mediaPath,
+      user: user.username,
+      media: mediaUrl || mediaPath,
       postDateTime:  new Date(),
     };
 

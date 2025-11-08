@@ -28,14 +28,14 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const { title, description, author, model, postedAt } = req.body;
+    const { title, description, user, media, postedAt } = req.body;
 
     try {
       const savedGalleryPost = await createGalleryPost({
         title,
         description,
-        author,
-        model,
+        user,
+        media,
         postDateTime: postedAt,
       });
 

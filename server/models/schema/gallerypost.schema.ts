@@ -19,10 +19,10 @@ const galleryPostSchema: Schema = new Schema(
     description: {
       type: String,
     },
-    author: {
+    user: {
       type: String,
     },
-    model: {
+    media: {
       type: String,
     },
     postDateTime: {
