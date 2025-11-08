@@ -33,7 +33,7 @@ const useNewGalleryPost = () => {
     let isValid = true;
 
     if (!title) {
-      setTitleErr('Title cannot be empty');
+      setTitleErr('Project title cannot be empty');
       isValid = false;
     } else if (title.length > 100) {
       setTitleErr('Title cannot be more than 100 characters');
@@ -43,13 +43,20 @@ const useNewGalleryPost = () => {
     }
 
     if (!text) {
-      setTextErr('Question text cannot be empty');
+      setTextErr('Project description cannot be empty');
       isValid = false;
     } else if (!validateHyperlink(text)) {
       setTextErr('Invalid hyperlink format.');
       isValid = false;
     } else {
       setTextErr('');
+    }
+
+    if (!mediaUrl && !mediaPath) {
+      setMediaErr('Media file or link must be uploaded. How else will people be able to visualize your cool project?');
+      isValid = false;
+    } else {
+      setMediaErr('');
     }
 
     return isValid;
@@ -63,16 +70,11 @@ const useNewGalleryPost = () => {
   const postGalleryPost = async () => {
     if (!validateForm()) return;
 
-    if (!mediaUrl && !mediaPath) {
-        setTextErr('Media file or link must bbe uploaded');
-        return;
-    }
-
     const gallerypost: GalleryPost = {
       title,
       description: text,
       user: user.username,
-      media: mediaUrl || mediaPath,
+      media: (mediaUrl || mediaPath)!,
       postDateTime:  new Date(),
     };
 
