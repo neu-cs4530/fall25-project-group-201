@@ -37,7 +37,7 @@ const createOrthographicMatrix = (
   return m;
 };
 
-const useThreeViewportPage = (modelPath: string | null) => {
+const useThreeViewport = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -66,26 +66,27 @@ const useThreeViewportPage = (modelPath: string | null) => {
 
     // --- Mouse controls for rotating the scene around the model ---
     const handleMouseDown = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) return;
       isDragging = true;
       previousMouseX = event.clientX;
       previousMouseY = event.clientY;
     };
 
-    const handleMouseUp = () => {
-      isDragging = false;
-    };
-
     const handleMouseMove = (event: MouseEvent) => {
       if (!isDragging) return;
-
       const deltaX = event.clientX - previousMouseX;
       const deltaY = event.clientY - previousMouseY;
 
-      scene.rotation.y += deltaX * sensitivity; // left/right
-      scene.rotation.x += deltaY * sensitivity; // up/down
+      scene.rotation.y += deltaX * sensitivity;
+      scene.rotation.x += deltaY * sensitivity;
 
       previousMouseX = event.clientX;
       previousMouseY = event.clientY;
+    };
+
+    const handleMouseUp = (event: MouseEvent) => {
+      if (!isDragging) return;
+      isDragging = false;
     };
 
     window.addEventListener('mouseup', handleMouseUp);
@@ -107,11 +108,16 @@ const useThreeViewportPage = (modelPath: string | null) => {
     cameraRef.current = camera;
 
     // --- Camera controls (zoom in/zoom out) ---
-    const moveSpeed = 0.05;
+    let targetZ = 5;
+    const moveSpeed = 0.005;
+
     const handleWheel = (event: WheelEvent) => {
-      camera.position.z += event.deltaY * moveSpeed;
+      event.preventDefault(); // stop scrolling
+      event.stopPropagation(); // ✅ prevent bubbling to page scroll
+      targetZ += event.deltaY * moveSpeed;
+      targetZ = THREE.MathUtils.clamp(targetZ, 1, 100);
     };
-    containerRef.current.addEventListener('wheel', handleWheel);
+    containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
@@ -207,6 +213,7 @@ const useThreeViewportPage = (modelPath: string | null) => {
     // --- Animation loop ---
     const animate = () => {
       requestAnimationFrame(animate);
+      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.1);
       renderer.render(scene, camera);
     };
     animate();
@@ -280,4 +287,4 @@ const useThreeViewportPage = (modelPath: string | null) => {
   };
 };
 
-export default useThreeViewportPage;
+export default useThreeViewport;

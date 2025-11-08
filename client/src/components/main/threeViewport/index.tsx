@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import useThreeViewportPage from '../../../hooks/useThreeViewportPage';
+import useThreeViewport from '../../../hooks/useThreeViewport';
 import useModelUpload from '../../../hooks/useModelUpload';
 import './index.css';
 import orthoIcon from '../../../../public/icons/orthoIcon.png';
@@ -30,7 +30,7 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
   const activeModel = modelPath || modelUrl;
 
   const { containerRef, handleResetCamera, handleTogglePerspective } =
-    useThreeViewportPage(activeModel);
+    useThreeViewport(activeModel);
 
   const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true);
 

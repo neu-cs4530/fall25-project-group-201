@@ -1,11 +1,11 @@
-import useThreeViewportPage from '../../../hooks/useThreeViewportPage';
+import useThreeViewport from '../../../hooks/useThreeViewport';
 
 interface PortfolioModelViewerProps {
   modelUrl: string;
 }
 
 const PortfolioModelViewer = ({ modelUrl }: PortfolioModelViewerProps) => {
-  const { containerRef } = useThreeViewportPage(modelUrl);
+  const { containerRef } = useThreeViewport(modelUrl);
 
   return (
     <div
