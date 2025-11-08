@@ -1,8 +1,8 @@
 import { ChangeEvent } from 'react';
-import useNewQuestion from '../../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
+import useNewGalleryPost from '../../../../hooks/useNewGalleryPost';
 
 const NewGalleryPostPage = () => {
   const {
@@ -10,23 +10,17 @@ const NewGalleryPostPage = () => {
     setTitle,
     text,
     setText,
-    tagNames,
-    setTagNames,
-    community,
     titleErr,
     textErr,
-    tagErr,
     mediaErr,
     setMediaErr,
     mediaUrl,
     setMediaUrl,
     mediaPath,
     setUploadedMediaPath,
-    postQuestion,
-    communityList,
-    handleDropdownChange,
+    postGalleryPost,
     handleFileChange,
-  } = useNewQuestion();
+  } = useNewGalleryPost();
 
   const { user: currentUser } = useUserContext();
 
@@ -187,8 +181,8 @@ const NewGalleryPostPage = () => {
         </div>
       </div>
 
-      <button className='submit-btn' onClick={postQuestion}>
-        Post Question
+      <button className='submit-btn' onClick={postGalleryPost}>
+        Post Project To Gallery
       </button>
     </div>
   );
