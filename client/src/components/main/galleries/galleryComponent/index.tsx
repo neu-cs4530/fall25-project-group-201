@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "./index.css";
 import useGalleryComponentPage from "../../../../hooks/useGalleryComponentPage";
+import PortfolioModelViewer from "../../threeViewport/PortfolioModelViewer";
 
 type GalleryComponentProps = {
   communityID: string;
@@ -78,15 +79,28 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
           );
         }
 
-        // Otherwise assume it's an image
-        return (
-          <img
-            key={i}
-            src={url}
-            alt={`Gallery item ${i}`}
-            className="galleryMedia"
-          />
-        );
+        if (ext && ["jpg", "jpeg", "png"].includes(ext)) {
+          // Image
+          return (
+            <img
+              key={i}
+              src={url}
+              alt={`Gallery item ${i}`}
+              className="galleryMedia"
+            />
+          );
+        }
+
+        if (ext && ["glb"].includes(ext)) {
+          // 3D model
+          return (
+             <div className='portfolio-model-item'>
+              <div style={{ width: '100%', height: '200px' }}>
+                <PortfolioModelViewer modelUrl={url} />
+              </div>
+            </div>
+          );
+        }
       })}
       </div>
 
