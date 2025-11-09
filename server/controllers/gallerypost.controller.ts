@@ -5,7 +5,11 @@ import {
   FakeSOSocket,
   // GalleryPostResponse,
 } from '../types/types';
-import { createGalleryPost, getAllGalleryPosts, getGalleryPostById } from '../services/gallerypost.service';
+import {
+  createGalleryPost,
+  getAllGalleryPosts,
+  getGalleryPostById,
+} from '../services/gallerypost.service';
 
 const galleryPostController = (socket: FakeSOSocket) => {
   const router = express.Router();
@@ -28,7 +32,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const { title, description, user, media, community, postedAt, thumbnailMedia} = req.body;
+    const { title, description, user, media, community, postedAt, thumbnailMedia } = req.body;
 
     try {
       const savedGalleryPost = await createGalleryPost({
@@ -38,7 +42,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
         media,
         postDateTime: postedAt,
         community,
-        thumbnailMedia
+        thumbnailMedia,
       });
 
       if ('error' in savedGalleryPost) {
@@ -56,7 +60,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
   const getGalleryPostRoute = async (_req: express.Request, res: Response): Promise<void> => {
     try {
       const { galleryPostID } = _req.params;
-      console.log("galleryPostID, ", galleryPostID)
+      console.log('galleryPostID, ', galleryPostID);
       const galleryPost = await getGalleryPostById(galleryPostID);
 
       if ('error' in galleryPost) {
