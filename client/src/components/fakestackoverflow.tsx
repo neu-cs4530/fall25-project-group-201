@@ -23,7 +23,7 @@ import CommunityPage from './main/communities/communityPage';
 import AllCollectionsPage from './main/collections/allCollectionsPage';
 import CollectionPage from './main/collections/collectionPage';
 import NewCollectionPage from './main/collections/newCollectionPage';
-import NewGalleryPostPage from './main/galleries/NewGalleryPostPage'
+import NewGalleryPostPage from './main/galleries/NewGalleryPostPage';
 import ThreeViewport from './main/threeViewport';
 import GalleryPostViewport from './main/threeViewport/GalleryPostViewport';
 

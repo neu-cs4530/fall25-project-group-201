@@ -25,7 +25,9 @@ const useNewGalleryPost = () => {
   const [thumbnailMediaErr, setThumbnailMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
-  const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(undefined);
+  const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(
+    undefined,
+  );
   const { communityID } = useParams<{ communityID: string }>();
 
   /**
@@ -57,7 +59,9 @@ const useNewGalleryPost = () => {
     }
 
     if (!mediaUrl && !mediaPath) {
-      setMediaErr('Media file or link must be uploaded. How else will people be able to visualize your cool project?');
+      setMediaErr(
+        'Media file or link must be uploaded. How else will people be able to visualize your cool project?',
+      );
       isValid = false;
     } else {
       setMediaErr('');
@@ -69,7 +73,7 @@ const useNewGalleryPost = () => {
       isValid = false;
     } else {
       setThumbnailMediaErr('');
-}
+    }
 
     if (!communityID) {
       setCommunityErr('Error: Community for this project is not defined');
@@ -89,16 +93,16 @@ const useNewGalleryPost = () => {
   const postGalleryPost = async () => {
     if (!validateForm()) return;
 
-    console.log("thumbnailMediaPath, ", thumbnailMediaPath)
+    console.log('thumbnailMediaPath, ', thumbnailMediaPath);
 
     const gallerypost: GalleryPost = {
       title,
       description: text,
       user: user.username,
       media: (mediaUrl || mediaPath)!,
-       ...(thumbnailMediaPath ? { thumbnailMedia: thumbnailMediaPath } : {}),
-      postDateTime:  new Date(),
-      community: communityID!
+      ...(thumbnailMediaPath ? { thumbnailMedia: thumbnailMediaPath } : {}),
+      postDateTime: new Date(),
+      community: communityID!,
     };
 
     try {
@@ -122,7 +126,7 @@ const useNewGalleryPost = () => {
     setUploadedMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
   };
 
-    const handleThumbnailFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleThumbnailFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 

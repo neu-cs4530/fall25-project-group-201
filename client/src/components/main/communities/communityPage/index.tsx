@@ -2,7 +2,7 @@ import useCommunityPage from '../../../../hooks/useCommunityPage';
 import QuestionView from '../../questionPage/question';
 import CommunityMembershipButton from '../communityMembershipButton';
 import './index.css';
-import GalleryComponent from '../../galleries/galleryComponent'
+import GalleryComponent from '../../galleries/galleryComponent';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -19,7 +19,7 @@ const CommunityPage = () => {
 
   const handleNewGalleryPost = () => {
     navigate(`/new/galleryPost/${community._id}`);
-  }
+  };
 
   return (
     <div className='community-page-layout'>
@@ -27,10 +27,10 @@ const CommunityPage = () => {
         <main className='gallery-section'>
           <h3 className='gallery-heading'>Gallery</h3>
           <div className='gallery-upload-button' onClick={handleNewGalleryPost}>
-              <div style={{ fontSize: '3rem' }}>➕</div>
-              <span>Upload Project</span>
+            <div style={{ fontSize: '3rem' }}>➕</div>
+            <span>Upload Project</span>
           </div>
-          <GalleryComponent communityID={community._id.toString()}/>         
+          <GalleryComponent communityID={community._id.toString()} />
         </main>
 
         <main className='questions-section'>

@@ -65,7 +65,7 @@ const NewGalleryPostPage = () => {
     const tempFileUrl = URL.createObjectURL(file);
     setPreviewFilePath(tempFileUrl);
 
-    if (!previewFilePath){
+    if (!previewFilePath) {
       setMediaErr('Unable to preview media');
     }
 
@@ -223,7 +223,11 @@ const NewGalleryPostPage = () => {
             <>
               <h3>Add Thumbnail</h3>
               <div className='file-upload'>
-                <input type='file' accept='image/*,video/*,.glb' onChange={handleThumbnailFileUpload} />
+                <input
+                  type='file'
+                  accept='image/*,video/*,.glb'
+                  onChange={handleThumbnailFileUpload}
+                />
               </div>
               {thumbnailMediaErr && <p className='error'>{thumbnailMediaErr}</p>}
               <div className='model-preview'>
