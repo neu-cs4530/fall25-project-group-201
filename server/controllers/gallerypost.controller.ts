@@ -60,7 +60,6 @@ const galleryPostController = (socket: FakeSOSocket) => {
   const getGalleryPostRoute = async (_req: express.Request, res: Response): Promise<void> => {
     try {
       const { galleryPostID } = _req.params;
-      console.log('galleryPostID, ', galleryPostID);
       const galleryPost = await getGalleryPostById(galleryPostID);
 
       if ('error' in galleryPost) {
