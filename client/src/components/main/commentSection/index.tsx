@@ -50,19 +50,14 @@ const CommentSection = ({
 
     try {
       const parsed = new URL(url);
-
-      // Allowed protocols
       if (!['http:', 'https:'].includes(parsed.protocol)) return false;
 
-      // Image file extensions
       const imagePattern = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i;
       if (imagePattern.test(parsed.pathname)) return true;
 
-      // YouTube URL patterns
       const youtubePattern = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)/i;
       if (youtubePattern.test(url)) return true;
 
-      // Vimeo URL pattern
       const vimeoPattern = /^(?:https?:\/\/)?(?:www\.)?vimeo\.com\/\d+/i;
       if (vimeoPattern.test(url)) return true;
 
@@ -109,33 +104,26 @@ const CommentSection = ({
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
     };
 
-    // Add the comment via the parent handler
     await handleAddComment(newComment);
 
-    // Clear inputs
     setText('');
     setMediaUrl('');
     setFile(null);
 
-    // REFRESH: reload the comments list by refetching the question
     if (typeof window !== 'undefined') {
-      // optional: scroll to top of comment section
       const commentContainer = document.querySelector('.comments-container');
       commentContainer?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-
   // Function to detect Image, YouTube or Vimeo URLs and return embed iframe
   const renderEmbeddedMedia = (text: string) => {
-    // Image URL
     const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i;
     const imageMatch = text.match(imageRegex);
     if (imageMatch) {
       return <img src={imageMatch[0]} alt='user-uploaded' className='comment-image' />;
     }
 
-    // YouTube URL
     const ytRegex =
       /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const ytMatch = text.match(ytRegex);
@@ -152,7 +140,6 @@ const CommentSection = ({
       );
     }
 
-    // Vimeo URL
     const vimeoRegex = /https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/;
     const vimeoMatch = text.match(vimeoRegex);
     if (vimeoMatch) {
@@ -187,7 +174,6 @@ const CommentSection = ({
 
       {showComments && (
         <div className='comments-container'>
-          {/* Add New Comment at the top */}
           <div className='add-comment'>
             <div className='input-row'>
               <textarea
@@ -197,13 +183,11 @@ const CommentSection = ({
                 className='comment-textarea'
               />
 
-              {/* Media button */}
               <div className='media-button-wrapper'>
                 <button
                   type='button'
                   className='media-button'
-                  onClick={() => setShowMediaInput(!showMediaInput)}
-                >
+                  onClick={() => setShowMediaInput(!showMediaInput)}>
                   <FaLink />
                 </button>
 
@@ -232,7 +216,6 @@ const CommentSection = ({
             {textErr && <small className='error'>{textErr}</small>}
           </div>
 
-          {/* List of existing comments */}
           <ul className='comments-list'>
             {comments.length > 0 ? (
               comments.map(comment => (
@@ -241,20 +224,28 @@ const CommentSection = ({
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
 
-                    {comment.mediaPath && (() => {
-                      const path = comment.mediaPath.toLowerCase();
-                      if (path.endsWith('.glb')) {
-                        return (
-                          <div className='comment-model-wrapper'>
-                            <ThreeViewport key={comment.mediaPath} modelPath={comment.mediaPath} />
-                          </div>
-                        );
-                      } else if (['.mp4', '.webm', '.ogg'].some(ext => path.endsWith(ext))) {
-                        return <video src={comment.mediaPath} controls className='comment-media' />;
-                      } else {
-                        return <img src={comment.mediaPath} alt='media' className='comment-media' />;
-                      }
-                    })()}
+                    {comment.mediaPath &&
+                      (() => {
+                        const path = comment.mediaPath.toLowerCase();
+                        if (path.endsWith('.glb')) {
+                          return (
+                            <div className='comment-model-wrapper'>
+                              <ThreeViewport
+                                key={comment.mediaPath}
+                                modelPath={comment.mediaPath}
+                              />
+                            </div>
+                          );
+                        } else if (['.mp4', '.webm', '.ogg'].some(ext => path.endsWith(ext))) {
+                          return (
+                            <video src={comment.mediaPath} controls className='comment-media' />
+                          );
+                        } else {
+                          return (
+                            <img src={comment.mediaPath} alt='media' className='comment-media' />
+                          );
+                        }
+                      })()}
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
@@ -268,7 +259,6 @@ const CommentSection = ({
         </div>
       )}
     </div>
-
   );
 };
 
