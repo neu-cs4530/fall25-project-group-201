@@ -25,6 +25,7 @@ import CollectionPage from './main/collections/collectionPage';
 import NewCollectionPage from './main/collections/newCollectionPage';
 import NewGalleryPostPage from './main/galleries/NewGalleryPostPage'
 import ThreeViewport from './main/threeViewport';
+import GalleryPostViewport from './main/threeViewport/GalleryPostViewport';
 
 const ProtectedRoute = ({
   user,
@@ -82,6 +83,7 @@ const FakeStackOverflow = ({ socket }: { socket: FakeSOSocket | null }) => {
             <Route path='/communities/:communityID' element={<CommunityPage />} />
             <Route path='/viewportTest' element={<ThreeViewport />} />
             <Route path='/new/galleryPost/:communityID' element={<NewGalleryPostPage />} />
+            <Route path='/galleryPostViewport/:galleryPostID' element={<GalleryPostViewport />} />
           </Route>
         }
       </Routes>

@@ -23,7 +23,18 @@ const getGalleryPosts = async (): Promise<DatabaseGalleryPost[]> => {
   return res.data;
 };
 
+const getGalleryPost = async (galleryPostID: string): Promise<DatabaseGalleryPost> => {
+  const res = await api.get(`${GALLERY_API_URL}/getGalleryPost/${galleryPostID}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error while getting gallery post');
+  }
+
+  return res.data;
+};
+
 export {
   addGalleryPost,
-  getGalleryPosts
+  getGalleryPosts,
+  getGalleryPost
 };

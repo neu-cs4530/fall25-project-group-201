@@ -2,14 +2,13 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "./index.css";
 import useGalleryComponentPage from "../../../../hooks/useGalleryComponentPage";
-import PortfolioModelViewer from "../../threeViewport/PortfolioModelViewer";
 
 type GalleryComponentProps = {
   communityID: string;
 };
 
 const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
-  const { filteredGalleryPosts, error } = useGalleryComponentPage(communityID);
+  const { filteredGalleryPosts, error, handle3DMediaClick } = useGalleryComponentPage(communityID);
 
   const [startIndex, setStartIndex] = useState(0);
   const visibleCount = 2;
@@ -99,6 +98,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
               src={item.thumbnailMedia}
               alt={`Gallery item ${i}`}
               className="galleryMedia"
+              onClick={() => handle3DMediaClick(item._id.toString())}
             />
           );
         }

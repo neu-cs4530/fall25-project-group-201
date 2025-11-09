@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { DatabaseGalleryPost } from '../types/types';
 import { getGalleryPosts } from '../services/galleryService';
 import useUserContext from './useUserContext';
+import { useNavigate } from 'react-router-dom';
 
 const useGalleryComponentPage = (communityID: string) => {
     const { user: currentUser } = useUserContext();
     const [galleryPosts, setGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
     const [filteredGalleryPosts, setFilteredGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchGalleryPosts = async () => {
@@ -33,10 +35,14 @@ const useGalleryComponentPage = (communityID: string) => {
         fetchGalleryPosts();
     }, [currentUser.username, communityID]);
 
+    const handle3DMediaClick = (galleryPostID: string) => {
+        navigate(`/galleryPostViewport/${galleryPostID}`);
+    }
 
     return {
         filteredGalleryPosts,
-        error
+        error,
+        handle3DMediaClick
     };
 };
 
