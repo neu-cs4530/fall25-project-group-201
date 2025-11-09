@@ -92,13 +92,14 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
         }
 
         if (ext && ["glb"].includes(ext)) {
-          // 3D model
+          // For 3D model, show thumbnail instead
           return (
-             <div className='portfolio-model-item'>
-              <div style={{ width: '100%', height: '200px' }}>
-                <PortfolioModelViewer modelUrl={url} />
-              </div>
-            </div>
+            <img
+              key={i}
+              src={item.thumbnailMedia}
+              alt={`Gallery item ${i}`}
+              className="galleryMedia"
+            />
           );
         }
       })}
