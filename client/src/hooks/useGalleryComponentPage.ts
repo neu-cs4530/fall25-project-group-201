@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 const useGalleryComponentPage = (communityID: string) => {
   const { user: currentUser } = useUserContext();
-  const [galleryPosts, setGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
   const [filteredGalleryPosts, setFilteredGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -15,7 +14,6 @@ const useGalleryComponentPage = (communityID: string) => {
     const fetchGalleryPosts = async () => {
       try {
         const resGalleryPosts = await getGalleryPosts();
-        setGalleryPosts(resGalleryPosts);
 
         // Filter using the fetched data directly
         const filteredPosts = resGalleryPosts.filter(post => post.community === communityID);
@@ -25,7 +23,6 @@ const useGalleryComponentPage = (communityID: string) => {
           setError('No gallery posts found for this community');
         }
       } catch (err: unknown) {
-        console.error(err);
         setError('Failed to fetch gallery posts for this community');
       }
     };

@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { validateHyperlink } from '../tool';
 import { addGalleryPost } from '../services/galleryService';
@@ -92,8 +92,6 @@ const useNewGalleryPost = () => {
    */
   const postGalleryPost = async () => {
     if (!validateForm()) return;
-
-    console.log('thumbnailMediaPath, ', thumbnailMediaPath);
 
     const gallerypost: GalleryPost = {
       title,

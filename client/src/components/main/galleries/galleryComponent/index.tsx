@@ -34,6 +34,8 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       {/* If there are no gallery posts */}
       {filteredGalleryPosts.length === 0 && <div>No gallery posts in this community yet!</div>}
 
+      {error && <div>error</div>}
+
       {/* Grid of visible items */}
       <div className='flex w-full h-full justify-center items-center space-x-4 px-6 transition-all duration-300'>
         {visibleItems.map((item, i) => {

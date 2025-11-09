@@ -1,4 +1,3 @@
-import { DatabaseGalleryPost } from '@fake-stack-overflow/shared';
 import useThreeViewportPage from '../../../../hooks/useThreeViewportPage';
 import useGalleryPostViewport from '../../../../hooks/useGalleryPostViewport';
 import { useEffect } from 'react';
@@ -9,8 +8,6 @@ const GalleryPostViewport = () => {
   useEffect(() => {
     fetchGalleryPost();
   }, [fetchGalleryPost]);
-
-  console.log('media: ', galleryPost?.media ?? null);
 
   const { containerRef } = useThreeViewportPage(galleryPost?.media ?? null);
 

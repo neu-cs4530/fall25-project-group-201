@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DatabaseGalleryPost } from '../types/types';
 import { getGalleryPost } from '../services/galleryService';
 
