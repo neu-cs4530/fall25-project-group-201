@@ -86,7 +86,6 @@ const CommentSection = ({
 
     let tempMediaPath: string | undefined;
 
-    // Upload file if present
     if (file) {
       tempMediaPath = await handleAddMedia(file);
       if (!tempMediaPath) {
@@ -100,7 +99,6 @@ const CommentSection = ({
         setMediaError('Media URL is invalid');
         return;
       }
-      setMediaUrl(mediaUrl);
     }
 
     const newComment: Comment = {
@@ -111,11 +109,22 @@ const CommentSection = ({
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
     };
 
-    handleAddComment(newComment);
+    // Add the comment via the parent handler
+    await handleAddComment(newComment);
 
+    // Clear inputs
     setText('');
     setMediaUrl('');
+    setFile(null);
+
+    // REFRESH: reload the comments list by refetching the question
+    if (typeof window !== 'undefined') {
+      // optional: scroll to top of comment section
+      const commentContainer = document.querySelector('.comments-container');
+      commentContainer?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
+
 
   // Function to detect Image, YouTube or Vimeo URLs and return embed iframe
   const renderEmbeddedMedia = (text: string) => {
@@ -178,6 +187,52 @@ const CommentSection = ({
 
       {showComments && (
         <div className='comments-container'>
+          {/* Add New Comment at the top */}
+          <div className='add-comment'>
+            <div className='input-row'>
+              <textarea
+                placeholder='Write a comment...'
+                value={text}
+                onChange={e => setText(e.target.value)}
+                className='comment-textarea'
+              />
+
+              {/* Media button */}
+              <div className='media-button-wrapper'>
+                <button
+                  type='button'
+                  className='media-button'
+                  onClick={() => setShowMediaInput(!showMediaInput)}
+                >
+                  <FaLink />
+                </button>
+
+                {showMediaInput && (
+                  <div className='media-popup'>
+                    <input
+                      type='text'
+                      placeholder='Paste image/YouTube/Vimeo link'
+                      value={mediaUrl}
+                      onChange={e => setMediaUrl(e.target.value)}
+                      className='comment-media-input'
+                    />
+                  </div>
+                )}
+              </div>
+
+              <button className='add-comment-button' onClick={handleAddCommentClick}>
+                Post
+              </button>
+            </div>
+            <div>
+              <input type='file' onChange={handleFileChange} />
+            </div>
+            {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
+            {mediaError && <small className='error'>{mediaError}</small>}
+            {textErr && <small className='error'>{textErr}</small>}
+          </div>
+
+          {/* List of existing comments */}
           <ul className='comments-list'>
             {comments.length > 0 ? (
               comments.map(comment => (
@@ -186,47 +241,20 @@ const CommentSection = ({
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
 
-                    {comment.mediaPath &&
-                      (() => {
-                        const path = comment.mediaPath.toLowerCase();
-
-                        if (path.endsWith('.glb')) {
-                          // 3D model viewport
-                          return (
-                            <div
-                              className='comment-model-wrapper'
-                              style={{
-                                width: '100%',
-                                height: '400px',
-                                marginTop: '1rem',
-                                position: 'relative',
-                              }}>
-                              <ThreeViewport
-                                key={comment.mediaPath}
-                                modelPath={comment.mediaPath}
-                              />
-                            </div>
-                          );
-                        } else if (
-                          path.endsWith('.mp4') ||
-                          path.endsWith('.webm') ||
-                          path.endsWith('.ogg')
-                        ) {
-                          // Video file
-                          return (
-                            <video src={comment.mediaPath} controls className='comment-media' />
-                          );
-                        } else {
-                          // Image file
-                          return (
-                            <img
-                              src={comment.mediaPath}
-                              alt='Loading...'
-                              className='comment-media'
-                            />
-                          );
-                        }
-                      })()}
+                    {comment.mediaPath && (() => {
+                      const path = comment.mediaPath.toLowerCase();
+                      if (path.endsWith('.glb')) {
+                        return (
+                          <div className='comment-model-wrapper'>
+                            <ThreeViewport key={comment.mediaPath} modelPath={comment.mediaPath} />
+                          </div>
+                        );
+                      } else if (['.mp4', '.webm', '.ogg'].some(ext => path.endsWith(ext))) {
+                        return <video src={comment.mediaPath} controls className='comment-media' />;
+                      } else {
+                        return <img src={comment.mediaPath} alt='media' className='comment-media' />;
+                      }
+                    })()}
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
@@ -237,69 +265,10 @@ const CommentSection = ({
               <p className='no-comments'>No comments yet.</p>
             )}
           </ul>
-
-          <div className='add-comment'>
-            <div className='input-row'>
-              <textarea
-                placeholder='Comment'
-                value={text}
-                onChange={e => setText(e.target.value)}
-                className='comment-textarea'
-              />
-
-              {/* Media button */}
-              <div
-                className='media-button-wrapper'
-                style={{ position: 'relative', display: 'inline-block' }}>
-                <button
-                  type='button'
-                  className='media-button'
-                  onClick={() => setShowMediaInput(!showMediaInput)}>
-                  <FaLink />
-                </button>
-
-                {/* Popup input above button */}
-                {showMediaInput && (
-                  <div
-                    className='media-popup'
-                    style={{
-                      position: 'absolute',
-                      bottom: '100%', // popup above the button
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      marginBottom: '8px',
-                      backgroundColor: 'white',
-                      padding: '6px',
-                      borderRadius: '4px',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                      zIndex: 10,
-                    }}>
-                    <input
-                      type='text'
-                      placeholder='Paste image/YouTube/Vimeo link'
-                      value={mediaUrl}
-                      onChange={e => setMediaUrl(e.target.value)}
-                      className='comment-media-input'
-                      style={{ width: '200px', padding: '4px' }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <button className='add-comment-button' onClick={handleAddCommentClick}>
-                Add Comment
-              </button>
-            </div>
-            <div>
-              <input type='file' onChange={handleFileChange} />
-            </div>
-            {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
-            {mediaError && <small className='error'>{mediaError}</small>}
-            {textErr && <small className='error'>{textErr}</small>}
-          </div>
         </div>
       )}
     </div>
+
   );
 };
 

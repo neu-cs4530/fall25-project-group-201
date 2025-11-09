@@ -97,25 +97,18 @@ const useAnswerPage = () => {
     targetId: string | undefined,
   ) => {
     try {
-      if (targetId === undefined) {
-        throw new Error('No target ID provided.');
-      }
+      if (!targetId) throw new Error('No target ID provided.');
 
-      let updatedComment = comment;
+      await addComment(targetId, targetType, comment);
 
-      if (mediaPath && mediaPath.trim() !== '') {
-        updatedComment = {
-          ...comment,
-          mediaPath,
-        };
-      }
-
-      await addComment(targetId, targetType, updatedComment);
+      // REFRESH: refetch question to reload comments
+      const updatedQuestion = await getQuestionById(questionID, user.username);
+      setQuestion(updatedQuestion);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error adding comment:', error);
     }
   };
+
 
   useEffect(() => {
     /**
