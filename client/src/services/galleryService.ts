@@ -1,4 +1,4 @@
-import { DatabaseGalleryPost, GalleryPost} from '../types/types';
+import { DatabaseGalleryPost, GalleryPost } from '../types/types';
 import api from './config';
 
 const GALLERY_API_URL = `/api/gallery`;
@@ -33,8 +33,4 @@ const getGalleryPost = async (galleryPostID: string): Promise<DatabaseGalleryPos
   return res.data;
 };
 
-export {
-  addGalleryPost,
-  getGalleryPosts,
-  getGalleryPost
-};
+export { addGalleryPost, getGalleryPosts, getGalleryPost };
