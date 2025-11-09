@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import './index.css';
 import useGalleryComponentPage from '../../../../hooks/useGalleryComponentPage';
+import { DatabaseGalleryPost } from '@fake-stack-overflow/shared';
 
 type GalleryComponentProps = {
   communityID: string;
@@ -12,15 +13,22 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
   const visibleCount = 2; // show 2 items at a time
   const [startIndex, setStartIndex] = useState(0);
+  const [currentMedia, setCurrentMedia] = useState<DatabaseGalleryPost>();
 
   const next = () => {
     setStartIndex(prev => (prev + visibleCount >= filteredGalleryPosts.length ? 0 : prev + visibleCount));
+    setCurrentMedia(undefined)
   };
   const prev = () => {
     setStartIndex(prev => (prev - visibleCount < 0 ? 0 : prev - visibleCount));
+    setCurrentMedia(undefined)
   };
 
   const visibleItems = filteredGalleryPosts.slice(startIndex, startIndex + visibleCount);
+
+  const handleMediaClick = (media: DatabaseGalleryPost) => {
+    setCurrentMedia(media);
+  }
 
   return (
     <div className="relative w-full h-[160px] bg-black/90 rounded-2xl flex items-center justify-center overflow-hidden px-4">
@@ -35,7 +43,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
           const isEmbed = /youtube\.com|youtu\.be|vimeo\.com/.test(url);
 
           return (
-            <span key={i} className="carouselItem inline-flex flex-col items-center">
+            <span key={i} className="carouselItem inline-flex flex-col items-center" onClick={() => handleMediaClick(item)}>
               {/* Media */}
               {isEmbed ? (() => {
                 let embedUrl = url;
@@ -65,7 +73,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                   src={item.thumbnailMedia}
                   alt={`Gallery ${i}`}
                   className="galleryMedia cursor-pointer"
-                  onClick={() => handle3DMediaClick(item._id.toString())}
+                  /*onClick={() => handle3DMediaClick(item._id.toString())}*/
                 />
               ) : null}
 
@@ -77,6 +85,21 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
           );
         })}
       </div>
+
+      {currentMedia && <div className='galleryPostInfo'>
+        <h3>{currentMedia.title}</h3>
+
+        <div>{currentMedia.user} posted at {new Date(currentMedia.postDateTime).toLocaleString()}</div>
+
+        <div>{currentMedia.description}</div>
+        
+        {(currentMedia.media.toLowerCase().endsWith('.glb')) &&
+          <button onClick={() => handle3DMediaClick(currentMedia._id.toString())}>
+            View 3D Model In Viewport
+          </button>
+        }
+        
+      </div>}
 
       {/* Arrows */}
       {filteredGalleryPosts.length > visibleCount && (
