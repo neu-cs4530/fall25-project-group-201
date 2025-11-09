@@ -233,10 +233,7 @@ const NewGalleryPostPage = () => {
               <div className='model-preview'>
                 <p>3D Model Preview:</p>
                 <div>
-                  {previewFilePath && (
-                    <ThreeViewport key={previewFilePath}
-                    modelPath={previewFilePath.toString()}/>
-                  )}
+                  {previewFilePath && <ThreeViewport key={previewFilePath} modelPath={previewFilePath.toString()} />}
                 </div>
               </div>
             </>
