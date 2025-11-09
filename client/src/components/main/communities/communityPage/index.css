@@ -120,7 +120,7 @@
   color: #1f2937;
 }
 
-.upload-placeholder {
+.gallery-upload-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
