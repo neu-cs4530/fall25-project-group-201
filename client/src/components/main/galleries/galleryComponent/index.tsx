@@ -106,19 +106,21 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       </div>
 
       {/* Navigation arrows */}
-      <button
-        onClick={prev}
-        className="absolute left-4 text-white bg-black/40 p-2 rounded-full hover:bg-black/60"
-      >
-        <ChevronLeft size={28} />
-      </button>
+      {(filteredGalleryPosts.length > 2) && 
+        <button
+          onClick={prev}
+          className="absolute left-4 text-white bg-black/40 p-2 rounded-full hover:bg-black/60"
+        >
+          <ChevronLeft size={28} />
+        </button>}
 
-      <button
-        onClick={next}
-        className="absolute right-4 text-white bg-black/40 p-2 rounded-full hover:bg-black/60"
-      >
-        <ChevronRight size={28} />
-      </button>
+      {(filteredGalleryPosts.length > 2) && 
+        <button
+          onClick={next}
+          className="absolute right-4 text-white bg-black/40 p-2 rounded-full hover:bg-black/60"
+        >
+          <ChevronRight size={28} />
+        </button>}
     </div>
   );
 };
