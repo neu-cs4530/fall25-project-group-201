@@ -195,7 +195,12 @@ const CommentSection = ({
                           return (
                             <div
                               className='comment-model-wrapper'
-                              style={{ width: '100%', height: '400px', marginTop: '1rem' }}>
+                              style={{
+                                width: '100%',
+                                height: '400px',
+                                marginTop: '1rem',
+                                position: 'relative',
+                              }}>
                               <ThreeViewport
                                 key={comment.mediaPath}
                                 modelPath={comment.mediaPath}
