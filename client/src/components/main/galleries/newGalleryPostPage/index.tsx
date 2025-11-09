@@ -14,13 +14,17 @@ const NewGalleryPostPage = () => {
     textErr,
     mediaErr,
     setMediaErr,
+    thumbnailMediaErr,
+    setThumbnailMediaErr,
     communityErr,
     mediaUrl,
     setMediaUrl,
     mediaPath,
     setUploadedMediaPath,
+    setUploadedThumbnailMediaPath,
     postGalleryPost,
     handleFileChange,
+    handleThumbnailFileChange,
   } = useNewGalleryPost();
 
   const { user: currentUser } = useUserContext();
@@ -84,6 +88,42 @@ const NewGalleryPostPage = () => {
       }
     } catch (err) {
       setMediaErr('Error uploading file');
+    }
+  };
+
+  const handleThumbnailFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    handleThumbnailFileChange(e);
+
+    const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      setThumbnailMediaErr('Unsupported file type');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('user', currentUser.username);
+      formData.append('filepathLocation', file.name);
+
+      const res = await fetch('/api/media/create', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data?.filepathLocation) {
+        setUploadedThumbnailMediaPath(data.filepathLocation);
+        setThumbnailMediaErr(null);
+      } else {
+        setThumbnailMediaErr('Thumbnail upload failed');
+      }
+    } catch (err) {
+      setThumbnailMediaErr('Error uploading thumbnail file');
     }
   };
 
@@ -172,12 +212,19 @@ const NewGalleryPostPage = () => {
           )}
 
           {mediaPath?.endsWith('.glb') && (
-            <div className='model-preview'>
-              <p>3D Model Preview:</p>
-              <div>
-                <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+            <>
+              <h3>Add Thumbnail</h3>
+              <div className='file-upload'>
+                <input type='file' accept='image/*,video/*,.glb' onChange={handleThumbnailFileUpload} />
               </div>
-            </div>
+              {thumbnailMediaErr && <p className='error'>{thumbnailMediaErr}</p>}
+              <div className='model-preview'>
+                <p>3D Model Preview:</p>
+                <div>
+                  <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>

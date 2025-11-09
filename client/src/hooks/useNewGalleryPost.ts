@@ -22,8 +22,10 @@ const useNewGalleryPost = () => {
   const [communityErr, setCommunityErr] = useState<string>('');
 
   const [mediaErr, setMediaErr] = useState<string | null>(null);
+  const [thumbnailMediaErr, setThumbnailMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
+  const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(undefined);
   const { communityID } = useParams<{ communityID: string }>();
 
   /**
@@ -79,11 +81,14 @@ const useNewGalleryPost = () => {
   const postGalleryPost = async () => {
     if (!validateForm()) return;
 
+    console.log("thumbnailMediaPath, ", thumbnailMediaPath)
+
     const gallerypost: GalleryPost = {
       title,
       description: text,
       user: user.username,
       media: (mediaUrl || mediaPath)!,
+       ...(thumbnailMediaPath ? { thumbnailMedia: thumbnailMediaPath } : {}),
       postDateTime:  new Date(),
       community: communityID!
     };
@@ -110,6 +115,13 @@ const useNewGalleryPost = () => {
     setUploadedMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
   };
 
+    const handleThumbnailFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadedThumbnailMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
+  };
+
   return {
     title,
     setTitle,
@@ -119,13 +131,17 @@ const useNewGalleryPost = () => {
     textErr,
     mediaErr,
     setMediaErr,
+    thumbnailMediaErr,
+    setThumbnailMediaErr,
     mediaUrl,
     setMediaUrl,
     communityErr,
     mediaPath,
     setUploadedMediaPath,
+    setUploadedThumbnailMediaPath,
     postGalleryPost,
     handleFileChange,
+    handleThumbnailFileChange,
   };
 };
 

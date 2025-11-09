@@ -31,6 +31,10 @@ const galleryPostSchema: Schema = new Schema(
     postDateTime: {
       type: Date,
     },
+    thumbnailMedia: {
+      type: String,
+      required: false,
+    },
   },
   { collection: 'GalleryPost' },
 );

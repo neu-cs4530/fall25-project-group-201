@@ -6,6 +6,7 @@ export interface GalleryPost {
   description: string;
   user: string;
   media: string;
+  thumbnailMedia?: string;
   community: string;
   postDateTime: Date;
 }
@@ -31,5 +32,6 @@ export interface CreateGalleryPostRequest extends Request {
     media: string;
     community: string;
     postedAt: Date;
+    thumbnailMedia?: string;
   };
 }
