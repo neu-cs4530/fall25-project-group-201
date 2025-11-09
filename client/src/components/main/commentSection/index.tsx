@@ -182,34 +182,31 @@ const CommentSection = ({
                 onChange={e => setText(e.target.value)}
                 className='comment-textarea'
               />
-
-              <div className='media-button-wrapper'>
-                <button
-                  type='button'
-                  className='media-button'
-                  onClick={() => setShowMediaInput(!showMediaInput)}>
-                  <FaLink />
-                </button>
-
-                {showMediaInput && (
-                  <div className='media-popup'>
-                    <input
-                      type='text'
-                      placeholder='Paste image/YouTube/Vimeo link'
-                      value={mediaUrl}
-                      onChange={e => setMediaUrl(e.target.value)}
-                      className='comment-media-input'
-                    />
-                  </div>
-                )}
-              </div>
-
               <button className='add-comment-button' onClick={handleAddCommentClick}>
                 Post
               </button>
             </div>
-            <div>
-              <input type='file' onChange={handleFileChange} />
+
+            <div className='media-actions'>
+              <button
+                type='button'
+                className='media-button'
+                onClick={() => setShowMediaInput(!showMediaInput)}>
+                <FaLink />
+              </button>
+              <input type='file' onChange={handleFileChange} className='file-input' />
+
+              {showMediaInput && (
+                <div className='media-popup'>
+                  <input
+                    type='text'
+                    placeholder='Paste image/YouTube/Vimeo link'
+                    value={mediaUrl}
+                    onChange={e => setMediaUrl(e.target.value)}
+                    className='comment-media-input'
+                  />
+                </div>
+              )}
             </div>
             {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
             {mediaError && <small className='error'>{mediaError}</small>}
