@@ -94,7 +94,6 @@ const useNewGalleryPost = () => {
     };
 
     try {
-        console.log("trying...")
       const res = await addGalleryPost(gallerypost);
       if (res && res._id) {
         navigate(`/communities/${communityID}`);

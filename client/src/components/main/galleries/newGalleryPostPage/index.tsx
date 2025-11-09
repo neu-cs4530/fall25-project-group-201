@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
 import './index.css';
 import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
@@ -28,6 +28,7 @@ const NewGalleryPostPage = () => {
   } = useNewGalleryPost();
 
   const { user: currentUser } = useUserContext();
+  const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
 
   /**
    * Handles changes to the media URL input.
@@ -60,6 +61,13 @@ const NewGalleryPostPage = () => {
     if (!file) return;
 
     handleFileChange(e);
+
+    const tempFileUrl = URL.createObjectURL(file);
+    setPreviewFilePath(tempFileUrl);
+
+    if (!previewFilePath){
+      setMediaErr('Unable to preview media');
+    }
 
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
     const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
@@ -221,7 +229,7 @@ const NewGalleryPostPage = () => {
               <div className='model-preview'>
                 <p>3D Model Preview:</p>
                 <div>
-                  <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+                  <ThreeViewport key={previewFilePath} modelPath={previewFilePath.toString()} />
                 </div>
               </div>
             </>
