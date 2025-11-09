@@ -5,7 +5,11 @@ import {
   FakeSOSocket,
   // GalleryPostResponse,
 } from '../types/types';
-import { createGalleryPost, getAllGalleryPosts } from '../services/gallerypost.service';
+import {
+  createGalleryPost,
+  getAllGalleryPosts,
+  getGalleryPostById,
+} from '../services/gallerypost.service';
 
 const galleryPostController = (socket: FakeSOSocket) => {
   const router = express.Router();
@@ -28,15 +32,17 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const { title, description, author, model, postedAt } = req.body;
+    const { title, description, user, media, community, postedAt, thumbnailMedia } = req.body;
 
     try {
       const savedGalleryPost = await createGalleryPost({
         title,
         description,
-        author,
-        model,
+        user,
+        media,
         postDateTime: postedAt,
+        community,
+        thumbnailMedia,
       });
 
       if ('error' in savedGalleryPost) {
@@ -51,7 +57,23 @@ const galleryPostController = (socket: FakeSOSocket) => {
     }
   };
 
+  const getGalleryPostRoute = async (_req: express.Request, res: Response): Promise<void> => {
+    try {
+      const { galleryPostID } = _req.params;
+      const galleryPost = await getGalleryPostById(galleryPostID);
+
+      if ('error' in galleryPost) {
+        throw new Error(galleryPost.error);
+      }
+
+      res.json(galleryPost);
+    } catch (err: unknown) {
+      res.status(500).send(`Error retrieving gallery post: ${(err as Error).message}`);
+    }
+  };
+
   router.get('/getAllGalleryPosts', getAllGalleryPostsRoute);
+  router.get('/getGalleryPost/:galleryPostID', getGalleryPostRoute);
   router.post('/create', createGalleryPostRoute);
 
   return router;

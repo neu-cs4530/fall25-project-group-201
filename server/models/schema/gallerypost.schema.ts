@@ -19,14 +19,21 @@ const galleryPostSchema: Schema = new Schema(
     description: {
       type: String,
     },
-    author: {
+    user: {
       type: String,
     },
-    model: {
+    media: {
+      type: String,
+    },
+    community: {
       type: String,
     },
     postDateTime: {
       type: Date,
+    },
+    thumbnailMedia: {
+      type: String,
+      required: false,
     },
   },
   { collection: 'GalleryPost' },
