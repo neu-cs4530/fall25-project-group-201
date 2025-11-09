@@ -31,6 +31,13 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
   return (
     <div className="relative w-full h-[300px] flex items-center justify-center bg-black/90 rounded-2xl overflow-hidden">
+      
+      {/* If there are no gallery posts */}
+      {(filteredGalleryPosts.length === 0) &&
+      <div>
+        No gallery posts in this community yet!
+      </div>}
+
       {/* Grid of visible items */}
       <div className="flex w-full h-full justify-center items-center space-x-4 px-6 transition-all duration-300">
        {visibleItems.map((item, i) => {
