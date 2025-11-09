@@ -79,12 +79,6 @@ const SideBarNav = () => {
         className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
         My Collections
       </NavLink>
-      <NavLink
-        to='/viewportTest'
-        id='menu_communities'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
-        3D Viewport Test
-      </NavLink>
     </div>
   );
 };

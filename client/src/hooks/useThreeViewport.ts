@@ -176,7 +176,7 @@ const useThreeViewport = (modelPath: string | null) => {
     scene.add(new THREE.AmbientLight(0xffffff, 1.1));
 
     // --- Ground plane ---
-    const groundGeo = new THREE.PlaneGeometry(20, 20, 1, 1);
+    const groundGeo = new THREE.PlaneGeometry(1000, 1000, 1, 1);
     const groundMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 10 });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
