@@ -63,6 +63,14 @@ const useNewGalleryPost = () => {
       setMediaErr('');
     }
 
+    // Check for 3D model thumbnail if media is glb
+    if (mediaPath?.endsWith('.glb') && !thumbnailMediaPath) {
+      setThumbnailMediaErr('You must upload a thumbnail for 3D models.');
+      isValid = false;
+    } else {
+      setThumbnailMediaErr('');
+}
+
     if (!communityID) {
       setCommunityErr('Error: Community for this project is not defined');
       isValid = false;
