@@ -146,3 +146,41 @@
 .media-button:hover {
   color: #0056b3;
 }
+
+.comment-model-wrapper .viewport-card {
+  width: 100% !important;
+  height: 100% !important;
+  padding-bottom: 0 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  max-width: 600px;
+}
+
+.comment-model-wrapper .viewport-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.comment-model-wrapper .upload-section {
+  position: absolute !important;
+  top: 10px;
+  left: 10px;
+}
+
+.delete-media-button {
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.delete-media-button:hover {
+  background: #c0392b;
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getMetaData } from '../../../tool';
@@ -11,8 +11,10 @@ import ThreeViewport from '../threeViewport';
 /**
  * Interface representing the props for the Comment Section component.
  *
- * - comments - list of the comment components
- * - handleAddComment - a function that handles adding a new comment, taking a Comment object as an argument
+ * @property comments - List of all comments to be displayed.
+ * @property handleAddComment - Function that handles adding a new comment to the thread.
+ * @property handleAddMedia - Function that uploads a media file and returns its hosted URL.
+ * @property handleAddMediaError - Error message string for media upload failures.
  */
 interface CommentSectionProps {
   comments: DatabaseComment[];
@@ -22,10 +24,15 @@ interface CommentSectionProps {
 }
 
 /**
- * CommentSection component shows the users all the comments and allows the users add more comments.
+ * CommentSection component displays all existing comments for a post and
+ * allows authenticated users to add text and media comments.
  *
- * @param comments: an array of Comment objects
- * @param handleAddComment: function to handle the addition of a new comment
+ * @component
+ * @param {DatabaseComment[]} comments - Array of existing comments to display.
+ * @param {(comment: Comment) => void} handleAddComment - Function called to post a new comment.
+ * @param {(file: File) => Promise<string | undefined>} handleAddMedia - Function that uploads media files.
+ * @param {string | null} handleAddMediaError - Error message for media upload issues.
+ * @returns A rendered comment section with media upload and markdown support.
  */
 const CommentSection = ({
   comments,
@@ -40,10 +47,15 @@ const CommentSection = ({
   const [mediaUrl, setMediaUrl] = useState<string>(''); // for embedded links
   const [showMediaInput, setShowMediaInput] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   /**
-   * Validate whether a string is a valid media URL.
-   * Supports image URLs, YouTube, and Vimeo links.
+   * Validates whether a provided string is a valid media URL.
+   * Supports image formats, YouTube, and Vimeo links.
+   *
+   * @param url - The URL string to validate.
+   * @returns True if the URL matches a supported media pattern, otherwise false.
    */
   function isValidMediaUrl(url: string): boolean {
     if (!url) return false;
@@ -68,7 +80,8 @@ const CommentSection = ({
   }
 
   /**
-   * Function to handle the addition of a new comment.
+   * Handles the posting of a new comment.
+   * Validates input, uploads media if attached, and resets input state on success.
    */
   const handleAddCommentClick = async () => {
     if (text.trim() === '' || user.username.trim() === '') {
@@ -110,13 +123,23 @@ const CommentSection = ({
     setMediaUrl('');
     setFile(null);
 
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
     if (typeof window !== 'undefined') {
       const commentContainer = document.querySelector('.comments-container');
       commentContainer?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  // Function to detect Image, YouTube or Vimeo URLs and return embed iframe
+  /**
+   * Renders embedded media elements such as images, YouTube, or Vimeo videos
+   * when a valid URL is detected in a comment.
+   *
+   * @param text - The comment text that may contain a media URL.
+   * @returns A JSX element representing the embedded media.
+   */
   const renderEmbeddedMedia = (text: string) => {
     const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i;
     const imageMatch = text.match(imageRegex);
@@ -158,11 +181,27 @@ const CommentSection = ({
     return <div className='comment-media'>Error embedding URL: {text}</div>;
   };
 
-  const [file, setFile] = useState<File | null>(null);
-
+  /**
+   * Handles file selection from the file input element.
+   *
+   * @param e - The file input change event.
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]); // store the selected file
+    }
+  };
+
+  /**
+   * Clears the selected file or entered media URL,
+   * resetting the input state and error messages.
+   */
+  const handleDeleteMedia = () => {
+    setFile(null);
+    setMediaUrl('');
+    setMediaError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -194,7 +233,22 @@ const CommentSection = ({
                 onClick={() => setShowMediaInput(!showMediaInput)}>
                 <FaLink />
               </button>
-              <input type='file' onChange={handleFileChange} className='file-input' />
+              <input
+                type='file'
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className='file-input'
+              />
+
+              {(file || mediaUrl) && (
+                <button
+                  type='button'
+                  className='delete-media-button'
+                  onClick={handleDeleteMedia}
+                >
+                  ✕ Remove Media
+                </button>
+              )}
 
               {showMediaInput && (
                 <div className='media-popup'>
