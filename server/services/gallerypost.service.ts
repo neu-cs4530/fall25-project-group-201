@@ -43,3 +43,20 @@ export const getGalleryPostById = async (id: string): Promise<GalleryPostRespons
     return { error: (error as Error).message };
   }
 };
+
+export const deleteGalleryPost = async (id: string, username: string): Promise<GalleryPostResponse> => {
+  try {
+    const deletedGalleryPost = await GalleryPostModel.findOneAndDelete({
+      _id: id,
+      username: username,
+    });
+
+    if (!deletedGalleryPost) {
+      throw new Error('Failed to delete gallery post');
+    }
+
+    return deletedGalleryPost;
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+};

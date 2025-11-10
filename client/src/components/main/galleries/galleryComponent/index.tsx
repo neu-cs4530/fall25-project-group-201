@@ -9,7 +9,7 @@ type GalleryComponentProps = {
 };
 
 const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
-  const { filteredGalleryPosts, error, handle3DMediaClick, checkIfAuthorOfCurrentGalleryPost, isAuthor} = useGalleryComponentPage(communityID);
+  const { filteredGalleryPosts, error, handle3DMediaClick, checkIfAuthorOfCurrentGalleryPost, isAuthor, handleDeleteMediaPost} = useGalleryComponentPage(communityID);
 
   const visibleCount = 2; // show 2 items at a time
   const [startIndex, setStartIndex] = useState(0);
@@ -96,7 +96,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       {currentGalleryPost && (
         <div className='galleryPostInfo'>
           {/* Trash button */}
-          {isAuthor && <button className='trashButton'>
+          {isAuthor && <button className='trashButton' onClick={() => handleDeleteMediaPost(currentGalleryPost)}>
             <Trash2 size={16} className='text-white' />
           </button>}
 

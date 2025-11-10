@@ -35,3 +35,12 @@ export interface CreateGalleryPostRequest extends Request {
     thumbnailMedia?: string;
   };
 }
+
+export interface GalleryPostRequest extends Request {
+  params: {
+    galleryPostId: string;
+  };
+  query: {
+    username: string;
+  };
+}

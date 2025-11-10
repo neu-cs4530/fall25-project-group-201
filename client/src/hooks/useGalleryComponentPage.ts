@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DatabaseGalleryPost } from '../types/types';
-import { getGalleryPosts } from '../services/galleryService';
+import { getGalleryPosts, deleteGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -40,12 +40,17 @@ const useGalleryComponentPage = (communityID: string) => {
     setIsAuthor(currentGalleryPost.user === currentUser.username);
   }
 
+  const handleDeleteMediaPost = (currentGalleryPost: DatabaseGalleryPost) => {
+    deleteGalleryPost(currentGalleryPost._id.toString(), currentGalleryPost.user);
+  }
+
   return {
     filteredGalleryPosts,
     error,
     handle3DMediaClick,
     checkIfAuthorOfCurrentGalleryPost,
     isAuthor,
+    handleDeleteMediaPost
   };
 };
 
