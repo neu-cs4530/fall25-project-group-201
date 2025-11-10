@@ -4,8 +4,10 @@ import { Request } from 'express';
 export interface GalleryPost {
   title: string;
   description: string;
-  author: string;
-  model: string;
+  user: string;
+  media: string;
+  thumbnailMedia?: string;
+  community: string;
   postDateTime: Date;
 }
 
@@ -26,8 +28,10 @@ export interface CreateGalleryPostRequest extends Request {
   body: {
     title: string;
     description: string;
-    author: string;
-    model: string;
+    user: string;
+    media: string;
+    community: string;
     postedAt: Date;
+    thumbnailMedia?: string;
   };
 }
