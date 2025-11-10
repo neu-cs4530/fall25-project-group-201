@@ -31,7 +31,6 @@ const useGalleryComponentPage = (communityID: string) => {
     fetchGalleryPosts();
   }, [currentUser.username, communityID]);
 
-
   const handle3DMediaClick = (galleryPostID: string) => {
     navigate(`/galleryPostViewport/${galleryPostID}`);
   };
@@ -39,7 +38,7 @@ const useGalleryComponentPage = (communityID: string) => {
   // Check if the current user is the author of the currentGalleryPost being displayed
   const checkIfAuthorOfCurrentGalleryPost = (currentGalleryPost: DatabaseGalleryPost) => {
     setIsAuthor(currentGalleryPost.user === currentUser.username);
-  }
+  };
 
   const handleDeleteGalleryPost = async (currentGalleryPost: DatabaseGalleryPost) => {
     try {
@@ -50,14 +49,13 @@ const useGalleryComponentPage = (communityID: string) => {
     }
   };
 
-
   return {
     filteredGalleryPosts,
     error,
     handle3DMediaClick,
     checkIfAuthorOfCurrentGalleryPost,
     isAuthor,
-    handleDeleteGalleryPost
+    handleDeleteGalleryPost,
   };
 };
 

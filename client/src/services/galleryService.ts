@@ -33,7 +33,10 @@ const getGalleryPost = async (galleryPostID: string): Promise<DatabaseGalleryPos
   return res.data;
 };
 
-const deleteGalleryPost = async (galleryPostId: string, username: string): Promise<DatabaseGalleryPost> => {
+const deleteGalleryPost = async (
+  galleryPostId: string,
+  username: string,
+): Promise<DatabaseGalleryPost> => {
   const res = await api.delete(`${GALLERY_API_URL}/delete/${galleryPostId}?${username}`);
 
   if (res.status !== 200) {
@@ -43,4 +46,4 @@ const deleteGalleryPost = async (galleryPostId: string, username: string): Promi
   return res.data;
 };
 
-export { addGalleryPost, getGalleryPosts, getGalleryPost, deleteGalleryPost};
+export { addGalleryPost, getGalleryPosts, getGalleryPost, deleteGalleryPost };
