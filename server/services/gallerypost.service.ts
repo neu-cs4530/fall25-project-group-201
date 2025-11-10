@@ -61,7 +61,7 @@ export const deleteGalleryPost = async (
       throw new Error('Gallery post not found');
     }
 
-    // Get full filepath
+    // Get full filepath for media
     const projectRoot = path.resolve(__dirname, '../../');
     const filePath = path.join(projectRoot, 'client', 'public', galleryPost.media);
 
@@ -71,6 +71,20 @@ export const deleteGalleryPost = async (
         await fs.unlink(filePath);
       } catch (err) {
         throw new Error(`Failed to delete media: ${filePath}`);
+      }
+    }
+
+    if (galleryPost.thumbnailMedia) {
+      // Get full filepath for media
+      const thumbnailfilePath = path.join(projectRoot, 'client', 'public', galleryPost.thumbnailMedia);
+
+      // Delete thumbnailMedia
+      if (galleryPost.thumbnailMedia) {
+        try {
+          await fs.unlink(thumbnailfilePath);
+        } catch (err) {
+          throw new Error(`Failed to delete thumbnailMedia: ${thumbnailfilePath}`);
+        }
       }
     }
 
