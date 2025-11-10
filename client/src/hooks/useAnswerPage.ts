@@ -13,12 +13,17 @@ import { getQuestionById } from '../services/questionService';
 import mediaService from '../services/mediaService';
 
 /**
- * Custom hook for managing the answer page's state, navigation, and real-time updates.
+ * Custom React hook for managing the Answer Page functionality.
+ * Handles fetching and updating question data, comments, answers, media uploads,
+ * and real-time socket updates.
  *
- * @returns questionID - The current question ID retrieved from the URL parameters.
- * @returns question - The current question object with its answers, comments, and votes.
- * @returns handleNewComment - Function to handle the submission of a new comment to a question or answer.
- * @returns handleNewAnswer - Function to navigate to the "New Answer" page
+ * @returns {object} Object containing:
+ * - `questionID`: The current question ID from URL parameters.
+ * - `question`: The current question object (with answers, comments, votes, etc.).
+ * - `handleNewComment`: Function to handle new comment submission.
+ * - `handleNewAnswer`: Function to navigate to the "New Answer" page.
+ * - `handleAddMedia`: Function to upload new media files.
+ * - `handleAddMediaError`: Error message related to media uploads, if any.
  */
 const useAnswerPage = () => {
   const { qid } = useParams();
@@ -27,25 +32,36 @@ const useAnswerPage = () => {
   const { user, socket } = useUserContext();
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
-  const mediaPath: string = '';
   const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
 
   /**
-   * Function to handle navigation to the "New Answer" page.
+   * Navigates the user to the "New Answer" page for the current question.
+   *
+   * @function
+   * @returns {void}
    */
   const handleNewAnswer = () => {
     navigate(`/new/answer/${questionID}`);
   };
 
+  /**
+   * Handles the addition of new media by uploading files to the server.
+   * Validates file type, size, and user authentication before uploading.
+   *
+   * @async
+   * @function
+   * @param {File} file - The media file to upload.
+   * @returns {Promise<string | undefined>} The uploaded file path or `undefined` on failure.
+   */
   const handleAddMedia = async (file: File): Promise<string | undefined> => {
     if (!file || !file.name) {
       setHandleAddMediaError('File with valid path is required');
       return;
     }
 
-    const maxSize = 20 * 1024 * 1024; // 20 MB in bytes
+    const maxSize = 20 * 1024 * 1024; // 20 MB
     if (file.size > maxSize) {
-      setHandleAddMediaError('File size cannot exceed 2 MB');
+      setHandleAddMediaError('File size cannot exceed 20 MB');
       return;
     }
 
@@ -58,7 +74,7 @@ const useAnswerPage = () => {
     const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
 
     if (!allowedExtensions.includes(fileExtension)) {
-      setHandleAddMediaError('Only .png, .jpeg, .jpg, and .mp4 files are allowed');
+      setHandleAddMediaError('Only .png, .jpeg, .jpg, .mp4, and .glb files are allowed');
       return;
     }
 
@@ -68,13 +84,16 @@ const useAnswerPage = () => {
       formData.append('filepathLocation', file.name);
 
       const newMedia = await mediaService.addMedia(user.username, formData);
-
       return newMedia.filepathLocation;
     } catch (err) {
       return undefined;
     }
   };
 
+  /**
+   * Syncs the `questionID` state with the URL parameter (`qid`).
+   * Redirects to the home page if `qid` is not found.
+   */
   useEffect(() => {
     if (!qid) {
       navigate('/home');
@@ -85,43 +104,44 @@ const useAnswerPage = () => {
   }, [qid, navigate]);
 
   /**
-   * Function to handle the submission of a new comment to a question or answer.
+   * Adds a new comment to a question or answer, then refreshes the question data.
    *
-   * @param comment - The comment object to be added.
-   * @param targetType - The type of target being commented on, either 'question' or 'answer'.
-   * @param targetId - The ID of the target being commented on.
+   * @async
+   * @function
+   * @param {Comment} comment - The comment to add.
+   * @param {'question' | 'answer'} targetType - Whether the comment is for a question or answer.
+   * @param {string | undefined} targetId - The ID of the target being commented on.
+   * @returns {Promise<void>}
    */
   const handleNewComment = async (
     comment: Comment,
     targetType: 'question' | 'answer',
     targetId: string | undefined,
-  ) => {
+  ): Promise<void> => {
     try {
-      if (targetId === undefined) {
-        throw new Error('No target ID provided.');
-      }
+      if (!targetId) throw new Error('No target ID provided.');
 
-      let updatedComment = comment;
-
-      if (mediaPath && mediaPath.trim() !== '') {
-        updatedComment = {
-          ...comment,
-          mediaPath,
-        };
-      }
-
-      await addComment(targetId, targetType, updatedComment);
+      await addComment(targetId, targetType, comment);
+      const updatedQuestion = await getQuestionById(questionID, user.username);
+      setQuestion(updatedQuestion);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error adding comment:', error);
     }
   };
 
+  /**
+   * Fetches the full question data when the question ID or user changes.
+   */
   useEffect(() => {
     /**
-     * Function to fetch the question data based on the question ID.
+     * Fetches the question data by its ID from the server.
+     *
+     * @async
+     * @function
+     * @returns {Promise<void>}
      */
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
         const res = await getQuestionById(questionID, user.username);
         setQuestion(res || null);
@@ -135,11 +155,15 @@ const useAnswerPage = () => {
     fetchData().catch(e => console.log(e));
   }, [questionID, user.username]);
 
+  /**
+   * Sets up socket listeners for real-time updates to answers, comments, views, and votes.
+   * Cleans up listeners when the component is unmounted.
+   */
   useEffect(() => {
     /**
-     * Function to handle updates to the answers of a question.
+     * Handles updates when a new answer is added to the current question.
      *
-     * @param answer - The updated answer object.
+     * @param {{ qid: ObjectId, answer: PopulatedDatabaseAnswer }} payload - The updated answer data.
      */
     const handleAnswerUpdate = ({
       qid: id,
@@ -158,10 +182,9 @@ const useAnswerPage = () => {
     };
 
     /**
-     * Function to handle updates to the comments of a question or answer.
+     * Handles updates to comments for both questions and answers.
      *
-     * @param result - The updated question or answer object.
-     * @param type - The type of the object being updated, either 'question' or 'answer'.
+     * @param {{ result: PopulatedDatabaseQuestion | PopulatedDatabaseAnswer, type: 'question' | 'answer' }} data - The updated data payload.
      */
     const handleCommentUpdate = ({
       result,
@@ -172,7 +195,6 @@ const useAnswerPage = () => {
     }) => {
       if (type === 'question') {
         const questionResult = result as PopulatedDatabaseQuestion;
-
         if (String(questionResult._id) === questionID) {
           setQuestion(questionResult);
         }
@@ -191,9 +213,9 @@ const useAnswerPage = () => {
     };
 
     /**
-     * Function to handle updates to the views of a question.
+     * Handles updates to the view count of a question.
      *
-     * @param q The updated question object.
+     * @param {PopulatedDatabaseQuestion} q - The updated question with new view data.
      */
     const handleViewsUpdate = (q: PopulatedDatabaseQuestion) => {
       if (String(q._id) === questionID) {
@@ -202,9 +224,9 @@ const useAnswerPage = () => {
     };
 
     /**
-     * Function to handle vote updates for a question.
+     * Handles vote count updates for the question.
      *
-     * @param voteData - The updated vote data for a question
+     * @param {VoteUpdatePayload} voteData - The updated vote data payload.
      */
     const handleVoteUpdate = (voteData: VoteUpdatePayload) => {
       if (voteData.qid === questionID) {
@@ -225,6 +247,7 @@ const useAnswerPage = () => {
     socket.on('commentUpdate', handleCommentUpdate);
     socket.on('voteUpdate', handleVoteUpdate);
 
+    // Cleanup listeners on unmount
     return () => {
       socket.off('answerUpdate', handleAnswerUpdate);
       socket.off('viewsUpdate', handleViewsUpdate);

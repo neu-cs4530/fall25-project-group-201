@@ -1,4 +1,4 @@
-import useThreeViewportPage from '../../../../hooks/useThreeViewportPage';
+import useThreeViewport from '../../../../hooks/useThreeViewport';
 import useGalleryPostViewport from '../../../../hooks/useGalleryPostViewport';
 import { useEffect } from 'react';
 
@@ -9,7 +9,7 @@ const GalleryPostViewport = () => {
     fetchGalleryPost();
   }, [fetchGalleryPost]);
 
-  const { containerRef } = useThreeViewportPage(galleryPost?.media ?? null);
+  const { containerRef } = useThreeViewport(galleryPost?.media ?? null);
 
   return (
     <>

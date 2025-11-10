@@ -36,7 +36,7 @@ interface QuestionBodyProps {
  */
 const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
-  const isVideo = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
+  const isVideo = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
   const isImage = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
   return (
@@ -46,16 +46,23 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
       <div className='answer_question_text'>
         <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
 
-        {isGLB && (
+        {mediaPath && isGLB && (
           <div className='three-wrapper'>
             <ThreeViewport key={mediaPath} modelPath={mediaPath!} />
           </div>
         )}
 
-        {mediaPath && !isGLB && (
+        {mediaPath && isImage && (
           <div className='question-media'>
-            <img src={`/${mediaPath}`} alt='uploaded media' />
+            <img src={mediaPath} alt='uploaded media' />
           </div>
+        )}
+
+        {mediaPath && isVideo && (
+          <video controls>
+            <source src={mediaPath} />
+            Your browser does not support video.
+          </video>
         )}
 
         {mediaUrl && (

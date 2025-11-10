@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getMetaData } from '../../../tool';
@@ -11,8 +11,10 @@ import ThreeViewport from '../threeViewport';
 /**
  * Interface representing the props for the Comment Section component.
  *
- * - comments - list of the comment components
- * - handleAddComment - a function that handles adding a new comment, taking a Comment object as an argument
+ * @property comments - List of all comments to be displayed.
+ * @property handleAddComment - Function that handles adding a new comment to the thread.
+ * @property handleAddMedia - Function that uploads a media file and returns its hosted URL.
+ * @property handleAddMediaError - Error message string for media upload failures.
  */
 interface CommentSectionProps {
   comments: DatabaseComment[];
@@ -22,10 +24,15 @@ interface CommentSectionProps {
 }
 
 /**
- * CommentSection component shows the users all the comments and allows the users add more comments.
+ * CommentSection component displays all existing comments for a post and
+ * allows authenticated users to add text and media comments.
  *
- * @param comments: an array of Comment objects
- * @param handleAddComment: function to handle the addition of a new comment
+ * @component
+ * @param {DatabaseComment[]} comments - Array of existing comments to display.
+ * @param {(comment: Comment) => void} handleAddComment - Function called to post a new comment.
+ * @param {(file: File) => Promise<string | undefined>} handleAddMedia - Function that uploads media files.
+ * @param {string | null} handleAddMediaError - Error message for media upload issues.
+ * @returns A rendered comment section with media upload and markdown support.
  */
 const CommentSection = ({
   comments,
@@ -40,29 +47,29 @@ const CommentSection = ({
   const [mediaUrl, setMediaUrl] = useState<string>(''); // for embedded links
   const [showMediaInput, setShowMediaInput] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   /**
-   * Validate whether a string is a valid media URL.
-   * Supports image URLs, YouTube, and Vimeo links.
+   * Validates whether a provided string is a valid media URL.
+   * Supports image formats, YouTube, and Vimeo links.
+   *
+   * @param url - The URL string to validate.
+   * @returns True if the URL matches a supported media pattern, otherwise false.
    */
   function isValidMediaUrl(url: string): boolean {
     if (!url) return false;
 
     try {
       const parsed = new URL(url);
-
-      // Allowed protocols
       if (!['http:', 'https:'].includes(parsed.protocol)) return false;
 
-      // Image file extensions
       const imagePattern = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i;
       if (imagePattern.test(parsed.pathname)) return true;
 
-      // YouTube URL patterns
       const youtubePattern = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)/i;
       if (youtubePattern.test(url)) return true;
 
-      // Vimeo URL pattern
       const vimeoPattern = /^(?:https?:\/\/)?(?:www\.)?vimeo\.com\/\d+/i;
       if (vimeoPattern.test(url)) return true;
 
@@ -73,7 +80,8 @@ const CommentSection = ({
   }
 
   /**
-   * Function to handle the addition of a new comment.
+   * Handles the posting of a new comment.
+   * Validates input, uploads media if attached, and resets input state on success.
    */
   const handleAddCommentClick = async () => {
     if (text.trim() === '' || user.username.trim() === '') {
@@ -86,7 +94,6 @@ const CommentSection = ({
 
     let tempMediaPath: string | undefined;
 
-    // Upload file if present
     if (file) {
       tempMediaPath = await handleAddMedia(file);
       if (!tempMediaPath) {
@@ -100,7 +107,6 @@ const CommentSection = ({
         setMediaError('Media URL is invalid');
         return;
       }
-      setMediaUrl(mediaUrl);
     }
 
     const newComment: Comment = {
@@ -111,22 +117,36 @@ const CommentSection = ({
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
     };
 
-    handleAddComment(newComment);
+    await handleAddComment(newComment);
 
     setText('');
     setMediaUrl('');
+    setFile(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
+    if (typeof window !== 'undefined') {
+      const commentContainer = document.querySelector('.comments-container');
+      commentContainer?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  // Function to detect Image, YouTube or Vimeo URLs and return embed iframe
+  /**
+   * Renders embedded media elements such as images, YouTube, or Vimeo videos
+   * when a valid URL is detected in a comment.
+   *
+   * @param text - The comment text that may contain a media URL.
+   * @returns A JSX element representing the embedded media.
+   */
   const renderEmbeddedMedia = (text: string) => {
-    // Image URL
     const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i;
     const imageMatch = text.match(imageRegex);
     if (imageMatch) {
       return <img src={imageMatch[0]} alt='user-uploaded' className='comment-image' />;
     }
 
-    // YouTube URL
     const ytRegex =
       /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const ytMatch = text.match(ytRegex);
@@ -143,7 +163,6 @@ const CommentSection = ({
       );
     }
 
-    // Vimeo URL
     const vimeoRegex = /https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/;
     const vimeoMatch = text.match(vimeoRegex);
     if (vimeoMatch) {
@@ -162,11 +181,27 @@ const CommentSection = ({
     return <div className='comment-media'>Error embedding URL: {text}</div>;
   };
 
-  const [file, setFile] = useState<File | null>(null);
-
+  /**
+   * Handles file selection from the file input element.
+   *
+   * @param e - The file input change event.
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]); // store the selected file
+    }
+  };
+
+  /**
+   * Clears the selected file or entered media URL,
+   * resetting the input state and error messages.
+   */
+  const handleDeleteMedia = () => {
+    setFile(null);
+    setMediaUrl('');
+    setMediaError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -178,6 +213,56 @@ const CommentSection = ({
 
       {showComments && (
         <div className='comments-container'>
+          <div className='add-comment'>
+            <div className='input-row'>
+              <textarea
+                placeholder='Write a comment...'
+                value={text}
+                onChange={e => setText(e.target.value)}
+                className='comment-textarea'
+              />
+              <button className='add-comment-button' onClick={handleAddCommentClick}>
+                Post
+              </button>
+            </div>
+
+            <div className='media-actions'>
+              <button
+                type='button'
+                className='media-button'
+                onClick={() => setShowMediaInput(!showMediaInput)}>
+                <FaLink />
+              </button>
+              <input
+                type='file'
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className='file-input'
+              />
+
+              {(file || mediaUrl) && (
+                <button type='button' className='delete-media-button' onClick={handleDeleteMedia}>
+                  ✕ Remove Media
+                </button>
+              )}
+
+              {showMediaInput && (
+                <div className='media-popup'>
+                  <input
+                    type='text'
+                    placeholder='Paste image/YouTube/Vimeo link'
+                    value={mediaUrl}
+                    onChange={e => setMediaUrl(e.target.value)}
+                    className='comment-media-input'
+                  />
+                </div>
+              )}
+            </div>
+            {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
+            {mediaError && <small className='error'>{mediaError}</small>}
+            {textErr && <small className='error'>{textErr}</small>}
+          </div>
+
           <ul className='comments-list'>
             {comments.length > 0 ? (
               comments.map(comment => (
@@ -189,36 +274,22 @@ const CommentSection = ({
                     {comment.mediaPath &&
                       (() => {
                         const path = comment.mediaPath.toLowerCase();
-
                         if (path.endsWith('.glb')) {
-                          // 3D model viewport
                           return (
-                            <div
-                              className='comment-model-wrapper'
-                              style={{ width: '100%', height: '400px', marginTop: '1rem' }}>
+                            <div className='comment-model-wrapper'>
                               <ThreeViewport
                                 key={comment.mediaPath}
                                 modelPath={comment.mediaPath}
                               />
                             </div>
                           );
-                        } else if (
-                          path.endsWith('.mp4') ||
-                          path.endsWith('.webm') ||
-                          path.endsWith('.ogg')
-                        ) {
-                          // Video file
+                        } else if (['.mp4', '.webm', '.ogg'].some(ext => path.endsWith(ext))) {
                           return (
                             <video src={comment.mediaPath} controls className='comment-media' />
                           );
                         } else {
-                          // Image file
                           return (
-                            <img
-                              src={comment.mediaPath}
-                              alt='Loading...'
-                              className='comment-media'
-                            />
+                            <img src={comment.mediaPath} alt='media' className='comment-media' />
                           );
                         }
                       })()}
@@ -232,66 +303,6 @@ const CommentSection = ({
               <p className='no-comments'>No comments yet.</p>
             )}
           </ul>
-
-          <div className='add-comment'>
-            <div className='input-row'>
-              <textarea
-                placeholder='Comment'
-                value={text}
-                onChange={e => setText(e.target.value)}
-                className='comment-textarea'
-              />
-
-              {/* Media button */}
-              <div
-                className='media-button-wrapper'
-                style={{ position: 'relative', display: 'inline-block' }}>
-                <button
-                  type='button'
-                  className='media-button'
-                  onClick={() => setShowMediaInput(!showMediaInput)}>
-                  <FaLink />
-                </button>
-
-                {/* Popup input above button */}
-                {showMediaInput && (
-                  <div
-                    className='media-popup'
-                    style={{
-                      position: 'absolute',
-                      bottom: '100%', // popup above the button
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      marginBottom: '8px',
-                      backgroundColor: 'white',
-                      padding: '6px',
-                      borderRadius: '4px',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                      zIndex: 10,
-                    }}>
-                    <input
-                      type='text'
-                      placeholder='Paste image/YouTube/Vimeo link'
-                      value={mediaUrl}
-                      onChange={e => setMediaUrl(e.target.value)}
-                      className='comment-media-input'
-                      style={{ width: '200px', padding: '4px' }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <button className='add-comment-button' onClick={handleAddCommentClick}>
-                Add Comment
-              </button>
-            </div>
-            <div>
-              <input type='file' onChange={handleFileChange} />
-            </div>
-            {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
-            {mediaError && <small className='error'>{mediaError}</small>}
-            {textErr && <small className='error'>{textErr}</small>}
-          </div>
         </div>
       )}
     </div>
