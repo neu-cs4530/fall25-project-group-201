@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useRef } from 'react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
@@ -40,6 +40,7 @@ const NewQuestion = () => {
   } = useNewQuestion();
 
   const { user: currentUser } = useUserContext();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   /**
    * Handles changes to the media URL input.
@@ -70,6 +71,9 @@ const NewQuestion = () => {
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setUploadedMediaPath(undefined);
+    if (fileInputRef.current) fileInputRef.current.value = '';
 
     handleFileChange(e);
 
@@ -102,6 +106,7 @@ const NewQuestion = () => {
       setMediaErr('Error uploading file');
     }
   };
+
 
   return (
     <div className='new-question-container'>
@@ -173,32 +178,36 @@ const NewQuestion = () => {
         </div>
 
         <div className='file-upload'>
-          <input type='file' accept='image/*,video/*,.glb' onChange={handleFileUpload} />
+          <label className='file-label'>
+            {fileInputRef.current?.files?.[0]?.name || 'Choose a file'}
+            <input
+              ref={fileInputRef}
+              type='file'
+              accept='image/*,video/*,.glb'
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+            />
+          </label>
         </div>
 
         {mediaErr && <p className='error'>{mediaErr}</p>}
 
         <div className='media-preview'>
+          {/* Embedded URL preview */}
           {mediaUrl && (
             <div className='embed-preview'>
-              <p>Preview:</p>
+              <p>Embed Preview:</p>
               {mediaUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
                 <img src={mediaUrl} alt='Embedded media' />
               ) : (
                 (() => {
                   let embedUrl = mediaUrl;
-
                   const youtubeMatch = mediaUrl.match(
                     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/,
                   );
-                  if (youtubeMatch) {
-                    embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
-                  }
-
+                  if (youtubeMatch) embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
                   const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
-                  if (vimeoMatch) {
-                    embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-                  }
+                  if (vimeoMatch) embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
 
                   return (
                     <iframe
@@ -211,18 +220,70 @@ const NewQuestion = () => {
                   );
                 })()
               )}
+              <button
+                type='button'
+                className='delete-media-btn'
+                onClick={() => {
+                  setMediaUrl('');
+                  setUploadedMediaPath(undefined);
+                }}>
+                Remove
+              </button>
             </div>
           )}
 
+          {/* Uploaded 3D model */}
           {mediaPath?.endsWith('.glb') && (
             <div className='model-preview'>
               <p>3D Model Preview:</p>
-              <div>
-                <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
-              </div>
+              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+              <button
+                type='button'
+                className='delete-media-btn'
+                onClick={() => {
+                  setUploadedMediaPath(undefined);
+                }}>
+                Remove
+              </button>
+            </div>
+          )}
+
+          {/* Uploaded image or video */}
+          {mediaPath && !mediaPath.endsWith('.glb') && (
+            <div className='uploaded-preview'>
+              <p>File Preview:</p>
+
+              {mediaPath.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                <img src={mediaPath} alt='Uploaded media' />
+              ) : mediaPath.match(/\.(mp4|webm|ogg)$/i) ? (
+                <video controls>
+                  <source src={mediaPath} type='video/mp4' />
+                  Your browser does not support the video tag.
+                </video>
+              ) : null}
+
+              <button
+                type='button'
+                className='delete-media-btn'
+                onClick={async () => {
+                  try {
+                    await fetch('/api/media/delete', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ filepathLocation: mediaPath }),
+                    });
+                  } catch (err) {
+                    console.warn('Optional: could not delete file on server', err);
+                  }
+                  setUploadedMediaPath(undefined);
+                }}>
+                Remove
+              </button>
             </div>
           )}
         </div>
+
+
       </div>
 
       <button className='submit-btn' onClick={postQuestion}>

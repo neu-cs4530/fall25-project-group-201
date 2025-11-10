@@ -122,6 +122,57 @@ textarea {
 }
 
 .model-preview {
-  width: 50%;
+  width: 100%;
   margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.media-preview img,
+.media-preview video {
+  max-height: 300px;
+  width: auto;
+  border-radius: 8px;
+  margin-top: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.media-preview iframe {
+  max-height: 300px;
+  width: auto;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.media-preview p {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.delete-media-btn {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: none;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.delete-media-btn:hover {
+  background-color: #c0392b;
+}
+
+.file-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.file-label:hover {
+  background-color: #2563eb;
 }
