@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const useGalleryComponentPage = (communityID: string) => {
   const { user: currentUser } = useUserContext();
   const [filteredGalleryPosts, setFilteredGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
+  const [isAuthor, setIsAuthor] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -34,10 +35,17 @@ const useGalleryComponentPage = (communityID: string) => {
     navigate(`/galleryPostViewport/${galleryPostID}`);
   };
 
+  // Check if the current user is the author of the currentGalleryPost being displayed
+  const checkIfAuthorOfCurrentGalleryPost = (currentGalleryPost: DatabaseGalleryPost) => {
+    setIsAuthor(currentGalleryPost.user === currentUser.username);
+  }
+
   return {
     filteredGalleryPosts,
     error,
     handle3DMediaClick,
+    checkIfAuthorOfCurrentGalleryPost,
+    isAuthor,
   };
 };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import './index.css';
 import useGalleryComponentPage from '../../../../hooks/useGalleryComponentPage';
@@ -9,27 +9,33 @@ type GalleryComponentProps = {
 };
 
 const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
-  const { filteredGalleryPosts, error, handle3DMediaClick } = useGalleryComponentPage(communityID);
+  const { filteredGalleryPosts, error, handle3DMediaClick, checkIfAuthorOfCurrentGalleryPost, isAuthor} = useGalleryComponentPage(communityID);
 
   const visibleCount = 2; // show 2 items at a time
   const [startIndex, setStartIndex] = useState(0);
-  const [currentMedia, setCurrentMedia] = useState<DatabaseGalleryPost>();
+  const [currentGalleryPost, setCurrentGalleryPost] = useState<DatabaseGalleryPost>();
+
+  useEffect(() => {
+    if (currentGalleryPost) {
+      checkIfAuthorOfCurrentGalleryPost(currentGalleryPost)
+    }
+  }, [currentGalleryPost?._id]);
 
   const next = () => {
     setStartIndex(prev =>
       prev + visibleCount >= filteredGalleryPosts.length ? 0 : prev + visibleCount,
     );
-    setCurrentMedia(undefined);
+    setCurrentGalleryPost(undefined);
   };
   const prev = () => {
     setStartIndex(prev => (prev - visibleCount < 0 ? 0 : prev - visibleCount));
-    setCurrentMedia(undefined);
+    setCurrentGalleryPost(undefined);
   };
 
   const visibleItems = filteredGalleryPosts.slice(startIndex, startIndex + visibleCount);
 
   const handleMediaClick = (media: DatabaseGalleryPost) => {
-    setCurrentMedia(media);
+    setCurrentGalleryPost(media);
   };
 
   return (
@@ -87,23 +93,23 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
         })}
       </div>
 
-      {currentMedia && (
+      {currentGalleryPost && (
         <div className='galleryPostInfo'>
           {/* Trash button */}
-          <button className='trashButton'>
+          {isAuthor && <button className='trashButton'>
             <Trash2 size={16} className='text-white' />
-          </button>
+          </button>}
 
-          <h3>{currentMedia.title}</h3>
+          <h3>{currentGalleryPost.title}</h3>
 
           <div>
-            {currentMedia.user} posted at {new Date(currentMedia.postDateTime).toLocaleString()}
+            {currentGalleryPost.user} posted at {new Date(currentGalleryPost.postDateTime).toLocaleString()}
           </div>
 
-          <div>{currentMedia.description}</div>
+          <div>{currentGalleryPost.description}</div>
 
-          {currentMedia.media.toLowerCase().endsWith('.glb') && (
-            <button onClick={() => handle3DMediaClick(currentMedia._id.toString())}>
+          {currentGalleryPost.media.toLowerCase().endsWith('.glb') && (
+            <button onClick={() => handle3DMediaClick(currentGalleryPost._id.toString())}>
               View 3D Model In Viewport
             </button>
           )}
