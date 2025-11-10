@@ -11,25 +11,26 @@ const useGalleryComponentPage = (communityID: string) => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchGalleryPosts = async () => {
-      try {
-        const resGalleryPosts = await getGalleryPosts();
+  const fetchGalleryPosts = async () => {
+    try {
+      const resGalleryPosts = await getGalleryPosts();
+      const filteredPosts = resGalleryPosts.filter(post => post.community === communityID);
+      setFilteredGalleryPosts(filteredPosts);
 
-        // Filter using the fetched data directly
-        const filteredPosts = resGalleryPosts.filter(post => post.community === communityID);
-        setFilteredGalleryPosts(filteredPosts);
-
-        if (!filteredPosts.length) {
-          setError('No gallery posts found for this community');
-        }
-      } catch (err: unknown) {
-        setError('Failed to fetch gallery posts for this community');
+      if (!filteredPosts.length) {
+        setError('No gallery posts found for this community');
+      } else {
+        setError(null);
       }
-    };
+    } catch (err: unknown) {
+      setError('Failed to fetch gallery posts for this community');
+    }
+  };
 
+  useEffect(() => {
     fetchGalleryPosts();
   }, [currentUser.username, communityID]);
+
 
   const handle3DMediaClick = (galleryPostID: string) => {
     navigate(`/galleryPostViewport/${galleryPostID}`);
@@ -40,9 +41,15 @@ const useGalleryComponentPage = (communityID: string) => {
     setIsAuthor(currentGalleryPost.user === currentUser.username);
   }
 
-  const handleDeleteMediaPost = (currentGalleryPost: DatabaseGalleryPost) => {
-    deleteGalleryPost(currentGalleryPost._id.toString(), currentGalleryPost.user);
-  }
+  const handleDeleteGalleryPost = async (currentGalleryPost: DatabaseGalleryPost) => {
+    try {
+      await deleteGalleryPost(currentGalleryPost._id.toString(), currentGalleryPost.user);
+      await fetchGalleryPosts(); // wait for fetch to complete
+    } catch (err) {
+      console.error('Failed to delete gallery post', err);
+    }
+  };
+
 
   return {
     filteredGalleryPosts,
@@ -50,7 +57,7 @@ const useGalleryComponentPage = (communityID: string) => {
     handle3DMediaClick,
     checkIfAuthorOfCurrentGalleryPost,
     isAuthor,
-    handleDeleteMediaPost
+    handleDeleteGalleryPost
   };
 };
 
