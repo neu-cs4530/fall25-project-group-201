@@ -4,8 +4,11 @@ import remarkGfm from 'remark-gfm';
 import './index.css';
 import useProfileSettings from '../../hooks/useProfileSettings';
 import PortfolioModelViewer from '../main/threeViewport/PortfolioModelViewer';
+import toast, { Toaster } from 'react-hot-toast';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ProfileSettings: React.FC = () => {
+  const navigate = useNavigate();
   const {
     userData,
     loading,
@@ -13,8 +16,6 @@ const ProfileSettings: React.FC = () => {
     newBio,
     newPassword,
     confirmNewPassword,
-    successMessage,
-    errorMessage,
     showConfirmation,
     pendingAction,
     canEditProfile,
@@ -60,6 +61,10 @@ const ProfileSettings: React.FC = () => {
     handleViewCollectionsPage,
   } = useProfileSettings();
 
+  const handleUploadPortfolio = () => {
+    navigate(`/user/${userData?.username}/upload-portfolio`);
+  };
+
   if (loading) {
     return (
       <div
@@ -90,6 +95,7 @@ const ProfileSettings: React.FC = () => {
       }>
       <div className='profile-card'>
         <h2>Profile</h2>
+        <Toaster position="top-center" />
 
         {/* Banner & Profile Picture Section - INTERACTIVE */}
         <div className='profile-header-section'>
@@ -98,10 +104,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.bannerImage
                 ? {
-                    backgroundImage: `url(${userData.bannerImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.bannerImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {!userData?.bannerImage && <span>Banner Image</span>}
@@ -126,10 +132,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.profilePicture
                 ? {
-                    backgroundImage: `url(${userData.profilePicture})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.profilePicture})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {!userData?.profilePicture && <span>Profile Picture</span>}
@@ -149,9 +155,6 @@ const ProfileSettings: React.FC = () => {
             )}
           </div>
         </div>
-
-        {successMessage && <p className='success-message'>{successMessage}</p>}
-        {errorMessage && <p className='error-message'>{errorMessage}</p>}
 
         {userData ? (
           <>
@@ -484,13 +487,38 @@ const ProfileSettings: React.FC = () => {
             <h4>Portfolio</h4>
             <div className='portfolio-grid-section'>
               {userData.portfolioModels && userData.portfolioModels.length > 0 ? (
-                userData.portfolioModels.map((modelUrl, index) => (
-                  <div key={index} className='portfolio-model-item'>
-                    <div style={{ width: '100%', height: '200px' }}>
-                      <PortfolioModelViewer modelUrl={modelUrl} />
+                userData.portfolioModels.map((modelUrl, index) => {
+                  const thumbnailUrl = userData.portfolioThumbnails?.[index];
+                  return (
+                    <div
+                      key={index}
+                      className='portfolio-model-item'
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        // TODO: Navigate to full viewer
+                        console.log('Clicked model:', index);
+                      }}
+                    >
+                      {thumbnailUrl ? (
+                        <img
+                          src={thumbnailUrl}
+                          alt={`Portfolio model ${index + 1}`}
+                          style={{
+                            width: '100%',
+                            height: '200px',
+                            objectFit: 'cover',
+                            borderRadius: '8px'
+                          }}
+                        />
+                      ) : (
+                        // Fallback to 3D viewer if no thumbnail
+                        <div style={{ width: '100%', height: '200px' }}>
+                          <PortfolioModelViewer modelUrl={modelUrl} />
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className='portfolio-placeholder'>
                   <div className='placeholder-text'>📦</div>
@@ -499,21 +527,16 @@ const ProfileSettings: React.FC = () => {
               )}
 
               {canEditProfile && (
-                <label className='portfolio-upload-box'>
-                  <input
-                    type='file'
-                    accept='.glb,.gltf'
-                    style={{ display: 'none' }}
-                    onChange={e => {
-                      const file = e.target.files?.[0];
-                      if (file) handleUploadPortfolioModel(file);
-                    }}
-                  />
+                <button
+                  className='portfolio-upload-box'
+                  onClick={handleUploadPortfolio}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className='upload-placeholder'>
                     <div style={{ fontSize: '3rem' }}>➕</div>
                     <span>Upload Model</span>
                   </div>
-                </label>
+                </button>
               )}
             </div>
 

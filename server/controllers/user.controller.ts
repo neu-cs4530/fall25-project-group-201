@@ -387,51 +387,79 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Uploads a portfolio model for a user.
-   */
+  * Uploads a portfolio model AND thumbnail for a user.
+  */
   const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const file = req.file;
-      const { username } = req.body;
+  try {
+    const { username, thumbnail } = req.body;
+    const file = req.file;
 
-      if (!file) {
-        res.status(400).json({ error: 'File missing' });
-        return;
-      }
-      if (!username) {
-        res.status(400).json({ error: 'Username missing' });
-        return;
-      }
+    console.log('=== UPLOAD PORTFOLIO DEBUG ===');
+    console.log('Username:', username);
+    console.log('Thumbnail received:', thumbnail);
+    console.log('File:', file?.originalname);
 
-      // Convert .glb to base64
-      const Base64Model = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
-
-      // Get current user
-      const user = await getUserByUsername(username);
-      if ('error' in user) {
-        throw new Error('User not found');
-      }
-
-      // Add to portfolioModels array
-      const currentModels = user.portfolioModels || [];
-      const updatedModels = [...currentModels, Base64Model];
-
-      const updatedUser = await updateUser(username, { portfolioModels: updatedModels });
-
-      if ('error' in updatedUser) {
-        throw new Error(updatedUser.error);
-      }
-
-      socket.emit('userUpdate', {
-        user: updatedUser,
-        type: 'updated',
-      });
-
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      res.status(500).send(`Error uploading portfolio model: ${error}`);
+    if (!file) {
+      res.status(400).json({ error: 'Model file missing' });
+      return;
     }
-  };
+    if (!username) {
+      res.status(400).json({ error: 'Username missing' });
+      return;
+    }
+
+    const isGlbFile = file.originalname.toLowerCase().endsWith('.glb');
+    if (isGlbFile && !thumbnail) {
+      res.status(400).json({ error: 'Thumbnail required for 3D models' });
+      return;
+    }
+
+    const Base64Model = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+    const user = await getUserByUsername(username);
+    if ('error' in user) {
+      throw new Error('User not found');
+    }
+
+    const currentModels = user.portfolioModels || [];
+    const currentThumbnails = user.portfolioThumbnails || [];
+    
+    // FIX: Ensure thumbnails array matches models array length
+    // Fill missing thumbnails with empty strings
+    while (currentThumbnails.length < currentModels.length) {
+      currentThumbnails.push('');
+    }
+
+    console.log('Current models length:', currentModels.length);
+    console.log('Current thumbnails length (after padding):', currentThumbnails.length);
+    
+    const updatedModels = [...currentModels, Base64Model];
+    const updatedThumbnails = [...currentThumbnails, thumbnail || ''];
+
+    console.log('Updated models length:', updatedModels.length);
+    console.log('Updated thumbnails length:', updatedThumbnails.length);
+    console.log('=== END DEBUG ===');
+
+    const updatedUser = await updateUser(username, { 
+      portfolioModels: updatedModels,
+      portfolioThumbnails: updatedThumbnails,
+    });
+
+    if ('error' in updatedUser) {
+      throw new Error(updatedUser.error);
+    }
+
+    socket.emit('userUpdate', {
+      user: updatedUser,
+      type: 'updated',
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error('Error in UploadPortfolioModel:', error);
+    res.status(500).send(`Error uploading portfolio model: ${error}`);
+  }
+};
 
   // Define routes for the user-related operations.
   router.post('/signup', createUser);

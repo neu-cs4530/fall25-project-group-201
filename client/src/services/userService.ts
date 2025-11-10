@@ -229,10 +229,15 @@ const uploadResume = async (username: string, file: File): Promise<SafeDatabaseU
 /**
  * Uploads a portfolio model for a user.
  */
-const uploadPortfolioModel = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+const uploadPortfolioModel = async (
+  username: string,
+  file: File,
+  thumbnail: string,
+): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
+  formData.append('thumbnail', thumbnail);  // ← Make sure this line exists!
 
   const res = await api.post(`${USER_API_URL}/uploadPortfolioModel`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },

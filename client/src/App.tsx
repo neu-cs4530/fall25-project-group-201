@@ -3,6 +3,7 @@ import { FakeSOSocket } from './types/types';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import FakeStackOverflow from './components/fakestackoverflow';
+import { Toaster } from 'react-hot-toast';
 
 // ensures that the socket connections work properly in production as well.
 const SERVER_URL: string | undefined = import.meta.env.VITE_SERVER_URL || 'http://localhost:8000';
@@ -29,6 +30,7 @@ const App = () => {
 
   return (
     <Router>
+      <Toaster position="top-right" />
       <FakeStackOverflow socket={socket} />
     </Router>
   );
