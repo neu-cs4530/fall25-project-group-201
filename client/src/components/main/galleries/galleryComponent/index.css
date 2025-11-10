@@ -1,7 +1,3 @@
-.carouselRow {
-  display: inline-block
-}
-
 .galleryMedia {
   width: auto;      /* slightly smaller than container width */
   height: 150px;     /* slightly smaller than container height */
@@ -12,6 +8,29 @@
   margin: 2px;
 }
 
+.arrowButtonLeft {
+  position: relative;
+  top: -60px;
+  left: 0px;
+  cursor: pointer;
+}
+
+.arrowButtonLeft.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.arrowButtonRight{
+  position: relative;   
+  top: -60px;     
+  left: 0px;
+  cursor: pointer;
+}
+
+.arrowButtonRight.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
 
 .galleryMedia:hover {
   opacity: 1;

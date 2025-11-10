@@ -52,6 +52,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
       {/* Carousel row */}
       <div className='carousel-row'>
+        <button
+          onClick={prev}
+          className={`arrowButtonLeft ${filteredGalleryPosts.length <= visibleCount ? 'disabled' : ''}`}>
+          <ChevronLeft size={20} />
+        </button>
         {visibleItems.map((item, i) => {
           const url = item.media;
           const ext = url.split('.').pop()?.toLowerCase();
@@ -98,6 +103,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             </span>
           );
         })}
+        <button
+          onClick={next}
+          className={`arrowButtonRight ${filteredGalleryPosts.length <= visibleCount ? 'disabled' : ''}`}>
+          <ChevronRight size={20} />
+        </button>
       </div>
 
       {currentGalleryPost && (
@@ -121,22 +131,6 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             </button>
           )}
         </div>
-      )}
-
-      {/* Arrows */}
-      {filteredGalleryPosts.length > visibleCount && (
-        <>
-          <button
-            onClick={prev}
-            className='absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 p-1 rounded-full hover:bg-black/60 text-white'>
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={next}
-            className='absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 p-1 rounded-full hover:bg-black/60 text-white'>
-            <ChevronRight size={20} />
-          </button>
-        </>
       )}
     </div>
   );
