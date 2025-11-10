@@ -11,7 +11,7 @@ type GalleryComponentProps = {
 const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   const { filteredGalleryPosts, error, handle3DMediaClick, checkIfAuthorOfCurrentGalleryPost, isAuthor, handleDeleteGalleryPost} = useGalleryComponentPage(communityID);
 
-  const visibleCount = 4; // show 3 items at a time
+  const visibleCount = 4; // show 4 items at a time
   const [startIndex, setStartIndex] = useState(0);
   const [currentGalleryPost, setCurrentGalleryPost] = useState<DatabaseGalleryPost>();
 
