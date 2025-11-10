@@ -241,11 +241,7 @@ const CommentSection = ({
               />
 
               {(file || mediaUrl) && (
-                <button
-                  type='button'
-                  className='delete-media-button'
-                  onClick={handleDeleteMedia}
-                >
+                <button type='button' className='delete-media-button' onClick={handleDeleteMedia}>
                   ✕ Remove Media
                 </button>
               )}
