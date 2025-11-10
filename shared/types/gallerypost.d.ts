@@ -8,7 +8,7 @@ export interface GalleryPost {
   media: string;
   thumbnailMedia?: string;
   community: string;
-  postDateTime: Date;
+  postedAt: Date;
 }
 
 export interface DatabaseGalleryPost extends GalleryPost {

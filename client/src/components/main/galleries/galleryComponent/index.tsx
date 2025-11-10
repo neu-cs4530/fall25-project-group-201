@@ -108,7 +108,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
           <h3>{currentGalleryPost.title}</h3>
 
           <div>
-            {currentGalleryPost.user} posted at {new Date(currentGalleryPost.postDateTime).toLocaleString()}
+            {currentGalleryPost.user} posted at {new Date(currentGalleryPost.postedAt).toLocaleString()}
           </div>
 
           <div>{currentGalleryPost.description}</div>

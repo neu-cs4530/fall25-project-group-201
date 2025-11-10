@@ -4,6 +4,7 @@ import {
   GalleryPostRequest,
   // DatabaseGalleryPost,
   FakeSOSocket,
+  GalleryPost,
   // GalleryPostResponse,
 } from '../types/types';
 import {
@@ -34,17 +35,12 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const { title, description, user, media, community, postedAt, thumbnailMedia } = req.body;
+    //const { title, description, user, media, community, postedAt, thumbnailMedia } = req.body;
+    const galleryPost: GalleryPost = req.body;
 
     try {
       const savedGalleryPost = await createGalleryPost({
-        title,
-        description,
-        user,
-        media,
-        postDateTime: postedAt,
-        community,
-        thumbnailMedia,
+        ...galleryPost
       });
 
       if ('error' in savedGalleryPost) {
