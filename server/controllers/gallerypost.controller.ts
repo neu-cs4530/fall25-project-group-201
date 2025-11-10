@@ -1,14 +1,17 @@
 import express, { Response } from 'express';
 import {
   CreateGalleryPostRequest,
+  GalleryPostRequest,
   // DatabaseGalleryPost,
   FakeSOSocket,
+  GalleryPost,
   // GalleryPostResponse,
 } from '../types/types';
 import {
   createGalleryPost,
   getAllGalleryPosts,
   getGalleryPostById,
+  deleteGalleryPost,
 } from '../services/gallerypost.service';
 
 const galleryPostController = (socket: FakeSOSocket) => {
@@ -32,17 +35,12 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const { title, description, user, media, community, postedAt, thumbnailMedia } = req.body;
+    //const { title, description, user, media, community, postedAt, thumbnailMedia } = req.body;
+    const galleryPost: GalleryPost = req.body;
 
     try {
       const savedGalleryPost = await createGalleryPost({
-        title,
-        description,
-        user,
-        media,
-        postDateTime: postedAt,
-        community,
-        thumbnailMedia,
+        ...galleryPost,
       });
 
       if ('error' in savedGalleryPost) {
@@ -72,9 +70,27 @@ const galleryPostController = (socket: FakeSOSocket) => {
     }
   };
 
+  const deleteGalleryPostRoute = async (_req: GalleryPostRequest, res: Response): Promise<void> => {
+    try {
+      const { galleryPostId } = _req.params;
+      const { username } = _req.query;
+
+      const galleryPost = await deleteGalleryPost(galleryPostId, username);
+
+      if ('error' in galleryPost) {
+        throw new Error(galleryPost.error);
+      }
+
+      res.json(galleryPost);
+    } catch (err: unknown) {
+      res.status(500).send(`Error deleting gallery post: ${(err as Error).message}`);
+    }
+  };
+
   router.get('/getAllGalleryPosts', getAllGalleryPostsRoute);
   router.get('/getGalleryPost/:galleryPostID', getGalleryPostRoute);
   router.post('/create', createGalleryPostRoute);
+  router.delete('/delete/:galleryPostId', deleteGalleryPostRoute);
 
   return router;
 };

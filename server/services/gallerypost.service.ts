@@ -1,5 +1,7 @@
 import { DatabaseGalleryPost, GalleryPost, GalleryPostResponse } from '@fake-stack-overflow/shared';
 import GalleryPostModel from '../models/gallerypost.model';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { error: string }> => {
   try {
@@ -39,6 +41,71 @@ export const getGalleryPostById = async (id: string): Promise<GalleryPostRespons
     }
 
     return galleryPost;
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+};
+
+export const deleteGalleryPost = async (
+  id: string,
+  username: string,
+): Promise<GalleryPostResponse> => {
+  try {
+    // Find the gallery post
+    const galleryPost = await GalleryPostModel.findOne({
+      _id: id,
+      username: username,
+    });
+
+    if (!galleryPost) {
+      throw new Error('Gallery post not found');
+    }
+
+    const projectRoot = path.resolve(__dirname, '../../');
+
+    // Only delete if media is local (not an external embed)
+    if (galleryPost.media && !/^https?:\/\//i.test(galleryPost.media)) {
+      // Get full filepath for media
+      const filePath = path.join(projectRoot, 'client', 'public', galleryPost.media);
+
+      // Delete media
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        throw new Error(`Failed to delete media: ${filePath}`);
+      }
+    }
+
+    if (galleryPost.thumbnailMedia) {
+      // Get full filepath for media
+      const thumbnailfilePath = path.join(
+        projectRoot,
+        'client',
+        'public',
+        galleryPost.thumbnailMedia,
+      );
+
+      // Delete thumbnailMedia
+      if (galleryPost.thumbnailMedia) {
+        try {
+          await fs.unlink(thumbnailfilePath);
+        } catch (err) {
+          throw new Error(`Failed to delete thumbnailMedia: ${thumbnailfilePath}`);
+        }
+      }
+    }
+
+    // Delete gallery post
+    const deletedGalleryPost = await GalleryPostModel.findOneAndDelete({
+      _id: id,
+      username: username,
+    });
+
+    if (!deletedGalleryPost) {
+      throw new Error('Failed to delete gallery post after deleting media');
+    }
+
+    return deletedGalleryPost;
   } catch (error) {
     return { error: (error as Error).message };
   }

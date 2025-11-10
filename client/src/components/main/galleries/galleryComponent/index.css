@@ -1,21 +1,69 @@
-.carouselRow {
-  display: inline-block
-}
-
 .galleryMedia {
   width: auto;      /* slightly smaller than container width */
   height: 150px;     /* slightly smaller than container height */
+  max-width: 170px;
   object-fit: cover; /* or 'contain' if you want full media visible */
   border-radius: 8px;
   opacity: 0.8;
+  margin: 2px;
+  padding: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.noGalleryPostsDiv{
+  margin-left: 10px;
+  margin: 10px;
+}
 
 .galleryMedia:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transform: scale(1.1);
   opacity: 1;
+}
+
+.arrowButtonLeft {
+  position: relative;
+  top: -60px;
+  left: 0px;
+  cursor: pointer;
+}
+
+.arrowButtonLeft.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.arrowButtonRight{
+  position: relative;   
+  top: -60px;     
+  left: 0px;
+  cursor: pointer;
+}
+
+.arrowButtonRight.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
 }
 
 .galleryPostInfo {
   width: 100%;
   background-color: rgb(222, 225, 225);
+  padding: 20px;
+  margin: 10px;
+}
+
+.galleryAuthor{
+  color: rgb(111, 66, 66);
+}
+
+.galleryPostDate {
+  color: rgb(114, 114, 114);
+}
+
+.trashButton {
+  float: right;
+  margin: -5px;
 }

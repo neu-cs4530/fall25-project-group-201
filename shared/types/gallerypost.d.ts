@@ -8,7 +8,7 @@ export interface GalleryPost {
   media: string;
   thumbnailMedia?: string;
   community: string;
-  postDateTime: Date;
+  postedAt: Date;
 }
 
 export interface DatabaseGalleryPost extends GalleryPost {
@@ -33,5 +33,14 @@ export interface CreateGalleryPostRequest extends Request {
     community: string;
     postedAt: Date;
     thumbnailMedia?: string;
+  };
+}
+
+export interface GalleryPostRequest extends Request {
+  params: {
+    galleryPostId: string;
+  };
+  query: {
+    username: string;
   };
 }

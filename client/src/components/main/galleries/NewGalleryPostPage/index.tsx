@@ -65,10 +65,6 @@ const NewGalleryPostPage = () => {
     const tempFileUrl = URL.createObjectURL(file);
     setPreviewFilePath(tempFileUrl);
 
-    if (!previewFilePath) {
-      setMediaErr('Unable to preview media');
-    }
-
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
     const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
