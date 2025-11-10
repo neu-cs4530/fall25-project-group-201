@@ -61,12 +61,14 @@ export const deleteGalleryPost = async (
       throw new Error('Gallery post not found');
     }
 
-    // Get full filepath for media
     const projectRoot = path.resolve(__dirname, '../../');
-    const filePath = path.join(projectRoot, 'client', 'public', galleryPost.media);
 
-    // Delete media
-    if (galleryPost.media) {
+    // Only delete if media is local (not an external embed)
+    if (galleryPost.media && !/^https?:\/\//i.test(galleryPost.media)) {
+      // Get full filepath for media
+      const filePath = path.join(projectRoot, 'client', 'public', galleryPost.media);
+
+      // Delete media
       try {
         await fs.unlink(filePath);
       } catch (err) {
