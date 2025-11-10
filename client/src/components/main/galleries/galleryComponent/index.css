@@ -5,9 +5,11 @@
 .galleryMedia {
   width: auto;      /* slightly smaller than container width */
   height: 150px;     /* slightly smaller than container height */
+  max-width: 170px;
   object-fit: cover; /* or 'contain' if you want full media visible */
   border-radius: 8px;
   opacity: 0.8;
+  margin: 2px;
 }
 
 
