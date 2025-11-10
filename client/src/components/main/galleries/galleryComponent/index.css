@@ -39,8 +39,19 @@
 .galleryPostInfo {
   width: 100%;
   background-color: rgb(222, 225, 225);
+  padding: 20px;
+  margin: 10px;
+}
+
+.galleryAuthor{
+  color: rgb(111, 66, 66);
+}
+
+.galleryPostDate {
+  color: rgb(114, 114, 114);
 }
 
 .trashButton {
   float: right;
+  margin: -5px;
 }

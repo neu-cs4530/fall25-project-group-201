@@ -112,6 +112,8 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
       {currentGalleryPost && (
         <div className='galleryPostInfo'>
+          <span className='galleryAuthor'>{currentGalleryPost.user}</span> <span className='galleryPostDate'>posted at {new Date(currentGalleryPost.postedAt).toLocaleString()}</span>
+
           {/* Trash button */}
           {isAuthor && <button className='trashButton' onClick={() => handleDeleteButtonClick(currentGalleryPost)}>
             <Trash2 size={16} className='text-white' />
@@ -119,10 +121,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
           <h3>{currentGalleryPost.title}</h3>
 
-          <div>
-            {currentGalleryPost.user} posted at {new Date(currentGalleryPost.postedAt).toLocaleString()}
-          </div>
-
+          
           <div>{currentGalleryPost.description}</div>
 
           {currentGalleryPost.media.toLowerCase().endsWith('.glb') && (
