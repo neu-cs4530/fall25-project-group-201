@@ -107,7 +107,6 @@ const NewQuestion = () => {
     }
   };
 
-
   return (
     <div className='new-question-container'>
       <h2>Ask a New Question</h2>
@@ -273,6 +272,7 @@ const NewQuestion = () => {
                       body: JSON.stringify({ filepathLocation: mediaPath }),
                     });
                   } catch (err) {
+                    /* eslint-disable no-console */
                     console.warn('Optional: could not delete file on server', err);
                   }
                   setUploadedMediaPath(undefined);
@@ -282,8 +282,6 @@ const NewQuestion = () => {
             </div>
           )}
         </div>
-
-
       </div>
 
       <button className='submit-btn' onClick={postQuestion}>
