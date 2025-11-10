@@ -46,7 +46,9 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   return (
     <div className='relative w-full h-[160px] bg-black/90 rounded-2xl flex items-center justify-center overflow-hidden px-4'>
       {filteredGalleryPosts.length === 0 && <div className='text-white'>No gallery posts yet!</div>}
-      {error && <div className='text-red-500'>Error loading gallery posts</div>}
+      {error && error !== 'No gallery posts found for this community' && (
+        <div className='text-red-500'>{error}</div>
+      )}
 
       {/* Carousel row */}
       <div className='carousel-row'>
