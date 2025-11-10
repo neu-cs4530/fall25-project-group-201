@@ -26,7 +26,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     if (currentGalleryPost) {
       checkIfAuthorOfCurrentGalleryPost(currentGalleryPost);
     }
-  }, [currentGalleryPost?._id]);
+  }, [currentGalleryPost, checkIfAuthorOfCurrentGalleryPost]);
 
   const next = () => {
     setStartIndex(prev =>

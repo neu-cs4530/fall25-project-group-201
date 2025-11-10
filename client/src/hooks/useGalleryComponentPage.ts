@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { DatabaseGalleryPost } from '../types/types';
 import { getGalleryPosts, deleteGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
@@ -11,7 +11,7 @@ const useGalleryComponentPage = (communityID: string) => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const fetchGalleryPosts = async () => {
+  const fetchGalleryPosts = useCallback(async () => {
     try {
       const resGalleryPosts = await getGalleryPosts();
       const filteredPosts = resGalleryPosts.filter(post => post.community === communityID);
@@ -25,11 +25,11 @@ const useGalleryComponentPage = (communityID: string) => {
     } catch (err: unknown) {
       setError('Failed to fetch gallery posts for this community');
     }
-  };
+  }, [communityID]);
 
   useEffect(() => {
     fetchGalleryPosts();
-  }, [currentUser.username, communityID]);
+  }, [fetchGalleryPosts]);
 
   const handle3DMediaClick = (galleryPostID: string) => {
     navigate(`/galleryPostViewport/${galleryPostID}`);
@@ -45,7 +45,7 @@ const useGalleryComponentPage = (communityID: string) => {
       await deleteGalleryPost(currentGalleryPost._id.toString(), currentGalleryPost.user);
       await fetchGalleryPosts(); // wait for fetch to complete
     } catch (err) {
-      console.error('Failed to delete gallery post', err);
+      setError('Failed to delete gallery post');
     }
   };
 
