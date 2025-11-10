@@ -82,11 +82,6 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                   /*onClick={() => handle3DMediaClick(item._id.toString())}*/
                 />
               ) : null}
-
-              {/* Trash button */}
-              <button className='mt-2 bg-black/50 p-1 rounded-full flex items-center justify-center hover:bg-red-600'>
-                <Trash2 size={16} className='text-white' />
-              </button>
             </span>
           );
         })}
@@ -94,6 +89,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
       {currentMedia && (
         <div className='galleryPostInfo'>
+          {/* Trash button */}
+          <button className='trashButton'>
+            <Trash2 size={16} className='text-white' />
+          </button>
+
           <h3>{currentMedia.title}</h3>
 
           <div>

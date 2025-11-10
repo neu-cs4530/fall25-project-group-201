@@ -19,3 +19,7 @@
   width: 100%;
   background-color: rgb(222, 225, 225);
 }
+
+.trashButton {
+  float: right;
+}
