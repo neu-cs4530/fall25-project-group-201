@@ -48,7 +48,7 @@ export const getGalleryPostById = async (id: string): Promise<GalleryPostRespons
 
 export const deleteGalleryPost = async (
   id: string,
-  username: string
+  username: string,
 ): Promise<GalleryPostResponse> => {
   try {
     // Find the gallery post
@@ -78,7 +78,12 @@ export const deleteGalleryPost = async (
 
     if (galleryPost.thumbnailMedia) {
       // Get full filepath for media
-      const thumbnailfilePath = path.join(projectRoot, 'client', 'public', galleryPost.thumbnailMedia);
+      const thumbnailfilePath = path.join(
+        projectRoot,
+        'client',
+        'public',
+        galleryPost.thumbnailMedia,
+      );
 
       // Delete thumbnailMedia
       if (galleryPost.thumbnailMedia) {

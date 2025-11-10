@@ -11,7 +11,7 @@ import {
   createGalleryPost,
   getAllGalleryPosts,
   getGalleryPostById,
-  deleteGalleryPost
+  deleteGalleryPost,
 } from '../services/gallerypost.service';
 
 const galleryPostController = (socket: FakeSOSocket) => {
@@ -40,7 +40,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
 
     try {
       const savedGalleryPost = await createGalleryPost({
-        ...galleryPost
+        ...galleryPost,
       });
 
       if ('error' in savedGalleryPost) {
