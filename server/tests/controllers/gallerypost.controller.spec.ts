@@ -15,8 +15,31 @@ const mockGalleryPostResponse = {
   postedAt: new Date('2024-06-06'),
 };
 
+// Mock community data
+const mockCollection: DatabaseGalleryPost = {
+  _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
+  title: 'New Gallery Post',
+  description: 'New Description',
+  user: 'test_user',
+  media: '/test_user/testMedia.png',
+  community: '65e9b58910afe6e94fc6e6dd',
+  postedAt: new Date('2024-06-06'),
+};
+
+const mockCollection2: DatabaseGalleryPost = {
+  _id: new mongoose.Types.ObjectId('65e9b58910abc6e94fc6123d'),
+  title: 'New Gallery Post 2',
+  description: 'New Description 2',
+  user: 'test_user2',
+  media: '/test_user/testMedia2.png',
+  community: '65e9b58910afe6e94fc6e6dd',
+  postedAt: new Date('2024-06-05'),
+};
+
+
 // Service method spies
 const createGalleryPostSpy = jest.spyOn(gallerypostService, 'createGalleryPost');
+const getGalleriesSpy = jest.spyOn(gallerypostService, 'getAllGalleryPosts');
 
 describe('Gallery Post Controller', () => {
   beforeEach(() => {
@@ -168,5 +191,53 @@ describe('Gallery Post Controller', () => {
         expect(response.status).toBe(500);
         expect(response.text).toContain('Error creating a gallery post: Database error');
     });
+    
   });
+
+  describe('GET /getAllGalleryPosts', () => {
+      test('should get gallery posts successfully', async () => {
+        const mockGalleryPosts = [mockCollection, mockCollection2];
+  
+        getGalleriesSpy.mockResolvedValueOnce(mockGalleryPosts);
+  
+        const response = await supertest(app)
+          .get('/api/gallery/getAllGalleryPosts')
+  
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveLength(2);
+      });
+
+      test('should get gallery post successfully if there is only one gallery post entry', async () => {
+        const mockGalleryPosts = [mockCollection2];
+  
+        getGalleriesSpy.mockResolvedValueOnce(mockGalleryPosts);
+  
+        const response = await supertest(app)
+          .get('/api/gallery/getAllGalleryPosts')
+  
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveLength(1);
+      });
+
+      test('should get empty array if there are no gallery posts', async () => {
+        const mockGalleryPosts: DatabaseGalleryPost[] = [];
+  
+        getGalleriesSpy.mockResolvedValueOnce(mockGalleryPosts);
+  
+        const response = await supertest(app)
+          .get('/api/gallery/getAllGalleryPosts')
+  
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveLength(0);
+      });
+
+      test('should return 500 when service returns error', async () => {
+        getGalleriesSpy.mockResolvedValueOnce({ error: 'Database error' });
+    
+        const response = await supertest(app)
+          .get('/api/gallery/getAllGalleryPosts')
+    
+        expect(response.status).toBe(500);
+       });
+    })
 });
