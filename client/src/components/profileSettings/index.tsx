@@ -83,6 +83,14 @@ const ProfileSettings: React.FC = () => {
     );
   }
 
+  const openPortfolioModel = (projectId: string | number, modelUrl: string, title: string) => {
+    navigate(`/user/${userData?.username}/portfolio/${projectId}`, {
+      state: { modelUrl, title },
+    });
+  };
+
+
+
   return (
     <div
       className='profile-settings'
@@ -495,8 +503,12 @@ const ProfileSettings: React.FC = () => {
                       className='portfolio-model-item'
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
-                        // TODO: Navigate to full viewer
-                        console.log('Clicked model:', index);
+                        navigate(`/user/${userData.username}/portfolio/${index}`, {
+                          state: {
+                            modelUrl: modelUrl,
+                            title: `Portfolio Model ${index + 1}`
+                          }
+                        });
                       }}
                     >
                       {thumbnailUrl ? (
@@ -511,7 +523,6 @@ const ProfileSettings: React.FC = () => {
                           }}
                         />
                       ) : (
-                        // Fallback to 3D viewer if no thumbnail
                         <div style={{ width: '100%', height: '200px' }}>
                           <PortfolioModelViewer modelUrl={modelUrl} />
                         </div>

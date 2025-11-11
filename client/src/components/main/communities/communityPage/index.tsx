@@ -17,6 +17,10 @@ const CommunityPage = () => {
     return <div className='loading'>Loading...</div>;
   }
 
+  /**
+   * Handles when Upload Project button is clicked.
+   * Navigates to form to create a new gallery post.
+   */
   const handleNewGalleryPost = () => {
     navigate(`/new/galleryPost/${community._id}`);
   };
@@ -26,11 +30,11 @@ const CommunityPage = () => {
       <main className='questions-and-gallery-section'>
         <main className='gallery-section'>
           <h3 className='gallery-heading'>Gallery</h3>
+          <GalleryComponent communityID={community._id.toString()} />
           <div className='gallery-upload-button' onClick={handleNewGalleryPost}>
             <div style={{ fontSize: '3rem' }}>➕</div>
             <span>Upload Project</span>
           </div>
-          <GalleryComponent communityID={community._id.toString()} />
         </main>
 
         <main className='questions-section'>

@@ -138,7 +138,7 @@ const useNewQuestion = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadedMediaPath(`userData/${user.username}/${file.name}`); // Path used in backend
+    setUploadedMediaPath(`/userData/${user.username}/${file.name}`);
   };
 
   /**

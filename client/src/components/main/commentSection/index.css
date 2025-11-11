@@ -22,33 +22,67 @@
 
 .comments-container {
   margin-top: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.input-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.comment-textarea {
+  flex: 1;
+  min-height: 50px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.add-comment-button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-comment-button:hover {
+  background-color: #218838;
 }
 
 .comments-list {
-  list-style-type: none;
-  padding: 0;
+  list-style: none;
   margin: 0;
-}
-
-.comment-media {
-  max-width: 500px;
-  max-height: auto;
-  width: auto;
-  height: auto;
-  color: red;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .comment-item {
-  background-color: #fff;
-  padding: 0.5em;
-  margin-bottom: 0.25em;
-  border-radius: 4px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.75rem;
   border: 1px solid #ddd;
 }
 
 .comment-text {
-  font-size: 0.85rem;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.25rem;
 }
 
 .comment-meta {
@@ -56,81 +90,97 @@
   color: #666;
 }
 
-.no-comments {
-  font-style: italic;
-  color: #666;
-  font-size: 0.85rem;
-}
-
-.add-comment {
-  margin-top: 0.5em;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
-
-.input-row {
-  display: flex;
-  gap: 0.5em;
-}
-
-.comment-username {
-  flex: 2;
-  padding: 0.25em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-
-.comment-username:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-.comment-textarea {
-  flex: 5;
-  padding: 0.25em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  resize: none;
-}
-
-.comment-textarea:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-.add-comment-button {
-  flex: 1;
-  background-color: #28a745;
-  color: white;
-  padding: 0.25em 0.5em;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-.add-comment-button:hover {
-  background-color: #218838;
-}
-
-.error {
-  color: red;
-  font-size: 0.75rem;
-  display: block;
-  margin-top: -0.5em;
+.comment-media {
+  max-width: 600px;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .comment-model-wrapper {
   width: 100%;
-  height: 400px; /* adjust as needed */
+  height: 400px;
   margin-top: 1rem;
+  position: relative;
 }
-.comment-media {
-  max-width: 100%;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+.media-popup {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  margin-bottom: 4px;
+  background-color: white;
+  padding: 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 10;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.media-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+
+.media-button-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.file-input {
+  cursor: pointer;
+}
+
+.media-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 1.2rem;
+}
+
+.media-button:hover {
+  color: #0056b3;
+}
+
+.comment-model-wrapper .viewport-card {
+  width: 100% !important;
+  height: 100% !important;
+  padding-bottom: 0 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  max-width: 600px;
+}
+
+.comment-model-wrapper .viewport-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.comment-model-wrapper .upload-section {
+  position: absolute !important;
+  top: 10px;
+  left: 10px;
+}
+
+.delete-media-button {
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.delete-media-button:hover {
+  background: #c0392b;
 }

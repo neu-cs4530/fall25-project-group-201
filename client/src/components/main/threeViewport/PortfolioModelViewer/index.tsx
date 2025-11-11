@@ -1,17 +1,20 @@
-import useThreeViewportPage from '../../../../hooks/useThreeViewportPage';
-import './index.css';
+import useThreeViewport from '../../../../hooks/useThreeViewport';
 
 interface PortfolioModelViewerProps {
   modelUrl: string;
 }
 
 const PortfolioModelViewer = ({ modelUrl }: PortfolioModelViewerProps) => {
-  const { containerRef } = useThreeViewportPage(modelUrl);
+  const { containerRef } = useThreeViewport(modelUrl);
 
   return (
     <div
       ref={containerRef}
-      className='portfolio-model-viewer'
+      style={{
+        width: '100%',
+        height: '100%',
+        background: '#2a2a2a'
+      }}
     />
   );
 };
