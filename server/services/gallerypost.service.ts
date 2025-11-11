@@ -6,6 +6,11 @@ import path from 'path';
 export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { error: string }> => {
   try {
     const posts = await GalleryPostModel.find({});
+
+    if (!posts) {
+      throw new Error('Failed to get gallery posts');
+    }
+
     return posts;
   } catch (err) {
     return { error: (err as Error).message };

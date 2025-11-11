@@ -13,7 +13,8 @@ import { GalleryPost, DatabaseGalleryPost } from '../../types/types';
 import {
     createGalleryPost,
     deleteGalleryPost,
-    getGalleryPostById
+    getGalleryPostById,
+    getAllGalleryPosts
 } from '../../services/gallerypost.service';
 
 describe('Gallery Post Service', () => {
@@ -202,34 +203,79 @@ describe('Gallery Post Service', () => {
                 error: expect.stringContaining('Gallery post not found')
             });
         });
+    });
 
-        describe('getGalleryPostById', () => {
-            test('should return gallery post', async () => {
-                jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(mockGalleryPost);
+     describe('getGalleryPostById', () => {
+        test('should return gallery post', async () => {
+            jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(mockGalleryPost);
 
-                const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
+            const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
 
-                expect(result).toEqual(mockGalleryPost);
-                expect(GalleryPostModel.findById).toHaveBeenCalledWith('65e9123910afe6e94fdef6dd');
-            });
-
-            test('should return error when gallery post not found', async () => {
-                jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(null);
-
-                const result = await getGalleryPostById('invalid_id');
-
-                expect(result).toEqual({ error: 'Failed to get gallery post' });
-            });
-
-            test('should return error when database throws error', async () => {
-                jest.spyOn(GalleryPostModel, 'findById').mockRejectedValueOnce(new Error('Database error'));
-
-                const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
-
-                expect(result).toEqual({ error: 'Database error' });
-            });
+            expect(result).toEqual(mockGalleryPost);
+            expect(GalleryPostModel.findById).toHaveBeenCalledWith('65e9123910afe6e94fdef6dd');
         });
-  
+
+        test('should return error when gallery post not found', async () => {
+            jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(null);
+
+            const result = await getGalleryPostById('invalid_id');
+
+            expect(result).toEqual({ error: 'Failed to get gallery post' });
+        });
+
+        test('should return error when database throws error', async () => {
+            jest.spyOn(GalleryPostModel, 'findById').mockRejectedValueOnce(new Error('Database error'));
+
+            const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
+
+            expect(result).toEqual({ error: 'Database error' });
+        });
+    });
+
+    describe('getAllGalleryPosts', () => {
+        test('should get all gallery posts', async () => {
+            const mockGalleryPosts = [mockGalleryPost, mockGalleryPostWithThumbnail];
+
+            jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce(mockGalleryPosts);
+
+            const result = await getAllGalleryPosts();
+
+            expect(result).toEqual(mockGalleryPosts);
+        });
+
+        test('should return singular gallery post if there is only one gallery post', async () => {
+            const mockGalleryPosts = [mockGalleryPostWithThumbnail];
+
+            jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce(mockGalleryPosts);
+
+            const result = await getAllGalleryPosts();
+
+            expect(result).toEqual(mockGalleryPosts);
+        });
+
+        test('should return empty array when no gallery posts found', async () => {
+            jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce([]);
+
+            const result = await getAllGalleryPosts();
+
+            expect(result).toEqual([]);
+        });
+
+        test('should return error when find returns null', async () => {
+            jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce(null as any);
+
+            const result = await getAllGalleryPosts();
+
+            expect(result).toEqual({ error: 'Failed to get gallery posts' });
+        });
+
+        test('should return error when database throws error', async () => {
+            jest.spyOn(GalleryPostModel, 'find').mockRejectedValueOnce(new Error('Database error'));
+    
+            const result = await getAllGalleryPosts();
+    
+            expect(result).toEqual({ error: 'Database error' });
+        });
     });
 
 });
