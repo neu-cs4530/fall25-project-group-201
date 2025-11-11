@@ -23,7 +23,7 @@ import {
 const galleryPostController = (socket: FakeSOSocket) => {
   const router = express.Router();
 
-   /**
+  /**
    * Gets all gallery posts
    *
    * @param req - The request object

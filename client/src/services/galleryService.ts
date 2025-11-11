@@ -3,7 +3,6 @@ import api from './config';
 
 const GALLERY_API_URL = `/api/gallery`;
 
-
 /**
  * Creates a gallery post.
  *
@@ -34,7 +33,7 @@ const getGalleryPosts = async (): Promise<DatabaseGalleryPost[]> => {
 
 /**
  * Gets a gallery post.
- * 
+ *
  * @param galleryPostID - The ID of the gallery post.
  */
 const getGalleryPost = async (galleryPostID: string): Promise<DatabaseGalleryPost> => {
@@ -49,7 +48,7 @@ const getGalleryPost = async (galleryPostID: string): Promise<DatabaseGalleryPos
 
 /**
  * Deletes a gallery post.
- * 
+ *
  * @param galleryPostID - The ID of the gallery post.
  * @param username - The author of the gallery post.
  */

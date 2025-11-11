@@ -61,7 +61,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   const visibleItems = filteredGalleryPosts.slice(startIndex, startIndex + visibleCount);
 
   /**
-   * Handles when a gallery post is clicked. 
+   * Handles when a gallery post is clicked.
    * Shows information about the gallery post (title, description, author, postedAt)
    */
   const handleMediaClick = (media: DatabaseGalleryPost) => {
