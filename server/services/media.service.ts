@@ -6,7 +6,7 @@ import path from 'path';
 /**
  * Creates a media document (and copies the media file from user's device to the application)
  * @param media - the media object to be created
-**/
+ **/
 const addMedia = async (media: Media): Promise<MediaResponse> => {
   try {
     const userDir = path.resolve(__dirname, '../../client/public/userData', media.user);

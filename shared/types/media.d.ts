@@ -17,7 +17,7 @@ export interface Media {
 /**
  * Represents a Database Media
  * _id - Object Id of the media document
-**/
+ **/
 export interface DatabaseMedia extends Media {
   _id: ObjectId;
 }
