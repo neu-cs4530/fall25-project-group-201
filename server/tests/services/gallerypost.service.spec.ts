@@ -12,7 +12,8 @@ import GalleryPostModel from '../../models/gallerypost.model';
 import { GalleryPost, DatabaseGalleryPost } from '../../types/types';
 import {
     createGalleryPost,
-    deleteGalleryPost
+    deleteGalleryPost,
+    getGalleryPostById
 } from '../../services/gallerypost.service';
 
 describe('Gallery Post Service', () => {
@@ -199,6 +200,33 @@ describe('Gallery Post Service', () => {
 
             expect(result).toEqual({
                 error: expect.stringContaining('Gallery post not found')
+            });
+        });
+
+        describe('getGalleryPostById', () => {
+            test('should return gallery post', async () => {
+                jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(mockGalleryPost);
+
+                const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
+
+                expect(result).toEqual(mockGalleryPost);
+                expect(GalleryPostModel.findById).toHaveBeenCalledWith('65e9123910afe6e94fdef6dd');
+            });
+
+            test('should return error when gallery post not found', async () => {
+                jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(null);
+
+                const result = await getGalleryPostById('invalid_id');
+
+                expect(result).toEqual({ error: 'Failed to get gallery post' });
+            });
+
+            test('should return error when database throws error', async () => {
+                jest.spyOn(GalleryPostModel, 'findById').mockRejectedValueOnce(new Error('Database error'));
+
+                const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
+
+                expect(result).toEqual({ error: 'Database error' });
             });
         });
   
