@@ -14,7 +14,10 @@ const UploadPortfolioModel = () => {
     descriptionErr,
     modelErr,
     thumbnailErr,
+    mediaUrl,
+    setMediaUrl,
     modelPath,
+    setModelPath,
     thumbnailPath,
     previewFilePath,
     submitPortfolioModel,
@@ -27,8 +30,8 @@ const UploadPortfolioModel = () => {
 
   return (
     <div className='new-question-container'>
-      <h2>Upload Portfolio Model</h2>
-      
+      <h2>Upload Portfolio Media</h2>
+
       <div className='form-section'>
         <label htmlFor='title'>Model Title</label>
         <input
@@ -53,20 +56,39 @@ const UploadPortfolioModel = () => {
       </div>
 
       <div className='form-section media-section'>
-        <h3>3D Model File (.glb)</h3>
+        <h3>Media</h3>
+
+        <div className='media-inputs'>
+          <input
+            type='text'
+            placeholder='Paste media URL (YouTube, image, etc.)'
+            value={mediaUrl}
+            onChange={e => setMediaUrl(e.target.value)}
+          />
+          <button type='button' onClick={() => {
+            if (mediaUrl) {
+              setModelPath(undefined);
+              setShowThumbnailUpload(false);
+            }
+          }}>
+            Add Embed
+          </button>
+        </div>
+
         <div className='file-upload'>
-          <input 
-            type='file' 
-            accept='.glb' 
+          <input
+            type='file'
+            accept='image/*,video/*,.glb'
             onChange={(e) => {
               handleModelFileUpload(e);
               setShowThumbnailUpload(true);
-            }} 
+            }}
           />
         </div>
+
         {modelErr && <p className='error'>{modelErr}</p>}
 
-        {modelPath && previewFilePath && (
+        {modelPath && previewFilePath && modelPath.endsWith('.glb') && (
           <div className='model-preview'>
             <p>3D Model Preview:</p>
             <div>
@@ -76,36 +98,41 @@ const UploadPortfolioModel = () => {
         )}
       </div>
 
-      {showThumbnailUpload && modelPath && (
-        <div className='form-section media-section'>
-          <h3>Thumbnail Image</h3>
-          <p>Upload a thumbnail image to represent your 3D model</p>
-          <div className='file-upload'>
-            <input 
-              type='file' 
-              accept='image/*' 
-              onChange={handleThumbnailFileUpload} 
-            />
-          </div>
-          {thumbnailErr && <p className='error'>{thumbnailErr}</p>}
-
-          {thumbnailPath && (
-            <div className='media-preview'>
-              <p>Thumbnail Preview:</p>
-              <img src={thumbnailPath} alt='Thumbnail preview' style={{ maxWidth: '300px' }} />
+      {
+        showThumbnailUpload && modelPath && modelPath.endsWith('.glb') &&(
+          <div className='form-section media-section'>
+            <h3>Thumbnail Image</h3>
+            <p>Upload a thumbnail image to represent your 3D model</p>
+            <div className='file-upload'>
+              <input
+                type='file'
+                accept='image/*'
+                onChange={handleThumbnailFileUpload}
+              />
             </div>
-          )}
-        </div>
-      )}
+            {thumbnailErr && <p className='error'>{thumbnailErr}</p>}
 
-      <button 
-        className='submit-btn' 
-        onClick={submitPortfolioModel}
-        disabled={!modelPath || !thumbnailPath}
-      >
-        Add to Portfolio
-      </button>
-    </div>
+            {thumbnailPath && (
+              <div className='media-preview'>
+                <p>Thumbnail Preview:</p>
+                <img src={thumbnailPath} alt='Thumbnail preview' style={{ maxWidth: '300px' }} />
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      <button
+  className='submit-btn'
+  onClick={submitPortfolioModel}
+  disabled={
+    (!modelPath && !mediaUrl) || 
+    (modelPath?.endsWith('.glb') && !thumbnailPath)
+  }
+>
+  Add to Portfolio
+</button>
+    </div >
   );
 };
 

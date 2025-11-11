@@ -366,6 +366,7 @@ const useProfileSettings = () => {
 
   return {
     userData,
+    setUserData,
     newPassword,
     confirmNewPassword,
     setNewPassword,

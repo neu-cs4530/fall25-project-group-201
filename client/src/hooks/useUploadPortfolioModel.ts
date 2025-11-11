@@ -10,15 +10,16 @@ import toast from 'react-hot-toast';
 const useUploadPortfolioModel = () => {
   const navigate = useNavigate();
   const { user } = useUserContext();
-  
+
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  
+
   const [titleErr, setTitleErr] = useState<string>('');
   const [descriptionErr, setDescriptionErr] = useState<string>('');
   const [modelErr, setModelErr] = useState<string | null>(null);
   const [thumbnailErr, setThumbnailErr] = useState<string | null>(null);
-  
+  const [mediaUrl, setMediaUrl] = useState<string>('');
+
   const [modelPath, setModelPath] = useState<string | undefined>(undefined);
   const [thumbnailPath, setThumbnailPath] = useState<string | undefined>(undefined);
   const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
@@ -46,15 +47,15 @@ const useUploadPortfolioModel = () => {
       setDescriptionErr('');
     }
 
-    if (!modelPath) {
-      setModelErr('You must upload a 3D model file (.glb)');
+    if (!modelPath && !mediaUrl) {
+      setModelErr('You must upload a media file or provide a URL');
       isValid = false;
     } else {
       setModelErr('');
     }
 
-    if (!thumbnailPath) {
-      setThumbnailErr('You must upload a thumbnail for your 3D model');
+    if (modelPath?.endsWith('.glb') && !thumbnailPath) {
+      setThumbnailErr('You must upload a thumbnail for 3D models');
       isValid = false;
     } else {
       setThumbnailErr('');
@@ -70,18 +71,44 @@ const useUploadPortfolioModel = () => {
     if (!validateForm()) return;
 
     try {
-      // Read the model file
-      const modelResponse = await fetch(modelPath!);
-      const modelBlob = await modelResponse.blob();
-      const modelFile = new File([modelBlob], 'model.glb', { type: 'model/gltf-binary' });
+      // If it's a URL, send it directly as a string
+      if (mediaUrl) {
+        await uploadPortfolioModel(user.username, mediaUrl, thumbnailPath || '');
+        toast.success('Portfolio media uploaded successfully!');
+        navigate(`/user/${user.username}`);
+        return;
+      }
 
-      // Upload with thumbnail
-      await uploadPortfolioModel(user.username, modelFile, thumbnailPath!);
-      
-      toast.success('Portfolio model uploaded successfully!');
-      navigate(`/user/${user.username}`);
+      // If it's a file, read and upload
+      if (modelPath) {
+        const modelResponse = await fetch(modelPath);
+        const modelBlob = await modelResponse.blob();
+
+        // Determine file type from extension
+        const ext = modelPath.slice(modelPath.lastIndexOf('.')).toLowerCase();
+        let mimeType = 'model/gltf-binary';
+        let fileName = 'model.glb';
+
+        if (['.jpg', '.jpeg'].includes(ext)) {
+          mimeType = 'image/jpeg';
+          fileName = 'image.jpg';
+        } else if (ext === '.png') {
+          mimeType = 'image/png';
+          fileName = 'image.png';
+        } else if (ext === '.mp4') {
+          mimeType = 'video/mp4';
+          fileName = 'video.mp4';
+        }
+
+        const modelFile = new File([modelBlob], fileName, { type: mimeType });
+        await uploadPortfolioModel(user.username, modelFile, thumbnailPath || '');
+
+        toast.success('Portfolio media uploaded successfully!');
+        navigate(`/user/${user.username}`);
+      }
     } catch (err) {
-      toast.error('Failed to upload portfolio model');
+      console.error('Upload error:', err);
+      toast.error('Failed to upload portfolio media');
     }
   };
 
@@ -92,10 +119,10 @@ const useUploadPortfolioModel = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowedExtensions = ['.glb'];
+    const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
     const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
-      setModelErr('Only .glb files are supported');
+      setModelErr('Unsupported file type. Allowed: images, videos, or .glb');
       return;
     }
 
@@ -121,7 +148,11 @@ const useUploadPortfolioModel = () => {
         const tempFileUrl = URL.createObjectURL(file);
         setPreviewFilePath(tempFileUrl);
         setModelErr(null);
-        toast('Now upload a thumbnail for your 3D model');
+
+        // Only prompt for thumbnail if it's a .glb file
+        if (ext === '.glb') {
+          toast('Now upload a thumbnail for your 3D model');
+        }
       } else {
         setModelErr('Model upload failed');
       }
@@ -182,7 +213,10 @@ const useUploadPortfolioModel = () => {
     descriptionErr,
     modelErr,
     thumbnailErr,
+    mediaUrl,
+    setMediaUrl,
     modelPath,
+    setModelPath,
     thumbnailPath,
     previewFilePath,
     submitPortfolioModel,

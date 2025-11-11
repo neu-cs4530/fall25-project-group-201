@@ -11,6 +11,7 @@ const ProfileSettings: React.FC = () => {
   const navigate = useNavigate();
   const {
     userData,
+    setUserData,
     loading,
     editBioMode,
     newBio,
@@ -74,6 +75,7 @@ const ProfileSettings: React.FC = () => {
             '--color-primary': userData?.customColors?.primary || '#2563eb',
             '--color-accent': userData?.customColors?.accent || '#16a34a',
             '--color-bg': userData?.customColors?.background || '#f2f4f7',
+            fontFamily: userData?.customFont || 'Inter',
           } as React.CSSProperties
         }>
         <div className='profile-card'>
@@ -99,6 +101,7 @@ const ProfileSettings: React.FC = () => {
           '--color-primary': userData?.customColors?.primary || '#2563eb',
           '--color-accent': userData?.customColors?.accent || '#16a34a',
           '--color-bg': userData?.customColors?.background || '#f2f4f7',
+          fontFamily: userData?.customFont || 'Inter',
         } as React.CSSProperties
       }>
       <div className='profile-card'>
@@ -495,23 +498,37 @@ const ProfileSettings: React.FC = () => {
             <h4>Portfolio</h4>
             <div className='portfolio-grid-section'>
               {userData.portfolioModels && userData.portfolioModels.length > 0 ? (
-                userData.portfolioModels.map((modelUrl, index) => {
+                userData.portfolioModels.map((mediaUrl, index) => {
                   const thumbnailUrl = userData.portfolioThumbnails?.[index];
+
+                  // Determine media type
+                  const isGlbModel = mediaUrl.toLowerCase().endsWith('.glb') ||
+                    mediaUrl.toLowerCase().includes('data:model/gltf-binary');
+                  const isVideo = mediaUrl.toLowerCase().endsWith('.mp4') ||
+                    mediaUrl.includes('data:video/mp4') ||
+                    /youtube\.com|youtu\.be|vimeo\.com/.test(mediaUrl);
+                  const isImage = mediaUrl.match(/\.(jpeg|jpg|png|gif)$/i) ||
+                    mediaUrl.includes('data:image/');
+
                   return (
                     <div
                       key={index}
                       className='portfolio-model-item'
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: isGlbModel ? 'pointer' : 'default' }}
                       onClick={() => {
-                        navigate(`/user/${userData.username}/portfolio/${index}`, {
-                          state: {
-                            modelUrl: modelUrl,
-                            title: `Portfolio Model ${index + 1}`
-                          }
-                        });
+                        // Only navigate to viewer for 3D models
+                        if (isGlbModel) {
+                          navigate(`/user/${userData.username}/portfolio/${index}`, {
+                            state: {
+                              modelUrl: mediaUrl,
+                              title: `Portfolio Model ${index + 1}`
+                            }
+                          });
+                        }
                       }}
                     >
-                      {thumbnailUrl ? (
+                      {isGlbModel && thumbnailUrl ? (
+                        // 3D model with thumbnail
                         <img
                           src={thumbnailUrl}
                           alt={`Portfolio model ${index + 1}`}
@@ -522,9 +539,86 @@ const ProfileSettings: React.FC = () => {
                             borderRadius: '8px'
                           }}
                         />
-                      ) : (
+                      ) : isGlbModel ? (
+                        // 3D model without thumbnail (fallback to viewer)
                         <div style={{ width: '100%', height: '200px' }}>
-                          <PortfolioModelViewer modelUrl={modelUrl} />
+                          <PortfolioModelViewer modelUrl={mediaUrl} />
+                        </div>
+                      ) : isImage ? (
+                        // Display image directly
+                        <img
+                          src={mediaUrl}
+                          alt={`Portfolio ${index + 1}`}
+                          style={{
+                            width: '100%',
+                            height: '200px',
+                            objectFit: 'cover',
+                            borderRadius: '8px'
+                          }}
+                        />
+                      ) : isVideo ? (
+                        // Display video or video embed
+                        (() => {
+                          // Check if it's a YouTube/Vimeo URL
+                          const youtubeMatch = mediaUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+                          const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
+
+                          if (youtubeMatch) {
+                            return (
+                              <iframe
+                                src={`https://www.youtube.com/embed/${youtubeMatch[1]}`}
+                                style={{
+                                  width: '100%',
+                                  height: '200px',
+                                  borderRadius: '8px',
+                                  border: 'none'
+                                }}
+                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                                allowFullScreen
+                              />
+                            );
+                          } else if (vimeoMatch) {
+                            return (
+                              <iframe
+                                src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
+                                style={{
+                                  width: '100%',
+                                  height: '200px',
+                                  borderRadius: '8px',
+                                  border: 'none'
+                                }}
+                                allow='autoplay; fullscreen'
+                                allowFullScreen
+                              />
+                            );
+                          } else {
+                            // Regular video file
+                            return (
+                              <video
+                                src={mediaUrl}
+                                controls
+                                style={{
+                                  width: '100%',
+                                  height: '200px',
+                                  objectFit: 'cover',
+                                  borderRadius: '8px'
+                                }}
+                              />
+                            );
+                          }
+                        })()
+                      ) : (
+                        // Unknown media type
+                        <div style={{
+                          width: '100%',
+                          height: '200px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: '#f0f0f0',
+                          borderRadius: '8px'
+                        }}>
+                          Media Preview
                         </div>
                       )}
                     </div>
@@ -533,7 +627,7 @@ const ProfileSettings: React.FC = () => {
               ) : (
                 <div className='portfolio-placeholder'>
                   <div className='placeholder-text'>📦</div>
-                  <span>No models uploaded yet</span>
+                  <span>No media uploaded yet</span>
                 </div>
               )}
 
@@ -545,7 +639,7 @@ const ProfileSettings: React.FC = () => {
                 >
                   <div className='upload-placeholder'>
                     <div style={{ fontSize: '3rem' }}>➕</div>
-                    <span>Upload Model</span>
+                    <span>Upload Media</span>
                   </div>
                 </button>
               )}
@@ -754,6 +848,56 @@ const ProfileSettings: React.FC = () => {
                     </div>
                   </div>
                 )}
+              </>
+            )}
+
+            {/* Font Customization */}
+            {canEditProfile && (
+              <>
+                <h4>Custom Font</h4>
+                <div className='font-section'>
+                  <label>
+                    <strong>Select Font:</strong>
+                  </label>
+                  <select
+                    className='input-text'
+                    value={userData.customFont || 'Inter'}
+                    onChange={async (e) => {
+                      const newFont = e.target.value;
+                      try {
+                        const res = await fetch('/api/user/updateCustomFont', {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            username: userData.username,
+                            customFont: newFont
+                          })
+                        });
+
+                        if (res.ok) {
+                          const updatedUser = await res.json();
+                          // Update local state instead of reloading
+                          setUserData(updatedUser);  // This will update userData
+                          toast.success('Font updated!');
+                        } else {
+                          toast.error('Failed to update font');
+                        }
+                      } catch (err) {
+                        toast.error('Failed to update font');
+                      }
+                    }}
+                    style={{ width: '100%', marginTop: '0.5rem' }}
+                  >
+                    <option value='Inter'>Inter (Default)</option>
+                    <option value='Roboto'>Roboto</option>
+                    <option value='Open Sans'>Open Sans</option>
+                    <option value='Montserrat'>Montserrat</option>
+                    <option value='Lato'>Lato</option>
+                    <option value='Poppins'>Poppins</option>
+                    <option value='Playfair Display'>Playfair Display</option>
+                    <option value='Courier New'>Courier New (Monospace)</option>
+                  </select>
+                </div>
               </>
             )}
 

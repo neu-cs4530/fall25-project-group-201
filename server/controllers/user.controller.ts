@@ -277,6 +277,33 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
+ * Updates a user's custom font.
+ * @param req The request containing the username and customFont in the body.
+ * @param res The response, either confirming the update or returning an error.
+ * @returns A promise resolving to void.
+ */
+  const updateCustomFont = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, customFont } = req.body;
+
+      const updatedUser = await updateUser(username, { customFont });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating custom font: ${error}`);
+    }
+  };
+
+  /**
    * Uploads a profile picture for a user.
    */
   const uploadProfilePicture = async (req: Request, res: Response): Promise<void> => {
@@ -389,18 +416,23 @@ const userController = (socket: FakeSOSocket) => {
   /**
   * Uploads a portfolio model AND thumbnail for a user.
   */
-  const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
+  /**
+ * Uploads a portfolio model/media AND thumbnail for a user.
+ * Supports both file uploads and URL embeds.
+ */
+const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { username, thumbnail } = req.body;
+    const { username, thumbnail, mediaUrl } = req.body;
     const file = req.file;
 
     console.log('=== UPLOAD PORTFOLIO DEBUG ===');
     console.log('Username:', username);
     console.log('Thumbnail received:', thumbnail);
     console.log('File:', file?.originalname);
+    console.log('Media URL:', mediaUrl);
 
-    if (!file) {
-      res.status(400).json({ error: 'Model file missing' });
+    if (!file && !mediaUrl) {
+      res.status(400).json({ error: 'Either a file or media URL is required' });
       return;
     }
     if (!username) {
@@ -408,13 +440,23 @@ const userController = (socket: FakeSOSocket) => {
       return;
     }
 
-    const isGlbFile = file.originalname.toLowerCase().endsWith('.glb');
-    if (isGlbFile && !thumbnail) {
-      res.status(400).json({ error: 'Thumbnail required for 3D models' });
+    let mediaToStore: string;
+
+    // If URL is provided, use it directly
+    if (mediaUrl) {
+      mediaToStore = mediaUrl;
+    } else if (file) {
+      // Convert file to base64
+      const isGlbFile = file.originalname.toLowerCase().endsWith('.glb');
+      if (isGlbFile && !thumbnail) {
+        res.status(400).json({ error: 'Thumbnail required for 3D models' });
+        return;
+      }
+      mediaToStore = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+    } else {
+      res.status(400).json({ error: 'No media provided' });
       return;
     }
-
-    const Base64Model = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
 
     const user = await getUserByUsername(username);
     if ('error' in user) {
@@ -423,24 +465,20 @@ const userController = (socket: FakeSOSocket) => {
 
     const currentModels = user.portfolioModels || [];
     const currentThumbnails = user.portfolioThumbnails || [];
-    
-    // FIX: Ensure thumbnails array matches models array length
+
     // Fill missing thumbnails with empty strings
     while (currentThumbnails.length < currentModels.length) {
       currentThumbnails.push('');
     }
 
-    console.log('Current models length:', currentModels.length);
-    console.log('Current thumbnails length (after padding):', currentThumbnails.length);
-    
-    const updatedModels = [...currentModels, Base64Model];
+    const updatedModels = [...currentModels, mediaToStore];
     const updatedThumbnails = [...currentThumbnails, thumbnail || ''];
 
     console.log('Updated models length:', updatedModels.length);
     console.log('Updated thumbnails length:', updatedThumbnails.length);
     console.log('=== END DEBUG ===');
 
-    const updatedUser = await updateUser(username, { 
+    const updatedUser = await updateUser(username, {
       portfolioModels: updatedModels,
       portfolioThumbnails: updatedThumbnails,
     });
@@ -472,6 +510,7 @@ const userController = (socket: FakeSOSocket) => {
   router.patch('/updateSkills', updateSkills);
   router.patch('/updateExternalLinks', updateExternalLinks);
   router.patch('/updateCustomColors', updateCustomColors);
+  router.patch('/updateCustomFont', updateCustomFont);
   router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
   router.post('/uploadResume', upload.single('file'), uploadResume);
