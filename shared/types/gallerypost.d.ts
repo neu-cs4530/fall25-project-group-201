@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Request } from 'express';
 
-
 /**
  * Represents a Gallery post
  * - `title`: title of the gallery post.
