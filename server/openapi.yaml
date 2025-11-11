@@ -876,6 +876,37 @@ paths:
         '500':
           $ref: '#/components/responses/ErrorResponse'
 
+  /gallery/delete/{galleryPostId}:
+    delete:
+      tags:
+        - GalleryPost
+      summary: Delete a gallery post
+      parameters:
+        - in: path
+          name: galleryPostId
+          schema:
+            type: string
+            format: object-id
+          required: true
+          description: The unique ID of the gallery post to delete.
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+          description: The username of the user performing the deletion.
+      responses:
+        '200':
+          description: Gallery post successfully deleted. Returns the deleted gallery post object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseGalleryPost'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+
   # --------------------
   # USER CONTROLLER
   # --------------------

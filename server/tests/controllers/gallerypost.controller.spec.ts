@@ -41,6 +41,7 @@ const mockGalleryPost2: DatabaseGalleryPost = {
 const createGalleryPostSpy = jest.spyOn(gallerypostService, 'createGalleryPost');
 const getGalleriesSpy = jest.spyOn(gallerypostService, 'getAllGalleryPosts');
 const getGalleryByIdSpy = jest.spyOn(gallerypostService, 'getGalleryPostById');
+const deleteGalleryPostSpy  = jest.spyOn(gallerypostService, 'deleteGalleryPost');
 
 describe('Gallery Post Controller', () => {
   beforeEach(() => {
@@ -276,5 +277,58 @@ describe('Gallery Post Controller', () => {
         expect(response.status).toBe(500);
         expect(response.text).toContain('Error retrieving gallery post: Gallery post not found');
        });
+    })
+
+    describe('DELETE /delete/:galleryPostId', () => {
+        test('should delete collection successfully', async () => {
+            deleteGalleryPostSpy.mockResolvedValueOnce(mockGalleryPost);
+    
+            const response = await supertest(app)
+            .delete('/api/gallery/delete/65e9b58910afe6e94fc6e6dd')
+            .query({ username: 'test_user' });
+    
+            expect(response.status).toBe(200);
+            expect(deleteGalleryPostSpy).toHaveBeenCalledWith('65e9b58910afe6e94fc6e6dd', 'test_user');
+        });
+
+        test('should return 400 when missing username', async () => {
+            const response = await supertest(app).delete(
+            '/api/gallery/delete/65e9b58910afe6e94fc6e6dd')
+    
+            const openApiError = JSON.parse(response.text);
+
+            expect(response.status).toBe(400);
+            expect(openApiError.errors[0].path).toBe('/query/username');
+        });
+
+        test('should return 400 when missing Id', async () => {
+             const response = await supertest(app).delete('/api/gallery/delete/').query({
+            username: 'test_user',
+            });
+    
+            expect(response.status).toBe(404);
+        });
+
+        test('should return 500 when service throws error', async () => {
+            deleteGalleryPostSpy.mockRejectedValueOnce(new Error('Database error'));
+    
+            const response = await supertest(app)
+            .delete('/api/gallery/delete/65e9b58910afe6e94fc6e6dd')
+            .query({ username: 'test_user' });
+    
+            expect(response.status).toBe(500);
+            expect(response.text).toContain('Error deleting gallery post: Database error');
+        });
+
+         test('should return 500 when service returns error', async () => {
+            deleteGalleryPostSpy.mockResolvedValueOnce({ error: 'Gallery post not found' });
+    
+            const response = await supertest(app)
+            .delete('/api/gallery/delete/65e9b58910afe6e94fc6e6dd')
+            .query({ username: 'test_user' });
+    
+            expect(response.status).toBe(500);
+            expect(response.text).toContain('Error deleting gallery post: Gallery post not found');
+        });
     })
 });
