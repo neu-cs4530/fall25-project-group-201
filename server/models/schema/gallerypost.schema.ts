@@ -15,18 +15,23 @@ const galleryPostSchema: Schema = new Schema(
   {
     title: {
       type: String,
+      required: true,
     },
     description: {
       type: String,
+      required: true,
     },
     user: {
       type: String,
+      required: true,
     },
     media: {
       type: String,
+      required: true,
     },
     community: {
       type: String,
+      required: true,
     },
     postedAt: {
       type: Date,

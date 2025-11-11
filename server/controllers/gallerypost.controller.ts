@@ -35,7 +35,6 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    //const { title, description, user, media, community, postedAt, thumbnailMedia } = req.body;
     const galleryPost: GalleryPost = req.body;
 
     try {
@@ -46,8 +45,6 @@ const galleryPostController = (socket: FakeSOSocket) => {
       if ('error' in savedGalleryPost) {
         throw new Error(savedGalleryPost.error);
       }
-
-      // todo: socket emit here
 
       res.json(savedGalleryPost);
     } catch (err: unknown) {
