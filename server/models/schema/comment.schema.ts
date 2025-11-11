@@ -8,6 +8,8 @@ import { Schema } from 'mongoose';
  * - `text`: The content of the comment.
  * - `commentBy`: The username of the user who commented.
  * - `commentDateTime`: The date and time when the comment was posted.
+ * - `mediaUrl`: URL to embed, if applicable
+ * - `mediaPath`: location of media, if applicable
  */
 const commentSchema: Schema = new Schema(
   {
