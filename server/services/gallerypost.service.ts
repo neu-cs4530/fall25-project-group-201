@@ -3,15 +3,31 @@ import GalleryPostModel from '../models/gallerypost.model';
 import { promises as fs } from 'fs';
 import path from 'path';
 
+/**
+ * Gets all gallery posts.
+ *
+ * @returns A Promise resolving to an array of gallery post documents or an error object
+ */
 export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { error: string }> => {
   try {
     const posts = await GalleryPostModel.find({});
+
+    if (!posts) {
+      throw new Error('Failed to get gallery posts');
+    }
+
     return posts;
   } catch (err) {
     return { error: (err as Error).message };
   }
 };
 
+/**
+ * Creates a gallery post.
+ *
+ * @param galleryPost - the gallery post object to be created
+ * @returns A Promise resolving to the gallery post document or an error object
+ */
 export const createGalleryPost = async (galleryPost: GalleryPost): Promise<GalleryPostResponse> => {
   try {
     const newGalleryPost = await GalleryPostModel.create(galleryPost);
@@ -29,8 +45,8 @@ export const createGalleryPost = async (galleryPost: GalleryPost): Promise<Galle
 /**
  * Retrieves a gallery post by id.
  *
- * @param id
- * @returns
+ * @param id of the gallery post
+ * @returns A Promise resolving to the gallery post document or an error object
  */
 export const getGalleryPostById = async (id: string): Promise<GalleryPostResponse> => {
   try {
@@ -46,6 +62,13 @@ export const getGalleryPostById = async (id: string): Promise<GalleryPostRespons
   }
 };
 
+/**
+ * Deletes a gallery post.
+ *
+ * @param id of the gallery post
+ * @param username that authored the gallery post
+ * @returns A Promise resolving to the gallery post document or an error object
+ */
 export const deleteGalleryPost = async (
   id: string,
   username: string,
@@ -90,7 +113,7 @@ export const deleteGalleryPost = async (
         try {
           await fs.unlink(thumbnailfilePath);
         } catch (err) {
-          throw new Error(`Failed to delete thumbnailMedia: ${thumbnailfilePath}`);
+          throw new Error(`Failed to delete thumbnail media: ${thumbnailfilePath}`);
         }
       }
     }

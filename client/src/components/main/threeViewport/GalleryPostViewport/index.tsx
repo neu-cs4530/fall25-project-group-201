@@ -2,6 +2,9 @@ import useThreeViewport from '../../../../hooks/useThreeViewport';
 import useGalleryPostViewport from '../../../../hooks/useGalleryPostViewport';
 import { useEffect } from 'react';
 
+/**
+ * Component to display a 3D viewport with a model from a .glb file from a gallery post
+ */
 const GalleryPostViewport = () => {
   const { galleryPost, err, fetchGalleryPost } = useGalleryPostViewport();
 

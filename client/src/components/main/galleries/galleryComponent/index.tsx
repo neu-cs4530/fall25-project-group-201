@@ -8,6 +8,16 @@ type GalleryComponentProps = {
   communityID: string;
 };
 
+/**
+ * Component to display a community's gallery with gallery posts
+ * @returns A React component that includes:
+ * - Clickable gallery posts that are represented by their media/thumbnailMedia
+ * - Gallery posts can be 3D models (.glb files), images, videos or embeds
+ * - Arrows are available to see more gallery posts if there are more than 4 posts in the community
+ * - When clicked, gallery posts show more information about the post (author, title, description, postedAt)
+ * - When clicked, if the user is the author of the gallery post, they can delete it by clicking on the trash icon
+ * - When clicked, if a glb file, a button is available to view the 3D model in the 3D viewport
+ */
 const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   const {
     filteredGalleryPosts,
@@ -28,12 +38,21 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     }
   }, [currentGalleryPost, checkIfAuthorOfCurrentGalleryPost]);
 
+  /**
+   * Handles when right arrow button is clicked.
+   * Shows the next 4 gallery posts and resets the current gallery post.
+   */
   const next = () => {
     setStartIndex(prev =>
       prev + visibleCount >= filteredGalleryPosts.length ? 0 : prev + visibleCount,
     );
     setCurrentGalleryPost(undefined);
   };
+
+  /**
+   * Handles when left arrow button is clicked.
+   * Shows the previous 4 gallery posts and resets the current gallery post.
+   */
   const prev = () => {
     setStartIndex(prev => (prev - visibleCount < 0 ? 0 : prev - visibleCount));
     setCurrentGalleryPost(undefined);
@@ -41,10 +60,18 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
   const visibleItems = filteredGalleryPosts.slice(startIndex, startIndex + visibleCount);
 
+  /**
+   * Handles when a gallery post is clicked.
+   * Shows information about the gallery post (title, description, author, postedAt)
+   */
   const handleMediaClick = (media: DatabaseGalleryPost) => {
     setCurrentGalleryPost(media);
   };
 
+  /**
+   * Handles when the trash icon for a gallery post is clicked.
+   * Calls handleDeleteGalleryPost and resets the current gallery post.
+   */
   const handleDeleteButtonClick = (media: DatabaseGalleryPost) => {
     handleDeleteGalleryPost(media);
     setCurrentGalleryPost(undefined);

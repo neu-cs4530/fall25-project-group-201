@@ -4,6 +4,16 @@ import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
 import useNewGalleryPost from '../../../../hooks/useNewGalleryPost';
 
+/**
+ * Component to display a form for creating a new gallery post
+ * @returns A React component that includes:
+ * - Inputs to enter the title, description, and optional media URL to embed
+ * - Inputs to upload a media file
+ * - If media file is a .glb, there is an input to upload a thumbnail media file
+ * - Error messages displayed if there is no title, description, media URL or media file upload
+ * - Error message displayed if the media file is a .glb and no thumbnail media file uploaded
+ * - Post Project to Gallery button to upload the gallery post
+ */
 const NewGalleryPostPage = () => {
   const {
     title,
@@ -95,6 +105,13 @@ const NewGalleryPostPage = () => {
     }
   };
 
+  /**
+   * Handles file uploads for thumbnail media attachments.
+   * Calls `handleFileChange` from the hook and uploads the file to the backend.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} e - The change event triggered by the file input.
+   * @returns {Promise<void>} - Resolves after upload handling is complete.
+   */
   const handleThumbnailFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
