@@ -16,7 +16,7 @@ const mockGalleryPostResponse = {
 };
 
 // Mock community data
-const mockCollection: DatabaseGalleryPost = {
+const mockGalleryPost: DatabaseGalleryPost = {
   _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
   title: 'New Gallery Post',
   description: 'New Description',
@@ -26,7 +26,7 @@ const mockCollection: DatabaseGalleryPost = {
   postedAt: new Date('2024-06-06'),
 };
 
-const mockCollection2: DatabaseGalleryPost = {
+const mockGalleryPost2: DatabaseGalleryPost = {
   _id: new mongoose.Types.ObjectId('65e9b58910abc6e94fc6123d'),
   title: 'New Gallery Post 2',
   description: 'New Description 2',
@@ -40,6 +40,7 @@ const mockCollection2: DatabaseGalleryPost = {
 // Service method spies
 const createGalleryPostSpy = jest.spyOn(gallerypostService, 'createGalleryPost');
 const getGalleriesSpy = jest.spyOn(gallerypostService, 'getAllGalleryPosts');
+const getGalleryByIdSpy = jest.spyOn(gallerypostService, 'getGalleryPostById');
 
 describe('Gallery Post Controller', () => {
   beforeEach(() => {
@@ -196,7 +197,7 @@ describe('Gallery Post Controller', () => {
 
   describe('GET /getAllGalleryPosts', () => {
       test('should get gallery posts successfully', async () => {
-        const mockGalleryPosts = [mockCollection, mockCollection2];
+        const mockGalleryPosts = [mockGalleryPost, mockGalleryPost2];
   
         getGalleriesSpy.mockResolvedValueOnce(mockGalleryPosts);
   
@@ -208,7 +209,7 @@ describe('Gallery Post Controller', () => {
       });
 
       test('should get gallery post successfully if there is only one gallery post entry', async () => {
-        const mockGalleryPosts = [mockCollection2];
+        const mockGalleryPosts = [mockGalleryPost2];
   
         getGalleriesSpy.mockResolvedValueOnce(mockGalleryPosts);
   
@@ -238,6 +239,42 @@ describe('Gallery Post Controller', () => {
           .get('/api/gallery/getAllGalleryPosts')
     
         expect(response.status).toBe(500);
+       });
+    })
+
+    describe('GET /getGalleryPost/:galleryPostID', () => {
+      test('should get gallery post by id succesfully', async () => {
+        getGalleryByIdSpy.mockResolvedValueOnce(mockGalleryPost);
+  
+        const response = await supertest(app)
+            .get('/api/gallery/getGalleryPost/65e9b58910afe6e94fc6e6dd')
+  
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(
+            expect.objectContaining({
+                _id: expect.any(String),
+                title: mockGalleryPostResponse.title,
+                description: mockGalleryPostResponse.description,
+            })
+        );
+        expect(getGalleryByIdSpy).toHaveBeenCalledWith('65e9b58910afe6e94fc6e6dd');
+      });
+
+      test('should return 400 when missing Id', async () => {
+        const response = await supertest(app)
+            .get('/api/gallery/getGalleryPost/')
+    
+            expect(response.status).toBe(404);
+      })
+
+      test('should return 500 when service returns error', async () => {
+        getGalleryByIdSpy.mockResolvedValueOnce({ error: 'Gallery post not found' });
+    
+        const response = await supertest(app)
+            .get('/api/gallery/getGalleryPost/65e9b58910afe6e94fc6e6dd')
+    
+        expect(response.status).toBe(500);
+        expect(response.text).toContain('Error retrieving gallery post: Gallery post not found');
        });
     })
 });
