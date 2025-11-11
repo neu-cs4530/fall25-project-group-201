@@ -6,7 +6,7 @@ import useUserContext from './useUserContext';
 import { GalleryPost } from '../types/types';
 
 /**
- * Custom hook for managing a new question form, including state, validation,
+ * Custom hook for managing a new gallery post form, including state, validation,
  * file handling, media, and submission logic.
  *
  * @returns Object - Form state, error messages, handlers, and submission function
@@ -31,7 +31,7 @@ const useNewGalleryPost = () => {
   const { communityID } = useParams<{ communityID: string }>();
 
   /**
-   * Function to validate the form before submitting the question.
+   * Function to validate the form before submitting the gallery post.
    *
    * @returns boolean - True if the form is valid, false otherwise.
    */
@@ -86,9 +86,7 @@ const useNewGalleryPost = () => {
   };
 
   /**
-   * Function to post a question to the server.
-   *
-   * @returns title - The current value of the title input.
+   * Function to post a gallery post to the server.
    */
   const postGalleryPost = async () => {
     if (!validateForm()) return;
@@ -109,7 +107,7 @@ const useNewGalleryPost = () => {
         navigate(`/communities/${communityID}`);
       }
     } catch (err) {
-      setMediaErr('Failed to post question');
+      setMediaErr('Failed to post gallery post');
     }
   };
 
@@ -124,6 +122,10 @@ const useNewGalleryPost = () => {
     setUploadedMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
   };
 
+  /**
+   * Handles a file input change event by setting the uploaded thumbnail media path
+   * @param {ChangeEvent<HTMLInputElement>} e - The file input change event
+   */
   const handleThumbnailFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;

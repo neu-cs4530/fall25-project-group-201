@@ -4,6 +4,12 @@ import { getGalleryPosts, deleteGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * useGalleryComponentPage is a custom hook that supports the gallery component.
+ * It handles logic for fetching gallery posts by community Id, deleting gallery posts,
+ * and navigation to the 3D viewport if the post contains 3D media
+ * @param communityID that the gallery component belongs to
+ */
 const useGalleryComponentPage = (communityID: string) => {
   const { user: currentUser } = useUserContext();
   const [filteredGalleryPosts, setFilteredGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
@@ -11,6 +17,9 @@ const useGalleryComponentPage = (communityID: string) => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  /**
+   * Fetches all gallery posts and filters them by communityId
+   */
   const fetchGalleryPosts = useCallback(async () => {
     try {
       const resGalleryPosts = await getGalleryPosts();
@@ -31,15 +40,23 @@ const useGalleryComponentPage = (communityID: string) => {
     fetchGalleryPosts();
   }, [fetchGalleryPosts]);
 
+  /**
+   * Allows navigation to the galleryPostViewport if the post contains 3D media
+   */
   const handle3DMediaClick = (galleryPostID: string) => {
     navigate(`/galleryPostViewport/${galleryPostID}`);
   };
 
-  // Check if the current user is the author of the currentGalleryPost being displayed
+  /**
+   * Checks if the current user is the author of the currentGalleryPost being displayed
+   */
   const checkIfAuthorOfCurrentGalleryPost = (currentGalleryPost: DatabaseGalleryPost) => {
     setIsAuthor(currentGalleryPost.user === currentUser.username);
   };
 
+  /**
+   * Handles deletion of a gallery post.
+   */
   const handleDeleteGalleryPost = async (currentGalleryPost: DatabaseGalleryPost) => {
     try {
       await deleteGalleryPost(currentGalleryPost._id.toString(), currentGalleryPost.user);

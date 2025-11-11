@@ -2,6 +2,9 @@ import mongoose, { Model } from 'mongoose';
 import { DatabaseGalleryPost } from '../types/types';
 import galleryPostSchema from './schema/gallerypost.schema';
 
+/**
+ * Mongoose model for the Gallery Post collection.
+ */
 const GalleryPostModel: Model<DatabaseGalleryPost> = mongoose.model<DatabaseGalleryPost>(
   'GalleryPost',
   galleryPostSchema,

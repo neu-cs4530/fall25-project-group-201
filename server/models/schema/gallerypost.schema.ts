@@ -1,14 +1,16 @@
 import { Schema } from 'mongoose';
 
 /**
- * Mongoose schema for the Gallery collection.
+ * Mongoose schema for the Gallery Post collection.
  *
  * This schema defines the structure of a gallery post in the database.
- * Each gallery post includes the following fields: (tentative)
+ * Each gallery post includes the following fields:
  * - title
  * - description
- * - author (by username)
- * - model (by filepath, referencing the Media Schema type)
+ * - user
+ * - media
+ * - community (ID)
+ * - thumbnailMedia
  * - post date and time
  */
 const galleryPostSchema: Schema = new Schema(

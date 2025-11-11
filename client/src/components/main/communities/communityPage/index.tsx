@@ -17,6 +17,10 @@ const CommunityPage = () => {
     return <div className='loading'>Loading...</div>;
   }
 
+  /**
+   * Handles when Upload Project button is clicked.
+   * Navigates to form to create a new gallery post.
+   */
   const handleNewGalleryPost = () => {
     navigate(`/new/galleryPost/${community._id}`);
   };
