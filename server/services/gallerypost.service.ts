@@ -90,7 +90,7 @@ export const deleteGalleryPost = async (
         try {
           await fs.unlink(thumbnailfilePath);
         } catch (err) {
-          throw new Error(`Failed to delete thumbnailMedia: ${thumbnailfilePath}`);
+          throw new Error(`Failed to delete thumbnail media: ${thumbnailfilePath}`);
         }
       }
     }
