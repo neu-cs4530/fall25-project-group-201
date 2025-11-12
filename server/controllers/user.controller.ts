@@ -551,7 +551,6 @@ const userController = (socket: FakeSOSocket) => {
 
       res.status(200).json(updatedUser);
     } catch (error) {
-      console.error('Error in UploadPortfolioModel:', error);
       res.status(500).send(`Error uploading portfolio model: ${error}`);
     }
   };

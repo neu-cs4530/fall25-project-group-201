@@ -107,7 +107,6 @@ const useUploadPortfolioModel = () => {
         navigate(`/user/${user.username}`);
       }
     } catch (err) {
-      console.error('Upload error:', err);
       toast.error('Failed to upload portfolio media');
     }
   };
