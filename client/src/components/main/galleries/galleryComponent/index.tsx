@@ -299,17 +299,39 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                   <span>{selectedPost.views.length}</span>
                 </span>
 
-                <span className="statItem downloads" onClick={() => handleDownload(selectedPost)} style={{ cursor: 'pointer' }}>
-                  <Download size={18} color="blue" />
-                  <span>{selectedPost.downloads}</span>
-                </span>
+                {/* Only show downloads if media is NOT an embed */}
+                {(() => {
+                  const url = selectedPost.media;
+                  const youTubeId = getYouTubeVideoId(url);
+                  const vimeoId = getVimeoVideoId(url);
+                  const isEmbed = !!youTubeId || !!vimeoId;
+
+                  if (!isEmbed) {
+                    return (
+                      <span
+                        className="statItem downloads"
+                        onClick={() => handleDownload(selectedPost)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <Download size={18} color="blue" />
+                        <span>{selectedPost.downloads}</span>
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
 
                 {isAuthor(selectedPost) && (
                   <span className="statItem delete">
-                    <Trash2 size={18} className="deleteIcon" onClick={() => handleDelete(selectedPost)} />
+                    <Trash2
+                      size={18}
+                      className="deleteIcon"
+                      onClick={() => handleDelete(selectedPost)}
+                    />
                   </span>
                 )}
               </div>
+
 
               <p className="description">{selectedPost.description}</p>
             </div>
