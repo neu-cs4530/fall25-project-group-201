@@ -2,11 +2,12 @@ import { DatabaseGalleryPost, GalleryPost, GalleryPostResponse } from '@fake-sta
 import GalleryPostModel from '../models/gallerypost.model';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { ObjectId } from 'mongodb';
 
 /**
- * Gets all gallery posts.
+ * Fetches all gallery posts from the database.
  *
- * @returns A Promise resolving to an array of gallery post documents or an error object
+ * @returns {Promise<DatabaseGalleryPost[] | { error: string }>} Array of gallery posts or an error object
  */
 export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { error: string }> => {
   try {
@@ -23,10 +24,10 @@ export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { er
 };
 
 /**
- * Creates a gallery post.
+ * Creates a new gallery post in the database.
  *
- * @param galleryPost - the gallery post object to be created
- * @returns A Promise resolving to the gallery post document or an error object
+ * @param {GalleryPost} galleryPost - The gallery post data to create
+ * @returns {Promise<GalleryPostResponse>} The created gallery post or an error object
  */
 export const createGalleryPost = async (galleryPost: GalleryPost): Promise<GalleryPostResponse> => {
   try {
@@ -43,10 +44,10 @@ export const createGalleryPost = async (galleryPost: GalleryPost): Promise<Galle
 };
 
 /**
- * Retrieves a gallery post by id.
+ * Retrieves a gallery post by its ID.
  *
- * @param id of the gallery post
- * @returns A Promise resolving to the gallery post document or an error object
+ * @param {string} id - The ID of the gallery post
+ * @returns {Promise<GalleryPostResponse>} The gallery post or an error object
  */
 export const getGalleryPostById = async (id: string): Promise<GalleryPostResponse> => {
   try {
@@ -63,11 +64,11 @@ export const getGalleryPostById = async (id: string): Promise<GalleryPostRespons
 };
 
 /**
- * Deletes a gallery post.
+ * Deletes a gallery post by ID and username, including local media and thumbnail files.
  *
- * @param id of the gallery post
- * @param username that authored the gallery post
- * @returns A Promise resolving to the gallery post document or an error object
+ * @param {string} id - The ID of the gallery post
+ * @param {string} username - The username of the post owner
+ * @returns {Promise<GalleryPostResponse>} The deleted gallery post or an error object
  */
 export const deleteGalleryPost = async (
   id: string,
@@ -86,12 +87,8 @@ export const deleteGalleryPost = async (
 
     const projectRoot = path.resolve(__dirname, '../../');
 
-    // Only delete if media is local (not an external embed)
     if (galleryPost.media && !/^https?:\/\//i.test(galleryPost.media)) {
-      // Get full filepath for media
       const filePath = path.join(projectRoot, 'client', 'public', galleryPost.media);
-
-      // Delete media
       try {
         await fs.unlink(filePath);
       } catch (err) {
@@ -100,21 +97,16 @@ export const deleteGalleryPost = async (
     }
 
     if (galleryPost.thumbnailMedia) {
-      // Get full filepath for media
       const thumbnailfilePath = path.join(
         projectRoot,
         'client',
         'public',
         galleryPost.thumbnailMedia,
       );
-
-      // Delete thumbnailMedia
-      if (galleryPost.thumbnailMedia) {
-        try {
-          await fs.unlink(thumbnailfilePath);
-        } catch (err) {
-          throw new Error(`Failed to delete thumbnail media: ${thumbnailfilePath}`);
-        }
+      try {
+        await fs.unlink(thumbnailfilePath);
+      } catch (err) {
+        throw new Error(`Failed to delete thumbnailMedia: ${thumbnailfilePath}`);
       }
     }
 
@@ -131,5 +123,102 @@ export const deleteGalleryPost = async (
     return deletedGalleryPost;
   } catch (error) {
     return { error: (error as Error).message };
+  }
+};
+
+/**
+ * Fetches a gallery post by ID and increments its views array
+ * with the provided username if it hasn't been counted yet.
+ *
+ * @param {string} id - The ID of the gallery post
+ * @param {string} username - The username to add to views
+ * @returns {Promise<DatabaseGalleryPost | { error: string }>} Updated gallery post or error object
+ */
+export const fetchAndIncrementGalleryPostViewsById = async (
+  id: string,
+  username: string,
+): Promise<DatabaseGalleryPost | { error: string }> => {
+  try {
+    const objectId = new ObjectId(id);
+    const updatedPost = await GalleryPostModel.findOneAndUpdate(
+      { _id: objectId },
+      { $addToSet: { views: username } },
+      { new: true },
+    );
+
+    if (!updatedPost) {
+      throw new Error('Gallery post not found');
+    }
+
+    return updatedPost;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return { error: 'Error when fetching and updating gallery post views' };
+  }
+};
+
+/**
+ * Fetches a gallery post by ID and increments its downloads count by 1.
+ *
+ * @param {string} id - The ID of the gallery post
+ * @returns {Promise<DatabaseGalleryPost | { error: string }>} Updated gallery post or error object
+ */
+export const fetchAndIncrementGalleryPostDownloadsById = async (
+  id: string,
+): Promise<DatabaseGalleryPost | { error: string }> => {
+  try {
+    const objectId = new ObjectId(id);
+    const updatedPost = await GalleryPostModel.findOneAndUpdate(
+      { _id: objectId },
+      { $inc: { downloads: 1 } },
+      { new: true },
+    );
+
+    if (!updatedPost) {
+      throw new Error('Gallery post not found');
+    }
+
+    return updatedPost;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return { error: 'Error when fetching and updating gallery post downloads' };
+  }
+};
+
+/**
+ * Toggles a username in the likes array of a gallery post.
+ * Adds username if not liked, removes if already liked.
+ *
+ * @param {string} id - The ID of the gallery post
+ * @param {string} username - The username to toggle in likes
+ * @returns {Promise<DatabaseGalleryPost | { error: string }>} Updated gallery post or error object
+ */
+export const toggleGalleryPostLikeById = async (
+  id: string,
+  username: string,
+): Promise<DatabaseGalleryPost | { error: string }> => {
+  try {
+    const objectId = new ObjectId(id);
+    const post = await GalleryPostModel.findById(objectId);
+
+    if (!post) throw new Error('Gallery post not found');
+
+    const alreadyLiked = post.likes.includes(username);
+
+    const updatedPost = await GalleryPostModel.findByIdAndUpdate(
+      objectId,
+      alreadyLiked ? { $pull: { likes: username } } : { $addToSet: { likes: username } },
+      { new: true },
+    );
+
+    if (!updatedPost) throw new Error('Failed to update likes');
+
+    return updatedPost;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return { error: 'Error when toggling gallery post like' };
   }
 };

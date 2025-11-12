@@ -2,23 +2,24 @@ import express, { Response } from 'express';
 import {
   CreateGalleryPostRequest,
   GalleryPostRequest,
-  // DatabaseGalleryPost,
   FakeSOSocket,
   GalleryPost,
-  // GalleryPostResponse,
 } from '../types/types';
 import {
   createGalleryPost,
   getAllGalleryPosts,
   getGalleryPostById,
   deleteGalleryPost,
+  fetchAndIncrementGalleryPostDownloadsById,
+  toggleGalleryPostLikeById,
+  fetchAndIncrementGalleryPostViewsById,
 } from '../services/gallerypost.service';
 
 /**
- * This controller handles gallery post related routes.
- * @param socket The socket instance to emit events.
- * @returns {express.Router} The router object containing the gallery post routes.
- * @throws {Error} Throws an error if the gallery post operations fail.
+ * Controller for handling all gallery post related routes.
+ *
+ * @param {FakeSOSocket} socket - The socket instance for real-time updates
+ * @returns {express.Router} An Express router with gallery post routes
  */
 const galleryPostController = (socket: FakeSOSocket) => {
   const router = express.Router();
@@ -55,12 +56,14 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const galleryPost: GalleryPost = req.body;
+    const galleryPost: GalleryPost = {
+      ...req.body,
+      views: [],
+      downloads: 0,
+    };
 
     try {
-      const savedGalleryPost = await createGalleryPost({
-        ...galleryPost,
-      });
+      const savedGalleryPost = await createGalleryPost(galleryPost);
 
       if ('error' in savedGalleryPost) {
         throw new Error(savedGalleryPost.error);
@@ -118,11 +121,77 @@ const galleryPostController = (socket: FakeSOSocket) => {
     }
   };
 
-  // Registering routes
+  /**
+   * Increments the view count of a gallery post by a specific user.
+   */
+  const incrementGalleryPostViewsRoute = async (
+    req: express.Request,
+    res: Response,
+  ): Promise<void> => {
+    try {
+      const { galleryPostID, username } = req.params;
+      const updatedGalleryPost = await fetchAndIncrementGalleryPostViewsById(
+        galleryPostID,
+        username,
+      );
+
+      if ('error' in updatedGalleryPost) {
+        throw new Error(updatedGalleryPost.error);
+      }
+
+      res.json(updatedGalleryPost);
+    } catch (err: unknown) {
+      res.status(500).send(`Error incrementing gallery post views: ${(err as Error).message}`);
+    }
+  };
+
+  /**
+   * Increments the download count of a gallery post.
+   */
+  const incrementGalleryPostDownloadsRoute = async (
+    req: express.Request,
+    res: Response,
+  ): Promise<void> => {
+    try {
+      const { galleryPostID } = req.params;
+      const updatedGalleryPost = await fetchAndIncrementGalleryPostDownloadsById(galleryPostID);
+
+      if ('error' in updatedGalleryPost) {
+        throw new Error(updatedGalleryPost.error);
+      }
+
+      res.json(updatedGalleryPost);
+    } catch (err: unknown) {
+      res.status(500).send(`Error incrementing gallery post downloads: ${(err as Error).message}`);
+    }
+  };
+
+  /**
+   * Toggles a like for a gallery post by a specific user.
+   */
+  const toggleGalleryPostLikesRoute = async (req: express.Request, res: Response) => {
+    try {
+      const { galleryPostID, username } = req.params;
+      const updatedGalleryPost = await toggleGalleryPostLikeById(galleryPostID, username);
+
+      if ('error' in updatedGalleryPost) {
+        throw new Error(updatedGalleryPost.error);
+      }
+
+      res.json(updatedGalleryPost);
+    } catch (err: unknown) {
+      res.status(500).send(`Error toggling gallery post like: ${(err as Error).message}`);
+    }
+  };
+
+  // Register routes
   router.get('/getAllGalleryPosts', getAllGalleryPostsRoute);
   router.get('/getGalleryPost/:galleryPostID', getGalleryPostRoute);
   router.post('/create', createGalleryPostRoute);
   router.delete('/delete/:galleryPostId', deleteGalleryPostRoute);
+  router.post('/incrementViews/:galleryPostID/:username', incrementGalleryPostViewsRoute);
+  router.post('/incrementDownloads/:galleryPostID', incrementGalleryPostDownloadsRoute);
+  router.post('/toggleLikes/:galleryPostID/:username', toggleGalleryPostLikesRoute);
 
   return router;
 };

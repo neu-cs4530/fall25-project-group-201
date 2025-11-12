@@ -1,69 +1,259 @@
-.galleryMedia {
-  width: auto;      /* slightly smaller than container width */
-  height: 150px;     /* slightly smaller than container height */
-  max-width: 170px;
-  object-fit: cover; /* or 'contain' if you want full media visible */
-  border-radius: 8px;
-  opacity: 0.8;
-  margin: 2px;
-  padding: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  border: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.viewport-card {
+  width: 700px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
-.noGalleryPostsDiv{
-  margin-left: 10px;
-  margin: 10px;
-}
-
-.galleryMedia:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  transform: scale(1.1);
-  opacity: 1;
-}
-
-.arrowButtonLeft {
-  position: relative;
-  top: -60px;
-  left: 0px;
-  cursor: pointer;
-}
-
-.arrowButtonLeft.disabled {
-  cursor: not-allowed;
-  opacity: 0.3;
-}
-
-.arrowButtonRight{
-  position: relative;   
-  top: -60px;     
-  left: 0px;
-  cursor: pointer;
-}
-
-.arrowButtonRight.disabled {
-  cursor: not-allowed;
-  opacity: 0.3;
-}
-
-.galleryPostInfo {
+.viewport-canvas {
+  flex: 1;
   width: 100%;
-  background-color: rgb(222, 225, 225);
+  height: 100%;
+}
+
+
+.carouselContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.carouselArrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.carouselArrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.carouselPage {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 200px);
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+}
+
+.carouselPageIndicator {
+  display: flex;
+  justify-content: end;
+  padding-top: 20px;
+  color:#666;
+  font-size: 13px;
+}
+
+.galleryContainer {
   padding: 20px;
-  margin: 10px;
+  background-color: #ffffff;
 }
 
-.galleryAuthor{
-  color: rgb(111, 66, 66);
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
 }
 
-.galleryPostDate {
-  color: rgb(114, 114, 114);
+.galleryCard {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  cursor: pointer;
 }
 
-.trashButton {
-  float: right;
-  margin: -5px;
+.media {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  width: 750px;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-bottom: 25px;
+  padding-top: 25px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.closeBtn {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.modalInfo {
+  width: 100%;
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.modalMeta {
+  font-size: 0.8rem;
+  color: #666;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.modalStats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.deleteIcon {
+  cursor: pointer;
+  color: red;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.downloadBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #111;
+  color: white;
+  cursor: pointer;
+}
+
+.downloadBtn:hover {
+  background: #333;
+}
+
+.view3DBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #0077ff;
+  color: white;
+  cursor: pointer;
+}
+
+.view3DBtn:hover {
+  background: #005bb5;
+}
+
+.description {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+.sortingDropdown {
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.sortSelect {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.modalStatsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color:#666;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+}
+
+.statItem svg {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.statItem.likes svg:hover,
+.statItem.downloads svg:hover {
+  transform: scale(1.2);
+}
+
+.statItem.views svg {
+  cursor: default;
+  transform: none;
+}
+
+
+.deleteIcon {
+  color: red;
+}
+
+.modalMedia iframe {
+  width: 700px;
+  height: 375px;
+  display: block;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.modalMedia video,
+.modalMedia img {
+  max-width: 700px;
+  height: auto;
+  max-height: 500px;
+  display: block;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.filtersContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  padding-bottom: 20px;
 }

@@ -1,38 +1,82 @@
-import { useCallback, useState, useEffect } from 'react';
-import { DatabaseGalleryPost } from '../types/types';
-import { getGalleryPosts, deleteGalleryPost } from '../services/galleryService';
-import useUserContext from './useUserContext';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useUserContext from './useUserContext';
+import {
+  getGalleryPosts,
+  deleteGalleryPost,
+  incrementGalleryPostDownloads,
+  toggleGalleryPostLikes,
+} from '../services/galleryService';
+import { DatabaseGalleryPost } from '../types/types';
+
+type SortType = 'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded';
+type MediaType = 'all' | 'glb' | 'video' | 'image' | 'embed';
 
 /**
- * useGalleryComponentPage is a custom hook that supports the gallery component.
- * It handles logic for fetching gallery posts by community Id, deleting gallery posts,
- * and navigation to the 3D viewport if the post contains 3D media
- * @param communityID that the gallery component belongs to
+ * Custom hook for managing gallery posts in a community page.
+ *
+ * Provides filtering, sorting, pagination, and post interactions (like, download, delete).
+ *
+ * @param {string} communityID - The ID of the community whose gallery posts should be loaded
+ * @returns {{
+ *   filteredGalleryPosts: DatabaseGalleryPost[];
+ *   visibleItems: DatabaseGalleryPost[];
+ *   error: string | null;
+ *   isAuthor: (post: DatabaseGalleryPost) => boolean;
+ *   sortType: SortType;
+ *   setSortType: React.Dispatch<React.SetStateAction<SortType>>;
+ *   selectedType: MediaType;
+ *   setSelectedType: React.Dispatch<React.SetStateAction<MediaType>>;
+ *   nextPage: () => void;
+ *   prevPage: () => void;
+ *   itemsPerPage: number;
+ *   startIndex: number;
+ *   handle3DMediaClick: (id: string) => void;
+ *   handleDeleteGalleryPost: (post: DatabaseGalleryPost) => Promise<void>;
+ *   handleIncrementDownloads: (post: DatabaseGalleryPost) => Promise<void>;
+ *   handleToggleLikes: (post: DatabaseGalleryPost) => Promise<void>;
+ *   refreshGallery: () => Promise<void>;
+ * }}
  */
 const useGalleryComponentPage = (communityID: string) => {
   const { user: currentUser } = useUserContext();
-  const [filteredGalleryPosts, setFilteredGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
-  const [isAuthor, setIsAuthor] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const [allGalleryPosts, setAllGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<SortType>('newest');
+  const [selectedType, setSelectedType] = useState<MediaType>('all');
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [startIndex, setStartIndex] = useState(0);
+
   /**
-   * Fetches all gallery posts and filters them by communityId
+   * Responsive grid adjustment
+   */
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      const width = window.innerWidth;
+      if (width >= 1600) setItemsPerPage(9);
+      else if (width >= 1200) setItemsPerPage(6);
+      else if (width >= 900) setItemsPerPage(3);
+      else if (width >= 600) setItemsPerPage(2);
+      else setItemsPerPage(1);
+    };
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  /**
+   * Fetch all gallery posts for the community and filter by communityID.
    */
   const fetchGalleryPosts = useCallback(async () => {
     try {
       const resGalleryPosts = await getGalleryPosts();
-      const filteredPosts = resGalleryPosts.filter(post => post.community === communityID);
-      setFilteredGalleryPosts(filteredPosts);
-
-      if (!filteredPosts.length) {
-        setError('No gallery posts found for this community');
-      } else {
-        setError(null);
-      }
-    } catch (err: unknown) {
-      setError('Failed to fetch gallery posts for this community');
+      const filtered = resGalleryPosts.filter(p => p.community === communityID);
+      setAllGalleryPosts(filtered);
+      setError(null);
+    } catch {
+      setError('Failed to fetch gallery posts.');
     }
   }, [communityID]);
 
@@ -41,38 +85,154 @@ const useGalleryComponentPage = (communityID: string) => {
   }, [fetchGalleryPosts]);
 
   /**
-   * Allows navigation to the galleryPostViewport if the post contains 3D media
+   * Extract YouTube video ID from a URL
+   *
+   * @param {string} url - the youtube video url
    */
-  const handle3DMediaClick = (galleryPostID: string) => {
-    navigate(`/galleryPostViewport/${galleryPostID}`);
-  };
+  const getYouTubeVideoId = (url: string) =>
+    url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] ?? null;
 
   /**
-   * Checks if the current user is the author of the currentGalleryPost being displayed
+   * Extract Vimeo video ID from a URL
+   *
+   * @param {string} url - the vimeo video url
    */
-  const checkIfAuthorOfCurrentGalleryPost = (currentGalleryPost: DatabaseGalleryPost) => {
-    setIsAuthor(currentGalleryPost.user === currentUser.username);
-  };
+  const getVimeoVideoId = (url: string) => url.match(/vimeo\.com\/(\d+)/)?.[1] ?? null;
+
+  const filteredGalleryPosts = useMemo(() => {
+    const filtered = allGalleryPosts.filter(post => {
+      if (!post.media) return false;
+      const ext = post.media.split('.').pop()?.toLowerCase();
+      const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
+      const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');
+      const is3D = ext === 'glb';
+      const youTubeId = getYouTubeVideoId(post.media);
+      const vimeoId = getVimeoVideoId(post.media);
+
+      switch (selectedType) {
+        case 'glb':
+          return is3D;
+        case 'video':
+          return isVideo;
+        case 'image':
+          return isImage;
+        case 'embed':
+          return !!youTubeId || !!vimeoId;
+        default:
+          return true;
+      }
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortType) {
+        case 'newest':
+          return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+        case 'oldest':
+          return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
+        case 'highestRated':
+          return b.likes.length - a.likes.length;
+        case 'mostViewed':
+          return b.views.length - a.views.length;
+        case 'mostDownloaded':
+          return b.downloads - a.downloads;
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [allGalleryPosts, selectedType, sortType]);
+
+  const visibleItems = useMemo(
+    () => filteredGalleryPosts.slice(startIndex, startIndex + itemsPerPage),
+    [filteredGalleryPosts, startIndex, itemsPerPage],
+  );
 
   /**
-   * Handles deletion of a gallery post.
+   * Go to next page of carousel
    */
-  const handleDeleteGalleryPost = async (currentGalleryPost: DatabaseGalleryPost) => {
+  const nextPage = () =>
+    setStartIndex(prev =>
+      prev + itemsPerPage >= filteredGalleryPosts.length ? 0 : prev + itemsPerPage,
+    );
+
+  /**
+   * Go to previous page of carousel
+   */
+  const prevPage = () =>
+    setStartIndex(prev =>
+      prev - itemsPerPage < 0
+        ? Math.max(filteredGalleryPosts.length - itemsPerPage, 0)
+        : prev - itemsPerPage,
+    );
+
+  /**
+   * Delete a gallery post
+   * @param {DatabaseGalleryPost} post - The post to delete
+   */
+  const handleDeleteGalleryPost = async (post: DatabaseGalleryPost) => {
     try {
-      await deleteGalleryPost(currentGalleryPost._id.toString(), currentGalleryPost.user);
-      await fetchGalleryPosts(); // wait for fetch to complete
-    } catch (err) {
-      setError('Failed to delete gallery post');
+      await deleteGalleryPost(post._id.toString(), post.user);
+      await fetchGalleryPosts(); // <-- refreshes the data
+    } catch {
+      setError('Failed to delete post.');
     }
   };
 
+  /**
+   * Increment download count and open media
+   * @param {DatabaseGalleryPost} post - Post being downloaded
+   */
+  const handleIncrementDownloads = async (post: DatabaseGalleryPost) => {
+    try {
+      await incrementGalleryPostDownloads(post._id.toString());
+      window.open(post.media, '_blank');
+      await fetchGalleryPosts();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  };
+
+  /**
+   * Toggle like for a post
+   * @param {DatabaseGalleryPost} post - Post to like/unlike
+   */
+  const handleToggleLikes = async (post: DatabaseGalleryPost) => {
+    try {
+      await toggleGalleryPostLikes(post._id.toString(), currentUser.username);
+      await fetchGalleryPosts(); // refresh posts after toggle
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  };
+
+  /**
+   * Navigate to 3D media view page
+   */
+  const handle3DMediaClick = (id: string) => navigate(`/galleryPostViewport/${id}`);
+
+  const refreshGallery = fetchGalleryPosts;
+
   return {
     filteredGalleryPosts,
+    visibleItems,
     error,
+    isAuthor: (post: DatabaseGalleryPost) => post.user === currentUser.username,
+    sortType,
+    setSortType,
+    selectedType,
+    setSelectedType,
+    nextPage,
+    prevPage,
+    itemsPerPage,
+    startIndex,
     handle3DMediaClick,
-    checkIfAuthorOfCurrentGalleryPost,
-    isAuthor,
     handleDeleteGalleryPost,
+    handleIncrementDownloads,
+    handleToggleLikes,
+    refreshGallery,
   };
 };
 

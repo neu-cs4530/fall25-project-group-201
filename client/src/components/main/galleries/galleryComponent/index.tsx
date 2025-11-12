@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { Trash2, Heart, X, Eye, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import './index.css';
 import useGalleryComponentPage from '../../../../hooks/useGalleryComponentPage';
 import { DatabaseGalleryPost } from '@fake-stack-overflow/shared';
+import useUserContext from '../../../../hooks/useUserContext';
+import ThreeViewport from '../../threeViewport';
 
+/**
+ * Props for the GalleryComponent.
+ */
 type GalleryComponentProps = {
   communityID: string;
 };
@@ -22,155 +27,385 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   const {
     filteredGalleryPosts,
     error,
-    handle3DMediaClick,
-    checkIfAuthorOfCurrentGalleryPost,
     isAuthor,
     handleDeleteGalleryPost,
+    handleIncrementDownloads,
+    handleToggleLikes,
+    refreshGallery,
   } = useGalleryComponentPage(communityID);
 
-  const visibleCount = 4; // show 4 items at a time
+  const { user: currentUser } = useUserContext();
+  const [selectedPost, setSelectedPost] = useState<DatabaseGalleryPost | null>(null);
+  const [sortType, setSortType] = useState<
+    'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded'
+  >('newest');
+  const [selectedType, setSelectedType] = useState<'all' | 'glb' | 'video' | 'image' | 'embed'>(
+    'all',
+  );
+  const [itemsPerPage, setItemsPerPage] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
-  const [currentGalleryPost, setCurrentGalleryPost] = useState<DatabaseGalleryPost>();
 
+  /**
+   * Updates items per page
+   */
   useEffect(() => {
-    if (currentGalleryPost) {
-      checkIfAuthorOfCurrentGalleryPost(currentGalleryPost);
+    const updateItemsPerPage = () => {
+      const width = window.innerWidth;
+      if (width >= 1600) setItemsPerPage(9);
+      else if (width >= 1200) setItemsPerPage(6);
+      else if (width >= 900) setItemsPerPage(3);
+      else if (width >= 600) setItemsPerPage(2);
+      else setItemsPerPage(1);
+    };
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  /**
+   * Extracts YouTube video ID from a URL
+   *
+   * @param {string} url - url path to embedded youtuve video
+   */
+  const getYouTubeVideoId = (url: string) =>
+    url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] ?? null;
+
+  /**
+   * Extract Vimeo video ID from a URL
+   *
+   * @param {string} url - url path to embedded vimeo video
+   */
+  const getVimeoVideoId = (url: string) => url.match(/vimeo\.com\/(\d+)/)?.[1] ?? null;
+
+  /**
+   * Filter posts by selected media type
+   */
+  const filteredByType = filteredGalleryPosts.filter(post => {
+    if (!post.media) return false;
+    const ext = post.media.split('.').pop()?.toLowerCase();
+    const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
+    const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');
+    const is3D = ext === 'glb';
+    const youTubeId = getYouTubeVideoId(post.media);
+    const vimeoId = getVimeoVideoId(post.media);
+
+    switch (selectedType) {
+      case 'glb':
+        return is3D;
+      case 'video':
+        return isVideo;
+      case 'image':
+        return isImage;
+      case 'embed':
+        return !!youTubeId || !!vimeoId;
+      default:
+        return true;
     }
-  }, [currentGalleryPost, checkIfAuthorOfCurrentGalleryPost]);
+  });
 
   /**
-   * Handles when right arrow button is clicked.
-   * Shows the next 4 gallery posts and resets the current gallery post.
+   * Sort posts by selected sort type
    */
-  const next = () => {
+  const sortedPosts = [...filteredByType].sort((a, b) => {
+    switch (sortType) {
+      case 'newest':
+        return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+      case 'oldest':
+        return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
+      case 'highestRated':
+        return b.likes.length - a.likes.length;
+      case 'mostViewed':
+        return b.views.length - a.views.length;
+      case 'mostDownloaded':
+        return b.downloads - a.downloads;
+      default:
+        return 0;
+    }
+  });
+
+  const visibleItems = sortedPosts.slice(startIndex, startIndex + itemsPerPage);
+
+  /**
+   * Navigate to next carousel page
+   */
+  const nextPage = () =>
+    setStartIndex(prev => (prev + itemsPerPage >= sortedPosts.length ? 0 : prev + itemsPerPage));
+
+  /**
+   * Navigate to previous carousel page
+   */
+  const prevPage = () =>
     setStartIndex(prev =>
-      prev + visibleCount >= filteredGalleryPosts.length ? 0 : prev + visibleCount,
+      prev - itemsPerPage < 0
+        ? Math.max(sortedPosts.length - itemsPerPage, 0)
+        : prev - itemsPerPage,
     );
-    setCurrentGalleryPost(undefined);
+
+  /**
+   * Render media element depending on type
+   * @param {DatabaseGalleryPost} post - Gallery post
+   * @param {boolean} showControls - Show video controls
+   * @returns {JSX.Element | null}
+   */
+  const renderMedia = (post: DatabaseGalleryPost, showControls = false) => {
+    const url = post.media;
+    if (!url) return null;
+    const ext = url.split('.').pop()?.toLowerCase();
+    const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
+    const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');
+    const is3D = ext === 'glb';
+    const youTubeId = getYouTubeVideoId(url);
+    const vimeoId = getVimeoVideoId(url);
+
+    if (isVideo) return <video src={url} className='media' controls={showControls} />;
+    if (isImage) return <img src={url} alt={post.title} className='media' />;
+    if (is3D) return <img src={post.thumbnailMedia} alt={post.title} className='media' />;
+    if (youTubeId)
+      return (
+        <img
+          src={`https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`}
+          alt={post.title}
+          className='media'
+        />
+      );
+    if (vimeoId)
+      return <img src={`https://vumbnail.com/${vimeoId}.jpg`} alt={post.title} className='media' />;
+    return null;
   };
 
   /**
-   * Handles when left arrow button is clicked.
-   * Shows the previous 4 gallery posts and resets the current gallery post.
+   * Toggle like for a post
    */
-  const prev = () => {
-    setStartIndex(prev => (prev - visibleCount < 0 ? 0 : prev - visibleCount));
-    setCurrentGalleryPost(undefined);
+  const handleHeartClick = async (post: DatabaseGalleryPost) => {
+    try {
+      const isLiked = post.likes.includes(currentUser.username);
+      const updatedLikes = isLiked
+        ? post.likes.filter(u => u !== currentUser.username)
+        : [...post.likes, currentUser.username];
+
+      setSelectedPost(prev => (prev?._id === post._id ? { ...prev, likes: updatedLikes } : prev));
+      refreshGallery?.();
+      await handleToggleLikes(post);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
   };
 
-  const visibleItems = filteredGalleryPosts.slice(startIndex, startIndex + visibleCount);
-
   /**
-   * Handles when a gallery post is clicked.
-   * Shows information about the gallery post (title, description, author, postedAt)
+   * Delete a gallery post
    */
-  const handleMediaClick = (media: DatabaseGalleryPost) => {
-    setCurrentGalleryPost(media);
+  const handleDelete = async (post: DatabaseGalleryPost) => {
+    try {
+      await handleDeleteGalleryPost(post);
+      setSelectedPost(null);
+      refreshGallery?.();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
   };
 
   /**
-   * Handles when the trash icon for a gallery post is clicked.
-   * Calls handleDeleteGalleryPost and resets the current gallery post.
+   * Download media
    */
-  const handleDeleteButtonClick = (media: DatabaseGalleryPost) => {
-    handleDeleteGalleryPost(media);
-    setCurrentGalleryPost(undefined);
+  const handleDownload = async (post: DatabaseGalleryPost) => {
+    try {
+      await handleIncrementDownloads(post);
+      window.open(post.media, '_blank');
+      refreshGallery?.();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
   };
 
   return (
-    <div className='relative w-full h-[160px] bg-black/90 rounded-2xl flex items-center justify-center overflow-hidden px-4'>
-      {filteredGalleryPosts.length === 0 && (
-        <div className='noGalleryPostsDiv'>No gallery posts yet!</div>
-      )}
-      {error && error !== 'No gallery posts found for this community' && (
-        <div className='text-red-500'>{error}</div>
-      )}
+    <div className='galleryContainer'>
+      {/* Filters */}
+      <div className='filtersContainer'>
+        <select
+          value={sortType}
+          onChange={e =>
+            setSortType(
+              e.target.value as
+                | 'newest'
+                | 'oldest'
+                | 'highestRated'
+                | 'mostViewed'
+                | 'mostDownloaded',
+            )
+          }
+          className='sortSelect'>
+          <option value='newest'>Newest</option>
+          <option value='oldest'>Oldest</option>
+          <option value='highestRated'>Most Liked</option>
+          <option value='mostViewed'>Most Viewed</option>
+          <option value='mostDownloaded'>Most Downloaded</option>
+        </select>
 
-      {/* Carousel row */}
-      <div className='carousel-row'>
-        {filteredGalleryPosts.length > 0 && (
-          <button
-            onClick={prev}
-            className={`arrowButtonLeft ${filteredGalleryPosts.length <= visibleCount ? 'disabled' : ''}`}>
-            <ChevronLeft size={20} />
-          </button>
-        )}
-        {visibleItems.map((item, i) => {
-          const url = item.media;
-          const ext = url.split('.').pop()?.toLowerCase();
-          const isEmbed = /youtube\.com|youtu\.be|vimeo\.com/.test(url);
-
-          return (
-            <span
-              key={i}
-              className='carouselItem inline-flex flex-col items-center'
-              onClick={() => handleMediaClick(item)}>
-              {/* Media */}
-              {isEmbed ? (
-                (() => {
-                  let embedUrl = url;
-                  if (url.includes('youtube.com/watch')) {
-                    const videoId = new URL(url).searchParams.get('v');
-                    if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                  }
-                  if (url.includes('vimeo.com') && !url.includes('player.vimeo.com')) {
-                    const vimeoId = url.split('/').pop();
-                    if (vimeoId) embedUrl = `https://player.vimeo.com/video/${vimeoId}`;
-                  }
-                  return (
-                    <iframe
-                      src={embedUrl}
-                      title={`Embed ${i}`}
-                      className='galleryMedia'
-                      allow='autoplay; fullscreen'
-                    />
-                  );
-                })()
-              ) : ext && ['mp4', 'webm', 'mov'].includes(ext) ? (
-                <video src={url} controls className='galleryMedia' />
-              ) : ext && ['jpg', 'jpeg', 'png'].includes(ext) ? (
-                <img src={url} alt={`Gallery ${i}`} className='galleryMedia' />
-              ) : ext && ['glb'].includes(ext) ? (
-                <img
-                  src={item.thumbnailMedia}
-                  alt={`Gallery ${i}`}
-                  className='galleryMedia cursor-pointer'
-                  /*onClick={() => handle3DMediaClick(item._id.toString())}*/
-                />
-              ) : null}
-            </span>
-          );
-        })}
-        {filteredGalleryPosts.length > 0 && (
-          <button
-            onClick={next}
-            className={`arrowButtonRight ${filteredGalleryPosts.length <= visibleCount ? 'disabled' : ''}`}>
-            <ChevronRight size={20} />
-          </button>
-        )}
+        <select
+          value={selectedType}
+          onChange={e =>
+            setSelectedType(e.target.value as 'all' | 'glb' | 'video' | 'image' | 'embed')
+          }
+          className='sortSelect'>
+          <option value='all'>All</option>
+          <option value='glb'>3D Models</option>
+          <option value='video'>Videos</option>
+          <option value='image'>Images</option>
+          <option value='embed'>Embeds</option>
+        </select>
       </div>
 
-      {currentGalleryPost && (
-        <div className='galleryPostInfo'>
-          <span className='galleryAuthor'>{currentGalleryPost.user}</span>{' '}
-          <span className='galleryPostDate'>
-            posted at {new Date(currentGalleryPost.postedAt).toLocaleString()}
-          </span>
-          {/* Trash button */}
-          {isAuthor && (
-            <button
-              className='trashButton'
-              onClick={() => handleDeleteButtonClick(currentGalleryPost)}>
-              <Trash2 size={16} className='text-white' />
+      {/* Errors & Empty State */}
+      {error && <div className='error'>{error}</div>}
+      {filteredGalleryPosts.length === 0 && (
+        <div className='noGalleryPosts'>No gallery posts yet!</div>
+      )}
+
+      {/* Carousel */}
+      <div className='carouselContainer'>
+        <button
+          className='carouselArrow left'
+          onClick={prevPage}
+          disabled={sortedPosts.length <= itemsPerPage}>
+          <ChevronLeft size={22} />
+        </button>
+
+        <div className='galleryGrid carouselPage'>
+          {visibleItems.map(post => (
+            <div
+              key={post._id.toString()}
+              className='galleryCard'
+              onClick={() => setSelectedPost(post)}>
+              {renderMedia(post, false)}
+            </div>
+          ))}
+        </div>
+
+        <button
+          className='carouselArrow right'
+          onClick={nextPage}
+          disabled={sortedPosts.length <= itemsPerPage}>
+          <ChevronRight size={22} />
+        </button>
+      </div>
+
+      {/* Page Indicator */}
+      {sortedPosts.length > itemsPerPage && (
+        <div className='carouselPageIndicator'>
+          Page {Math.floor(startIndex / itemsPerPage) + 1} of{' '}
+          {Math.ceil(sortedPosts.length / itemsPerPage)}
+        </div>
+      )}
+
+      {/* Modal */}
+      {selectedPost && (
+        <div className='modalOverlay' onClick={() => setSelectedPost(null)}>
+          <div className='modalContent' onClick={e => e.stopPropagation()}>
+            <button className='closeBtn' onClick={() => setSelectedPost(null)}>
+              <X size={18} />
             </button>
-          )}
-          <h3>{currentGalleryPost.title}</h3>
-          <div>{currentGalleryPost.description}</div>
-          {currentGalleryPost.media.toLowerCase().endsWith('.glb') && (
-            <button onClick={() => handle3DMediaClick(currentGalleryPost._id.toString())}>
-              View 3D Model In Viewport
-            </button>
-          )}
+
+            <div className='modalMedia'>
+              {(() => {
+                const url = selectedPost.media;
+                const ext = url.split('.').pop()?.toLowerCase();
+                const is3D = ext === 'glb';
+                const youTubeId = getYouTubeVideoId(url);
+                const vimeoId = getVimeoVideoId(url);
+
+                if (is3D)
+                  return <ThreeViewport key={selectedPost.media} modelPath={selectedPost.media} />;
+                if (youTubeId)
+                  return (
+                    <iframe
+                      width='700'
+                      height='394'
+                      src={`https://www.youtube.com/embed/${youTubeId}`}
+                      title={selectedPost.title}
+                      frameBorder='0'
+                      allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                      allowFullScreen
+                    />
+                  );
+                if (vimeoId)
+                  return (
+                    <iframe
+                      width='700'
+                      height='394'
+                      src={`https://player.vimeo.com/video/${vimeoId}`}
+                      title={selectedPost.title}
+                      frameBorder='0'
+                      allow='autoplay; fullscreen; picture-in-picture'
+                      allowFullScreen
+                    />
+                  );
+                return renderMedia(selectedPost, true);
+              })()}
+            </div>
+
+            <div className='modalInfo'>
+              <h3 className='modalTitle'>{selectedPost.title}</h3>
+              <div className='modalMeta'>
+                <span className='author'>{selectedPost.user} • &nbsp;</span>
+                <span className='date'>{new Date(selectedPost.postedAt).toLocaleString()}</span>
+              </div>
+              <div className='modalStatsRow'>
+                {/* Likes */}
+                <span className='statItem likes' title='Like'>
+                  <Heart
+                    size={18}
+                    color={selectedPost.likes.includes(currentUser.username) ? 'red' : 'gray'}
+                    onClick={() => handleHeartClick(selectedPost)}
+                  />
+                  <span>{selectedPost.likes.length}</span>
+                </span>
+
+                {/* Views */}
+                <span className='statItem views' title='Views'>
+                  <Eye size={18} />
+                  <span>{selectedPost.views.length}</span>
+                </span>
+
+                {/* Downloads (only for non-embed media) */}
+                {(() => {
+                  const url = selectedPost.media;
+                  const youTubeId = getYouTubeVideoId(url);
+                  const vimeoId = getVimeoVideoId(url);
+                  const isEmbed = !!youTubeId || !!vimeoId;
+
+                  if (!isEmbed) {
+                    return (
+                      <span
+                        className='statItem downloads'
+                        onClick={() => handleDownload(selectedPost)}
+                        style={{ cursor: 'pointer' }}
+                        title='Download'>
+                        <Download size={18} color='blue' />
+                        <span>{selectedPost.downloads}</span>
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
+
+                {/* Delete (only for author) */}
+                {isAuthor(selectedPost) && (
+                  <span className='statItem delete' title='Delete'>
+                    <Trash2
+                      size={18}
+                      className='deleteIcon'
+                      onClick={() => handleDelete(selectedPost)}
+                    />
+                  </span>
+                )}
+              </div>
+
+              <p className='description'>{selectedPost.description}</p>
+            </div>
+          </div>
         </div>
       )}
     </div>

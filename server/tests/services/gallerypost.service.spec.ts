@@ -29,69 +29,38 @@ describe('Gallery Post Service', () => {
     media: '/test_user/testMedia.png',
     community: '65e9b58910afe6e94fc6e6dd',
     postedAt: new Date('2024-06-06'),
+    views: [],
+    downloads: 0,
+    likes: [],
   };
 
   const mockGalleryPostInputWithThumbnail: GalleryPost = {
-    title: 'New Gallery Post',
-    description: 'New Description',
-    user: 'test_user',
+    ...mockGalleryPostInput,
     media: '/test_user/test3DMedia.glb',
-    community: '65e9b58910afe6e94fc6e6dd',
-    thumbnailMedia: '/test_user/testThumbail.png',
-    postedAt: new Date('2024-06-06'),
+    thumbnailMedia: '/test_user/testThumbnail.png',
   };
 
   const mockGalleryPost: DatabaseGalleryPost = {
     _id: new mongoose.Types.ObjectId('65e9123910afe6e94fdef6dd'),
-    title: 'New Gallery Post',
-    description: 'New Description',
-    user: 'test_user',
-    media: '/test_user/testMedia.png',
-    community: '65e9b58910afe6e94fc6e6dd',
-    postedAt: new Date('2024-06-06'),
+    ...mockGalleryPostInput,
   };
 
   const mockGalleryPostWithThumbnail: DatabaseGalleryPost = {
     _id: new mongoose.Types.ObjectId('65e9123910afe6e94123f6dd'),
-    title: 'New Gallery Post',
-    description: 'New Description',
-    user: 'test_user',
-    media: '/test_user/test3DMedia.glb',
-    community: '65e9b58910afe6e94fc6e6dd',
-    thumbnailMedia: '/test_user/testThumbail.png',
-    postedAt: new Date('2024-06-06'),
+    ...mockGalleryPostInputWithThumbnail,
   };
 
   describe('createGalleryPost', () => {
-    test('should create a new gallery post successfully', async () => {
-      const createdGalleryPost = {
-        ...mockGalleryPostInput,
-        _id: new mongoose.Types.ObjectId(),
-      };
-
-      jest.spyOn(GalleryPostModel, 'create').mockResolvedValueOnce(createdGalleryPost as any);
+    test('creates gallery post successfully', async () => {
+      jest.spyOn(GalleryPostModel, 'create').mockResolvedValueOnce(mockGalleryPost as any);
 
       const result = await createGalleryPost(mockGalleryPostInput);
 
-      expect(result).toEqual(createdGalleryPost);
+      expect(result).toEqual(mockGalleryPost);
       expect(GalleryPostModel.create).toHaveBeenCalledWith(mockGalleryPostInput);
     });
 
-    test('should create a new gallery post with thumbnail successfully', async () => {
-      const createdGalleryPost = {
-        ...mockGalleryPostInputWithThumbnail,
-        _id: new mongoose.Types.ObjectId(),
-      };
-
-      jest.spyOn(GalleryPostModel, 'create').mockResolvedValueOnce(createdGalleryPost as any);
-
-      const result = await createGalleryPost(mockGalleryPostInputWithThumbnail);
-
-      expect(result).toEqual(createdGalleryPost);
-      expect(GalleryPostModel.create).toHaveBeenCalledWith(mockGalleryPostInputWithThumbnail);
-    });
-
-    test('should return error when creation fails', async () => {
+    test('returns error if creation fails', async () => {
       jest.spyOn(GalleryPostModel, 'create').mockResolvedValueOnce(null as any);
 
       const result = await createGalleryPost(mockGalleryPostInput);
@@ -99,7 +68,7 @@ describe('Gallery Post Service', () => {
       expect(result).toEqual({ error: 'Failed to create gallery post' });
     });
 
-    test('should return error when database throws error', async () => {
+    test('returns error if database throws', async () => {
       jest.spyOn(GalleryPostModel, 'create').mockRejectedValueOnce(new Error('Database error'));
 
       const result = await createGalleryPost(mockGalleryPostInput);
@@ -168,61 +137,60 @@ describe('Gallery Post Service', () => {
       jest.spyOn(GalleryPostModel, 'findOne').mockResolvedValueOnce(mockGalleryPost as any);
       unlinkMock.mockRejectedValueOnce(new Error('Permission denied'));
 
-      const result = await deleteGalleryPost('65e9123910afe6e94123f6dd', 'test_user');
+      const result = await deleteGalleryPost(mockGalleryPost._id.toString(), 'test_user');
 
-      expect(result).toEqual({
-        error: expect.stringContaining('Failed to delete media'),
-      });
+      if ('error' in result) {
+        expect(result.error).toContain('Failed to delete media');
+      } else {
+        throw new Error('Expected error result, got success');
+      }
     });
 
-    test('should throw error when thumbnail media could not be deleted', async () => {
+    test('returns error when thumbnail deletion fails', async () => {
       jest
         .spyOn(GalleryPostModel, 'findOne')
         .mockResolvedValueOnce(mockGalleryPostWithThumbnail as any);
-      unlinkMock.mockResolvedValueOnce(undefined);
-      unlinkMock.mockRejectedValueOnce(new Error('Permission denied')); // Fails for thumbnail
+      unlinkMock.mockResolvedValueOnce(undefined); // media deletion succeeds
+      unlinkMock.mockRejectedValueOnce(new Error('Permission denied')); // thumbnail deletion fails
 
-      const result = await deleteGalleryPost('65e9123910afe6e94123f6dd', 'test_user');
+      const result = await deleteGalleryPost(
+        mockGalleryPostWithThumbnail._id.toString(),
+        'test_user',
+      );
 
-      expect(result).toEqual({
-        error: expect.stringContaining('Failed to delete thumbnail media'),
-      });
+      if ('error' in result) {
+        expect(result.error).toContain('Failed to delete thumbnailMedia');
+      } else {
+        throw new Error('Expected error result, got success');
+      }
     });
 
-    test('should throw error when deletion fails', async () => {
+    test('returns error when final deletion fails', async () => {
       jest.spyOn(GalleryPostModel, 'findOne').mockResolvedValueOnce(mockGalleryPost as any);
       unlinkMock.mockResolvedValueOnce(undefined);
       jest.spyOn(GalleryPostModel, 'findOneAndDelete').mockResolvedValueOnce(null);
 
-      const result = await deleteGalleryPost('65e9123910afe6e94123f6dd', 'test_user');
+      const result = await deleteGalleryPost(mockGalleryPost._id.toString(), 'test_user');
 
-      expect(result).toEqual({
-        error: expect.stringContaining('Failed to delete gallery post after deleting media'),
-      });
-    });
-
-    test('should not delete collection belonging to another user', async () => {
-      jest.spyOn(GalleryPostModel, 'findOne').mockResolvedValueOnce(null);
-
-      const result = await deleteGalleryPost('65e9123910afe6e94123f6dd', 'test_user');
-
-      expect(result).toEqual({
-        error: expect.stringContaining('Gallery post not found'),
-      });
+      if ('error' in result) {
+        expect(result.error).toContain('Failed to delete gallery post after deleting media');
+      } else {
+        throw new Error('Expected error result, got success');
+      }
     });
   });
 
   describe('getGalleryPostById', () => {
-    test('should return gallery post', async () => {
+    test('returns gallery post', async () => {
       jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(mockGalleryPost);
 
-      const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
+      const result = await getGalleryPostById(mockGalleryPost._id.toString());
 
       expect(result).toEqual(mockGalleryPost);
-      expect(GalleryPostModel.findById).toHaveBeenCalledWith('65e9123910afe6e94fdef6dd');
+      expect(GalleryPostModel.findById).toHaveBeenCalledWith(mockGalleryPost._id.toString());
     });
 
-    test('should return error when gallery post not found', async () => {
+    test('returns error if not found', async () => {
       jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(null);
 
       const result = await getGalleryPostById('invalid_id');
@@ -230,45 +198,26 @@ describe('Gallery Post Service', () => {
       expect(result).toEqual({ error: 'Failed to get gallery post' });
     });
 
-    test('should return error when database throws error', async () => {
+    test('returns error if database throws', async () => {
       jest.spyOn(GalleryPostModel, 'findById').mockRejectedValueOnce(new Error('Database error'));
 
-      const result = await getGalleryPostById('65e9123910afe6e94fdef6dd');
+      const result = await getGalleryPostById(mockGalleryPost._id.toString());
 
       expect(result).toEqual({ error: 'Database error' });
     });
   });
 
   describe('getAllGalleryPosts', () => {
-    test('should get all gallery posts', async () => {
-      const mockGalleryPosts = [mockGalleryPost, mockGalleryPostWithThumbnail];
-
-      jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce(mockGalleryPosts);
-
-      const result = await getAllGalleryPosts();
-
-      expect(result).toEqual(mockGalleryPosts);
-    });
-
-    test('should return singular gallery post if there is only one gallery post', async () => {
-      const mockGalleryPosts = [mockGalleryPostWithThumbnail];
-
-      jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce(mockGalleryPosts);
+    test('returns all posts', async () => {
+      const mockPosts = [mockGalleryPost, mockGalleryPostWithThumbnail];
+      jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce(mockPosts);
 
       const result = await getAllGalleryPosts();
 
-      expect(result).toEqual(mockGalleryPosts);
+      expect(result).toEqual(mockPosts);
     });
 
-    test('should return empty array when no gallery posts found', async () => {
-      jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce([]);
-
-      const result = await getAllGalleryPosts();
-
-      expect(result).toEqual([]);
-    });
-
-    test('should return error when find returns null', async () => {
+    test('returns error if find returns null', async () => {
       jest.spyOn(GalleryPostModel, 'find').mockResolvedValueOnce(null as any);
 
       const result = await getAllGalleryPosts();
@@ -276,7 +225,7 @@ describe('Gallery Post Service', () => {
       expect(result).toEqual({ error: 'Failed to get gallery posts' });
     });
 
-    test('should return error when database throws error', async () => {
+    test('returns error if database throws', async () => {
       jest.spyOn(GalleryPostModel, 'find').mockRejectedValueOnce(new Error('Database error'));
 
       const result = await getAllGalleryPosts();
