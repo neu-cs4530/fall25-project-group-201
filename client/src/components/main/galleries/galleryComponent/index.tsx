@@ -283,9 +283,9 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                 <span className="author">{selectedPost.user} • &nbsp;</span>
                 <span className="date">{new Date(selectedPost.postedAt).toLocaleString()}</span>
               </div>
-
               <div className="modalStatsRow">
-                <span className="statItem likes">
+                {/* Likes */}
+                <span className="statItem likes" title="Like">
                   <Heart
                     size={18}
                     color={selectedPost.likes.includes(currentUser.username) ? 'red' : 'gray'}
@@ -294,16 +294,18 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                   <span>{selectedPost.likes.length}</span>
                 </span>
 
-                <span className="statItem views">
+                {/* Views */}
+                <span className="statItem views" title="Views">
                   <Eye size={18} />
                   <span>{selectedPost.views.length}</span>
                 </span>
 
-                {/* Only show downloads if media is NOT an embed */}
+                {/* Downloads (only for non-embed media) */}
                 {(() => {
                   const url = selectedPost.media;
                   const youTubeId = getYouTubeVideoId(url);
                   const vimeoId = getVimeoVideoId(url);
+                  const ext = url.split('.').pop()?.toLowerCase();
                   const isEmbed = !!youTubeId || !!vimeoId;
 
                   if (!isEmbed) {
@@ -312,6 +314,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                         className="statItem downloads"
                         onClick={() => handleDownload(selectedPost)}
                         style={{ cursor: 'pointer' }}
+                        title="Download"
                       >
                         <Download size={18} color="blue" />
                         <span>{selectedPost.downloads}</span>
@@ -321,8 +324,9 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                   return null;
                 })()}
 
+                {/* Delete (only for author) */}
                 {isAuthor(selectedPost) && (
-                  <span className="statItem delete">
+                  <span className="statItem delete" title="Delete">
                     <Trash2
                       size={18}
                       className="deleteIcon"
@@ -330,7 +334,8 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                     />
                   </span>
                 )}
-              </div>
+</div>
+
 
 
               <p className="description">{selectedPost.description}</p>
