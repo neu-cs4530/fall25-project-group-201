@@ -535,10 +535,6 @@ const userController = (socket: FakeSOSocket) => {
       const updatedModels = [...currentModels, mediaToStore];
       const updatedThumbnails = [...currentThumbnails, thumbnail || ''];
 
-      console.log('Updated models length:', updatedModels.length);
-      console.log('Updated thumbnails length:', updatedThumbnails.length);
-      console.log('=== END DEBUG ===');
-
       const updatedUser = await updateUser(username, {
         portfolioModels: updatedModels,
         portfolioThumbnails: updatedThumbnails,

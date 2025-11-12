@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import './index.css';
-import useUserContext from '../../../hooks/useUserContext';
 import ThreeViewport from '../threeViewport';
 import useUploadPortfolioModel from '../../../hooks/useUploadPortfolioModel';
 
