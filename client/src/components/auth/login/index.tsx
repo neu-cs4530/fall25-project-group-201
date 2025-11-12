@@ -1,6 +1,8 @@
 import './index.css';
 import { Link } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
+import { useAuth0 } from '@auth0/auth0-react';
+import LoginButton from './LoginButton';
 
 /**
  * Renders a login form with username and password inputs, password visibility toggle,
@@ -17,11 +19,14 @@ const Login = () => {
     togglePasswordVisibility,
   } = useAuth('login');
 
+  // const { isAuthenticated, isLoading, error } = useAuth0();
+
   return (
     <div className='container'>
       <h2>Welcome to FakeStackOverflow!</h2>
       <h3>Please login to continue.</h3>
-      <form onSubmit={handleSubmit}>
+      <LoginButton />
+      {/* <form onSubmit={handleSubmit}>
         <h4>Please enter your username.</h4>
         <input
           type='text'
@@ -54,7 +59,7 @@ const Login = () => {
         <button type='submit' className='login-button'>
           Submit
         </button>
-      </form>
+      </form> */}
       {err && <p className='error-message'>{err}</p>}
       <Link to='/signup' className='signup-link'>
         Don&apos;t have an account? Sign up here.

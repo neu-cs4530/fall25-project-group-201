@@ -26,6 +26,7 @@ import collectionController from './controllers/collection.controller';
 import communityController from './controllers/community.controller';
 import mediaController from './controllers/media.controller';
 import galleryPostController from './controllers/gallerypost.controller';
+import { auth, requiresAuth } from 'express-openid-connect';
 
 const MONGO_URL = `${process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017'}/fake_so`;
 const PORT = parseInt(process.env.PORT || '8000');
@@ -101,6 +102,19 @@ try {
 } catch (e) {
   console.error('Failed to load or initialize OpenAPI Validator:', e);
 }
+
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  baseURL: `${process.env.CLIENT_URL || 'http://localhost:4530'}`,
+  clientID: `${process.env.AUTH0_CLIENT_ID}`,
+  issuerBaseURL: `https://${process.env.AUTH0_ISSUER_BASE_URL}`,
+  secret: `${process.env.AUTH0_SECRET}`
+};
+
+// The `auth` router attaches /login, /logout
+// and /callback routes to the baseURL
+app.use(auth(config));
 
 app.use('/api/question', questionController(socket));
 app.use('/api/tags', tagController());
