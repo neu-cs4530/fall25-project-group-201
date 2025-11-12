@@ -10,6 +10,10 @@ import { Schema } from 'mongoose';
  * - author (by username)
  * - model (by filepath, referencing the Media Schema type)
  * - post date and time
+ * - thumbnailMedia
+ * - views
+ * - downloads
+ * - likes
  */
 const galleryPostSchema: Schema = new Schema(
   {
@@ -34,6 +38,18 @@ const galleryPostSchema: Schema = new Schema(
     thumbnailMedia: {
       type: String,
       required: false,
+    },
+    views: {
+      type: [String],
+      default: [],
+    },
+    downloads: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: [String],
+      default: [],
     },
   },
   { collection: 'GalleryPost' },

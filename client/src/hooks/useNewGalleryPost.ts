@@ -101,6 +101,9 @@ const useNewGalleryPost = () => {
       ...(thumbnailMediaPath ? { thumbnailMedia: thumbnailMediaPath } : {}),
       postedAt: new Date(),
       community: communityID!,
+      views: [],
+      downloads: 0,
+      likes: [],
     };
 
     try {
@@ -124,6 +127,11 @@ const useNewGalleryPost = () => {
     setUploadedMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
   };
 
+  /**
+   * Handle file input change for the thumbnail of a 3D model.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} e - File input change event
+   */
   const handleThumbnailFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
