@@ -15,6 +15,7 @@ import {
 } from '../services/userService';
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
+import toast from 'react-hot-toast';
 
 /**
  * A custom hook to encapsulate all logic/state for the ProfileSettings component.
@@ -31,8 +32,6 @@ const useProfileSettings = () => {
   const [loading, setLoading] = useState(false);
   const [editBioMode, setEditBioMode] = useState(false);
   const [newBio, setNewBio] = useState('');
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editSkillsMode, setEditSkillsMode] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [editLinksMode, setEditLinksMode] = useState(false);
@@ -44,6 +43,9 @@ const useProfileSettings = () => {
   const [primaryColor, setPrimaryColor] = useState('#2563eb');
   const [accentColor, setAccentColor] = useState('#16a34a');
   const [backgroundColor, setBackgroundColor] = useState('#f2f4f7');
+  const [portfolioModelFile, setPortfolioModelFile] = useState<File | null>(null);
+  const [portfolioThumbnailFile, setPortfolioThumbnailFile] = useState<File | null>(null);
+  const [showThumbnailUpload, setShowThumbnailUpload] = useState(false);
 
   // For delete-user confirmation modal
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -62,7 +64,7 @@ const useProfileSettings = () => {
         setLoading(true);
         const data = await getUserByUsername(username);
         setUserData(data);
-        setSelectedSkills(data.skills || []); // intialize skills
+        setSelectedSkills(data.skills || []);
         setGithubLink(data.externalLinks?.github || '');
         setArtstationLink(data.externalLinks?.artstation || '');
         setLinkedinLink(data.externalLinks?.linkedin || '');
@@ -71,7 +73,7 @@ const useProfileSettings = () => {
         setAccentColor(data.customColors?.accent || '#16a34a');
         setBackgroundColor(data.customColors?.background || '#f2f4f7');
       } catch (error) {
-        setErrorMessage('Error fetching user profile');
+        toast.error('Error fetching user profile'); // CHANGED
         setUserData(null);
       } finally {
         setLoading(false);
@@ -81,31 +83,22 @@ const useProfileSettings = () => {
     fetchUserData();
   }, [username]);
 
-  /**
-   * Toggles the visibility of the password fields.
-   */
   const togglePasswordVisibility = () => {
     setShowPassword(prevState => !prevState);
   };
 
-  /**
-   * Validate the password fields before attempting to reset.
-   */
   const validatePasswords = () => {
     if (newPassword.trim() === '' || confirmNewPassword.trim() === '') {
-      setErrorMessage('Please enter and confirm your new password.');
+      toast.error('Please enter and confirm your new password.'); // CHANGED
       return false;
     }
     if (newPassword !== confirmNewPassword) {
-      setErrorMessage('Passwords do not match.');
+      toast.error('Passwords do not match.'); // CHANGED
       return false;
     }
     return true;
   };
 
-  /**
-   * Handler for resetting the password
-   */
   const handleResetPassword = async () => {
     if (!username) return;
     if (!validatePasswords()) {
@@ -113,40 +106,31 @@ const useProfileSettings = () => {
     }
     try {
       await resetPassword(username, newPassword);
-      setSuccessMessage('Password reset successful!');
-      setErrorMessage(null);
+      toast.success('Password reset successful!'); // CHANGED
       setNewPassword('');
       setConfirmNewPassword('');
     } catch (error) {
-      setErrorMessage('Failed to reset password.');
-      setSuccessMessage(null);
+      toast.error('Failed to reset password.'); // CHANGED
     }
   };
 
   const handleUpdateBiography = async () => {
     if (!username) return;
     try {
-      // Await the async call to update the biography
       const updatedUser = await updateBiography(username, newBio);
 
-      // Ensure state updates occur sequentially after the API call completes
       await new Promise(resolve => {
-        setUserData(updatedUser); // Update the user data
-        setEditBioMode(false); // Exit edit mode
-        resolve(null); // Resolve the promise
+        setUserData(updatedUser);
+        setEditBioMode(false);
+        resolve(null);
       });
 
-      setSuccessMessage('Biography updated!');
-      setErrorMessage(null);
+      toast.success('Biography updated!'); // CHANGED
     } catch (error) {
-      setErrorMessage('Failed to update biography.');
-      setSuccessMessage(null);
+      toast.error('Failed to update biography.'); // CHANGED
     }
   };
 
-  /**
-   * Handler for updating external links
-   */
   const handleUpdateExternalLinks = async () => {
     if (!username) return;
     try {
@@ -165,17 +149,12 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      setSuccessMessage('External links updated!');
-      setErrorMessage(null);
+      toast.success('External links updated!'); // CHANGED
     } catch (error) {
-      setErrorMessage('Failed to update external links.');
-      setSuccessMessage(null);
+      toast.error('Failed to update external links.'); // CHANGED
     }
   };
 
-  /**
-   * Handler for updating custom colors
-   */
   const handleUpdateCustomColors = async () => {
     if (!username) return;
     try {
@@ -188,98 +167,166 @@ const useProfileSettings = () => {
       const updatedUser = await updateCustomColors(username, customColors);
 
       await new Promise(resolve => {
-        setUserData({ ...updatedUser }); // ← ONLY THIS ONE (with spread)
+        setUserData({ ...updatedUser });
         setEditColorsMode(false);
         resolve(null);
       });
 
-      setSuccessMessage('Theme colors updated!');
-      setErrorMessage(null);
+      toast.success('Theme colors updated!'); // CHANGED
     } catch (error) {
-      setErrorMessage('Failed to update colors.');
-      setSuccessMessage(null);
+      toast.error('Failed to update colors.'); // CHANGED
     }
   };
 
-  /**
-   * Handler for uploading profile picture
-   */
   const handleUploadProfilePicture = async (file: File) => {
     if (!username) return;
+
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Profile picture must be JPG or PNG format.'); // CHANGED
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Profile picture must be under 5MB.'); // CHANGED
+      return;
+    }
+
     try {
       const updatedUser = await uploadProfilePicture(username, file);
       setUserData(updatedUser);
-      setSuccessMessage('Profile picture updated!');
-      setErrorMessage(null);
+      toast.success('Profile picture updated!'); // CHANGED
     } catch (error) {
-      setErrorMessage('Failed to upload profile picture.');
-      setSuccessMessage(null);
+      toast.error('Failed to upload profile picture.'); // CHANGED
     }
   };
 
-  /**
-   * Handler for uploading banner image
-   */
   const handleUploadBannerImage = async (file: File) => {
     if (!username) return;
+
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Banner image must be JPG or PNG format.'); // CHANGED
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Banner image must be under 5MB.'); // CHANGED
+      return;
+    }
+
     try {
       const updatedUser = await uploadBannerImage(username, file);
       setUserData(updatedUser);
-      setSuccessMessage('Banner image updated!');
-      setErrorMessage(null);
+      toast.success('Banner image updated!'); // CHANGED
     } catch (error) {
-      setErrorMessage('Failed to upload banner image.');
-      setSuccessMessage(null);
+      toast.error('Failed to upload banner image.'); // CHANGED
     }
   };
 
-  /**
-   * Handler for uploading resume
-   */
   const handleUploadResume = async (file: File) => {
     if (!username) return;
+
+    if (file.type !== 'application/pdf') {
+      toast.error('Resume must be PDF format.'); // CHANGED
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Resume must be under 10MB.'); // CHANGED
+      return;
+    }
+
     try {
       const updatedUser = await uploadResume(username, file);
       setUserData(updatedUser);
-      setSuccessMessage('Resume uploaded!');
-      setErrorMessage(null);
+      toast.success('Resume uploaded!'); // CHANGED
     } catch (error) {
-      setErrorMessage('Failed to upload resume.');
-      setSuccessMessage(null);
+      toast.error('Failed to upload resume.'); // CHANGED
     }
   };
 
-  /**
-   * Handler for uploading portfolio models
-   */
   const handleUploadPortfolioModel = async (file: File) => {
     if (!username) return;
+
+    const validTypes = ['model/gltf-binary', 'application/octet-stream'];
+    const validExtensions = ['.glb'];
+    const hasValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+
+    if (!validTypes.includes(file.type) && !hasValidExtension) {
+      toast.error('Portfolio model must be .glb format.');
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error('Model must be under 50MB.');
+      return;
+    }
+
+    // Store the file and show thumbnail upload UI
+    setPortfolioModelFile(file);
+    setShowThumbnailUpload(true);
+    toast('Now upload a thumbnail for your 3D model');
+  };
+
+  // Add new handler for thumbnail
+  const handleUploadPortfolioThumbnail = async (file: File) => {
+    if (!username) return;
+
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Thumbnail must be JPG or PNG format.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Thumbnail must be under 5MB.');
+      return;
+    }
+
+    setPortfolioThumbnailFile(file);
+  };
+
+  // Add new handler to complete the upload
+  const handleCompletePortfolioUpload = async () => {
+    if (!portfolioModelFile || !portfolioThumbnailFile || !username) {
+      toast.error('Both model and thumbnail are required');
+      return;
+    }
+
     try {
-      const updatedUser = await uploadPortfolioModel(username, file);
+      // First upload thumbnail to get base64
+      const thumbnailBase64 = await new Promise<string>(resolve => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(portfolioThumbnailFile);
+      });
+
+      // Then upload model with thumbnail reference
+      const updatedUser = await uploadPortfolioModel(username, portfolioModelFile, thumbnailBase64);
       setUserData(updatedUser);
-      setSuccessMessage('Portfolio model uploaded!');
-      setErrorMessage(null);
+
+      // Reset state
+      setPortfolioModelFile(null);
+      setPortfolioThumbnailFile(null);
+      setShowThumbnailUpload(false);
+
+      toast.success('Portfolio model uploaded!');
     } catch (error) {
-      setErrorMessage('Failed to upload portfolio model.');
-      setSuccessMessage(null);
+      toast.error('Failed to upload portfolio model.');
     }
   };
 
-  /**
-   * Handler for deleting the user (triggers confirmation modal)
-   */
   const handleDeleteUser = () => {
     if (!username) return;
     setShowConfirmation(true);
     setPendingAction(() => async () => {
       try {
         await deleteUser(username);
-        setSuccessMessage(`User "${username}" deleted successfully.`);
-        setErrorMessage(null);
+        toast.success(`User "${username}" deleted successfully.`); // CHANGED
         navigate('/');
       } catch (error) {
-        setErrorMessage('Failed to delete user.');
-        setSuccessMessage(null);
+        toast.error('Failed to delete user.');
       } finally {
         setShowConfirmation(false);
       }
@@ -291,9 +338,6 @@ const useProfileSettings = () => {
     return;
   };
 
-  /**
-   * Handler for updating user skills
-   */
   const handleUpdateSkills = async () => {
     if (!username) return;
     try {
@@ -305,28 +349,21 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      setSuccessMessage('Skills updated!');
-      setErrorMessage(null);
+      toast.success('Skills updated!');
     } catch (error) {
-      setErrorMessage('Failed to update skills.');
-      setSuccessMessage(null);
+      toast.error('Failed to update skills.');
     }
   };
 
-  /**
-   * Toggles a skill in the selected skills array
-   */
   const toggleSkill = (skill: string) => {
-    setSelectedSkills(
-      prev =>
-        prev.includes(skill)
-          ? prev.filter(s => s !== skill) // Remove if already selected
-          : [...prev, skill], // Add if not selected
+    setSelectedSkills(prev =>
+      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill],
     );
   };
 
   return {
     userData,
+    setUserData,
     newPassword,
     confirmNewPassword,
     setNewPassword,
@@ -368,9 +405,12 @@ const useProfileSettings = () => {
     handleUploadProfilePicture,
     handleUploadBannerImage,
     handleUploadResume,
+    portfolioModelFile,
+    portfolioThumbnailFile,
+    showThumbnailUpload,
     handleUploadPortfolioModel,
-    successMessage,
-    errorMessage,
+    handleUploadPortfolioThumbnail,
+    handleCompletePortfolioUpload,
     showConfirmation,
     setShowConfirmation,
     pendingAction,

@@ -277,6 +277,100 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
+   * Updates a user's custom font.
+   * @param req The request containing the username and customFont in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
+  const updateCustomFont = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, customFont } = req.body;
+
+      const updatedUser = await updateUser(username, { customFont });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating custom font: ${error}`);
+    }
+  };
+
+  /**
+   * Updates a user's portfolio media arrays (for deletion).
+   * @param req The request containing username, portfolioModels, and portfolioThumbnails arrays.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
+  const updatePortfolioMedia = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, portfolioModels, portfolioThumbnails } = req.body;
+
+      const updatedUser = await updateUser(username, {
+        portfolioModels,
+        portfolioThumbnails,
+      });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating portfolio media: ${error}`);
+    }
+  };
+
+  /**
+   * Deletes portfolio items by indices.
+   */
+  const deletePortfolioItems = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, indices } = req.body;
+
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        throw new Error('User not found');
+      }
+
+      // Filter out items at specified indices
+      const updatedModels = user.portfolioModels?.filter((_, i) => !indices.includes(i)) || [];
+      const updatedThumbnails =
+        user.portfolioThumbnails?.filter((_, i) => !indices.includes(i)) || [];
+
+      const updatedUser = await updateUser(username, {
+        portfolioModels: updatedModels,
+        portfolioThumbnails: updatedThumbnails,
+      });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error deleting portfolio items: ${error}`);
+    }
+  };
+
+  /**
    * Uploads a profile picture for a user.
    */
   const uploadProfilePicture = async (req: Request, res: Response): Promise<void> => {
@@ -387,15 +481,19 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Uploads a portfolio model for a user.
+   * Uploads a portfolio model AND thumbnail for a user.
+   */
+  /**
+   * Uploads a portfolio model/media AND thumbnail for a user.
+   * Supports both file uploads and URL embeds.
    */
   const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
     try {
+      const { username, thumbnail, mediaUrl } = req.body;
       const file = req.file;
-      const { username } = req.body;
 
-      if (!file) {
-        res.status(400).json({ error: 'File missing' });
+      if (!file && !mediaUrl) {
+        res.status(400).json({ error: 'Either a file or media URL is required' });
         return;
       }
       if (!username) {
@@ -403,20 +501,44 @@ const userController = (socket: FakeSOSocket) => {
         return;
       }
 
-      // Convert .glb to base64
-      const Base64Model = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+      let mediaToStore: string;
 
-      // Get current user
+      // If URL is provided, use it directly
+      if (mediaUrl) {
+        mediaToStore = mediaUrl;
+      } else if (file) {
+        // Convert file to base64
+        const isGlbFile = file.originalname.toLowerCase().endsWith('.glb');
+        if (isGlbFile && !thumbnail) {
+          res.status(400).json({ error: 'Thumbnail required for 3D models' });
+          return;
+        }
+        mediaToStore = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+      } else {
+        res.status(400).json({ error: 'No media provided' });
+        return;
+      }
+
       const user = await getUserByUsername(username);
       if ('error' in user) {
         throw new Error('User not found');
       }
 
-      // Add to portfolioModels array
       const currentModels = user.portfolioModels || [];
-      const updatedModels = [...currentModels, Base64Model];
+      const currentThumbnails = user.portfolioThumbnails || [];
 
-      const updatedUser = await updateUser(username, { portfolioModels: updatedModels });
+      // Fill missing thumbnails with empty strings
+      while (currentThumbnails.length < currentModels.length) {
+        currentThumbnails.push('');
+      }
+
+      const updatedModels = [...currentModels, mediaToStore];
+      const updatedThumbnails = [...currentThumbnails, thumbnail || ''];
+
+      const updatedUser = await updateUser(username, {
+        portfolioModels: updatedModels,
+        portfolioThumbnails: updatedThumbnails,
+      });
 
       if ('error' in updatedUser) {
         throw new Error(updatedUser.error);
@@ -444,6 +566,9 @@ const userController = (socket: FakeSOSocket) => {
   router.patch('/updateSkills', updateSkills);
   router.patch('/updateExternalLinks', updateExternalLinks);
   router.patch('/updateCustomColors', updateCustomColors);
+  router.patch('/updateCustomFont', updateCustomFont);
+  router.patch('/updatePortfolioMedia', updatePortfolioMedia);
+  router.delete('/deletePortfolioItems', deletePortfolioItems);
   router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
   router.post('/uploadResume', upload.single('file'), uploadResume);

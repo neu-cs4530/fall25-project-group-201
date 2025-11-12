@@ -51,7 +51,12 @@ const userSchema: Schema = new Schema(
       type: String,
       default: '',
     },
+    // implement other implementations of 3D models
     portfolioModels: {
+      type: [String],
+      default: [],
+    },
+    portfolioThumbnails: {
       type: [String],
       default: [],
     },

@@ -26,8 +26,8 @@ export interface User extends UserCredentials {
   bannerImage?: string; // banner image
   resumeFile?: string; // downloadable CV/resume
   portfolioModels?: string[]; // URLs to 3D models
+  portfolioThumbnails?: string[];
   externalLinks?: {
-    // TODO: Object storing external profile links, can add more/less
     github?: string;
     artstation?: string;
     linkedin?: string;

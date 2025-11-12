@@ -78,7 +78,62 @@ describe('Gallery Post Service', () => {
   });
 
   describe('deleteGalleryPost', () => {
-    test('returns error when media deletion fails', async () => {
+    test('should delete gallery post when it exists and belongs to user', async () => {
+      jest.spyOn(GalleryPostModel, 'findOne').mockResolvedValueOnce(mockGalleryPost as any);
+      jest
+        .spyOn(GalleryPostModel, 'findOneAndDelete')
+        .mockResolvedValueOnce(mockGalleryPost as any);
+      unlinkMock.mockResolvedValueOnce(undefined);
+
+      const result = await deleteGalleryPost('65e9123910afe6e94fdef6dd', 'test_user');
+
+      expect(result).toEqual(mockGalleryPost);
+      expect(GalleryPostModel.findOne).toHaveBeenCalledWith({
+        _id: '65e9123910afe6e94fdef6dd',
+        user: 'test_user',
+      });
+      expect(GalleryPostModel.findOneAndDelete).toHaveBeenCalledWith({
+        _id: '65e9123910afe6e94fdef6dd',
+        user: 'test_user',
+      });
+
+      expect(unlinkMock).toHaveBeenCalledTimes(1);
+    });
+
+    test('should delete gallery post with thumbnail when it exists and belongs to user', async () => {
+      jest
+        .spyOn(GalleryPostModel, 'findOne')
+        .mockResolvedValueOnce(mockGalleryPostWithThumbnail as any);
+      unlinkMock.mockResolvedValueOnce(undefined);
+      unlinkMock.mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(GalleryPostModel, 'findOneAndDelete')
+        .mockResolvedValueOnce(mockGalleryPostWithThumbnail as any);
+
+      const result = await deleteGalleryPost('65e9123910afe6e94123f6dd', 'test_user');
+
+      expect(result).toEqual(mockGalleryPostWithThumbnail);
+      expect(GalleryPostModel.findOne).toHaveBeenCalledWith({
+        _id: '65e9123910afe6e94123f6dd',
+        user: 'test_user',
+      });
+      expect(GalleryPostModel.findOneAndDelete).toHaveBeenCalledWith({
+        _id: '65e9123910afe6e94123f6dd',
+        user: 'test_user',
+      });
+
+      expect(unlinkMock).toHaveBeenCalledTimes(2);
+    });
+
+    test('should throw error when gallery post not found', async () => {
+      jest.spyOn(GalleryPostModel, 'findOne').mockResolvedValueOnce(null);
+
+      const result = await deleteGalleryPost('65e9123910afe6e94123f6dd', 'test_user');
+
+      expect(result).toEqual({ error: 'Gallery post not found' });
+    });
+
+    test('should throw error when media could not be deleted', async () => {
       jest.spyOn(GalleryPostModel, 'findOne').mockResolvedValueOnce(mockGalleryPost as any);
       unlinkMock.mockRejectedValueOnce(new Error('Permission denied'));
 
