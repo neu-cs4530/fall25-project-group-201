@@ -86,7 +86,7 @@ const useGalleryComponentPage = (communityID: string) => {
 
   /**
    * Extract YouTube video ID from a URL
-   * 
+   *
    * @param {string} url - the youtube video url
    */
   const getYouTubeVideoId = (url: string) =>
@@ -94,11 +94,10 @@ const useGalleryComponentPage = (communityID: string) => {
 
   /**
    * Extract Vimeo video ID from a URL
-   * 
+   *
    * @param {string} url - the vimeo video url
    */
-  const getVimeoVideoId = (url: string) =>
-    url.match(/vimeo\.com\/(\d+)/)?.[1] ?? null;
+  const getVimeoVideoId = (url: string) => url.match(/vimeo\.com\/(\d+)/)?.[1] ?? null;
 
   const filteredGalleryPosts = useMemo(() => {
     const filtered = allGalleryPosts.filter(post => {
@@ -111,22 +110,33 @@ const useGalleryComponentPage = (communityID: string) => {
       const vimeoId = getVimeoVideoId(post.media);
 
       switch (selectedType) {
-        case 'glb': return is3D;
-        case 'video': return isVideo;
-        case 'image': return isImage;
-        case 'embed': return !!youTubeId || !!vimeoId;
-        default: return true;
+        case 'glb':
+          return is3D;
+        case 'video':
+          return isVideo;
+        case 'image':
+          return isImage;
+        case 'embed':
+          return !!youTubeId || !!vimeoId;
+        default:
+          return true;
       }
     });
 
     const sorted = [...filtered].sort((a, b) => {
       switch (sortType) {
-        case 'newest': return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
-        case 'oldest': return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
-        case 'highestRated': return b.likes.length - a.likes.length;
-        case 'mostViewed': return b.views.length - a.views.length;
-        case 'mostDownloaded': return b.downloads - a.downloads;
-        default: return 0;
+        case 'newest':
+          return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+        case 'oldest':
+          return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
+        case 'highestRated':
+          return b.likes.length - a.likes.length;
+        case 'mostViewed':
+          return b.views.length - a.views.length;
+        case 'mostDownloaded':
+          return b.downloads - a.downloads;
+        default:
+          return 0;
       }
     });
 
@@ -135,20 +145,26 @@ const useGalleryComponentPage = (communityID: string) => {
 
   const visibleItems = useMemo(
     () => filteredGalleryPosts.slice(startIndex, startIndex + itemsPerPage),
-    [filteredGalleryPosts, startIndex, itemsPerPage]
+    [filteredGalleryPosts, startIndex, itemsPerPage],
   );
 
   /**
    * Go to next page of carousel
    */
   const nextPage = () =>
-    setStartIndex(prev => (prev + itemsPerPage >= filteredGalleryPosts.length ? 0 : prev + itemsPerPage));
+    setStartIndex(prev =>
+      prev + itemsPerPage >= filteredGalleryPosts.length ? 0 : prev + itemsPerPage,
+    );
 
   /**
    * Go to previous page of carousel
    */
   const prevPage = () =>
-    setStartIndex(prev => (prev - itemsPerPage < 0 ? Math.max(filteredGalleryPosts.length - itemsPerPage, 0) : prev - itemsPerPage));
+    setStartIndex(prev =>
+      prev - itemsPerPage < 0
+        ? Math.max(filteredGalleryPosts.length - itemsPerPage, 0)
+        : prev - itemsPerPage,
+    );
 
   /**
    * Delete a gallery post
@@ -173,6 +189,7 @@ const useGalleryComponentPage = (communityID: string) => {
       window.open(post.media, '_blank');
       await fetchGalleryPosts();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
@@ -186,6 +203,7 @@ const useGalleryComponentPage = (communityID: string) => {
       await toggleGalleryPostLikes(post._id.toString(), currentUser.username);
       await fetchGalleryPosts(); // refresh posts after toggle
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };

@@ -27,13 +27,11 @@ const CommunityPage = () => {
 
   return (
     <div className='community-page-layout'>
-      
       {/* Questions & Gallery Section */}
       <main className='questions-and-gallery-section'>
-        
         {/* Gallery Section */}
         <main className='gallery-section'>
-          <div className="gallery-header-row">
+          <div className='gallery-header-row'>
             <h3 className='gallery-heading'>Gallery</h3>
             <div className='gallery-upload-button' onClick={handleNewGalleryPost}>
               <div style={{ fontSize: '2rem' }}>+</div>
@@ -41,7 +39,7 @@ const CommunityPage = () => {
             </div>
           </div>
 
-          <hr className="gallery-divider" />
+          <hr className='gallery-divider' />
 
           <GalleryComponent communityID={community._id.toString()} />
         </main>

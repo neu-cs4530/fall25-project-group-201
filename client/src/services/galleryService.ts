@@ -83,10 +83,9 @@ const deleteGalleryPost = async (
  * @throws Will throw an error if the request fails
  */
 const incrementGalleryPostViews = async (galleryPostID: string, username: string) => {
-  const res = await fetch(
-    `${GALLERY_API_URL}/incrementViews/${galleryPostID}/${username}`,
-    { method: 'POST' },
-  );
+  const res = await fetch(`${GALLERY_API_URL}/incrementViews/${galleryPostID}/${username}`, {
+    method: 'POST',
+  });
 
   if (!res.ok) throw new Error('Failed to increment views');
   return res.json();
@@ -100,10 +99,9 @@ const incrementGalleryPostViews = async (galleryPostID: string, username: string
  * @throws Will throw an error if the request fails
  */
 const incrementGalleryPostDownloads = async (galleryPostID: string) => {
-  const res = await fetch(
-    `${GALLERY_API_URL}/incrementDownloads/${galleryPostID}`,
-    { method: 'POST' },
-  );
+  const res = await fetch(`${GALLERY_API_URL}/incrementDownloads/${galleryPostID}`, {
+    method: 'POST',
+  });
 
   if (!res.ok) throw new Error('Failed to increment downloads');
   return res.json();
@@ -118,13 +116,20 @@ const incrementGalleryPostDownloads = async (galleryPostID: string) => {
  * @throws Will throw an error if the request fails
  */
 const toggleGalleryPostLikes = async (galleryPostID: string, username: string) => {
-  const res = await fetch(
-    `${GALLERY_API_URL}/toggleLikes/${galleryPostID}/${username}`,
-    { method: 'POST' }
-  );
+  const res = await fetch(`${GALLERY_API_URL}/toggleLikes/${galleryPostID}/${username}`, {
+    method: 'POST',
+  });
 
   if (!res.ok) throw new Error('Failed to toggle likes');
   return res.json();
 };
 
-export { addGalleryPost, getGalleryPosts, getGalleryPost, deleteGalleryPost, incrementGalleryPostViews, incrementGalleryPostDownloads, toggleGalleryPostLikes};
+export {
+  addGalleryPost,
+  getGalleryPosts,
+  getGalleryPost,
+  deleteGalleryPost,
+  incrementGalleryPostViews,
+  incrementGalleryPostDownloads,
+  toggleGalleryPostLikes,
+};

@@ -88,7 +88,12 @@ export const deleteGalleryPost = async (
     }
 
     if (galleryPost.thumbnailMedia) {
-      const thumbnailfilePath = path.join(projectRoot, 'client', 'public', galleryPost.thumbnailMedia);
+      const thumbnailfilePath = path.join(
+        projectRoot,
+        'client',
+        'public',
+        galleryPost.thumbnailMedia,
+      );
       try {
         await fs.unlink(thumbnailfilePath);
       } catch (err) {
@@ -134,6 +139,7 @@ export const fetchAndIncrementGalleryPostViewsById = async (
 
     return updatedPost;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     return { error: 'Error when fetching and updating gallery post views' };
   }
@@ -162,6 +168,7 @@ export const fetchAndIncrementGalleryPostDownloadsById = async (
 
     return updatedPost;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     return { error: 'Error when fetching and updating gallery post downloads' };
   }
@@ -189,9 +196,7 @@ export const toggleGalleryPostLikeById = async (
 
     const updatedPost = await GalleryPostModel.findByIdAndUpdate(
       objectId,
-      alreadyLiked
-        ? { $pull: { likes: username } }
-        : { $addToSet: { likes: username } },
+      alreadyLiked ? { $pull: { likes: username } } : { $addToSet: { likes: username } },
       { new: true },
     );
 
@@ -199,6 +204,7 @@ export const toggleGalleryPostLikeById = async (
 
     return updatedPost;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     return { error: 'Error when toggling gallery post like' };
   }

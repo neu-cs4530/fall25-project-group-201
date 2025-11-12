@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Trash2,
-  Heart,
-  X,
-  Eye,
-  Download,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Trash2, Heart, X, Eye, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import './index.css';
 import useGalleryComponentPage from '../../../../hooks/useGalleryComponentPage';
 import { DatabaseGalleryPost } from '@fake-stack-overflow/shared';
@@ -41,8 +33,12 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
   const { user: currentUser } = useUserContext();
   const [selectedPost, setSelectedPost] = useState<DatabaseGalleryPost | null>(null);
-  const [sortType, setSortType] = useState<'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded'>('newest');
-  const [selectedType, setSelectedType] = useState<'all' | 'glb' | 'video' | 'image' | 'embed'>('all');
+  const [sortType, setSortType] = useState<
+    'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded'
+  >('newest');
+  const [selectedType, setSelectedType] = useState<'all' | 'glb' | 'video' | 'image' | 'embed'>(
+    'all',
+  );
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
 
@@ -63,22 +59,20 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
-
   /**
    * Extracts YouTube video ID from a URL
-   * 
+   *
    * @param {string} url - url path to embedded youtuve video
    */
   const getYouTubeVideoId = (url: string) =>
     url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] ?? null;
 
-  /** 
+  /**
    * Extract Vimeo video ID from a URL
-   * 
+   *
    * @param {string} url - url path to embedded vimeo video
    */
-  const getVimeoVideoId = (url: string) =>
-    url.match(/vimeo\.com\/(\d+)/)?.[1] ?? null;
+  const getVimeoVideoId = (url: string) => url.match(/vimeo\.com\/(\d+)/)?.[1] ?? null;
 
   /**
    * Filter posts by selected media type
@@ -93,11 +87,16 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     const vimeoId = getVimeoVideoId(post.media);
 
     switch (selectedType) {
-      case 'glb': return is3D;
-      case 'video': return isVideo;
-      case 'image': return isImage;
-      case 'embed': return !!youTubeId || !!vimeoId;
-      default: return true;
+      case 'glb':
+        return is3D;
+      case 'video':
+        return isVideo;
+      case 'image':
+        return isImage;
+      case 'embed':
+        return !!youTubeId || !!vimeoId;
+      default:
+        return true;
     }
   });
 
@@ -106,12 +105,18 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
    */
   const sortedPosts = [...filteredByType].sort((a, b) => {
     switch (sortType) {
-      case 'newest': return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
-      case 'oldest': return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
-      case 'highestRated': return b.likes.length - a.likes.length;
-      case 'mostViewed': return b.views.length - a.views.length;
-      case 'mostDownloaded': return b.downloads - a.downloads;
-      default: return 0;
+      case 'newest':
+        return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+      case 'oldest':
+        return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
+      case 'highestRated':
+        return b.likes.length - a.likes.length;
+      case 'mostViewed':
+        return b.views.length - a.views.length;
+      case 'mostDownloaded':
+        return b.downloads - a.downloads;
+      default:
+        return 0;
     }
   });
 
@@ -120,18 +125,18 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   /**
    * Navigate to next carousel page
    */
-  const nextPage = () => setStartIndex(prev =>
-    prev + itemsPerPage >= sortedPosts.length ? 0 : prev + itemsPerPage
-  );
+  const nextPage = () =>
+    setStartIndex(prev => (prev + itemsPerPage >= sortedPosts.length ? 0 : prev + itemsPerPage));
 
   /**
    * Navigate to previous carousel page
    */
-  const prevPage = () => setStartIndex(prev =>
-    prev - itemsPerPage < 0
-      ? Math.max(sortedPosts.length - itemsPerPage, 0)
-      : prev - itemsPerPage
-  );
+  const prevPage = () =>
+    setStartIndex(prev =>
+      prev - itemsPerPage < 0
+        ? Math.max(sortedPosts.length - itemsPerPage, 0)
+        : prev - itemsPerPage,
+    );
 
   /**
    * Render media element depending on type
@@ -149,11 +154,19 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     const youTubeId = getYouTubeVideoId(url);
     const vimeoId = getVimeoVideoId(url);
 
-    if (isVideo) return <video src={url} className="media" controls={showControls} />;
-    if (isImage) return <img src={url} alt={post.title} className="media" />;
-    if (is3D) return <img src={post.thumbnailMedia} alt={post.title} className="media" />;
-    if (youTubeId) return <img src={`https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`} alt={post.title} className="media" />;
-    if (vimeoId) return <img src={`https://vumbnail.com/${vimeoId}.jpg`} alt={post.title} className="media" />;
+    if (isVideo) return <video src={url} className='media' controls={showControls} />;
+    if (isImage) return <img src={url} alt={post.title} className='media' />;
+    if (is3D) return <img src={post.thumbnailMedia} alt={post.title} className='media' />;
+    if (youTubeId)
+      return (
+        <img
+          src={`https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`}
+          alt={post.title}
+          className='media'
+        />
+      );
+    if (vimeoId)
+      return <img src={`https://vumbnail.com/${vimeoId}.jpg`} alt={post.title} className='media' />;
     return null;
   };
 
@@ -167,12 +180,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
         ? post.likes.filter(u => u !== currentUser.username)
         : [...post.likes, currentUser.username];
 
-      setSelectedPost(prev =>
-        prev?._id === post._id ? { ...prev, likes: updatedLikes } : prev
-      );
+      setSelectedPost(prev => (prev?._id === post._id ? { ...prev, likes: updatedLikes } : prev));
       refreshGallery?.();
       await handleToggleLikes(post);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
@@ -186,6 +198,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       setSelectedPost(null);
       refreshGallery?.();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
@@ -199,70 +212,100 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       window.open(post.media, '_blank');
       refreshGallery?.();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
 
   return (
-    <div className="galleryContainer">
+    <div className='galleryContainer'>
       {/* Filters */}
-      <div className="filtersContainer">
-        <select value={sortType} onChange={e => setSortType(e.target.value as any)} className="sortSelect">
-          <option value="newest">Newest</option>
-          <option value="oldest">Oldest</option>
-          <option value="highestRated">Most Liked</option>
-          <option value="mostViewed">Most Viewed</option>
-          <option value="mostDownloaded">Most Downloaded</option>
+      <div className='filtersContainer'>
+        <select
+          value={sortType}
+          onChange={e =>
+            setSortType(
+              e.target.value as
+                | 'newest'
+                | 'oldest'
+                | 'highestRated'
+                | 'mostViewed'
+                | 'mostDownloaded',
+            )
+          }
+          className='sortSelect'>
+          <option value='newest'>Newest</option>
+          <option value='oldest'>Oldest</option>
+          <option value='highestRated'>Most Liked</option>
+          <option value='mostViewed'>Most Viewed</option>
+          <option value='mostDownloaded'>Most Downloaded</option>
         </select>
 
-        <select value={selectedType} onChange={e => setSelectedType(e.target.value as any)} className="sortSelect">
-          <option value="all">All</option>
-          <option value="glb">3D Models</option>
-          <option value="video">Videos</option>
-          <option value="image">Images</option>
-          <option value="embed">Embeds</option>
+        <select
+          value={selectedType}
+          onChange={e =>
+            setSelectedType(e.target.value as 'all' | 'glb' | 'video' | 'image' | 'embed')
+          }
+          className='sortSelect'>
+          <option value='all'>All</option>
+          <option value='glb'>3D Models</option>
+          <option value='video'>Videos</option>
+          <option value='image'>Images</option>
+          <option value='embed'>Embeds</option>
         </select>
       </div>
 
       {/* Errors & Empty State */}
-      {error && <div className="error">{error}</div>}
-      {filteredGalleryPosts.length === 0 && <div className="noGalleryPosts">No gallery posts yet!</div>}
+      {error && <div className='error'>{error}</div>}
+      {filteredGalleryPosts.length === 0 && (
+        <div className='noGalleryPosts'>No gallery posts yet!</div>
+      )}
 
       {/* Carousel */}
-      <div className="carouselContainer">
-        <button className="carouselArrow left" onClick={prevPage} disabled={sortedPosts.length <= itemsPerPage}>
+      <div className='carouselContainer'>
+        <button
+          className='carouselArrow left'
+          onClick={prevPage}
+          disabled={sortedPosts.length <= itemsPerPage}>
           <ChevronLeft size={22} />
         </button>
 
-        <div className="galleryGrid carouselPage">
+        <div className='galleryGrid carouselPage'>
           {visibleItems.map(post => (
-            <div key={post._id.toString()} className="galleryCard" onClick={() => setSelectedPost(post)}>
+            <div
+              key={post._id.toString()}
+              className='galleryCard'
+              onClick={() => setSelectedPost(post)}>
               {renderMedia(post, false)}
             </div>
           ))}
         </div>
 
-        <button className="carouselArrow right" onClick={nextPage} disabled={sortedPosts.length <= itemsPerPage}>
+        <button
+          className='carouselArrow right'
+          onClick={nextPage}
+          disabled={sortedPosts.length <= itemsPerPage}>
           <ChevronRight size={22} />
         </button>
       </div>
 
       {/* Page Indicator */}
       {sortedPosts.length > itemsPerPage && (
-        <div className="carouselPageIndicator">
-          Page {Math.floor(startIndex / itemsPerPage) + 1} of {Math.ceil(sortedPosts.length / itemsPerPage)}
+        <div className='carouselPageIndicator'>
+          Page {Math.floor(startIndex / itemsPerPage) + 1} of{' '}
+          {Math.ceil(sortedPosts.length / itemsPerPage)}
         </div>
       )}
 
       {/* Modal */}
       {selectedPost && (
-        <div className="modalOverlay" onClick={() => setSelectedPost(null)}>
-          <div className="modalContent" onClick={e => e.stopPropagation()}>
-            <button className="closeBtn" onClick={() => setSelectedPost(null)}>
+        <div className='modalOverlay' onClick={() => setSelectedPost(null)}>
+          <div className='modalContent' onClick={e => e.stopPropagation()}>
+            <button className='closeBtn' onClick={() => setSelectedPost(null)}>
               <X size={18} />
             </button>
 
-            <div className="modalMedia">
+            <div className='modalMedia'>
               {(() => {
                 const url = selectedPost.media;
                 const ext = url.split('.').pop()?.toLowerCase();
@@ -270,22 +313,45 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                 const youTubeId = getYouTubeVideoId(url);
                 const vimeoId = getVimeoVideoId(url);
 
-                if (is3D) return <ThreeViewport key={selectedPost.media} modelPath={selectedPost.media} />;
-                if (youTubeId) return <iframe width="700" height="394" src={`https://www.youtube.com/embed/${youTubeId}`} title={selectedPost.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />;
-                if (vimeoId) return <iframe width="700" height="394" src={`https://player.vimeo.com/video/${vimeoId}`} title={selectedPost.title} frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />;
+                if (is3D)
+                  return <ThreeViewport key={selectedPost.media} modelPath={selectedPost.media} />;
+                if (youTubeId)
+                  return (
+                    <iframe
+                      width='700'
+                      height='394'
+                      src={`https://www.youtube.com/embed/${youTubeId}`}
+                      title={selectedPost.title}
+                      frameBorder='0'
+                      allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                      allowFullScreen
+                    />
+                  );
+                if (vimeoId)
+                  return (
+                    <iframe
+                      width='700'
+                      height='394'
+                      src={`https://player.vimeo.com/video/${vimeoId}`}
+                      title={selectedPost.title}
+                      frameBorder='0'
+                      allow='autoplay; fullscreen; picture-in-picture'
+                      allowFullScreen
+                    />
+                  );
                 return renderMedia(selectedPost, true);
               })()}
             </div>
 
-            <div className="modalInfo">
-              <h3 className="modalTitle">{selectedPost.title}</h3>
-              <div className="modalMeta">
-                <span className="author">{selectedPost.user} • &nbsp;</span>
-                <span className="date">{new Date(selectedPost.postedAt).toLocaleString()}</span>
+            <div className='modalInfo'>
+              <h3 className='modalTitle'>{selectedPost.title}</h3>
+              <div className='modalMeta'>
+                <span className='author'>{selectedPost.user} • &nbsp;</span>
+                <span className='date'>{new Date(selectedPost.postedAt).toLocaleString()}</span>
               </div>
-              <div className="modalStatsRow">
+              <div className='modalStatsRow'>
                 {/* Likes */}
-                <span className="statItem likes" title="Like">
+                <span className='statItem likes' title='Like'>
                   <Heart
                     size={18}
                     color={selectedPost.likes.includes(currentUser.username) ? 'red' : 'gray'}
@@ -295,7 +361,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                 </span>
 
                 {/* Views */}
-                <span className="statItem views" title="Views">
+                <span className='statItem views' title='Views'>
                   <Eye size={18} />
                   <span>{selectedPost.views.length}</span>
                 </span>
@@ -305,18 +371,16 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                   const url = selectedPost.media;
                   const youTubeId = getYouTubeVideoId(url);
                   const vimeoId = getVimeoVideoId(url);
-                  const ext = url.split('.').pop()?.toLowerCase();
                   const isEmbed = !!youTubeId || !!vimeoId;
 
                   if (!isEmbed) {
                     return (
                       <span
-                        className="statItem downloads"
+                        className='statItem downloads'
                         onClick={() => handleDownload(selectedPost)}
                         style={{ cursor: 'pointer' }}
-                        title="Download"
-                      >
-                        <Download size={18} color="blue" />
+                        title='Download'>
+                        <Download size={18} color='blue' />
                         <span>{selectedPost.downloads}</span>
                       </span>
                     );
@@ -326,19 +390,17 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
                 {/* Delete (only for author) */}
                 {isAuthor(selectedPost) && (
-                  <span className="statItem delete" title="Delete">
+                  <span className='statItem delete' title='Delete'>
                     <Trash2
                       size={18}
-                      className="deleteIcon"
+                      className='deleteIcon'
                       onClick={() => handleDelete(selectedPost)}
                     />
                   </span>
                 )}
-</div>
+              </div>
 
-
-
-              <p className="description">{selectedPost.description}</p>
+              <p className='description'>{selectedPost.description}</p>
             </div>
           </div>
         </div>

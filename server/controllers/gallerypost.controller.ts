@@ -12,8 +12,8 @@ import {
   deleteGalleryPost,
   fetchAndIncrementGalleryPostDownloadsById,
   toggleGalleryPostLikeById,
+  fetchAndIncrementGalleryPostViewsById,
 } from '../services/gallerypost.service';
-import { fetchAndIncrementGalleryPostViewsById } from '../services/gallerypost.service';
 
 /**
  * Controller for handling all gallery post related routes.
@@ -111,10 +111,16 @@ const galleryPostController = (socket: FakeSOSocket) => {
   /**
    * Increments the view count of a gallery post by a specific user.
    */
-  const incrementGalleryPostViewsRoute = async (req: express.Request, res: Response): Promise<void> => {
+  const incrementGalleryPostViewsRoute = async (
+    req: express.Request,
+    res: Response,
+  ): Promise<void> => {
     try {
       const { galleryPostID, username } = req.params;
-      const updatedGalleryPost = await fetchAndIncrementGalleryPostViewsById(galleryPostID, username);
+      const updatedGalleryPost = await fetchAndIncrementGalleryPostViewsById(
+        galleryPostID,
+        username,
+      );
 
       if ('error' in updatedGalleryPost) {
         throw new Error(updatedGalleryPost.error);
@@ -129,7 +135,10 @@ const galleryPostController = (socket: FakeSOSocket) => {
   /**
    * Increments the download count of a gallery post.
    */
-  const incrementGalleryPostDownloadsRoute = async (req: express.Request, res: Response): Promise<void> => {
+  const incrementGalleryPostDownloadsRoute = async (
+    req: express.Request,
+    res: Response,
+  ): Promise<void> => {
     try {
       const { galleryPostID } = req.params;
       const updatedGalleryPost = await fetchAndIncrementGalleryPostDownloadsById(galleryPostID);
