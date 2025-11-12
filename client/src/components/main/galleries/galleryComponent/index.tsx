@@ -14,11 +14,14 @@ type GalleryComponentProps = {
 };
 
 /**
- * GalleryComponent displays gallery posts for a specific community, allowing
- * users to filter, sort, paginate, like, download, view 3D models, and view media in a modal.
- *
- * @param {GalleryComponentProps} props - Props object
- * @returns {JSX.Element}
+ * Component to display a community's gallery with gallery posts
+ * @returns A React component that includes:
+ * - Clickable gallery posts that are represented by their media/thumbnailMedia
+ * - Gallery posts can be 3D models (.glb files), images, videos or embeds
+ * - Arrows are available to see more gallery posts if there are more than 4 posts in the community
+ * - When clicked, gallery posts show more information about the post (author, title, description, postedAt)
+ * - When clicked, if the user is the author of the gallery post, they can delete it by clicking on the trash icon
+ * - When clicked, if a glb file, a button is available to view the 3D model in the 3D viewport
  */
 const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   const {

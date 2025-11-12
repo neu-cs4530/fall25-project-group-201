@@ -19,7 +19,8 @@ const CommunityPage = () => {
   }
 
   /**
-   * Navigate to the new gallery post creation page for this community.
+   * Handles when Upload Project button is clicked.
+   * Navigates to form to create a new gallery post.
    */
   const handleNewGalleryPost = () => {
     navigate(`/new/galleryPost/${community._id}`);

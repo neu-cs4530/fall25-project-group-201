@@ -25,7 +25,11 @@ const galleryPostController = (socket: FakeSOSocket) => {
   const router = express.Router();
 
   /**
-   * Retrieves all gallery posts.
+   * Gets all gallery posts
+   *
+   * @param req - The request object
+   * @param res - The response object used to send back the result
+   * @returns {Promise<void>} - A promise that resolves when the response has been sent
    */
   const getAllGalleryPostsRoute = async (_req: express.Request, res: Response): Promise<void> => {
     try {
@@ -42,10 +46,11 @@ const galleryPostController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Creates a new gallery post.
+   * Creates a gallery post.
    *
-   * @param {CreateGalleryPostRequest} req - The request containing the gallery post data
-   * @param {Response} res - Express response object
+   * @param req - The request object containing a create gallery post request.
+   * @param res - The response object used to send back the result
+   * @returns {Promise<void>} - A promise that resolves when the response has been sent
    */
   const createGalleryPostRoute = async (
     req: CreateGalleryPostRequest,
@@ -71,7 +76,11 @@ const galleryPostController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Retrieves a single gallery post by ID.
+   * Gets a gallery post based on ID.
+   *
+   * @param req - The request object containing the galleryPostID
+   * @param res - The response object used to send back the result
+   * @returns {Promise<void>} - A promise that resolves when the response has been sent
    */
   const getGalleryPostRoute = async (_req: express.Request, res: Response): Promise<void> => {
     try {
@@ -89,7 +98,11 @@ const galleryPostController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Deletes a gallery post by ID and username.
+   * Gets a gallery post based on ID and username.
+   *
+   * @param req - The request object containing the galleryPostID and username
+   * @param res - The response object used to send back the result
+   * @returns {Promise<void>} - A promise that resolves when the response has been sent
    */
   const deleteGalleryPostRoute = async (_req: GalleryPostRequest, res: Response): Promise<void> => {
     try {
