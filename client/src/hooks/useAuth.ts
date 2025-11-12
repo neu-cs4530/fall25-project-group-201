@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { ChangeEvent, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useLoginContext from './useLoginContext';
-import { createUser, loginUser } from '../services/userService';
-import { useAuth0 } from '@auth0/auth0-react';
 import { getUserByUsername } from '../services/userService';
+import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * Custom hook to manage authentication logic, including handling input changes,
@@ -30,13 +29,13 @@ const useAuth = () => {
   const { setUser } = useLoginContext();
   const navigate = useNavigate();
 
-  const { 
+  const {
     isAuthenticated,
     isLoading,
     user: auth0User,
     loginWithRedirect,
     // getAccessTokenSilently
-   } = useAuth0();
+  } = useAuth0();
 
   // /**
   //  * Toggles the visibility of the password input field.
@@ -91,19 +90,17 @@ const useAuth = () => {
       (async () => {
         try {
           // const token = await getAccessTokenSilently();
-          console.log(auth0User)
 
-          const username = auth0User.name || "";
+          const username = auth0User.name || '';
 
           const user = await getUserByUsername(username);
-          console.log(`user got: ${user}`)
 
-          setUser(user)
+          setUser(user);
           navigate('/home');
         } catch (error) {
-        console.error('Error fetching user data:', error);
-        setErr('Failed to load user data');
-      }
+          console.error('Error fetching user data:', error);
+          setErr('Failed to load user data');
+        }
       })();
     }
   }, [isAuthenticated, auth0User]);
@@ -124,7 +121,7 @@ const useAuth = () => {
     }
   };
 
- const handleSignup = async () => {
+  const handleSignup = async () => {
     try {
       await loginWithRedirect({
         appState: {
@@ -144,7 +141,8 @@ const useAuth = () => {
     isAuthenticated,
     user: auth0User,
     handleLogin,
-    handleSignup
+    handleSignup,
+    err,
   };
 };
 

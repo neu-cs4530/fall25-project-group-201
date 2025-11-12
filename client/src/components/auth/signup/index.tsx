@@ -1,6 +1,4 @@
 import './index.css';
-import { Link } from 'react-router-dom';
-import useAuth from '../../../hooks/useAuth';
 
 /**
  * Renders a signup form with username, password, and password confirmation inputs,

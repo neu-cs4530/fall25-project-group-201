@@ -10,7 +10,7 @@ import LogoutButton from './LogoutButton';
  * when they press Enter.
  */
 const Header = () => {
-  const { val, handleInputChange, handleKeyDown, handleSignOut } = useHeader();
+  const { val, handleInputChange, handleKeyDown } = useHeader();
   const { user: currentUser } = useUserContext();
   const navigate = useNavigate();
   return (

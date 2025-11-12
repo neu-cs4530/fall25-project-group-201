@@ -7,7 +7,7 @@ import { useAuth0 } from '@auth0/auth0-react';
  */
 const Login = () => {
   const { isLoading, isAuthenticated } = useAuth0();
-  const {handleLogin} = useAuth();
+  const { handleLogin } = useAuth();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -22,11 +22,7 @@ const Login = () => {
     <div className='container'>
       <h2>Welcome to FakeStackOverflow!</h2>
       <h3>Please login to continue.</h3>
-      <button 
-        onClick={handleLogin}
-        disabled={isLoading}
-        className="auth-button"
-      >
+      <button onClick={handleLogin} disabled={isLoading} className='auth-button'>
         Log In with Auth0
       </button>
     </div>
