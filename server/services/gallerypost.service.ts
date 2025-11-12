@@ -77,11 +77,11 @@ export const deleteGalleryPost = async (
     // Find the gallery post
     const galleryPost = await GalleryPostModel.findOne({
       _id: id,
-      username: username,
+      user: username,
     });
 
     if (!galleryPost) {
-      throw new Error('Gallery post not found');
+      throw new Error(`Gallery post not found: ${id}`);
     }
 
     const projectRoot = path.resolve(__dirname, '../../');
@@ -121,7 +121,7 @@ export const deleteGalleryPost = async (
     // Delete gallery post
     const deletedGalleryPost = await GalleryPostModel.findOneAndDelete({
       _id: id,
-      username: username,
+      user: username,
     });
 
     if (!deletedGalleryPost) {
