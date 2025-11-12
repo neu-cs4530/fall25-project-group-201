@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useEffect } from 'react';
 import useLoginContext from './useLoginContext';
 import { createUser, loginUser } from '../services/userService';
+import { useAuth0 } from '@auth0/auth0-react';
+import { getUserByUsername } from '../services/userService';
 
 /**
  * Custom hook to manage authentication logic, including handling input changes,
@@ -19,103 +21,130 @@ import { createUser, loginUser } from '../services/userService';
  *   - handleSubmit: Function to handle form submission.
  *   - togglePasswordVisibility: Function to toggle password visibility.
  */
-const useAuth = (authType: 'login' | 'signup') => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
-  const [showPassword, setShowPassword] = useState(false);
+const useAuth = () => {
+  // const [username, setUsername] = useState<string>('');
+  // const [password, setPassword] = useState<string>('');
+  // const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
+  // const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState<string>('');
   const { setUser } = useLoginContext();
   const navigate = useNavigate();
 
-  /**
-   * Toggles the visibility of the password input field.
-   */
-  const togglePasswordVisibility = () => {
-    setShowPassword(prevState => !prevState);
-  };
+  const { 
+    isAuthenticated,
+    isLoading,
+    user: auth0User,
+    loginWithRedirect,
+    // getAccessTokenSilently
+   } = useAuth0();
 
-  /**
-   * Handles changes in input fields and updates the corresponding state.
-   *
-   * @param e - The input change event.
-   * @param field - The field being updated ('username', 'password', or 'confirmPassword').
-   */
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    field: 'username' | 'password' | 'confirmPassword',
-  ) => {
-    const fieldText = e.target.value.trim();
+  // /**
+  //  * Toggles the visibility of the password input field.
+  //  */
+  // const togglePasswordVisibility = () => {
+  //   setShowPassword(prevState => !prevState);
+  // };
 
-    if (field === 'username') {
-      setUsername(fieldText);
-    } else if (field === 'password') {
-      setPassword(fieldText);
-    } else if (field === 'confirmPassword') {
-      setPasswordConfirmation(fieldText);
-    }
-  };
+  // /**
+  //  * Handles changes in input fields and updates the corresponding state.
+  //  *
+  //  * @param e - The input change event.
+  //  * @param field - The field being updated ('username', 'password', or 'confirmPassword').
+  //  */
+  // const handleInputChange = (
+  //   e: ChangeEvent<HTMLInputElement>,
+  //   field: 'username' | 'password' | 'confirmPassword',
+  // ) => {
+  //   const fieldText = e.target.value.trim();
 
-  /**
-   * Validates the input fields for the form.
-   * Ensures required fields are filled and passwords match (for signup).
-   *
-   * @returns {boolean} True if inputs are valid, false otherwise.
-   */
-  const validateInputs = (): boolean => {
-    if (username === '' || password === '') {
-      setErr('Please enter a username and password');
-      return false;
-    }
+  //   if (field === 'username') {
+  //     setUsername(fieldText);
+  //   } else if (field === 'password') {
+  //     setPassword(fieldText);
+  //   } else if (field === 'confirmPassword') {
+  //     setPasswordConfirmation(fieldText);
+  //   }
+  // };
 
-    if (authType === 'signup' && password !== passwordConfirmation) {
-      setErr('Passwords do not match');
-      return false;
-    }
+  // /**
+  //  * Validates the input fields for the form.
+  //  * Ensures required fields are filled and passwords match (for signup).
+  //  *
+  //  * @returns {boolean} True if inputs are valid, false otherwise.
+  //  */
+  // const validateInputs = (): boolean => {
+  //   if (username === '' || password === '') {
+  //     setErr('Please enter a username and password');
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   if (authType === 'signup' && password !== passwordConfirmation) {
+  //     setErr('Passwords do not match');
+  //     return false;
+  //   }
 
-  /**
-   * Handles the submission of the form.
-   * Validates input, performs login/signup, and navigates to the home page on success.
-   *
-   * @param event - The form submission event.
-   */
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  //   return true;
+  // };
 
-    if (!validateInputs()) {
-      return;
-    }
+  useEffect(() => {
+    if (isAuthenticated && auth0User) {
+      (async () => {
+        try {
+          // const token = await getAccessTokenSilently();
+          console.log(auth0User)
 
-    let user;
+          const username = auth0User.name || "";
 
-    try {
-      if (authType === 'signup') {
-        user = await createUser({ username, password });
-      } else if (authType === 'login') {
-        user = await loginUser({ username, password });
-      } else {
-        throw new Error('Invalid auth type');
+          const user = await getUserByUsername(username);
+          console.log(`user got: ${user}`)
+
+          setUser(user)
+          navigate('/home');
+        } catch (error) {
+        console.error('Error fetching user data:', error);
+        setErr('Failed to load user data');
       }
+      })();
+    }
+  }, [isAuthenticated, auth0User]);
 
-      setUser(user);
-      navigate('/home');
+  const handleLogin = async () => {
+    try {
+      await loginWithRedirect({
+        appState: {
+          returnTo: '/home', // Where to redirect after login
+        },
+        authorizationParams: {
+          prompt: 'login', // Force login screen
+        },
+      });
     } catch (error) {
-      setErr((error as Error).message);
+      console.error('Login error:', error);
+      setErr('Failed to initiate login');
+    }
+  };
+
+ const handleSignup = async () => {
+    try {
+      await loginWithRedirect({
+        appState: {
+          returnTo: '/home',
+        },
+        authorizationParams: {
+          screen_hint: 'signup', // Show signup screen instead of login
+        },
+      });
+    } catch (error) {
+      console.error('Signup error:', error);
+      setErr('Failed to initiate signup');
     }
   };
 
   return {
-    username,
-    password,
-    passwordConfirmation,
-    showPassword,
-    err,
-    handleInputChange,
-    handleSubmit,
-    togglePasswordVisibility,
+    isAuthenticated,
+    user: auth0User,
+    handleLogin,
+    handleSignup
   };
 };
 

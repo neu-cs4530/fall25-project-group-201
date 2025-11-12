@@ -37,7 +37,7 @@ const server = http.createServer(app);
 const socket: FakeSOSocket = new Server(server, {
   path: '/socket.io',
   cors: {
-    origin: `${process.env.CLIENT_URL}` || 'http://localhost:4530',
+    origin: `${process.env.CLIENT_URL || `http://localhost:4530`}` ,
     credentials: true,
   },
 });

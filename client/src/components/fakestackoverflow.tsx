@@ -12,7 +12,7 @@ import NewAnswerPage from './main/newAnswer';
 import AnswerPage from './main/answerPage';
 import MessagingPage from './main/messagingPage';
 import DirectMessage from './main/directMessage';
-import Signup from './auth/signup';
+// import Signup from './auth/signup';
 import UsersListPage from './main/usersListPage';
 import ProfileSettings from './profileSettings';
 import AllGamesPage from './main/games/allGamesPage';
@@ -55,7 +55,7 @@ const FakeStackOverflow = ({ socket }: { socket: FakeSOSocket | null }) => {
       <Routes>
         {/* Public Route */}
         <Route path='/' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
+        {/* <Route path='/signup' element={<Signup />} /> */}
         {/* Protected Routes */}
         {
           <Route
