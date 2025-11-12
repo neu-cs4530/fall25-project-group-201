@@ -492,12 +492,6 @@ const userController = (socket: FakeSOSocket) => {
       const { username, thumbnail, mediaUrl } = req.body;
       const file = req.file;
 
-      console.log('=== UPLOAD PORTFOLIO DEBUG ===');
-      console.log('Username:', username);
-      console.log('Thumbnail received:', thumbnail);
-      console.log('File:', file?.originalname);
-      console.log('Media URL:', mediaUrl);
-
       if (!file && !mediaUrl) {
         res.status(400).json({ error: 'Either a file or media URL is required' });
         return;

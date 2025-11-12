@@ -231,11 +231,11 @@ const uploadResume = async (username: string, file: File): Promise<SafeDatabaseU
  */
 const uploadPortfolioModel = async (
   username: string,
-  fileOrUrl: File | string,  // Changed from just File
+  fileOrUrl: File | string, // Changed from just File
   thumbnail: string,
 ): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
-  
+
   // If it's a string (URL), append it as 'mediaUrl'
   if (typeof fileOrUrl === 'string') {
     formData.append('mediaUrl', fileOrUrl);
@@ -243,7 +243,7 @@ const uploadPortfolioModel = async (
     // If it's a File, append it as 'file'
     formData.append('file', fileOrUrl);
   }
-  
+
   formData.append('username', username);
   formData.append('thumbnail', thumbnail);
 

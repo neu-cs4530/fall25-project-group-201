@@ -30,7 +30,7 @@ const App = () => {
 
   return (
     <Router>
-      <Toaster position="top-right" />
+      <Toaster position='top-right' />
       <FakeStackOverflow socket={socket} />
     </Router>
   );

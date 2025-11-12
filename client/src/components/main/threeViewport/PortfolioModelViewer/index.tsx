@@ -13,7 +13,7 @@ const PortfolioModelViewer = ({ modelUrl }: PortfolioModelViewerProps) => {
       style={{
         width: '100%',
         height: '100%',
-        background: '#2a2a2a'
+        background: '#2a2a2a',
       }}
     />
   );

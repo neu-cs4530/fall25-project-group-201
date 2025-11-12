@@ -126,8 +126,21 @@ const useUploadPortfolioModel = () => {
       return;
     }
 
-    if (file.size > 50 * 1024 * 1024) {
-      setModelErr('Model file must be under 50MB');
+    // Different size limits for different file types
+    let maxSize = 50 * 1024 * 1024; // Default 50MB for .glb
+    let maxSizeText = '50MB';
+
+    if (['.jpg', '.jpeg', '.png'].includes(ext)) {
+      maxSize = 5 * 1024 * 1024; // 5MB for images
+      maxSizeText = '5MB';
+    } else if (ext === '.mp4') {
+      maxSize = 20 * 1024 * 1024; // 20MB for videos
+      maxSizeText = '20MB';
+    }
+
+    if (file.size > maxSize) {
+      setModelErr(`File too large. ${ext.toUpperCase()} files must be under ${maxSizeText}`);
+      toast.error(`File too large. ${ext.toUpperCase()} files must be under ${maxSizeText}`);
       return;
     }
 

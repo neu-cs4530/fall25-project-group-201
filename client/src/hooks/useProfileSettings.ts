@@ -73,7 +73,7 @@ const useProfileSettings = () => {
         setAccentColor(data.customColors?.accent || '#16a34a');
         setBackgroundColor(data.customColors?.background || '#f2f4f7');
       } catch (error) {
-        toast.error('Error fetching user profile');  // CHANGED
+        toast.error('Error fetching user profile'); // CHANGED
         setUserData(null);
       } finally {
         setLoading(false);
@@ -89,11 +89,11 @@ const useProfileSettings = () => {
 
   const validatePasswords = () => {
     if (newPassword.trim() === '' || confirmNewPassword.trim() === '') {
-      toast.error('Please enter and confirm your new password.');  // CHANGED
+      toast.error('Please enter and confirm your new password.'); // CHANGED
       return false;
     }
     if (newPassword !== confirmNewPassword) {
-      toast.error('Passwords do not match.');  // CHANGED
+      toast.error('Passwords do not match.'); // CHANGED
       return false;
     }
     return true;
@@ -106,11 +106,11 @@ const useProfileSettings = () => {
     }
     try {
       await resetPassword(username, newPassword);
-      toast.success('Password reset successful!');  // CHANGED
+      toast.success('Password reset successful!'); // CHANGED
       setNewPassword('');
       setConfirmNewPassword('');
     } catch (error) {
-      toast.error('Failed to reset password.');  // CHANGED
+      toast.error('Failed to reset password.'); // CHANGED
     }
   };
 
@@ -125,9 +125,9 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      toast.success('Biography updated!');  // CHANGED
+      toast.success('Biography updated!'); // CHANGED
     } catch (error) {
-      toast.error('Failed to update biography.');  // CHANGED
+      toast.error('Failed to update biography.'); // CHANGED
     }
   };
 
@@ -149,9 +149,9 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      toast.success('External links updated!');  // CHANGED
+      toast.success('External links updated!'); // CHANGED
     } catch (error) {
-      toast.error('Failed to update external links.');  // CHANGED
+      toast.error('Failed to update external links.'); // CHANGED
     }
   };
 
@@ -172,9 +172,9 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      toast.success('Theme colors updated!');  // CHANGED
+      toast.success('Theme colors updated!'); // CHANGED
     } catch (error) {
-      toast.error('Failed to update colors.');  // CHANGED
+      toast.error('Failed to update colors.'); // CHANGED
     }
   };
 
@@ -183,21 +183,21 @@ const useProfileSettings = () => {
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Profile picture must be JPG or PNG format.');  // CHANGED
+      toast.error('Profile picture must be JPG or PNG format.'); // CHANGED
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Profile picture must be under 5MB.');  // CHANGED
+      toast.error('Profile picture must be under 5MB.'); // CHANGED
       return;
     }
 
     try {
       const updatedUser = await uploadProfilePicture(username, file);
       setUserData(updatedUser);
-      toast.success('Profile picture updated!');  // CHANGED
+      toast.success('Profile picture updated!'); // CHANGED
     } catch (error) {
-      toast.error('Failed to upload profile picture.');  // CHANGED
+      toast.error('Failed to upload profile picture.'); // CHANGED
     }
   };
 
@@ -206,21 +206,21 @@ const useProfileSettings = () => {
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Banner image must be JPG or PNG format.');  // CHANGED
+      toast.error('Banner image must be JPG or PNG format.'); // CHANGED
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Banner image must be under 5MB.');  // CHANGED
+      toast.error('Banner image must be under 5MB.'); // CHANGED
       return;
     }
 
     try {
       const updatedUser = await uploadBannerImage(username, file);
       setUserData(updatedUser);
-      toast.success('Banner image updated!');  // CHANGED
+      toast.success('Banner image updated!'); // CHANGED
     } catch (error) {
-      toast.error('Failed to upload banner image.');  // CHANGED
+      toast.error('Failed to upload banner image.'); // CHANGED
     }
   };
 
@@ -228,21 +228,21 @@ const useProfileSettings = () => {
     if (!username) return;
 
     if (file.type !== 'application/pdf') {
-      toast.error('Resume must be PDF format.');  // CHANGED
+      toast.error('Resume must be PDF format.'); // CHANGED
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('Resume must be under 10MB.');  // CHANGED
+      toast.error('Resume must be under 10MB.'); // CHANGED
       return;
     }
 
     try {
       const updatedUser = await uploadResume(username, file);
       setUserData(updatedUser);
-      toast.success('Resume uploaded!');  // CHANGED
+      toast.success('Resume uploaded!'); // CHANGED
     } catch (error) {
-      toast.error('Failed to upload resume.');  // CHANGED
+      toast.error('Failed to upload resume.'); // CHANGED
     }
   };
 
@@ -296,7 +296,7 @@ const useProfileSettings = () => {
 
     try {
       // First upload thumbnail to get base64
-      const thumbnailBase64 = await new Promise<string>((resolve) => {
+      const thumbnailBase64 = await new Promise<string>(resolve => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result as string);
         reader.readAsDataURL(portfolioThumbnailFile);
@@ -323,7 +323,7 @@ const useProfileSettings = () => {
     setPendingAction(() => async () => {
       try {
         await deleteUser(username);
-        toast.success(`User "${username}" deleted successfully.`);  // CHANGED
+        toast.success(`User "${username}" deleted successfully.`); // CHANGED
         navigate('/');
       } catch (error) {
         toast.error('Failed to delete user.');
@@ -356,11 +356,8 @@ const useProfileSettings = () => {
   };
 
   const toggleSkill = (skill: string) => {
-    setSelectedSkills(
-      prev =>
-        prev.includes(skill)
-          ? prev.filter(s => s !== skill)
-          : [...prev, skill],
+    setSelectedSkills(prev =>
+      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill],
     );
   };
 
