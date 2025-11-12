@@ -121,11 +121,11 @@ describe('Gallery Post Service', () => {
       expect(result).toEqual(mockGalleryPost);
       expect(GalleryPostModel.findOne).toHaveBeenCalledWith({
         _id: '65e9123910afe6e94fdef6dd',
-        username: 'test_user',
+        user: 'test_user',
       });
       expect(GalleryPostModel.findOneAndDelete).toHaveBeenCalledWith({
         _id: '65e9123910afe6e94fdef6dd',
-        username: 'test_user',
+        user: 'test_user',
       });
 
       expect(unlinkMock).toHaveBeenCalledTimes(1);
@@ -146,11 +146,11 @@ describe('Gallery Post Service', () => {
       expect(result).toEqual(mockGalleryPostWithThumbnail);
       expect(GalleryPostModel.findOne).toHaveBeenCalledWith({
         _id: '65e9123910afe6e94123f6dd',
-        username: 'test_user',
+        user: 'test_user',
       });
       expect(GalleryPostModel.findOneAndDelete).toHaveBeenCalledWith({
         _id: '65e9123910afe6e94123f6dd',
-        username: 'test_user',
+        user: 'test_user',
       });
 
       expect(unlinkMock).toHaveBeenCalledTimes(2);

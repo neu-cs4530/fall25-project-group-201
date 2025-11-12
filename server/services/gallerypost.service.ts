@@ -81,7 +81,7 @@ export const deleteGalleryPost = async (
     });
 
     if (!galleryPost) {
-      throw new Error(`Gallery post not found: ${id}`);
+      throw new Error(`Gallery post not found`);
     }
 
     const projectRoot = path.resolve(__dirname, '../../');
