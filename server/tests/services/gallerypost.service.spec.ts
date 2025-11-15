@@ -29,7 +29,7 @@ describe('Gallery Post Service', () => {
     media: '/test_user/testMedia.png',
     community: '65e9b58910afe6e94fc6e6dd',
     postedAt: new Date('2024-06-06'),
-    views: [],
+    views: 0,
     downloads: 0,
     likes: [],
   };

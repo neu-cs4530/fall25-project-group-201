@@ -12,7 +12,7 @@ const mockGalleryPost: DatabaseGalleryPost = {
   media: '/test_user/testMedia.png',
   community: '65e9b58910afe6e94fc6e6dd',
   postedAt: new Date('2024-06-06'),
-  views: [],
+  views: 0,
   downloads: 0,
   likes: [],
 };
@@ -25,7 +25,7 @@ const mockGalleryPost2: DatabaseGalleryPost = {
   media: '/test_user/testMedia2.png',
   community: '65e9b58910afe6e94fc6e6dd',
   postedAt: new Date('2024-06-05'),
-  views: [],
+  views: 0,
   downloads: 0,
   likes: [],
 };
@@ -55,7 +55,7 @@ describe('Gallery Post Controller', () => {
       const createdGalleryPost = {
         ...mockReqBody,
         _id: new mongoose.Types.ObjectId(),
-        views: [],
+        views: 0,
         downloads: 0,
         likes: [],
       };
