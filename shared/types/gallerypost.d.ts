@@ -19,7 +19,7 @@ export interface GalleryPost {
   thumbnailMedia?: string;
   community: string;
   postedAt: Date;
-  views: string[];
+  views: number;
   downloads: number;
   likes: string[];
 }
@@ -50,7 +50,7 @@ export interface CreateGalleryPostRequest extends Request {
     community: string;
     postedAt: Date;
     thumbnailMedia?: string;
-    views: string[];
+    views: number;
     downloads: number;
     likes: string[];
   };

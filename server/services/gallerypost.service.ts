@@ -136,13 +136,12 @@ export const deleteGalleryPost = async (
  */
 export const fetchAndIncrementGalleryPostViewsById = async (
   id: string,
-  username: string,
 ): Promise<DatabaseGalleryPost | { error: string }> => {
   try {
     const objectId = new ObjectId(id);
     const updatedPost = await GalleryPostModel.findOneAndUpdate(
       { _id: objectId },
-      { $addToSet: { views: username } },
+      { $inc: { views: 1 } },
       { new: true },
     );
 
