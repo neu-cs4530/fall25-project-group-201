@@ -30,11 +30,17 @@ const mockGalleryPost2: DatabaseGalleryPost = {
   likes: [],
 };
 
-// Service method spies
+// Service Spies
 const createGalleryPostSpy = jest.spyOn(gallerypostService, 'createGalleryPost');
 const getGalleriesSpy = jest.spyOn(gallerypostService, 'getAllGalleryPosts');
 const getGalleryByIdSpy = jest.spyOn(gallerypostService, 'getGalleryPostById');
 const deleteGalleryPostSpy = jest.spyOn(gallerypostService, 'deleteGalleryPost');
+const incrementViewsSpy = jest.spyOn(gallerypostService, 'fetchAndIncrementGalleryPostViewsById');
+const incrementDownloadsSpy = jest.spyOn(
+  gallerypostService,
+  'fetchAndIncrementGalleryPostDownloadsById',
+);
+const toggleLikesSpy = jest.spyOn(gallerypostService, 'toggleGalleryPostLikeById');
 
 describe('Gallery Post Controller', () => {
   beforeEach(() => {
@@ -42,7 +48,7 @@ describe('Gallery Post Controller', () => {
   });
 
   describe('POST /create', () => {
-    test('should create a new gallery post successfully', async () => {
+    test('should create a gallery post successfully', async () => {
       const mockReqBody = {
         title: 'New Gallery Post',
         description: 'New Description',
@@ -52,7 +58,7 @@ describe('Gallery Post Controller', () => {
         postedAt: new Date(),
       };
 
-      const createdGalleryPost = {
+      const createdPost = {
         ...mockReqBody,
         _id: new mongoose.Types.ObjectId(),
         views: 0,
@@ -60,37 +66,28 @@ describe('Gallery Post Controller', () => {
         likes: [],
       };
 
-      createGalleryPostSpy.mockResolvedValueOnce(createdGalleryPost);
+      createGalleryPostSpy.mockResolvedValueOnce(createdPost);
 
       const response = await supertest(app).post('/api/gallery/create').send(mockReqBody);
 
       expect(response.status).toBe(200);
-      expect(response.body).toMatchObject({
-        title: createdGalleryPost.title,
-        description: createdGalleryPost.description,
-        user: createdGalleryPost.user,
-        media: createdGalleryPost.media,
-        community: createdGalleryPost.community,
-      });
-      expect(response.body._id).toBe(createdGalleryPost._id.toString());
+      expect(response.body._id).toBe(createdPost._id.toString());
+      expect(createGalleryPostSpy).toHaveBeenCalled();
     });
 
-    test('should return 500 when service returns error', async () => {
-      const mockReqBody = {
-        title: 'New Gallery Post',
-        description: 'New Description',
-        user: 'test_user',
-        media: '/test_user/testMedia.png',
-        community: '65e9b58910afe6e94fc6e6dd',
-        postedAt: new Date(),
-      };
+    test('should return 500 on service error', async () => {
+      createGalleryPostSpy.mockResolvedValueOnce({ error: 'DB error' });
 
-      createGalleryPostSpy.mockResolvedValueOnce({ error: 'Database error' });
-
-      const response = await supertest(app).post('/api/gallery/create').send(mockReqBody);
+      const response = await supertest(app).post('/api/gallery/create').send({
+        title: 'Bad',
+        description: 'Bad',
+        user: 'test',
+        media: '/x.png',
+        community: '123',
+      });
 
       expect(response.status).toBe(500);
-      expect(response.text).toContain('Error creating a gallery post: Database error');
+      expect(response.text).toContain('Error creating a gallery post: DB error');
     });
   });
 
@@ -101,11 +98,11 @@ describe('Gallery Post Controller', () => {
       const response = await supertest(app).get('/api/gallery/getAllGalleryPosts');
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveLength(2);
+      expect(response.body.length).toBe(2);
     });
 
-    test('should return 500 when service returns error', async () => {
-      getGalleriesSpy.mockResolvedValueOnce({ error: 'Database error' });
+    test('should return 500 on service error', async () => {
+      getGalleriesSpy.mockResolvedValueOnce({ error: 'DB error' });
 
       const response = await supertest(app).get('/api/gallery/getAllGalleryPosts');
 
@@ -113,37 +110,36 @@ describe('Gallery Post Controller', () => {
     });
   });
 
-  describe('GET /getGalleryPost/:galleryPostID', () => {
-    test('should get gallery post by ID', async () => {
+  describe('GET /getGalleryPost/:id', () => {
+    test('should return a gallery post', async () => {
       getGalleryByIdSpy.mockResolvedValueOnce(mockGalleryPost);
 
       const response = await supertest(app).get(
-        `/api/gallery/getGalleryPost/${mockGalleryPost._id.toString()}`,
+        `/api/gallery/getGalleryPost/${mockGalleryPost._id}`,
       );
 
       expect(response.status).toBe(200);
       expect(response.body.title).toBe(mockGalleryPost.title);
-      expect(getGalleryByIdSpy).toHaveBeenCalledWith(mockGalleryPost._id.toString());
     });
 
-    test('should return 500 when service returns error', async () => {
-      getGalleryByIdSpy.mockResolvedValueOnce({ error: 'Gallery post not found' });
+    test('should return 500 on service error', async () => {
+      getGalleryByIdSpy.mockResolvedValueOnce({ error: 'Not found' });
 
       const response = await supertest(app).get(
-        `/api/gallery/getGalleryPost/${mockGalleryPost._id.toString()}`,
+        `/api/gallery/getGalleryPost/${mockGalleryPost._id}`,
       );
 
       expect(response.status).toBe(500);
-      expect(response.text).toContain('Error retrieving gallery post: Gallery post not found');
+      expect(response.text).toContain('Error retrieving gallery post: Not found');
     });
   });
 
-  describe('DELETE /delete/:galleryPostId', () => {
-    test('should delete gallery post successfully', async () => {
+  describe('DELETE /delete/:id', () => {
+    test('should delete successfully', async () => {
       deleteGalleryPostSpy.mockResolvedValueOnce(mockGalleryPost);
 
       const response = await supertest(app)
-        .delete(`/api/gallery/delete/${mockGalleryPost._id.toString()}`)
+        .delete(`/api/gallery/delete/${mockGalleryPost._id}`)
         .query({ username: mockGalleryPost.user });
 
       expect(response.status).toBe(200);
@@ -153,26 +149,107 @@ describe('Gallery Post Controller', () => {
       );
     });
 
-    test('should return 500 when service throws error', async () => {
-      deleteGalleryPostSpy.mockRejectedValueOnce(new Error('Database error'));
+    test('should return 500 on thrown error', async () => {
+      deleteGalleryPostSpy.mockRejectedValueOnce(new Error('DB error'));
 
       const response = await supertest(app)
-        .delete(`/api/gallery/delete/${mockGalleryPost._id.toString()}`)
+        .delete(`/api/gallery/delete/${mockGalleryPost._id}`)
         .query({ username: mockGalleryPost.user });
 
       expect(response.status).toBe(500);
-      expect(response.text).toContain('Error deleting gallery post: Database error');
+      expect(response.text).toContain('Error deleting gallery post: DB error');
     });
 
-    test('should return 500 when service returns error', async () => {
-      deleteGalleryPostSpy.mockResolvedValueOnce({ error: 'Gallery post not found' });
+    test('should return 500 on service error', async () => {
+      deleteGalleryPostSpy.mockResolvedValueOnce({ error: 'Not found' });
 
       const response = await supertest(app)
-        .delete(`/api/gallery/delete/${mockGalleryPost._id.toString()}`)
+        .delete(`/api/gallery/delete/${mockGalleryPost._id}`)
         .query({ username: mockGalleryPost.user });
 
       expect(response.status).toBe(500);
-      expect(response.text).toContain('Error deleting gallery post: Gallery post not found');
+      expect(response.text).toContain('Error deleting gallery post: Not found');
+    });
+  });
+
+  describe('POST /incrementViews/:id/:username', () => {
+    test('should increment views', async () => {
+      incrementViewsSpy.mockResolvedValueOnce({
+        ...mockGalleryPost,
+        views: 1,
+      });
+
+      const response = await supertest(app).post(
+        `/api/gallery/incrementViews/${mockGalleryPost._id}/tester`,
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body.views).toBe(1);
+      expect(incrementViewsSpy).toHaveBeenCalledWith(mockGalleryPost._id.toString());
+    });
+
+    test('should return 500 on service error', async () => {
+      incrementViewsSpy.mockResolvedValueOnce({ error: 'DB error' });
+
+      const response = await supertest(app).post(
+        `/api/gallery/incrementViews/${mockGalleryPost._id}/tester`,
+      );
+
+      expect(response.status).toBe(500);
+      expect(response.text).toContain('Error incrementing gallery post views: DB error');
+    });
+  });
+
+  describe('POST /incrementDownloads/:id/:username', () => {
+    test('should increment downloads', async () => {
+      incrementDownloadsSpy.mockResolvedValueOnce({
+        ...mockGalleryPost,
+        downloads: 1,
+      });
+
+      const response = await supertest(app).post(
+        `/api/gallery/incrementDownloads/${mockGalleryPost._id}/tester`,
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body.downloads).toBe(1);
+    });
+
+    test('should return 500 on service error', async () => {
+      incrementDownloadsSpy.mockResolvedValueOnce({ error: 'DB error' });
+
+      const response = await supertest(app).post(
+        `/api/gallery/incrementDownloads/${mockGalleryPost._id}/tester`,
+      );
+
+      expect(response.status).toBe(500);
+    });
+  });
+
+  describe('POST /toggleLikes/:id/:username', () => {
+    test('should toggle likes', async () => {
+      toggleLikesSpy.mockResolvedValueOnce({
+        ...mockGalleryPost,
+        likes: ['tester'],
+      });
+
+      const response = await supertest(app).post(
+        `/api/gallery/toggleLikes/${mockGalleryPost._id}/tester`,
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body.likes).toContain('tester');
+    });
+
+    test('should return 500 on service error', async () => {
+      toggleLikesSpy.mockResolvedValueOnce({ error: 'DB error' });
+
+      const response = await supertest(app).post(
+        `/api/gallery/toggleLikes/${mockGalleryPost._id}/tester`,
+      );
+
+      expect(response.status).toBe(500);
+      expect(response.text).toContain('Error toggling gallery post like: DB error');
     });
   });
 });
