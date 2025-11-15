@@ -129,7 +129,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
     res: Response,
   ): Promise<void> => {
     try {
-      const { galleryPostID, username } = req.params;
+      const { galleryPostID } = req.params;
       const updatedGalleryPost = await fetchAndIncrementGalleryPostViewsById(galleryPostID);
 
       if ('error' in updatedGalleryPost) {

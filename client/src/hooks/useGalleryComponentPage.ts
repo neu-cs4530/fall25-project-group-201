@@ -189,7 +189,7 @@ const useGalleryComponentPage = (communityID: string) => {
       await incrementGalleryPostViews(post._id.toString(), currentUser.username);
       await fetchGalleryPosts();
     } catch (err) {
-      // eslint-disable-next-line no console
+      // eslint-disable-next-line no-console
       console.error('Failed to increment views', err);
     }
   };

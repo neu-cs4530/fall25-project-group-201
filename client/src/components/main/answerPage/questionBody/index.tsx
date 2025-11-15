@@ -80,7 +80,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
                 let embed = mediaUrl;
 
                 const youtube = mediaUrl.match(
-                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/
+                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/,
                 );
                 if (youtube) embed = `https://www.youtube.com/embed/${youtube[1]}`;
 
@@ -96,7 +96,6 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
             />
           </div>
         )}
-
       </div>
 
       <div className='answer_question_right'>
