@@ -99,7 +99,7 @@ const useNewGalleryPost = () => {
       ...(thumbnailMediaPath ? { thumbnailMedia: thumbnailMediaPath } : {}),
       postedAt: new Date(),
       community: communityID!,
-      views: [],
+      views: 0,
       downloads: 0,
       likes: [],
     };
