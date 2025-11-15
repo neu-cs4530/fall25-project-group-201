@@ -36,8 +36,12 @@ interface QuestionBodyProps {
  */
 const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
-  const isVideo = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
-  const isImage = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
+
+  const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
+  const isImagePath = mediaPath?.match(/\.(png|jpg|jpeg|gif)$/i);
+
+  const isVideoUrl = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
+  const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
@@ -46,65 +50,53 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
       <div className='answer_question_text'>
         <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
 
+        {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
           <div className='three-wrapper'>
-            <ThreeViewport key={mediaPath} modelPath={mediaPath!} />
+            <ThreeViewport key={mediaPath} modelPath={mediaPath} />
           </div>
         )}
 
-        {mediaPath && isImage && (
+        {/* ----- IMAGE (either path or url) ----- */}
+        {(isImagePath || isImageUrl) && (
           <div className='question-media'>
-            <img src={mediaPath} alt='uploaded media' />
+            <img src={mediaPath || mediaUrl} alt='uploaded media' />
           </div>
         )}
 
-        {mediaPath && isVideo && (
+        {/* ----- VIDEO (either path or url) ----- */}
+        {(isVideoPath || isVideoUrl) && (
           <video controls>
-            <source src={mediaPath} />
+            <source src={mediaPath || mediaUrl} />
             Your browser does not support video.
           </video>
         )}
 
-        {mediaUrl && (
-          <div className='question-media'>
-            {isVideo ? (
-              <video controls>
-                <source src={mediaUrl} />
-                Your browser does not support video.
-              </video>
-            ) : isImage ? (
-              <img src={mediaUrl} alt='embedded media' />
-            ) : (
-              (() => {
-                let embedUrl = mediaUrl;
+        {/* ----- EMBED (YouTube/Vimeo/other URLs only) ----- */}
+        {mediaUrl && !isVideoUrl && !isImageUrl && (
+          <div className='iframe-wrapper'>
+            <iframe
+              src={(() => {
+                let embed = mediaUrl;
 
-                const youtubeMatch = mediaUrl.match(
-                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/,
+                const youtube = mediaUrl.match(
+                  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/
                 );
-                if (youtubeMatch) {
-                  embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
-                }
+                if (youtube) embed = `https://www.youtube.com/embed/${youtube[1]}`;
 
-                const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
-                if (vimeoMatch) {
-                  embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-                }
+                const vimeo = mediaUrl.match(/vimeo\.com\/(\d+)/);
+                if (vimeo) embed = `https://player.vimeo.com/video/${vimeo[1]}`;
 
-                return (
-                  <div className='iframe-wrapper'>
-                    <iframe
-                      src={embedUrl}
-                      title='embedded content'
-                      frameBorder='0'
-                      allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                      allowFullScreen
-                    />
-                  </div>
-                );
-              })()
-            )}
+                return embed;
+              })()}
+              title='embedded content'
+              frameBorder='0'
+              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+              allowFullScreen
+            />
           </div>
         )}
+
       </div>
 
       <div className='answer_question_right'>
