@@ -21,6 +21,14 @@ import {
 import { ObjectId } from 'mongodb';
 
 describe('Gallery Post Service', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    (console.error as jest.Mock).mockRestore();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
