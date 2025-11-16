@@ -25,10 +25,6 @@ describe('Gallery Post Service', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  afterAll(() => {
-    (console.error as jest.Mock).mockRestore();
-  });
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
