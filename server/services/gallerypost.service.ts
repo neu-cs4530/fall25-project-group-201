@@ -75,7 +75,6 @@ export const deleteGalleryPost = async (
   username: string,
 ): Promise<GalleryPostResponse> => {
   try {
-    // Find the gallery post
     const galleryPost = await GalleryPostModel.findOne({
       _id: id,
       user: username,
@@ -110,7 +109,6 @@ export const deleteGalleryPost = async (
       }
     }
 
-    // Delete gallery post
     const deletedGalleryPost = await GalleryPostModel.findOneAndDelete({
       _id: id,
       user: username,
@@ -136,25 +134,27 @@ export const deleteGalleryPost = async (
  */
 export const fetchAndIncrementGalleryPostViewsById = async (
   id: string,
-  username: string,
 ): Promise<DatabaseGalleryPost | { error: string }> => {
   try {
+    if (!ObjectId.isValid(id)) {
+      return { error: 'Invalid gallery post ID' };
+    }
+
     const objectId = new ObjectId(id);
+
     const updatedPost = await GalleryPostModel.findOneAndUpdate(
       { _id: objectId },
-      { $addToSet: { views: username } },
+      { $inc: { views: 1 } },
       { new: true },
     );
 
     if (!updatedPost) {
-      throw new Error('Gallery post not found');
+      return { error: 'Gallery post not found' };
     }
 
     return updatedPost;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return { error: 'Error when fetching and updating gallery post views' };
+    return { error: 'Error when fetching and updating gallery post downloads' };
   }
 };
 
@@ -164,28 +164,29 @@ export const fetchAndIncrementGalleryPostViewsById = async (
  * @param {string} id - The ID of the gallery post
  * @returns {Promise<DatabaseGalleryPost | { error: string }>} Updated gallery post or error object
  */
-export const fetchAndIncrementGalleryPostDownloadsById = async (
-  id: string,
-): Promise<DatabaseGalleryPost | { error: string }> => {
+export async function fetchAndIncrementGalleryPostDownloadsById(id: string | ObjectId) {
   try {
-    const objectId = new ObjectId(id);
+    const idString = typeof id === 'string' ? id : id.toHexString();
+
+    if (!ObjectId.isValid(idString)) {
+      return { error: 'Invalid gallery post ID' };
+    }
+
+    const objectId = new ObjectId(idString);
+
     const updatedPost = await GalleryPostModel.findOneAndUpdate(
       { _id: objectId },
       { $inc: { downloads: 1 } },
       { new: true },
     );
 
-    if (!updatedPost) {
-      throw new Error('Gallery post not found');
-    }
+    if (!updatedPost) return { error: 'Gallery post not found' };
 
     return updatedPost;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
     return { error: 'Error when fetching and updating gallery post downloads' };
   }
-};
+}
 
 /**
  * Toggles a username in the likes array of a gallery post.
@@ -217,8 +218,6 @@ export const toggleGalleryPostLikeById = async (
 
     return updatedPost;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
     return { error: 'Error when toggling gallery post like' };
   }
 };

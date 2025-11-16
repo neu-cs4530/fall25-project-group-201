@@ -47,7 +47,7 @@ const galleryPostSchema: Schema = new Schema(
       required: false,
     },
     views: {
-      type: [String],
+      type: Number,
       default: [],
     },
     downloads: {

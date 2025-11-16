@@ -4,6 +4,7 @@ import useUserContext from './useUserContext';
 import {
   getGalleryPosts,
   deleteGalleryPost,
+  incrementGalleryPostViews,
   incrementGalleryPostDownloads,
   toggleGalleryPostLikes,
 } from '../services/galleryService';
@@ -132,7 +133,7 @@ const useGalleryComponentPage = (communityID: string) => {
         case 'highestRated':
           return b.likes.length - a.likes.length;
         case 'mostViewed':
-          return b.views.length - a.views.length;
+          return b.views - a.views;
         case 'mostDownloaded':
           return b.downloads - a.downloads;
         default:
@@ -173,9 +174,23 @@ const useGalleryComponentPage = (communityID: string) => {
   const handleDeleteGalleryPost = async (post: DatabaseGalleryPost) => {
     try {
       await deleteGalleryPost(post._id.toString(), post.user);
-      await fetchGalleryPosts(); // <-- refreshes the data
+      await fetchGalleryPosts();
     } catch {
       setError('Failed to delete post.');
+    }
+  };
+
+  /**
+   * Increment view count and open media
+   * @param {DatabaseGalleryPost} post - Post being viewed
+   */
+  const handleIncrementViews = async (post: DatabaseGalleryPost) => {
+    try {
+      await incrementGalleryPostViews(post._id.toString(), currentUser.username);
+      await fetchGalleryPosts();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to increment views', err);
     }
   };
 
@@ -185,7 +200,7 @@ const useGalleryComponentPage = (communityID: string) => {
    */
   const handleIncrementDownloads = async (post: DatabaseGalleryPost) => {
     try {
-      await incrementGalleryPostDownloads(post._id.toString());
+      await incrementGalleryPostDownloads(post._id.toString(), currentUser.username);
       window.open(post.media, '_blank');
       await fetchGalleryPosts();
     } catch (err) {
@@ -230,6 +245,7 @@ const useGalleryComponentPage = (communityID: string) => {
     startIndex,
     handle3DMediaClick,
     handleDeleteGalleryPost,
+    handleIncrementViews,
     handleIncrementDownloads,
     handleToggleLikes,
     refreshGallery,

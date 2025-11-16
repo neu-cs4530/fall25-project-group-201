@@ -29,6 +29,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     error,
     isAuthor,
     handleDeleteGalleryPost,
+    handleIncrementViews,
     handleIncrementDownloads,
     handleToggleLikes,
     refreshGallery,
@@ -115,7 +116,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       case 'highestRated':
         return b.likes.length - a.likes.length;
       case 'mostViewed':
-        return b.views.length - a.views.length;
+        return b.views - a.views;
       case 'mostDownloaded':
         return b.downloads - a.downloads;
       default:
@@ -278,7 +279,10 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             <div
               key={post._id.toString()}
               className='galleryCard'
-              onClick={() => setSelectedPost(post)}>
+              onClick={() => {
+                handleIncrementViews(post);
+                setSelectedPost(post);
+              }}>
               {renderMedia(post, false)}
             </div>
           ))}
@@ -366,7 +370,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                 {/* Views */}
                 <span className='statItem views' title='Views'>
                   <Eye size={18} />
-                  <span>{selectedPost.views.length}</span>
+                  <span>{selectedPost.views}</span>
                 </span>
 
                 {/* Downloads (only for non-embed media) */}

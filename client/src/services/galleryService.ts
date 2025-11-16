@@ -98,8 +98,8 @@ const incrementGalleryPostViews = async (galleryPostID: string, username: string
  * @returns {Promise<any>} Server response JSON
  * @throws Will throw an error if the request fails
  */
-const incrementGalleryPostDownloads = async (galleryPostID: string) => {
-  const res = await fetch(`${GALLERY_API_URL}/incrementDownloads/${galleryPostID}`, {
+const incrementGalleryPostDownloads = async (galleryPostID: string, username: string) => {
+  const res = await fetch(`${GALLERY_API_URL}/incrementDownloads/${galleryPostID}/${username}`, {
     method: 'POST',
   });
 

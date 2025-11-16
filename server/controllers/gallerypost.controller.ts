@@ -58,7 +58,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
   ): Promise<void> => {
     const galleryPost: GalleryPost = {
       ...req.body,
-      views: [],
+      views: 0,
       downloads: 0,
     };
 
@@ -129,11 +129,8 @@ const galleryPostController = (socket: FakeSOSocket) => {
     res: Response,
   ): Promise<void> => {
     try {
-      const { galleryPostID, username } = req.params;
-      const updatedGalleryPost = await fetchAndIncrementGalleryPostViewsById(
-        galleryPostID,
-        username,
-      );
+      const { galleryPostID } = req.params;
+      const updatedGalleryPost = await fetchAndIncrementGalleryPostViewsById(galleryPostID);
 
       if ('error' in updatedGalleryPost) {
         throw new Error(updatedGalleryPost.error);
@@ -190,7 +187,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
   router.post('/create', createGalleryPostRoute);
   router.delete('/delete/:galleryPostId', deleteGalleryPostRoute);
   router.post('/incrementViews/:galleryPostID/:username', incrementGalleryPostViewsRoute);
-  router.post('/incrementDownloads/:galleryPostID', incrementGalleryPostDownloadsRoute);
+  router.post('/incrementDownloads/:galleryPostID/:username', incrementGalleryPostDownloadsRoute);
   router.post('/toggleLikes/:galleryPostID/:username', toggleGalleryPostLikesRoute);
 
   return router;
