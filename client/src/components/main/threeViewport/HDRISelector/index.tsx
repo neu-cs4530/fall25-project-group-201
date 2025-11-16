@@ -5,7 +5,7 @@ interface HDRISelectorProps {
   currentPreset: string | null;
   onPresetChange: (preset: string) => void;
   isLoading: boolean;
-  presets: Array<{ value: string; label: string }>;
+  presets: Array<{ value: string; label: string; icon?: string }>;
 }
 
 const HDRISelector = ({ currentPreset, onPresetChange, isLoading, presets }: HDRISelectorProps) => {
@@ -39,7 +39,12 @@ const HDRISelector = ({ currentPreset, onPresetChange, isLoading, presets }: HDR
         className='hdri-selector-button'
         onClick={() => setIsOpen(!isOpen)}
         disabled={isLoading}>
-        {isLoading ? 'Loading...' : selectedPreset?.label || 'Select Lighting'}
+        {isLoading ? 'Loading...' : (
+          <>
+            {selectedPreset?.icon && <span style={{ marginRight: '8px' }}>{selectedPreset.icon}</span>}
+            {selectedPreset?.label || 'Select Lighting'}
+          </>
+        )}
       </button>
 
       {isOpen && (
@@ -49,6 +54,7 @@ const HDRISelector = ({ currentPreset, onPresetChange, isLoading, presets }: HDR
               key={preset.value}
               className={`hdri-option ${preset.value === currentPreset ? 'active' : ''}`}
               onClick={() => handleSelect(preset.value)}>
+              {preset.icon && <span style={{ marginRight: '8px' }}>{preset.icon}</span>}
               {preset.label}
             </div>
           ))}

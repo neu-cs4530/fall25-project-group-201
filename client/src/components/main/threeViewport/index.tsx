@@ -14,10 +14,10 @@ interface ThreeViewportProps {
 }
 
 const HDRI_PRESETS = [
-  { value: 'default', label: 'Default' },
-  { value: 'sunset', label: 'Sunset' },
-  { value: 'studio', label: 'Studio' },
-  { value: 'indoor', label: 'Indoor' },
+  { value: 'default', label: 'Default', icon: '💡' },
+  { value: 'sunset', label: 'Sunset', icon: '🌅' },
+  { value: 'studio', label: 'Studio', icon: '🎬' },
+  { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
 const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportProps) => {
