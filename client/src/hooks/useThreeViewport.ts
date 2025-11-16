@@ -59,6 +59,7 @@ const useThreeViewport = (modelPath: string | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const targetZRef = useRef<number>(1);
 
   const [isPerspective, setIsPerspective] = useState(true);
@@ -163,6 +164,7 @@ const useThreeViewport = (modelPath: string | null) => {
 
     // --- Renderer setup ---
     const renderer = new THREE.WebGLRenderer({ antialias: true });
+    rendererRef.current = renderer;
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -329,6 +331,8 @@ const useThreeViewport = (modelPath: string | null) => {
 
   return {
     containerRef,
+    sceneRef,
+    rendererRef,
     handleResetCamera,
     handleTogglePerspective,
     isPerspective,

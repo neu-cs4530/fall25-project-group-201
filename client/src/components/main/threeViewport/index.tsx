@@ -1,56 +1,54 @@
 import { useState, useRef } from 'react';
 import useThreeViewport from '../../../hooks/useThreeViewport';
 import useModelUpload from '../../../hooks/useModelUpload';
+import useHDRI from '../../../hooks/useHDRI';
+import HDRISelector from './HDRISelector';
 import './index.css';
 import orthoIcon from '../../../../public/icons/orthoIcon.png';
 import perspIcon from '../../../../public/icons/perspIcon.png';
 import cameraIcon from '../../../../public/icons/cameraIcon.png';
 
-/**
- * Props for the ThreeViewport component.
- * @typedef {Object} ThreeViewportProps
- * @property {string | null} [modelPath] - Optional path to a GLB model to be displayed in the viewport.
- * @property {boolean} [allowUpload=false] - Whether to allow model uploads via file input.
- */
 interface ThreeViewportProps {
   modelPath?: string | null;
   allowUpload?: boolean;
 }
 
-/**
- * A 3D viewport component using Three.js for model visualization.
- * Supports uploading GLB models, toggling between orthographic/perspective cameras,
- * and resetting the camera view.
- *
- * @param {ThreeViewportProps} props - The component props.
- * @returns {JSX.Element} A rendered Three.js viewport component.
- */
+const HDRI_PRESETS = [
+  { value: 'default', label: 'Default' },
+  { value: 'sunset', label: 'Sunset' },
+  { value: 'studio', label: 'Studio' },
+  { value: 'indoor', label: 'Indoor' },
+];
+
 const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 
-  const { containerRef, handleResetCamera, handleTogglePerspective } =
+  const { containerRef, sceneRef, rendererRef, handleResetCamera, handleTogglePerspective } =
     useThreeViewport(activeModel);
 
-  const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true);
+  // HDRI Hook Integration
+  const { currentPreset, switchPreset, isLoading } = useHDRI({
+    scene: sceneRef.current,
+    renderer: rendererRef.current,
+    presets: [
+      { name: 'sunset', path: '/hdri/sunset.hdr', intensity: 1.0 },
+      { name: 'studio', path: '/hdri/studio.hdr', intensity: 1.2 },
+      { name: 'indoor', path: '/hdri/indoor.hdr', intensity: 0.8 },
+    ],
+    initialPreset: 'default',
+  });
 
+  const [isOrthoCameraMode, setIsOrthoCameraMode] = useState<boolean>(true);
   const [visibleTooltip, setVisibleTooltip] = useState<string | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  /**
-   * Handles toggling between orthographic and perspective camera modes.
-   */
   const handleCameraModeToggle = () => {
     const updatedCameraMode = !isOrthoCameraMode;
     setIsOrthoCameraMode(updatedCameraMode);
     handleTogglePerspective();
   };
 
-  /**
-   * Positions the tooltip relative to the hovered icon.
-   *
-   * @param {React.MouseEvent<HTMLDivElement, MouseEvent>} e - The mouse event.
-   */
   const positionTooltip = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const tooltip = e.currentTarget.querySelector('.tooltip-text') as HTMLElement;
     if (tooltip) {
@@ -62,22 +60,13 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     }
   };
 
-  /**
-   * Handles mouse enter events by starting a timer before showing the tooltip.
-   *
-   * @param {string} tooltipId - Identifier for the tooltip to display.
-   * @param {React.MouseEvent<HTMLDivElement, MouseEvent>} e - The mouse event.
-   */
   const handleMouseEnter = (tooltipId: string, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     positionTooltip(e);
     hoverTimeout.current = setTimeout(() => {
       setVisibleTooltip(tooltipId);
-    }, 1000); // delay in ms (1 second)
+    }, 1000);
   };
 
-  /**
-   * Handles mouse leave events by clearing any pending tooltip timers.
-   */
   const handleMouseLeave = () => {
     if (hoverTimeout.current) {
       clearTimeout(hoverTimeout.current);
@@ -141,6 +130,16 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
             </>
           )}
         </div>
+
+        {/* HDRI Selector*/}
+        {activeModel && (
+          <HDRISelector
+            currentPreset={currentPreset}
+            onPresetChange={switchPreset}
+            isLoading={isLoading || !sceneRef.current}
+            presets={HDRI_PRESETS}
+          />
+        )}
       </div>
     </div>
   );
