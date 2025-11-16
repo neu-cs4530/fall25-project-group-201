@@ -115,7 +115,7 @@ app.use('/api/community', communityController(socket));
 app.use('/api/media', mediaController(socket));
 app.use('/api/gallery', galleryPostController(socket));
 
-const openApiDocument = yaml.parse(fs.readFileSync('openapi.yaml', 'utf8'));
+const openApiDocument = yaml.parse(fs.readFileSync('./openapi.yaml', 'utf8'));
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 console.log('Swagger UI is available at /api/docs');
 
