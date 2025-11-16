@@ -17,6 +17,7 @@ import {
   getAllGalleryPosts,
   fetchAndIncrementGalleryPostViewsById,
   toggleGalleryPostLikeById,
+  fetchAndIncrementGalleryPostDownloadsById,
 } from '../../services/gallerypost.service';
 import { ObjectId } from 'mongodb';
 
@@ -56,6 +57,8 @@ describe('Gallery Post Service', () => {
     _id: new mongoose.Types.ObjectId('65e9123910afe6e94123f6dd'),
     ...mockGalleryPostInputWithThumbnail,
   };
+
+  const fakeId = new mongoose.Types.ObjectId().toString();
 
   describe('createGalleryPost', () => {
     test('creates gallery post successfully', async () => {
@@ -117,7 +120,7 @@ describe('Gallery Post Service', () => {
     test('returns error if gallery post not found', async () => {
       jest.spyOn(GalleryPostModel, 'findOne').mockResolvedValueOnce(null);
 
-      const result = await deleteGalleryPost('fake_id', 'test_user');
+      const result = await deleteGalleryPost(fakeId, 'test_user');
 
       expect(result).toEqual({ error: 'Gallery post not found' });
     });
@@ -171,7 +174,7 @@ describe('Gallery Post Service', () => {
     test('returns error if not found', async () => {
       jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(null);
 
-      const result = await getGalleryPostById('fake_id');
+      const result = await getGalleryPostById(fakeId);
 
       expect(result).toEqual({ error: 'Failed to get gallery post' });
     });
@@ -232,7 +235,7 @@ describe('Gallery Post Service', () => {
     test('returns error if post not found', async () => {
       jest.spyOn(GalleryPostModel, 'findOneAndUpdate').mockResolvedValueOnce(null);
 
-      const result = await fetchAndIncrementGalleryPostViewsById('fake_id');
+      const result = await fetchAndIncrementGalleryPostViewsById(fakeId);
 
       expect('error' in result).toBe(true);
     });
@@ -241,6 +244,43 @@ describe('Gallery Post Service', () => {
       jest.spyOn(GalleryPostModel, 'findOneAndUpdate').mockRejectedValueOnce(new Error('DB error'));
 
       const result = await fetchAndIncrementGalleryPostViewsById(mockGalleryPost._id.toString());
+
+      expect('error' in result).toBe(true);
+    });
+  });
+
+  describe('fetchAndIncrementGalleryPostDownloadsById', () => {
+    test('increments downloads successfully', async () => {
+      const updatedPost = { ...mockGalleryPost, downloads: mockGalleryPost.downloads + 1 };
+
+      jest.spyOn(GalleryPostModel, 'findOneAndUpdate').mockResolvedValueOnce(updatedPost as any);
+
+      const result = await fetchAndIncrementGalleryPostDownloadsById(
+        mockGalleryPost._id.toString(),
+      );
+
+      expect(result).toEqual(updatedPost);
+      expect(GalleryPostModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { _id: new ObjectId(mockGalleryPost._id.toString()) },
+        { $inc: { downloads: 1 } },
+        { new: true },
+      );
+    });
+
+    test('returns error if post not found', async () => {
+      jest.spyOn(GalleryPostModel, 'findOneAndUpdate').mockResolvedValueOnce(null);
+
+      const result = await fetchAndIncrementGalleryPostDownloadsById(fakeId);
+
+      expect('error' in result).toBe(true);
+    });
+
+    test('returns error if database throws', async () => {
+      jest.spyOn(GalleryPostModel, 'findOneAndUpdate').mockRejectedValueOnce(new Error('DB error'));
+
+      const result = await fetchAndIncrementGalleryPostDownloadsById(
+        mockGalleryPost._id.toString(),
+      );
 
       expect('error' in result).toBe(true);
     });
@@ -274,7 +314,7 @@ describe('Gallery Post Service', () => {
     test('returns error if post not found', async () => {
       jest.spyOn(GalleryPostModel, 'findById').mockResolvedValueOnce(null);
 
-      const result = await toggleGalleryPostLikeById('fake_id', 'user2');
+      const result = await toggleGalleryPostLikeById(fakeId, 'user2');
 
       expect('error' in result).toBe(true);
     });
