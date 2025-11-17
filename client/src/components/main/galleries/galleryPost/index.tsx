@@ -4,6 +4,9 @@ import useUserContext from '../../../../hooks/useUserContext';
 import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
 
+/**
+ * Component to display a single gallery post from a community gallery.
+ */
 const GalleryPostPage = () => {
   const { post, error, incrementDownloads, toggleLike, removePost } = useGalleryPostPage();
   const { user } = useUserContext();

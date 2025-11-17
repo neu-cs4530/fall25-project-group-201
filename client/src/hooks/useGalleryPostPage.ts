@@ -10,6 +10,19 @@ import {
 import useUserContext from './useUserContext';
 import { DatabaseGalleryPost } from '../types/types';
 
+/**
+ * Custom hook for managing a single gallery post page.
+ *
+ * Fetches a gallery post by ID, handles incrementing views and downloads,
+ * toggling likes, and deleting the post.
+ *
+ * @returns {Object} An object containing:
+ *   - `post`: The current gallery post, or null if not loaded.
+ *   - `error`: Any error message encountered during operations.
+ *   - `incrementDownloads`: Function to increment download count and open the media.
+ *   - `toggleLike`: Function to toggle the user's like on the post.
+ *   - `removePost`: Function to delete the current post.
+ */
 const useGalleryPostPage = () => {
   const { postId } = useParams();
   const { user } = useUserContext();
@@ -17,6 +30,10 @@ const useGalleryPostPage = () => {
   const [post, setPost] = useState<DatabaseGalleryPost | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Fetch the gallery post by ID from the server.
+   * Sets the `post` state or an error if the post is not found.
+   */
   const fetchPost = useCallback(async () => {
     try {
       const all = await getGalleryPosts();
@@ -31,6 +48,10 @@ const useGalleryPostPage = () => {
     }
   }, [postId]);
 
+  
+  /**
+   * Effect to increment post views once per session and fetch the post.
+   */
   useEffect(() => {
     if (!postId || !user.username) return;
 
@@ -52,6 +73,10 @@ const useGalleryPostPage = () => {
     incrementAndFetch();
   }, [fetchPost, postId, user.username]);
 
+  
+  /**
+   * Increment download count for the post and open the media in a new tab.
+   */
   const incrementDownloads = async () => {
     if (!post) return;
     try {
@@ -63,6 +88,9 @@ const useGalleryPostPage = () => {
     }
   };
 
+  /**
+   * Toggle the current user's like on the post.
+   */
   const toggleLike = async () => {
     if (!post) return;
     try {
@@ -73,6 +101,9 @@ const useGalleryPostPage = () => {
     }
   };
 
+  /**
+   * Delete the current post.
+   */
   const removePost = async () => {
     if (!post) return;
     try {
