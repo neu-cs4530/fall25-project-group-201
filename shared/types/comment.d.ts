@@ -6,6 +6,8 @@ import { ObjectId } from 'mongodb';
  * - `text`: The content of the comment.
  * - `commentBy`: The author of the comment.
  * - `commentDateTime`: The timestamp when the comment was made.
+ * - `mediaUrl`: URL to embed, if applicable
+ * - `mediaPath`: location of media, if applicable
  */
 export interface Comment {
   text: string;
@@ -19,6 +21,8 @@ export interface Comment {
  * Represents a comment stored in the database.
  * - `_id`: Unique identifier for the comment.
  * - `text`: The content of the comment.
+ * - `mediaUrl`: URL to embed, if applicable
+ * - `mediaPath`: location of media, if applicable
  * - `commentBy`: The author of the comment.
  * - `commentDateTime`: The timestamp when the comment was made.
  */
