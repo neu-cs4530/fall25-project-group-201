@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import useLoginContext from './useLoginContext';
 import { getUserByUsername } from '../services/userService';
 import { useAuth0 } from '@auth0/auth0-react';
-import { EnvironmentNode } from 'three/webgpu';
-import { SafeDatabaseUser, User } from '@fake-stack-overflow/shared';
+import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 
 /**
  * Custom hook to manage authentication logic, including handling input changes,
@@ -27,7 +26,6 @@ const useAuth = () => {
   // const [password, setPassword] = useState<string>('');
   // const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
   // const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState<string>('');
   const [err, setErr] = useState<string>('');
   const { setUser } = useLoginContext();
   const navigate = useNavigate();
@@ -93,14 +91,10 @@ const useAuth = () => {
       (async () => {
         try {
           // const token = await getAccessTokenSilently();
-          console.log('Auth0 user object: ', auth0User);
-          const extractedUsername = (auth0User.name || auth0User.nickname)?.trim()
+          const extractedUsername = (auth0User.name || auth0User.nickname)?.trim();
           if (!extractedUsername) {
-            return
+            return;
           }
-          console.log("Searching username:", extractedUsername);
-          setUsername(extractedUsername)
-
 
           const user = await getUserByUsername(extractedUsername);
           // console.log('Fetched user: ', user);
@@ -112,12 +106,12 @@ const useAuth = () => {
         }
       })();
     }
-  }, [isLoading, isAuthenticated]);
+  });
 
   const handleRedirectHome = async (user: SafeDatabaseUser) => {
     setUser(user);
     navigate('/home');
-    return
+    return;
   };
 
   const handleLogin = async () => {
@@ -147,7 +141,7 @@ const useAuth = () => {
         },
       });
     } catch (error) {
-      console.error('Signup error:', error);
+      // console.error('Signup error:', error);
       setErr('Failed to initiate signup');
     }
   };
@@ -157,7 +151,7 @@ const useAuth = () => {
     user: auth0User,
     handleLogin,
     handleSignup,
-    err
+    err,
   };
 };
 
