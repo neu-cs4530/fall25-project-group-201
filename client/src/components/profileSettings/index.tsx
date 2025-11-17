@@ -7,9 +7,13 @@ import useProfileSettings from '../../hooks/useProfileSettings';
 import PortfolioModelViewer from '../main/threeViewport/PortfolioModelViewer';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import TestimonialsSection from './TestimonialsSection';
+import WriteTestimonialButton from './WriteTestimonialButton';
+import useUserContext from '../../hooks/useUserContext';
 
 const ProfileSettings: React.FC = () => {
   const navigate = useNavigate();
+  const { user: currentUser } = useUserContext();
   const [deleteMode, setDeleteMode] = useState(false);
   const [itemsToDelete, setItemsToDelete] = useState<number[]>([]);
   const {
@@ -62,6 +66,9 @@ const ProfileSettings: React.FC = () => {
     handleUpdateBiography,
     handleDeleteUser,
     handleViewCollectionsPage,
+    handleSubmitTestimonial,
+    handleDeleteTestimonial,
+    handleApproveTestimonial,
   } = useProfileSettings();
 
   const handleUploadPortfolio = () => {
@@ -140,10 +147,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.bannerImage
                 ? {
-                    backgroundImage: `url(${userData.bannerImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.bannerImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {!userData?.bannerImage && <span>Banner Image</span>}
@@ -168,10 +175,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.profilePicture
                 ? {
-                    backgroundImage: `url(${userData.profilePicture})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.profilePicture})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {!userData?.profilePicture && <span>Profile Picture</span>}
@@ -779,6 +786,25 @@ const ProfileSettings: React.FC = () => {
                 </>
               )}
             </div>
+
+            {/* Testimonials Section - ADD THIS ENTIRE BLOCK */}
+            <h4>Testimonials</h4>
+            {!canEditProfile && currentUser.username && (
+              <WriteTestimonialButton
+                profileUsername={userData.username}
+                currentUsername={currentUser.username}
+                existingTestimonial={userData.testimonials?.find(
+                  t => t.fromUsername === currentUser.username
+                )}
+                onSubmit={handleSubmitTestimonial}
+                onDelete={handleDeleteTestimonial}
+              />
+            )}
+            <TestimonialsSection
+              testimonials={userData.testimonials || []}
+              canEditProfile={canEditProfile}
+              onApprove={handleApproveTestimonial}
+            />
 
             {/* Theme Customization - INTERACTIVE */}
 

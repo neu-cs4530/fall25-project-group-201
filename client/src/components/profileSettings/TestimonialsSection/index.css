@@ -1,0 +1,126 @@
+.testimonials-section {
+  margin-top: 2rem;
+}
+
+.pending-testimonials {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #fef3c7;
+  border-radius: 8px;
+  border: 1px solid #fbbf24;
+}
+
+.pending-testimonials h5 {
+  margin: 0 0 0.5rem 0;
+  color: #92400e;
+}
+
+.pending-note {
+  font-size: 0.875rem;
+  color: #92400e;
+  margin-bottom: 1rem;
+}
+
+.testimonial-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-card.pending {
+  background: white;
+  border-color: #fbbf24;
+}
+
+.testimonial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: opacity 0.2s;
+}
+
+.testimonial-author:hover {
+  opacity: 0.7;
+}
+
+.testimonial-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+.testimonial-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.testimonial-author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.testimonial-author-info strong {
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.testimonial-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.testimonial-content {
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.testimonial-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.testimonial-actions .button {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+.no-testimonials {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.no-testimonials p {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+.approved-testimonials {
+  margin-top: 1rem;
+}

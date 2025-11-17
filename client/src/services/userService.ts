@@ -231,7 +231,7 @@ const uploadResume = async (username: string, file: File): Promise<SafeDatabaseU
  */
 const uploadPortfolioModel = async (
   username: string,
-  fileOrUrl: File | string, // Changed from just File
+  fileOrUrl: File | string,  // Changed from just File
   thumbnail: string,
 ): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
@@ -255,6 +255,71 @@ const uploadPortfolioModel = async (
     throw new Error('Error uploading portfolio model');
   }
   return res.data;
+};
+
+/**
+ * Creates or updates a testimonial for a user
+ */
+export const createOrUpdateTestimonial = async (
+  profileUsername: string,
+  fromUsername: string,
+  content: string
+): Promise<SafeDatabaseUser> => {
+  const response = await fetch('/api/user/testimonial', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ profileUsername, fromUsername, content }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error);
+  }
+
+  return response.json();
+};
+
+/**
+ * Deletes your testimonial from a user's profile
+ */
+export const deleteTestimonial = async (
+  profileUsername: string,
+  fromUsername: string
+): Promise<SafeDatabaseUser> => {
+  const response = await fetch(`/api/user/testimonial/${profileUsername}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fromUsername }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error);
+  }
+
+  return response.json();
+};
+
+/**
+ * Approves or rejects a testimonial (profile owner only)
+ */
+export const updateTestimonialApproval = async (
+  username: string,
+  testimonialId: string,
+  approved: boolean
+): Promise<SafeDatabaseUser> => {
+  const response = await fetch('/api/user/testimonial/approve', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, testimonialId, approved }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error);
+  }
+
+  return response.json();
 };
 
 export {

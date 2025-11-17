@@ -555,6 +555,177 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+ * Creates or updates a testimonial from one user to another.
+ */
+  const createOrUpdateTestimonial = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { profileUsername, fromUsername, content } = req.body;
+
+      if (!profileUsername || !fromUsername || !content) {
+        res.status(400).json({ error: 'Missing required fields' });
+        return;
+      }
+
+      // Get the user who is receiving the testimonial
+      const profileUser = await getUserByUsername(profileUsername);
+      if ('error' in profileUser) {
+        res.status(404).json({ error: 'Profile user not found' });
+        return;
+      }
+
+      // Get the user who is writing the testimonial (for profile picture)
+      const fromUser = await getUserByUsername(fromUsername);
+      if ('error' in fromUser) {
+        res.status(404).json({ error: 'Author user not found' });
+        return;
+      }
+
+      // Can't write testimonial for yourself
+      if (profileUsername === fromUsername) {
+        res.status(400).json({ error: 'Cannot write testimonial for yourself' });
+        return;
+      }
+
+      const testimonials = profileUser.testimonials || [];
+
+      // Check if testimonial already exists from this user
+      const existingIndex = testimonials.findIndex(
+        (t: any) => t.fromUsername === fromUsername
+      );
+
+      const newTestimonial = {
+        fromUsername,
+        fromProfilePicture: fromUser.profilePicture || '',
+        content: content.trim(),
+        createdAt: new Date(),
+        approved: false,
+      };
+
+      if (existingIndex >= 0) {
+        // Update existing testimonial
+        testimonials[existingIndex] = {
+          ...testimonials[existingIndex],
+          ...newTestimonial,
+        };
+      } else {
+        // Add new testimonial
+        testimonials.push(newTestimonial);
+      }
+
+      const updatedUser = await updateUser(profileUsername, { testimonials });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error creating/updating testimonial: ${error}`);
+    }
+  };
+
+  /**
+   * Deletes a user's testimonial from another user's profile.
+   */
+  const deleteTestimonial = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { profileUsername } = req.params;
+      const { fromUsername } = req.body;
+
+      if (!fromUsername) {
+        res.status(400).json({ error: 'fromUsername required' });
+        return;
+      }
+
+      const profileUser = await getUserByUsername(profileUsername);
+      if ('error' in profileUser) {
+        res.status(404).json({ error: 'Profile user not found' });
+        return;
+      }
+
+      const testimonials = profileUser.testimonials || [];
+      const filteredTestimonials = testimonials.filter(
+        (t: any) => t.fromUsername !== fromUsername
+      );
+
+      const updatedUser = await updateUser(profileUsername, {
+        testimonials: filteredTestimonials
+      });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error deleting testimonial: ${error}`);
+    }
+  };
+
+  /**
+   * Approves or rejects a testimonial.
+   */
+  const updateTestimonialApproval = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, testimonialId, approved } = req.body;
+
+      if (!username || !testimonialId || typeof approved !== 'boolean') {
+        res.status(400).json({ error: 'Missing required fields' });
+        return;
+      }
+
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      const testimonials = user.testimonials || [];
+      const testimonialIndex = testimonials.findIndex(
+        (t: any) => t._id.toString() === testimonialId
+      );
+
+      if (testimonialIndex === -1) {
+        res.status(404).json({ error: 'Testimonial not found' });
+        return;
+      }
+
+      if (approved) {
+        // Approve testimonial
+        testimonials[testimonialIndex].approved = true;
+      } else {
+        // Reject = delete testimonial
+        testimonials.splice(testimonialIndex, 1);
+      }
+
+      const updatedUser = await updateUser(username, { testimonials });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error updating testimonial approval: ${error}`);
+    }
+  };
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -573,6 +744,9 @@ const userController = (socket: FakeSOSocket) => {
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
   router.post('/uploadResume', upload.single('file'), uploadResume);
   router.post('/uploadPortfolioModel', upload.single('file'), UploadPortfolioModel);
+  router.post('/testimonial', createOrUpdateTestimonial);
+router.delete('/testimonial/:profileUsername', deleteTestimonial);
+router.patch('/testimonial/approve', updateTestimonialApproval);
   return router;
 };
 

@@ -81,6 +81,20 @@ const userSchema: Schema = new Schema(
       type: String,
       default: '',
     },
+    testimonials: {
+      type: [
+        {
+          fromUserId: { type: Schema.Types.ObjectId, ref: 'User' },
+          fromUsername: { type: String, required: true },
+          fromProfilePicture: { type: String, default: '' },
+          content: { type: String, required: true },
+          createdAt: { type: Date, default: Date.now },
+          approved: { type: Boolean, default: false },
+          _id: { type: Schema.Types.ObjectId, auto: true }
+        }
+      ],
+      default: [],
+    },
   },
   { collection: 'User' },
 );
