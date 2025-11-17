@@ -5,6 +5,7 @@ import useGalleryComponentPage from '../../../../hooks/useGalleryComponentPage';
 import { DatabaseGalleryPost } from '@fake-stack-overflow/shared';
 import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Props for the GalleryComponent.
@@ -36,6 +37,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   } = useGalleryComponentPage(communityID);
 
   const { user: currentUser } = useUserContext();
+  const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<DatabaseGalleryPost | null>(null);
   const [sortType, setSortType] = useState<
     'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded'
@@ -279,10 +281,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             <div
               key={post._id.toString()}
               className='galleryCard'
-              onClick={() => {
-                handleIncrementViews(post);
-                setSelectedPost(post);
-              }}>
+              onClick={() => navigate(`/gallery/${post._id.toString()}`)}>
               {renderMedia(post, false)}
             </div>
           ))}
