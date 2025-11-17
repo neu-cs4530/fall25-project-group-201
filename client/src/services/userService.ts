@@ -231,7 +231,7 @@ const uploadResume = async (username: string, file: File): Promise<SafeDatabaseU
  */
 const uploadPortfolioModel = async (
   username: string,
-  fileOrUrl: File | string,  // Changed from just File
+  fileOrUrl: File | string, // Changed from just File
   thumbnail: string,
 ): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
@@ -263,7 +263,7 @@ const uploadPortfolioModel = async (
 export const createOrUpdateTestimonial = async (
   profileUsername: string,
   fromUsername: string,
-  content: string
+  content: string,
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch('/api/user/testimonial', {
     method: 'POST',
@@ -284,7 +284,7 @@ export const createOrUpdateTestimonial = async (
  */
 export const deleteTestimonial = async (
   profileUsername: string,
-  fromUsername: string
+  fromUsername: string,
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch(`/api/user/testimonial/${profileUsername}`, {
     method: 'DELETE',
@@ -306,7 +306,7 @@ export const deleteTestimonial = async (
 export const updateTestimonialApproval = async (
   username: string,
   testimonialId: string,
-  approved: boolean
+  approved: boolean,
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch('/api/user/testimonial/approve', {
     method: 'PATCH',

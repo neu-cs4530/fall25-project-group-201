@@ -368,11 +368,7 @@ const useProfileSettings = () => {
     if (!username || !currentUser.username) return;
 
     try {
-      const updatedUser = await createOrUpdateTestimonial(
-        username,
-        currentUser.username,
-        content
-      );
+      const updatedUser = await createOrUpdateTestimonial(username, currentUser.username, content);
       setUserData(updatedUser);
       toast.success('Testimonial submitted for review!');
     } catch (error) {

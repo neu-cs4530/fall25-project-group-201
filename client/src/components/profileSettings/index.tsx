@@ -147,10 +147,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.bannerImage
                 ? {
-                  backgroundImage: `url(${userData.bannerImage})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+                    backgroundImage: `url(${userData.bannerImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
                 : {}
             }>
             {!userData?.bannerImage && <span>Banner Image</span>}
@@ -175,10 +175,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.profilePicture
                 ? {
-                  backgroundImage: `url(${userData.profilePicture})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+                    backgroundImage: `url(${userData.profilePicture})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
                 : {}
             }>
             {!userData?.profilePicture && <span>Profile Picture</span>}
@@ -794,7 +794,7 @@ const ProfileSettings: React.FC = () => {
                 profileUsername={userData.username}
                 currentUsername={currentUser.username}
                 existingTestimonial={userData.testimonials?.find(
-                  t => t.fromUsername === currentUser.username
+                  t => t.fromUsername === currentUser.username,
                 )}
                 onSubmit={handleSubmitTestimonial}
                 onDelete={handleDeleteTestimonial}

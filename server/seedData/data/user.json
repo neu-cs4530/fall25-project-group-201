@@ -4,7 +4,12 @@
     "password": "securePass123!",
     "dateJoined": "2024-07-15T08:24:13Z",
     "biography": "Full-stack developer with 5 years of experience. Passionate about React, Node.js, and building scalable web applications.",
-    "skills": ["React", "JavaScript", "Python", "MySQL"],
+    "skills": [
+      "React",
+      "JavaScript",
+      "Python",
+      "MySQL"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/user123",
@@ -14,14 +19,41 @@
       "primary": "#3b82f6",
       "accent": "#8b5cf6",
       "background": "#f0f9ff"
-    }
+    },
+    "testimonials": [
+      {
+        "fromUsername": "reactexpert",
+        "fromProfilePicture": "",
+        "content": "Worked with user123 on a complex React project. Their problem-solving skills and attention to detail are exceptional. Highly recommend!",
+        "createdAt": "2024-11-01T10:30:00Z",
+        "approved": true
+      },
+      {
+        "fromUsername": "nodejsdev",
+        "fromProfilePicture": "",
+        "content": "Great team player with strong backend knowledge. Their contributions to our Node.js microservices were invaluable.",
+        "createdAt": "2024-11-05T14:20:00Z",
+        "approved": true
+      },
+      {
+        "fromUsername": "frontenddev",
+        "fromProfilePicture": "",
+        "content": "User123 is an amazing mentor! They helped me understand React hooks and state management concepts clearly.",
+        "createdAt": "2024-11-10T09:15:00Z",
+        "approved": false
+      }
+    ]
   },
   "user234": {
     "username": "user234",
     "password": "strongP@ss234",
     "dateJoined": "2024-08-22T14:36:42Z",
     "biography": "",
-    "skills": ["Blender", "Maya", "Substance Painter"],
+    "skills": [
+      "Blender",
+      "Maya",
+      "Substance Painter"
+    ],
     "customFont": "Open Sans",
     "externalLinks": {
       "artstation": "https://artstation.com/user234"
@@ -37,7 +69,11 @@
     "password": "P@ssw0rd345",
     "dateJoined": "2024-09-10T09:12:55Z",
     "biography": "Frontend developer focusing on React and TypeScript. Always looking to improve UI/UX and performance.",
-    "skills": ["React", "JavaScript", "C#"],
+    "skills": [
+      "React",
+      "JavaScript",
+      "C#"
+    ],
     "customFont": "Courier New",
     "externalLinks": {
       "github": "https://github.com/user345",
@@ -47,14 +83,34 @@
       "primary": "#10b981",
       "accent": "#06b6d4",
       "background": "#ecfdf5"
-    }
+    },
+    "testimonials": [
+      {
+        "fromUsername": "user123",
+        "fromProfilePicture": "",
+        "content": "ReactExpert lives up to their name! Their deep knowledge of React internals helped our team optimize performance significantly.",
+        "createdAt": "2024-10-15T16:45:00Z",
+        "approved": true
+      },
+      {
+        "fromUsername": "webpackwizard",
+        "fromProfilePicture": "",
+        "content": "One of the best React developers I've worked with. Their code reviews are thorough and educational.",
+        "createdAt": "2024-10-20T11:30:00Z",
+        "approved": true
+      }
+    ]
   },
   "user456": {
     "username": "user456",
     "password": "C0mplexP@ss456",
     "dateJoined": "2024-10-05T11:47:33Z",
     "biography": "Data scientist with a background in Python and machine learning. I enjoy solving complex problems with data.",
-    "skills": ["Python", "C++", "MySQL"],
+    "skills": [
+      "Python",
+      "C++",
+      "MySQL"
+    ],
     "customFont": "Lato",
     "externalLinks": {
       "github": "https://github.com/user456",
@@ -71,7 +127,11 @@
     "password": "Sup3rS3cure567!",
     "dateJoined": "2024-11-12T15:28:09Z",
     "biography": "Backend developer specializing in microservices architecture. Java enthusiast and open source contributor.",
-    "skills": ["C++", "Python", "MySQL"],
+    "skills": [
+      "C++",
+      "Python",
+      "MySQL"
+    ],
     "customFont": "Poppins",
     "externalLinks": {
       "github": "https://github.com/user567"
@@ -87,7 +147,11 @@
     "password": "P@ssw0rd678!",
     "dateJoined": "2024-12-03T17:52:21Z",
     "biography": "",
-    "skills": ["ZBrush", "Blender", "Unreal Engine"],
+    "skills": [
+      "ZBrush",
+      "Blender",
+      "Unreal Engine"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "artstation": "https://artstation.com/user678",
@@ -104,7 +168,11 @@
     "password": "SecretP@ss789",
     "dateJoined": "2025-01-18T20:14:39Z",
     "biography": "Mobile app developer working with React Native. Creating cross-platform experiences is my passion.",
-    "skills": ["React", "JavaScript", "C#"],
+    "skills": [
+      "React",
+      "JavaScript",
+      "C#"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/user789",
@@ -121,7 +189,10 @@
     "password": "P@ssword890!",
     "dateJoined": "2025-02-07T13:09:27Z",
     "biography": "Database administrator with extensive experience in PostgreSQL and MySQL optimization. Performance tuning expert.",
-    "skills": ["MySQL", "Python"],
+    "skills": [
+      "MySQL",
+      "Python"
+    ],
     "customFont": "Poppins",
     "externalLinks": {
       "linkedin": "https://linkedin.com/in/user890",
@@ -138,7 +209,10 @@
     "password": "S3cureP@ss101",
     "dateJoined": "2024-06-30T10:42:18Z",
     "biography": "Cloud architect specializing in multi-cloud deployments. AWS certified and passionate about serverless technologies.",
-    "skills": ["Python", "C++"],
+    "skills": [
+      "Python",
+      "C++"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/user101",
@@ -155,7 +229,10 @@
     "password": "C0mplexP@ss202!",
     "dateJoined": "2024-08-08T16:37:52Z",
     "biography": "Security engineer focusing on application security and penetration testing. Bug bounty hunter in spare time.",
-    "skills": ["Python", "C++"],
+    "skills": [
+      "Python",
+      "C++"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/user202",
@@ -172,7 +249,11 @@
     "password": "JavaScr1pt!23",
     "dateJoined": "2024-05-15T08:24:13Z",
     "biography": "JavaScript developer with a focus on modern ES6+ features and async programming patterns. I love helping others level up their JS skills.",
-    "skills": ["JavaScript", "React", "Python"],
+    "skills": [
+      "JavaScript",
+      "React",
+      "Python"
+    ],
     "customFont": "Poppins",
     "externalLinks": {
       "github": "https://github.com/jsdev123"
@@ -188,7 +269,11 @@
     "password": "R3@ctHooks!",
     "dateJoined": "2024-06-18T14:36:42Z",
     "biography": "React specialist with 6 years of experience. Core contributor to several popular React libraries and passionate about component design.",
-    "skills": ["React", "JavaScript", "Unity"],
+    "skills": [
+      "React",
+      "JavaScript",
+      "Unity"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/reactninja",
@@ -206,7 +291,10 @@
     "password": "Bundl3M@ster!",
     "dateJoined": "2024-07-20T09:12:55Z",
     "biography": "Frontend tooling expert specializing in webpack, babel, and modern build pipelines. I help teams optimize their build processes.",
-    "skills": ["JavaScript", "React"],
+    "skills": [
+      "JavaScript",
+      "React"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/webpackwizard"
@@ -222,7 +310,11 @@
     "password": "Typ3S@fety!",
     "dateJoined": "2024-08-22T11:47:33Z",
     "biography": "TypeScript evangelist and static typing enthusiast. I believe in catching errors at compile time, not runtime.",
-    "skills": ["JavaScript", "React", "Python"],
+    "skills": [
+      "JavaScript",
+      "React",
+      "Python"
+    ],
     "customFont": "Poppins",
     "externalLinks": {
       "github": "https://github.com/typescriptfan",
@@ -239,7 +331,11 @@
     "password": "F@stL0ad!ng",
     "dateJoined": "2024-09-25T15:28:09Z",
     "biography": "Web performance specialist focusing on core web vitals and page speed optimization. Every millisecond counts!",
-    "skills": ["JavaScript", "React", "Python"],
+    "skills": [
+      "JavaScript",
+      "React",
+      "Python"
+    ],
     "customFont": "Courier New",
     "externalLinks": {
       "github": "https://github.com/perfoptimizer",
@@ -256,7 +352,11 @@
     "password": "ReadTh3D0cs!",
     "dateJoined": "2024-10-27T17:52:21Z",
     "biography": "Software engineer who believes in thoroughly reading documentation before asking questions. I enjoy helping others understand complex APIs.",
-    "skills": ["Python", "JavaScript", "C++"],
+    "skills": [
+      "Python",
+      "JavaScript",
+      "C++"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/docreader"
@@ -272,7 +372,11 @@
     "password": "Qu3ryN1nja!",
     "dateJoined": "2024-11-30T20:14:39Z",
     "biography": "Database performance tuning expert with 12 years of experience across SQL and NoSQL technologies. I optimize queries for a living.",
-    "skills": ["MySQL", "Python", "C++"],
+    "skills": [
+      "MySQL",
+      "Python",
+      "C++"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/dbmaster",
@@ -290,7 +394,11 @@
     "password": "H@ndleAllC@ses!",
     "dateJoined": "2024-12-02T13:09:27Z",
     "biography": "Software engineer obsessed with robustness and handling all possible edge cases. If there's a way code can break, I'll find it.",
-    "skills": ["Python", "JavaScript", "C++"],
+    "skills": [
+      "Python",
+      "JavaScript",
+      "C++"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/edgecaseexpert"
@@ -306,7 +414,11 @@
     "password": "CSSm@ster!",
     "dateJoined": "2025-01-05T10:42:18Z",
     "biography": "Frontend developer specializing in responsive design and cross-browser compatibility. I make websites look good on all devices.",
-    "skills": ["React", "JavaScript", "Maya"],
+    "skills": [
+      "React",
+      "JavaScript",
+      "Maya"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/frontenddev",
@@ -323,7 +435,11 @@
     "password": "R3factor!ng",
     "dateJoined": "2025-02-08T16:37:52Z",
     "biography": "Software engineer passionate about clean code, SOLID principles, and maintainable architecture. Code quality advocate.",
-    "skills": ["Python", "C++", "JavaScript"],
+    "skills": [
+      "Python",
+      "C++",
+      "JavaScript"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/cleancodefan",
@@ -340,7 +456,10 @@
     "password": "L3arningR3act!",
     "dateJoined": "2024-12-15T07:42:18Z",
     "biography": "Junior developer learning React and modern frontend development. Eager to learn and improve my skills through the community.",
-    "skills": ["React", "JavaScript"],
+    "skills": [
+      "React",
+      "JavaScript"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/newbiereactdev"
@@ -356,7 +475,11 @@
     "password": "B@ckendPr0!",
     "dateJoined": "2024-11-18T11:19:44Z",
     "biography": "Backend developer working with Node.js and Express. Focusing on building scalable and reliable API services.",
-    "skills": ["Python", "C++", "MySQL"],
+    "skills": [
+      "Python",
+      "C++",
+      "MySQL"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/serverdev",
@@ -373,7 +496,10 @@
     "password": "C0nfigH3lp!",
     "dateJoined": "2024-12-20T08:36:51Z",
     "biography": "Frontend developer struggling with webpack configuration. Learning build tools and modern JavaScript development.",
-    "skills": ["JavaScript", "React"],
+    "skills": [
+      "JavaScript",
+      "React"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/webpacknewbie"
@@ -389,7 +515,10 @@
     "password": "L3arnSQL!",
     "dateJoined": "2025-01-30T15:21:38Z",
     "biography": "Software developer getting into database optimization. Currently working on improving my SQL skills and query performance.",
-    "skills": ["MySQL", "Python"],
+    "skills": [
+      "MySQL",
+      "Python"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "linkedin": "https://linkedin.com/in/dbnovice"
@@ -405,7 +534,11 @@
     "password": "JavaScr1pt!",
     "dateJoined": "2025-01-02T09:18:27Z",
     "biography": "JavaScript developer with a focus on functional programming and clean code practices. I enjoy solving complex problems with elegant solutions.",
-    "skills": ["JavaScript", "React", "MEL"],
+    "skills": [
+      "JavaScript",
+      "React",
+      "MEL"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/jsdeveloper",
@@ -422,7 +555,10 @@
     "password": "L3arnCSS!",
     "dateJoined": "2025-02-05T08:15:44Z",
     "biography": "Junior frontend developer learning the ropes of modern web development. React enthusiast and CSS battler.",
-    "skills": ["React", "JavaScript"],
+    "skills": [
+      "React",
+      "JavaScript"
+    ],
     "customFont": "Roboto",
     "externalLinks": {},
     "customColors": {
@@ -436,7 +572,10 @@
     "password": "Pyth0nR0cks!",
     "dateJoined": "2025-02-08T13:47:22Z",
     "biography": "Python developer working with data processing and analysis. Always looking for ways to optimize my code.",
-    "skills": ["Python", "C++"],
+    "skills": [
+      "Python",
+      "C++"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/pythonuser"
@@ -452,7 +591,10 @@
     "password": "C0ntainer!ze",
     "dateJoined": "2025-03-10T10:22:36Z",
     "biography": "Developer new to containerization and Docker. Learning how to build and deploy applications using containers.",
-    "skills": ["Python", "JavaScript"],
+    "skills": [
+      "Python",
+      "JavaScript"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/dockerbeginner"
@@ -468,7 +610,10 @@
     "password": "AsyncAw@it!",
     "dateJoined": "2025-03-14T09:38:52Z",
     "biography": "JavaScript developer learning the nuances of asynchronous programming. Looking to master promises and async/await.",
-    "skills": ["JavaScript", "React"],
+    "skills": [
+      "JavaScript",
+      "React"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/promisenovice"
@@ -484,7 +629,10 @@
     "password": "H00ksL3arner!",
     "dateJoined": "2025-03-17T11:27:09Z",
     "biography": "Developer learning React and component lifecycle management. Trying to understand hooks and prevent memory leaks.",
-    "skills": ["React", "JavaScript"],
+    "skills": [
+      "React",
+      "JavaScript"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/reactlearner"
@@ -500,7 +648,12 @@
     "password": "R3@ctM@ster!",
     "dateJoined": "2023-06-16T10:45:32Z",
     "biography": "Senior React developer with 8+ years of experience. Specializing in performance optimization and state management solutions.",
-    "skills": ["React", "JavaScript", "Unreal Engine", "C++"],
+    "skills": [
+      "React",
+      "JavaScript",
+      "Unreal Engine",
+      "C++"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/reactexpert",
@@ -518,7 +671,11 @@
     "password": "N0d3Exper7!",
     "dateJoined": "2023-08-19T13:27:56Z",
     "biography": "Node.js developer focusing on scalable backend architecture. Experienced in handling high-traffic applications and microservices.",
-    "skills": ["JavaScript", "Python", "MySQL"],
+    "skills": [
+      "JavaScript",
+      "Python",
+      "MySQL"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/nodejsdev",
@@ -535,7 +692,11 @@
     "password": "D@taAn@lyst!",
     "dateJoined": "2023-11-09T12:03:19Z",
     "biography": "Data scientist with expertise in Python, NumPy, and pandas. I help companies make sense of their data through efficient algorithms.",
-    "skills": ["Python", "C++", "MySQL"],
+    "skills": [
+      "Python",
+      "C++",
+      "MySQL"
+    ],
     "customFont": "Roboto",
     "externalLinks": {
       "github": "https://github.com/datascientist",
@@ -553,7 +714,10 @@
     "password": "C1CD@ut0mat3!",
     "dateJoined": "2024-01-11T16:44:37Z",
     "biography": "DevOps engineer specializing in containerization, orchestration, and infrastructure as code. Making deployment smooth and reliable.",
-    "skills": ["Python", "C++"],
+    "skills": [
+      "Python",
+      "C++"
+    ],
     "customFont": "Inter",
     "externalLinks": {
       "github": "https://github.com/devopsengineer",

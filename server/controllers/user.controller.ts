@@ -556,8 +556,8 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Creates or updates a testimonial from one user to another.
- */
+   * Creates or updates a testimonial from one user to another.
+   */
   const createOrUpdateTestimonial = async (req: Request, res: Response): Promise<void> => {
     try {
       const { profileUsername, fromUsername, content } = req.body;
@@ -590,9 +590,7 @@ const userController = (socket: FakeSOSocket) => {
       const testimonials = profileUser.testimonials || [];
 
       // Check if testimonial already exists from this user
-      const existingIndex = testimonials.findIndex(
-        (t: any) => t.fromUsername === fromUsername
-      );
+      const existingIndex = testimonials.findIndex((t: any) => t.fromUsername === fromUsername);
 
       const newTestimonial = {
         fromUsername,
@@ -650,12 +648,10 @@ const userController = (socket: FakeSOSocket) => {
       }
 
       const testimonials = profileUser.testimonials || [];
-      const filteredTestimonials = testimonials.filter(
-        (t: any) => t.fromUsername !== fromUsername
-      );
+      const filteredTestimonials = testimonials.filter((t: any) => t.fromUsername !== fromUsername);
 
       const updatedUser = await updateUser(profileUsername, {
-        testimonials: filteredTestimonials
+        testimonials: filteredTestimonials,
       });
 
       if ('error' in updatedUser) {
@@ -693,7 +689,7 @@ const userController = (socket: FakeSOSocket) => {
 
       const testimonials = user.testimonials || [];
       const testimonialIndex = testimonials.findIndex(
-        (t: any) => t._id.toString() === testimonialId
+        (t: any) => t._id.toString() === testimonialId,
       );
 
       if (testimonialIndex === -1) {
@@ -745,8 +741,8 @@ const userController = (socket: FakeSOSocket) => {
   router.post('/uploadResume', upload.single('file'), uploadResume);
   router.post('/uploadPortfolioModel', upload.single('file'), UploadPortfolioModel);
   router.post('/testimonial', createOrUpdateTestimonial);
-router.delete('/testimonial/:profileUsername', deleteTestimonial);
-router.patch('/testimonial/approve', updateTestimonialApproval);
+  router.delete('/testimonial/:profileUsername', deleteTestimonial);
+  router.patch('/testimonial/approve', updateTestimonialApproval);
   return router;
 };
 
