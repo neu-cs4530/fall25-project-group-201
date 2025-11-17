@@ -135,7 +135,7 @@ const useHDRI = ({ scene, renderer, presets, initialPreset }: UseHDRIOptions): U
         sceneRef.current.environment = envMap;
         sceneRef.current.background = envMap;
 
-        // Set intensity if available (Three.js r163+)
+        // Set intensity if available
         const sceneWithIntensity = sceneRef.current as THREE.Scene & {
           environmentIntensity?: number;
         };
