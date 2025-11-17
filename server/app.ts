@@ -28,7 +28,7 @@ import mediaController from './controllers/media.controller';
 import galleryPostController from './controllers/gallerypost.controller';
 import { auth } from 'express-openid-connect';
 
-const MONGO_URL = `${process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017'}/fake_so`;
+const MONGO_URL = `${process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/fake_so'}`;
 const PORT = parseInt(process.env.PORT || '8000');
 
 const app = express();

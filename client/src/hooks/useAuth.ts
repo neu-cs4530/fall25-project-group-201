@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import useLoginContext from './useLoginContext';
 import { getUserByUsername } from '../services/userService';
 import { useAuth0 } from '@auth0/auth0-react';
+import { EnvironmentNode } from 'three/webgpu';
 
 /**
  * Custom hook to manage authentication logic, including handling input changes,
@@ -31,7 +32,6 @@ const useAuth = () => {
 
   const {
     isAuthenticated,
-    isLoading,
     user: auth0User,
     loginWithRedirect,
     // getAccessTokenSilently
@@ -90,15 +90,18 @@ const useAuth = () => {
       (async () => {
         try {
           // const token = await getAccessTokenSilently();
+          console.log('Auth0 user object: ', auth0User);
 
-          const username = auth0User.name || '';
+          const username = auth0User.name || auth0User.nickname || '';
+
 
           const user = await getUserByUsername(username);
+          // console.log('Fetched user: ', user);
 
           setUser(user);
           navigate('/home');
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          // console.error('Error fetching user data:', error);
           setErr('Failed to load user data');
         }
       })();
@@ -116,7 +119,7 @@ const useAuth = () => {
         },
       });
     } catch (error) {
-      console.error('Login error:', error);
+      // console.error('Login error:', error);
       setErr('Failed to initiate login');
     }
   };
@@ -142,7 +145,7 @@ const useAuth = () => {
     user: auth0User,
     handleLogin,
     handleSignup,
-    err,
+    err
   };
 };
 
