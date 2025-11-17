@@ -4,6 +4,7 @@ import useLoginContext from './useLoginContext';
 import { getUserByUsername } from '../services/userService';
 import { useAuth0 } from '@auth0/auth0-react';
 import { EnvironmentNode } from 'three/webgpu';
+import { SafeDatabaseUser, User } from '@fake-stack-overflow/shared';
 
 /**
  * Custom hook to manage authentication logic, including handling input changes,
@@ -26,6 +27,7 @@ const useAuth = () => {
   // const [password, setPassword] = useState<string>('');
   // const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
   // const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState<string>('');
   const [err, setErr] = useState<string>('');
   const { setUser } = useLoginContext();
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ const useAuth = () => {
     isAuthenticated,
     user: auth0User,
     loginWithRedirect,
+    isLoading,
     // getAccessTokenSilently
   } = useAuth0();
 
@@ -86,27 +89,36 @@ const useAuth = () => {
   // };
 
   useEffect(() => {
-    if (isAuthenticated && auth0User) {
+    if (!isLoading && isAuthenticated && auth0User) {
       (async () => {
         try {
           // const token = await getAccessTokenSilently();
           console.log('Auth0 user object: ', auth0User);
+          const extractedUsername = (auth0User.name || auth0User.nickname)?.trim()
+          if (!extractedUsername) {
+            return
+          }
+          console.log("Searching username:", extractedUsername);
+          setUsername(extractedUsername)
 
-          const username = auth0User.name || auth0User.nickname || '';
 
-
-          const user = await getUserByUsername(username);
+          const user = await getUserByUsername(extractedUsername);
           // console.log('Fetched user: ', user);
 
-          setUser(user);
-          navigate('/home');
+          handleRedirectHome(user);
         } catch (error) {
           // console.error('Error fetching user data:', error);
           setErr('Failed to load user data');
         }
       })();
     }
-  }, [isAuthenticated, auth0User]);
+  }, [isLoading, isAuthenticated]);
+
+  const handleRedirectHome = async (user: SafeDatabaseUser) => {
+    setUser(user);
+    navigate('/home');
+    return
+  };
 
   const handleLogin = async () => {
     try {
