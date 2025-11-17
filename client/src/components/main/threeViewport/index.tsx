@@ -90,7 +90,7 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
       <div ref={containerRef} className='viewport-canvas' />
 
       <div
-        className="expand-icon"
+        className='expand-icon'
         onClick={() => {
           const viewportCard = containerRef.current?.parentElement;
           if (!viewportCard) return;
@@ -100,8 +100,7 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
           } else {
             document.exitFullscreen?.();
           }
-        }}
-      >
+        }}>
         ⤢
       </div>
 
