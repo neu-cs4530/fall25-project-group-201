@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import useHeader from '../../hooks/useHeader';
 import './index.css';
 import useUserContext from '../../hooks/useUserContext';
+import LogoutButton from './LogoutButton';
 
 /**
  * Header component that renders the main title and a search bar.
@@ -9,7 +10,7 @@ import useUserContext from '../../hooks/useUserContext';
  * when they press Enter.
  */
 const Header = () => {
-  const { val, handleInputChange, handleKeyDown, handleSignOut } = useHeader();
+  const { val, handleInputChange, handleKeyDown } = useHeader();
   const { user: currentUser } = useUserContext();
   const navigate = useNavigate();
   return (
@@ -24,9 +25,10 @@ const Header = () => {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
       />
-      <button onClick={handleSignOut} className='logout-button'>
+      <LogoutButton />
+      {/* <button onClick={handleSignOut} className='logout-button'>
         Log out
-      </button>
+      </button> */}
       <button
         className='view-profile-button'
         onClick={() => navigate(`/user/${currentUser.username}`)}>
