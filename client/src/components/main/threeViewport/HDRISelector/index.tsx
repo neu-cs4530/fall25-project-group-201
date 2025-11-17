@@ -39,9 +39,13 @@ const HDRISelector = ({ currentPreset, onPresetChange, isLoading, presets }: HDR
         className='hdri-selector-button'
         onClick={() => setIsOpen(!isOpen)}
         disabled={isLoading}>
-        {isLoading ? 'Loading...' : (
+        {isLoading ? (
+          'Loading...'
+        ) : (
           <>
-            {selectedPreset?.icon && <span style={{ marginRight: '8px' }}>{selectedPreset.icon}</span>}
+            {selectedPreset?.icon && (
+              <span style={{ marginRight: '8px' }}>{selectedPreset.icon}</span>
+            )}
             {selectedPreset?.label || 'Select Lighting'}
           </>
         )}
