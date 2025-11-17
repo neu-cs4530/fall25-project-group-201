@@ -78,6 +78,21 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     <div className='viewport-card'>
       <div ref={containerRef} className='viewport-canvas' />
 
+      <div
+        className='expand-icon'
+        onClick={() => {
+          const viewportCard = containerRef.current?.parentElement;
+          if (!viewportCard) return;
+
+          if (!document.fullscreenElement) {
+            viewportCard.requestFullscreen?.();
+          } else {
+            document.exitFullscreen?.();
+          }
+        }}>
+        ⤢
+      </div>
+
       <div className='upload-section'>
         {allowUpload && (
           <input
