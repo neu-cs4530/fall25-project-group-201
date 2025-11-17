@@ -182,16 +182,19 @@ const useHDRI = ({ scene, renderer, presets, initialPreset }: UseHDRIOptions): U
    * Cleanup on unmount
    */
   useEffect(() => {
+    const cache = textureCache.current; // Capture the ref value
+    const sceneRefCurrent = sceneRef.current;
+
     return () => {
-      if (sceneRef.current) {
-        sceneRef.current.environment = null;
-        sceneRef.current.background = null;
+      if (sceneRefCurrent) {
+        sceneRefCurrent.environment = null;
+        sceneRefCurrent.background = null;
       }
 
-      textureCache.current.forEach(texture => {
+      cache.forEach(texture => {
         texture.dispose();
       });
-      textureCache.current.clear();
+      cache.clear();
     };
   }, []);
 
