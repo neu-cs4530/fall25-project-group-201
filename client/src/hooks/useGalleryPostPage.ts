@@ -48,7 +48,6 @@ const useGalleryPostPage = () => {
     }
   }, [postId]);
 
-  
   /**
    * Effect to increment post views once per session and fetch the post.
    */
@@ -58,7 +57,6 @@ const useGalleryPostPage = () => {
     const sessionKey = `viewed_${postId}_${user.username}`;
     const incrementAndFetch = async () => {
       try {
-        // Only increment if not viewed in this session
         if (!sessionStorage.getItem(sessionKey)) {
           await incrementGalleryPostViews(postId, user.username);
           sessionStorage.setItem(sessionKey, 'true');
@@ -73,7 +71,6 @@ const useGalleryPostPage = () => {
     incrementAndFetch();
   }, [fetchPost, postId, user.username]);
 
-  
   /**
    * Increment download count for the post and open the media in a new tab.
    */
