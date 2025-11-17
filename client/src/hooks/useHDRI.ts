@@ -108,15 +108,15 @@ const useHDRI = ({ scene, renderer, presets, initialPreset }: UseHDRIOptions): U
 
   const switchPreset = useCallback(
     async (presetName: string) => {
+      // Silently return if scene not ready - it will load via useEffect when ready
       if (!sceneRef.current) {
-        console.warn('Scene not available yet');
         return;
       }
 
       // Handle "default" preset - remove HDRI
       if (presetName === 'default') {
         sceneRef.current.environment = null;
-        sceneRef.current.background = new THREE.Color(0xf5f5f5); // Original gray background
+        sceneRef.current.background = new THREE.Color(0xf5f5f5);
         setCurrentPreset('default');
         return;
       }
@@ -135,8 +135,12 @@ const useHDRI = ({ scene, renderer, presets, initialPreset }: UseHDRIOptions): U
         sceneRef.current.environment = envMap;
         sceneRef.current.background = envMap;
 
+        // Set intensity if available (Three.js r163+)
+        const sceneWithIntensity = sceneRef.current as THREE.Scene & {
+          environmentIntensity?: number;
+        };
         if ('environmentIntensity' in sceneRef.current) {
-          (sceneRef.current as any).environmentIntensity = preset.intensity;
+          sceneWithIntensity.environmentIntensity = preset.intensity;
         }
 
         setCurrentPreset(presetName);
@@ -145,7 +149,6 @@ const useHDRI = ({ scene, renderer, presets, initialPreset }: UseHDRIOptions): U
         const errorMessage = err instanceof Error ? err.message : 'Unknown error loading HDRI';
         setError(errorMessage);
         setIsLoading(false);
-        console.error('HDRI loading error:', err);
       }
     },
     [presets, loadPreset],
@@ -162,7 +165,6 @@ const useHDRI = ({ scene, renderer, presets, initialPreset }: UseHDRIOptions): U
       const errorMessage = err instanceof Error ? err.message : 'Unknown error preloading HDRIs';
       setError(errorMessage);
       setIsLoading(false);
-      console.error('HDRI preload error:', err);
     }
   }, [presets, loadPreset]);
 
