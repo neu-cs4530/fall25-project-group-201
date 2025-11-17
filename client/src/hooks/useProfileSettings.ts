@@ -12,6 +12,9 @@ import {
   uploadBannerImage,
   uploadResume,
   uploadPortfolioModel,
+  createOrUpdateTestimonial,
+  deleteTestimonial,
+  updateTestimonialApproval,
 } from '../services/userService';
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
@@ -73,7 +76,7 @@ const useProfileSettings = () => {
         setAccentColor(data.customColors?.accent || '#16a34a');
         setBackgroundColor(data.customColors?.background || '#f2f4f7');
       } catch (error) {
-        toast.error('Error fetching user profile'); // CHANGED
+        toast.error('Error fetching user profile');
         setUserData(null);
       } finally {
         setLoading(false);
@@ -89,11 +92,11 @@ const useProfileSettings = () => {
 
   const validatePasswords = () => {
     if (newPassword.trim() === '' || confirmNewPassword.trim() === '') {
-      toast.error('Please enter and confirm your new password.'); // CHANGED
+      toast.error('Please enter and confirm your new password.');
       return false;
     }
     if (newPassword !== confirmNewPassword) {
-      toast.error('Passwords do not match.'); // CHANGED
+      toast.error('Passwords do not match.');
       return false;
     }
     return true;
@@ -106,11 +109,11 @@ const useProfileSettings = () => {
     }
     try {
       await resetPassword(username, newPassword);
-      toast.success('Password reset successful!'); // CHANGED
+      toast.success('Password reset successful!');
       setNewPassword('');
       setConfirmNewPassword('');
     } catch (error) {
-      toast.error('Failed to reset password.'); // CHANGED
+      toast.error('Failed to reset password.');
     }
   };
 
@@ -125,9 +128,9 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      toast.success('Biography updated!'); // CHANGED
+      toast.success('Biography updated!');
     } catch (error) {
-      toast.error('Failed to update biography.'); // CHANGED
+      toast.error('Failed to update biography.');
     }
   };
 
@@ -149,9 +152,9 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      toast.success('External links updated!'); // CHANGED
+      toast.success('External links updated!');
     } catch (error) {
-      toast.error('Failed to update external links.'); // CHANGED
+      toast.error('Failed to update external links.');
     }
   };
 
@@ -172,9 +175,9 @@ const useProfileSettings = () => {
         resolve(null);
       });
 
-      toast.success('Theme colors updated!'); // CHANGED
+      toast.success('Theme colors updated!');
     } catch (error) {
-      toast.error('Failed to update colors.'); // CHANGED
+      toast.error('Failed to update colors.');
     }
   };
 
@@ -183,21 +186,21 @@ const useProfileSettings = () => {
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Profile picture must be JPG or PNG format.'); // CHANGED
+      toast.error('Profile picture must be JPG or PNG format.');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Profile picture must be under 5MB.'); // CHANGED
+      toast.error('Profile picture must be under 5MB.');
       return;
     }
 
     try {
       const updatedUser = await uploadProfilePicture(username, file);
       setUserData(updatedUser);
-      toast.success('Profile picture updated!'); // CHANGED
+      toast.success('Profile picture updated!');
     } catch (error) {
-      toast.error('Failed to upload profile picture.'); // CHANGED
+      toast.error('Failed to upload profile picture.');
     }
   };
 
@@ -206,21 +209,21 @@ const useProfileSettings = () => {
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Banner image must be JPG or PNG format.'); // CHANGED
+      toast.error('Banner image must be JPG or PNG format.');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Banner image must be under 5MB.'); // CHANGED
+      toast.error('Banner image must be under 5MB.');
       return;
     }
 
     try {
       const updatedUser = await uploadBannerImage(username, file);
       setUserData(updatedUser);
-      toast.success('Banner image updated!'); // CHANGED
+      toast.success('Banner image updated!');
     } catch (error) {
-      toast.error('Failed to upload banner image.'); // CHANGED
+      toast.error('Failed to upload banner image.');
     }
   };
 
@@ -228,21 +231,21 @@ const useProfileSettings = () => {
     if (!username) return;
 
     if (file.type !== 'application/pdf') {
-      toast.error('Resume must be PDF format.'); // CHANGED
+      toast.error('Resume must be PDF format.');
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('Resume must be under 10MB.'); // CHANGED
+      toast.error('Resume must be under 10MB.');
       return;
     }
 
     try {
       const updatedUser = await uploadResume(username, file);
       setUserData(updatedUser);
-      toast.success('Resume uploaded!'); // CHANGED
+      toast.success('Resume uploaded!');
     } catch (error) {
-      toast.error('Failed to upload resume.'); // CHANGED
+      toast.error('Failed to upload resume.');
     }
   };
 
@@ -323,7 +326,7 @@ const useProfileSettings = () => {
     setPendingAction(() => async () => {
       try {
         await deleteUser(username);
-        toast.success(`User "${username}" deleted successfully.`); // CHANGED
+        toast.success(`User "${username}" deleted successfully.`);
         navigate('/');
       } catch (error) {
         toast.error('Failed to delete user.');
@@ -359,6 +362,42 @@ const useProfileSettings = () => {
     setSelectedSkills(prev =>
       prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill],
     );
+  };
+
+  const handleSubmitTestimonial = async (content: string) => {
+    if (!username || !currentUser.username) return;
+
+    try {
+      const updatedUser = await createOrUpdateTestimonial(username, currentUser.username, content);
+      setUserData(updatedUser);
+      toast.success('Testimonial submitted for review!');
+    } catch (error) {
+      toast.error('Failed to submit testimonial.');
+    }
+  };
+
+  const handleDeleteTestimonial = async () => {
+    if (!username || !currentUser.username) return;
+
+    try {
+      const updatedUser = await deleteTestimonial(username, currentUser.username);
+      setUserData(updatedUser);
+      toast.success('Testimonial deleted.');
+    } catch (error) {
+      toast.error('Failed to delete testimonial.');
+    }
+  };
+
+  const handleApproveTestimonial = async (testimonialId: string, approved: boolean) => {
+    if (!username) return;
+
+    try {
+      const updatedUser = await updateTestimonialApproval(username, testimonialId, approved);
+      setUserData(updatedUser);
+      toast.success(approved ? 'Testimonial approved!' : 'Testimonial rejected.');
+    } catch (error) {
+      toast.error('Failed to update testimonial.');
+    }
   };
 
   return {
@@ -411,6 +450,10 @@ const useProfileSettings = () => {
     handleUploadPortfolioModel,
     handleUploadPortfolioThumbnail,
     handleCompletePortfolioUpload,
+    // testimonials
+    handleSubmitTestimonial,
+    handleDeleteTestimonial,
+    handleApproveTestimonial,
     showConfirmation,
     setShowConfirmation,
     pendingAction,

@@ -12,6 +12,19 @@ export interface UserCredentials {
 }
 
 /**
+ * Represents a testimonial left by one user on another user's profile.
+ */
+export interface Testimonial {
+  _id?: ObjectId;
+  fromUserId?: ObjectId;
+  fromUsername: string;
+  fromProfilePicture?: string;
+  content: string;
+  createdAt: Date;
+  approved: boolean;
+}
+
+/**
  * Represents a user document, including user credentials and additional details.
  * - `username`: The unique username of the user.
  * - `password`: The user's password.
@@ -39,7 +52,8 @@ export interface User extends UserCredentials {
     accent?: string;
     background?: string;
   };
-  customFont?: string; // Font family name
+  customFont?: string;
+  testimonials?: Testimonial[];
 }
 
 /**
