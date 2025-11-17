@@ -7,6 +7,7 @@ import {
   UserByUsernameRequest,
   FakeSOSocket,
   UpdateBiographyRequest,
+  Testimonial,
 } from '../types/types';
 import {
   deleteUserByUsername,
@@ -590,8 +591,9 @@ const userController = (socket: FakeSOSocket) => {
       const testimonials = profileUser.testimonials || [];
 
       // Check if testimonial already exists from this user
-      const existingIndex = testimonials.findIndex((t: any) => t.fromUsername === fromUsername);
-
+      const existingIndex = testimonials.findIndex(
+        (t: Testimonial) => t.fromUsername === fromUsername,
+      );
       const newTestimonial = {
         fromUsername,
         fromProfilePicture: fromUser.profilePicture || '',
@@ -648,7 +650,9 @@ const userController = (socket: FakeSOSocket) => {
       }
 
       const testimonials = profileUser.testimonials || [];
-      const filteredTestimonials = testimonials.filter((t: any) => t.fromUsername !== fromUsername);
+      const filteredTestimonials = testimonials.filter(
+        (t: Testimonial) => t.fromUsername !== fromUsername,
+      );
 
       const updatedUser = await updateUser(profileUsername, {
         testimonials: filteredTestimonials,
@@ -689,7 +693,7 @@ const userController = (socket: FakeSOSocket) => {
 
       const testimonials = user.testimonials || [];
       const testimonialIndex = testimonials.findIndex(
-        (t: any) => t._id.toString() === testimonialId,
+        (t: Testimonial) => t._id?.toString() === testimonialId,
       );
 
       if (testimonialIndex === -1) {
