@@ -1,20 +1,25 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './index.css';
 import useProfileSettings from '../../hooks/useProfileSettings';
 import PortfolioModelViewer from '../main/threeViewport/PortfolioModelViewer';
+import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileSettings: React.FC = () => {
+  const navigate = useNavigate();
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [itemsToDelete, setItemsToDelete] = useState<number[]>([]);
   const {
     userData,
+    setUserData,
     loading,
     editBioMode,
     newBio,
     newPassword,
     confirmNewPassword,
-    successMessage,
-    errorMessage,
     showConfirmation,
     pendingAction,
     canEditProfile,
@@ -47,7 +52,6 @@ const ProfileSettings: React.FC = () => {
     handleUploadProfilePicture,
     handleUploadBannerImage,
     handleUploadResume,
-    handleUploadPortfolioModel,
     togglePasswordVisibility,
     setEditBioMode,
     setNewBio,
@@ -60,6 +64,41 @@ const ProfileSettings: React.FC = () => {
     handleViewCollectionsPage,
   } = useProfileSettings();
 
+  const handleUploadPortfolio = () => {
+    navigate(`/user/${userData?.username}/upload-portfolio`);
+  };
+
+  const handleDeletePortfolioItems = async () => {
+    if (itemsToDelete.length === 0) {
+      setDeleteMode(false);
+      return;
+    }
+
+    try {
+      // Send only the indices to delete, not the entire arrays
+      const res = await fetch('/api/user/deletePortfolioItems', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: userData?.username,
+          indices: itemsToDelete,
+        }),
+      });
+
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setUserData(updatedUser);
+        toast.success(`Deleted ${itemsToDelete.length} item(s)`);
+        setDeleteMode(false);
+        setItemsToDelete([]);
+      } else {
+        toast.error('Failed to delete items');
+      }
+    } catch (err) {
+      toast.error('Error deleting items');
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -69,6 +108,7 @@ const ProfileSettings: React.FC = () => {
             '--color-primary': userData?.customColors?.primary || '#2563eb',
             '--color-accent': userData?.customColors?.accent || '#16a34a',
             '--color-bg': userData?.customColors?.background || '#f2f4f7',
+            'fontFamily': userData?.customFont || 'Inter',
           } as React.CSSProperties
         }>
         <div className='profile-card'>
@@ -86,10 +126,12 @@ const ProfileSettings: React.FC = () => {
           '--color-primary': userData?.customColors?.primary || '#2563eb',
           '--color-accent': userData?.customColors?.accent || '#16a34a',
           '--color-bg': userData?.customColors?.background || '#f2f4f7',
+          'fontFamily': userData?.customFont || 'Inter',
         } as React.CSSProperties
       }>
       <div className='profile-card'>
         <h2>Profile</h2>
+        <Toaster position='top-center' />
 
         {/* Banner & Profile Picture Section - INTERACTIVE */}
         <div className='profile-header-section'>
@@ -149,9 +191,6 @@ const ProfileSettings: React.FC = () => {
             )}
           </div>
         </div>
-
-        {successMessage && <p className='success-message'>{successMessage}</p>}
-        {errorMessage && <p className='error-message'>{errorMessage}</p>}
 
         {userData ? (
           <>
@@ -481,39 +520,212 @@ const ProfileSettings: React.FC = () => {
             )}
 
             {/* Portfolio Grid Section - INTERACTIVE */}
-            <h4>Portfolio</h4>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem',
+              }}>
+              <h4 style={{ margin: 0 }}>Portfolio</h4>
+              {canEditProfile &&
+                userData.portfolioModels &&
+                userData.portfolioModels.length > 0 && (
+                  <button
+                    className='button button-danger'
+                    style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                    onClick={() => {
+                      if (deleteMode) {
+                        handleDeletePortfolioItems();
+                      } else {
+                        setDeleteMode(true);
+                        setItemsToDelete([]);
+                      }
+                    }}>
+                    {deleteMode ? 'Done Deleting' : 'Delete Media'}
+                  </button>
+                )}
+            </div>
             <div className='portfolio-grid-section'>
               {userData.portfolioModels && userData.portfolioModels.length > 0 ? (
-                userData.portfolioModels.map((modelUrl, index) => (
-                  <div key={index} className='portfolio-model-item'>
-                    <div style={{ width: '100%', height: '200px' }}>
-                      <PortfolioModelViewer modelUrl={modelUrl} />
+                userData.portfolioModels.map((mediaUrl, index) => {
+                  const thumbnailUrl = userData.portfolioThumbnails?.[index];
+
+                  // Determine media type
+                  const isGlbModel =
+                    mediaUrl.toLowerCase().endsWith('.glb') ||
+                    mediaUrl.toLowerCase().includes('data:model/gltf-binary');
+                  const isVideo =
+                    mediaUrl.toLowerCase().endsWith('.mp4') ||
+                    mediaUrl.includes('data:video/mp4') ||
+                    /youtube\.com|youtu\.be|vimeo\.com/.test(mediaUrl);
+                  const isImage =
+                    mediaUrl.match(/\.(jpeg|jpg|png|gif)$/i) || mediaUrl.includes('data:image/');
+
+                  return (
+                    <div
+                      key={index}
+                      className='portfolio-model-item'
+                      style={{
+                        cursor: deleteMode ? 'pointer' : isGlbModel ? 'pointer' : 'default',
+                        position: 'relative',
+                        border: itemsToDelete.includes(index) ? '3px solid #dc2626' : 'none',
+                      }}
+                      onClick={() => {
+                        if (deleteMode) {
+                          setItemsToDelete(prev =>
+                            prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index],
+                          );
+                        } else if (isGlbModel) {
+                          navigate(`/user/${userData.username}/portfolio/${index}`, {
+                            state: {
+                              modelUrl: mediaUrl,
+                              title: `Portfolio Model ${index + 1}`,
+                            },
+                          });
+                        }
+                      }}>
+                      {/* Delete mode indicator */}
+                      {deleteMode && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '-10px',
+                            right: '-10px',
+                            width: '30px',
+                            height: '30px',
+                            background: itemsToDelete.includes(index) ? '#dc2626' : '#6b7280',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '20px',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            zIndex: 10,
+                            border: '2px solid white',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                          }}>
+                          {itemsToDelete.includes(index) ? '✓' : '−'}
+                        </div>
+                      )}
+                      {isGlbModel && thumbnailUrl ? (
+                        // 3D model with thumbnail
+                        <img
+                          src={thumbnailUrl}
+                          alt={`Portfolio model ${index + 1}`}
+                          style={{
+                            width: '100%',
+                            height: '200px',
+                            objectFit: 'cover',
+                            borderRadius: '8px',
+                          }}
+                        />
+                      ) : isGlbModel ? (
+                        // 3D model without thumbnail (fallback to viewer)
+                        <div style={{ width: '100%', height: '200px' }}>
+                          <PortfolioModelViewer modelUrl={mediaUrl} />
+                        </div>
+                      ) : isImage ? (
+                        // Display image directly
+                        <img
+                          src={mediaUrl}
+                          alt={`Portfolio ${index + 1}`}
+                          style={{
+                            width: '100%',
+                            height: '200px',
+                            objectFit: 'cover',
+                            borderRadius: '8px',
+                          }}
+                        />
+                      ) : isVideo ? (
+                        // Display video or video embed
+                        (() => {
+                          // Check if it's a YouTube/Vimeo URL
+                          const youtubeMatch = mediaUrl.match(
+                            /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
+                          );
+                          const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
+
+                          if (youtubeMatch) {
+                            return (
+                              <iframe
+                                src={`https://www.youtube.com/embed/${youtubeMatch[1]}`}
+                                style={{
+                                  width: '100%',
+                                  height: '200px',
+                                  borderRadius: '8px',
+                                  border: 'none',
+                                }}
+                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                                allowFullScreen
+                              />
+                            );
+                          } else if (vimeoMatch) {
+                            return (
+                              <iframe
+                                src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
+                                style={{
+                                  width: '100%',
+                                  height: '200px',
+                                  borderRadius: '8px',
+                                  border: 'none',
+                                }}
+                                allow='autoplay; fullscreen'
+                                allowFullScreen
+                              />
+                            );
+                          } else {
+                            // Regular video file
+                            return (
+                              <video
+                                src={mediaUrl}
+                                controls
+                                style={{
+                                  width: '100%',
+                                  height: '200px',
+                                  objectFit: 'cover',
+                                  borderRadius: '8px',
+                                }}
+                              />
+                            );
+                          }
+                        })()
+                      ) : (
+                        // Unknown media type
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '200px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: '#f0f0f0',
+                            borderRadius: '8px',
+                          }}>
+                          Media Preview
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className='portfolio-placeholder'>
                   <div className='placeholder-text'>📦</div>
-                  <span>No models uploaded yet</span>
+                  <span>No media uploaded yet</span>
                 </div>
               )}
 
               {canEditProfile && (
-                <label className='portfolio-upload-box'>
-                  <input
-                    type='file'
-                    accept='.glb,.gltf'
-                    style={{ display: 'none' }}
-                    onChange={e => {
-                      const file = e.target.files?.[0];
-                      if (file) handleUploadPortfolioModel(file);
-                    }}
-                  />
+                <button
+                  className='portfolio-upload-box'
+                  onClick={handleUploadPortfolio}
+                  style={{ cursor: 'pointer' }}>
                   <div className='upload-placeholder'>
                     <div style={{ fontSize: '3rem' }}>➕</div>
-                    <span>Upload Model</span>
+                    <span>Upload Media</span>
                   </div>
-                </label>
+                </button>
               )}
             </div>
 
@@ -720,6 +932,55 @@ const ProfileSettings: React.FC = () => {
                     </div>
                   </div>
                 )}
+              </>
+            )}
+
+            {/* Font Customization */}
+            {canEditProfile && (
+              <>
+                <h4>Custom Font</h4>
+                <div className='font-section'>
+                  <label>
+                    <strong>Select Font:</strong>
+                  </label>
+                  <select
+                    className='input-text'
+                    value={userData.customFont || 'Inter'}
+                    onChange={async e => {
+                      const newFont = e.target.value;
+                      try {
+                        const res = await fetch('/api/user/updateCustomFont', {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            username: userData.username,
+                            customFont: newFont,
+                          }),
+                        });
+
+                        if (res.ok) {
+                          const updatedUser = await res.json();
+                          // Update local state instead of reloading
+                          setUserData(updatedUser); // This will update userData
+                          toast.success('Font updated!');
+                        } else {
+                          toast.error('Failed to update font');
+                        }
+                      } catch (err) {
+                        toast.error('Failed to update font');
+                      }
+                    }}
+                    style={{ width: '100%', marginTop: '0.5rem' }}>
+                    <option value='Inter'>Inter (Default)</option>
+                    <option value='Roboto'>Roboto</option>
+                    <option value='Open Sans'>Open Sans</option>
+                    <option value='Montserrat'>Montserrat</option>
+                    <option value='Lato'>Lato</option>
+                    <option value='Poppins'>Poppins</option>
+                    <option value='Playfair Display'>Playfair Display</option>
+                    <option value='Courier New'>Courier New (Monospace)</option>
+                  </select>
+                </div>
               </>
             )}
 

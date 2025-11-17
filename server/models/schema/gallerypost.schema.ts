@@ -12,6 +12,10 @@ import { Schema } from 'mongoose';
  * - community (ID)
  * - thumbnailMedia
  * - post date and time
+ * - thumbnailMedia
+ * - views
+ * - downloads
+ * - likes
  */
 const galleryPostSchema: Schema = new Schema(
   {
@@ -41,6 +45,18 @@ const galleryPostSchema: Schema = new Schema(
     thumbnailMedia: {
       type: String,
       required: false,
+    },
+    views: {
+      type: Number,
+      default: [],
+    },
+    downloads: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: [String],
+      default: [],
     },
   },
   { collection: 'GalleryPost' },
