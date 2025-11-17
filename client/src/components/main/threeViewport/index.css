@@ -8,6 +8,12 @@
   position: relative;
 }
 
+.viewport-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .viewport-canvas {
   top: 0;
   left: 0;
@@ -17,7 +23,7 @@
 }
 
 .upload-section {
-  position: absolute; /* ← change this */
+  position: absolute;
   top: 10px;
   left: 10px;
   display: flex;
@@ -26,7 +32,7 @@
   background: rgba(255, 255, 255, 0.9);
   padding: 10px;
   border-radius: 8px;
-  z-index: 10; /* ensures it's on top of the canvas */
+  z-index: 10;
 }
 
 .upload-button {
@@ -47,7 +53,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px; /* space between the three items */
+  gap: 5px;
 }
 
 .upload-button,
@@ -107,4 +113,36 @@
   border-width: 5px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
+
+.expand-icon {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  z-index: 20;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.expand-icon:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.75);
+}
+
+:fullscreen .viewport-card {
+  border-radius: 0 !important;
+}
+
+:fullscreen .viewport-container {
+  border-radius: 0 !important;
 }
