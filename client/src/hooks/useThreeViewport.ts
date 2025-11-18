@@ -61,6 +61,9 @@ const useThreeViewport = (modelPath: string | null) => {
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const targetZRef = useRef<number>(1);
+  const [modelVerts, setModelVerts] = useState(0);
+  const [modelFaces, setModelFaces] = useState(0);
+  const [modelEdges, setModelEdges] = useState(0);
 
   const [isPerspective, setIsPerspective] = useState(true);
 
@@ -193,9 +196,35 @@ const useThreeViewport = (modelPath: string | null) => {
 
     loader.load(modelPath, gltf => {
       const model = gltf.scene;
+
+      let totalVertices = 0;
+      let totalFaces = 0;
+      let totalEdges = 0;
+
       model.traverse((child: Object3D) => {
-        if (child instanceof Mesh) child.castShadow = true;
+        if (child instanceof Mesh) {
+          child.castShadow = true;
+
+          const geo = child.geometry;
+          
+          // Vertices
+          const vCount = geo.attributes.position.count;
+          totalVertices += vCount;
+
+          // Faces (triangles)
+          const indexCount = geo.index ? geo.index.count : geo.attributes.position.count;
+          const fCount = indexCount / 3;
+          totalFaces += fCount;
+
+          // Edges (unique edges)
+          const edgesGeo = new THREE.EdgesGeometry(geo);
+          const eCount = edgesGeo.attributes.position.count / 2; // 2 verts per edge
+          totalEdges += eCount;
+        }
       });
+      setModelVerts(totalVertices);
+      setModelFaces(totalFaces);
+      setModelEdges(totalEdges);
       scene.add(model);
 
       // Center, scale, and ground-align the model
@@ -336,6 +365,9 @@ const useThreeViewport = (modelPath: string | null) => {
     handleResetCamera,
     handleTogglePerspective,
     isPerspective,
+    modelVerts,
+    modelFaces,
+    modelEdges
   };
 };
 

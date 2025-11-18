@@ -146,3 +146,8 @@
 :fullscreen .viewport-container {
   border-radius: 0 !important;
 }
+
+.modelInfo {
+  text-align: center;
+  font-size: 14px;
+}
