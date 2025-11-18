@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   getGalleryPosts,
   incrementGalleryPostViews,
@@ -26,6 +26,7 @@ import { DatabaseGalleryPost } from '../types/types';
 const useGalleryPostPage = () => {
   const { postId } = useParams();
   const { user } = useUserContext();
+  const navigate = useNavigate();
 
   const [post, setPost] = useState<DatabaseGalleryPost | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +106,7 @@ const useGalleryPostPage = () => {
     if (!post) return;
     try {
       await deleteGalleryPost(post._id.toString(), user.username);
+      navigate(`/communities/${post.community}`);
     } catch {
       setError('Failed to delete post.');
     }
