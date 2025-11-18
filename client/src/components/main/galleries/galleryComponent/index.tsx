@@ -97,10 +97,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
     const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');
     const is3D = ext === 'glb';
-    if (isVideo || isImage || is3D)
+    if (isImage || is3D)
       return (
         <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className='media' />
       );
+    if (isVideo) return <video src={post.media} controls className='media'></video>;
     return null;
   };
 
