@@ -105,7 +105,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       return (
         <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className='media' />
       );
-    if (isVideo) return <video src={post.media} controls className='media'></video>;
+    if (isVideo) return <video src={post.media} controls muted className='media'></video>;
     if (isEmbed) {
       let embedUrl = post.media;
 

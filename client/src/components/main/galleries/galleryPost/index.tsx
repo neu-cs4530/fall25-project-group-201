@@ -23,6 +23,7 @@ const GalleryPostPage = () => {
   const url = post.media;
   const ext = url.split('.').pop()?.toLowerCase();
   const is3D = ext === 'glb';
+  const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
   const youTubeId = getYouTubeVideoId(url);
   const vimeoId = getVimeoVideoId(url);
 
@@ -80,9 +81,10 @@ const GalleryPostPage = () => {
             allowFullScreen
           />
         )}
-        {!is3D && !youTubeId && !vimeoId && (
+        {!is3D && !youTubeId && !vimeoId && !isVideo && (
           <img src={url} alt={post.title} className='postMedia' />
         )}
+        {isVideo && <video src={url} controls muted className='postMedia'></video>}
       </div>
     </div>
   );
