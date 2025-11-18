@@ -97,11 +97,47 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
     const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');
     const is3D = ext === 'glb';
+    const isEmbed =
+      post.media.includes('youtube.com') ||
+      post.media.includes('youtu.be') ||
+      post.media.includes('vimeo.com');
     if (isImage || is3D)
       return (
         <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className='media' />
       );
     if (isVideo) return <video src={post.media} controls className='media'></video>;
+    if (isEmbed) {
+      let embedUrl = post.media;
+
+      // Convert YouTube share links to embed form
+      if (post.media.includes('youtu.be')) {
+        const id = post.media.split('youtu.be/')[1];
+        embedUrl = `https://www.youtube.com/embed/${id}`;
+      }
+
+      if (post.media.includes('youtube.com/watch')) {
+        const id = new URL(post.media).searchParams.get('v');
+        embedUrl = `https://www.youtube.com/embed/${id}`;
+      }
+
+      // Vimeo normal to embed conversion
+      if (post.media.includes('vimeo.com') && !post.media.includes('player.vimeo.com')) {
+        const id = post.media.split('vimeo.com/')[1];
+        embedUrl = `https://player.vimeo.com/video/${id}`;
+      }
+
+      return (
+        <iframe
+          className='media'
+          src={embedUrl}
+          width='800'
+          height='450'
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+          allowFullScreen
+        />
+      );
+    }
+
     return null;
   };
 
