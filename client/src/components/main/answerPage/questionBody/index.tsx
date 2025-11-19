@@ -121,7 +121,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, mediaSize
       </div>
 
       {mediaPath && mediaSize && ext &&
-      <Download size={20} onClick={() => handleDownload(mediaSize, ext)} color='blue' />
+      <Download size={20} onClick={() => handleDownload(mediaSize, ext)} color='blue' style={{ cursor: 'pointer' }}/>
       }
 
       <div className='answer_question_right'>
