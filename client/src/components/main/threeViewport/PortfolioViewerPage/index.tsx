@@ -56,9 +56,7 @@ export default function PortfolioViewerPage() {
 
         <h1>{item.title}</h1>
 
-        {item.description && (
-          <p className='postDescription'>{item.description}</p>
-        )}
+        {item.description && <p className='postDescription'>{item.description}</p>}
       </div>
 
       <div className='mediaWrapper'>
@@ -79,12 +77,8 @@ export default function PortfolioViewerPage() {
             allowFullScreen
           />
         )}
-        {isVideo && !youTubeId && !vimeoId && (
-          <video src={url} controls className='postMedia' />
-        )}
-        {isImage && (
-          <img src={url} alt={item.title} className='postMedia' />
-        )}
+        {isVideo && !youTubeId && !vimeoId && <video src={url} controls className='postMedia' />}
+        {isImage && <img src={url} alt={item.title} className='postMedia' />}
       </div>
     </div>
   );

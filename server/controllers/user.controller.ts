@@ -734,8 +734,8 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
-  * Reorders portfolio items by swapping two indices.
-  */
+   * Reorders portfolio items by swapping two indices.
+   */
   const reorderPortfolioItems = async (req: Request, res: Response): Promise<void> => {
     try {
       const { username, fromIndex, toIndex } = req.body;
@@ -773,8 +773,8 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Deletes a single portfolio item by index.
- */
+   * Deletes a single portfolio item by index.
+   */
   const deleteSinglePortfolioItem = async (req: Request, res: Response): Promise<void> => {
     try {
       const { username, index } = req.body;
@@ -809,47 +809,47 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Migrates old portfolioModels/Thumbnails arrays to new portfolio structure.
- * This is a one-time migration endpoint.
- */
-const migratePortfolioData = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { username } = req.body;
+   * Migrates old portfolioModels/Thumbnails arrays to new portfolio structure.
+   * This is a one-time migration endpoint.
+   */
+  const migratePortfolioData = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username } = req.body;
 
-    const user = await getUserByUsername(username);
-    if ('error' in user) {
-      throw new Error('User not found');
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        throw new Error('User not found');
+      }
+
+      // Skip if already migrated or no old data
+      if (!user.portfolioModels || user.portfolioModels.length === 0) {
+        res.status(200).json({ message: 'No migration needed', user });
+        return;
+      }
+
+      const migratedPortfolio = user.portfolioModels.map((mediaUrl, index) => ({
+        title: `Portfolio Item ${index + 1}`,
+        description: '',
+        mediaUrl,
+        thumbnailUrl: user.portfolioThumbnails?.[index] || '',
+        uploadedAt: new Date(),
+      }));
+
+      const updatedUser = await updateUser(username, {
+        portfolio: migratedPortfolio,
+        portfolioModels: [], // Clear old data
+        portfolioThumbnails: [],
+      });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error migrating portfolio: ${error}`);
     }
-
-    // Skip if already migrated or no old data
-    if (!user.portfolioModels || user.portfolioModels.length === 0) {
-      res.status(200).json({ message: 'No migration needed', user });
-      return;
-    }
-
-    const migratedPortfolio = user.portfolioModels.map((mediaUrl, index) => ({
-      title: `Portfolio Item ${index + 1}`,
-      description: '',
-      mediaUrl,
-      thumbnailUrl: user.portfolioThumbnails?.[index] || '',
-      uploadedAt: new Date(),
-    }));
-
-    const updatedUser = await updateUser(username, { 
-      portfolio: migratedPortfolio,
-      portfolioModels: [],  // Clear old data
-      portfolioThumbnails: []
-    });
-
-    if ('error' in updatedUser) {
-      throw new Error(updatedUser.error);
-    }
-
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).send(`Error migrating portfolio: ${error}`);
-  }
-};
+  };
 
   // Define routes for the user-related operations.
   router.post('/signup', createUser);

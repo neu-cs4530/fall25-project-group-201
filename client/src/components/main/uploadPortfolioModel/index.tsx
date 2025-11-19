@@ -98,26 +98,28 @@ const UploadPortfolioModel = () => {
         )}
       </div>
 
-      {showThumbnailUpload && modelPath && (modelPath.endsWith('.glb') || modelPath.endsWith('.mp4')) && (
-        <div className='form-section media-section'>
-          <h3>Thumbnail Image</h3>
-          <p>Upload a thumbnail image to represent your media</p>
-          <div className='file-upload'>
-            <input type='file' accept='image/*' onChange={handleThumbnailFileUpload} />
-          </div>
-          {thumbnailErr && <p className='error'>{thumbnailErr}</p>}
-
-          {thumbnailPath && (
-            <div className='media-preview'>
-              <p>Thumbnail Preview:</p>
-              <img src={thumbnailPath} alt='Thumbnail preview' style={{ maxWidth: '300px' }} />
+      {showThumbnailUpload &&
+        modelPath &&
+        (modelPath.endsWith('.glb') || modelPath.endsWith('.mp4')) && (
+          <div className='form-section media-section'>
+            <h3>Thumbnail Image</h3>
+            <p>Upload a thumbnail image to represent your media</p>
+            <div className='file-upload'>
+              <input type='file' accept='image/*' onChange={handleThumbnailFileUpload} />
             </div>
-          )}
-        </div>
-      )}
+            {thumbnailErr && <p className='error'>{thumbnailErr}</p>}
+
+            {thumbnailPath && (
+              <div className='media-preview'>
+                <p>Thumbnail Preview:</p>
+                <img src={thumbnailPath} alt='Thumbnail preview' style={{ maxWidth: '300px' }} />
+              </div>
+            )}
+          </div>
+        )}
 
       {/* Show thumbnail upload for YouTube/Vimeo */}
-      {mediaUrl && (/youtube\.com|youtu\.be|vimeo\.com/.test(mediaUrl)) && (
+      {mediaUrl && /youtube\.com|youtu\.be|vimeo\.com/.test(mediaUrl) && (
         <div className='form-section media-section'>
           <h3>Thumbnail Image (Required)</h3>
           <p>Upload a thumbnail for this video embed</p>
@@ -146,7 +148,7 @@ const UploadPortfolioModel = () => {
           const needsThumbnail =
             modelPath?.endsWith('.glb') ||
             modelPath?.endsWith('.mp4') ||
-            (mediaUrl && (/youtube\.com|youtu\.be|vimeo\.com/.test(mediaUrl)));
+            (mediaUrl && /youtube\.com|youtu\.be|vimeo\.com/.test(mediaUrl));
 
           // If thumbnail needed but not provided, disable
           if (needsThumbnail && !thumbnailPath) return true;

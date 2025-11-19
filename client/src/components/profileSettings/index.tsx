@@ -152,10 +152,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.bannerImage
                 ? {
-                  backgroundImage: `url(${userData.bannerImage})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+                    backgroundImage: `url(${userData.bannerImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
                 : {}
             }>
             {!userData?.bannerImage && <span>Banner Image</span>}
@@ -180,10 +180,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.profilePicture
                 ? {
-                  backgroundImage: `url(${userData.profilePicture})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+                    backgroundImage: `url(${userData.profilePicture})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
                 : {}
             }>
             {canEditProfile && (
@@ -539,22 +539,21 @@ const ProfileSettings: React.FC = () => {
                 marginBottom: '1rem',
               }}>
               <h4 style={{ margin: 0 }}>Portfolio</h4>
-              {canEditProfile &&
-                userData.portfolio &&
-                userData.portfolio.length > 0 && (
-                  <button
-                    className='button button-primary'  // Changed from button-danger
-                    style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-                    onClick={() => setEditMode(!editMode)}>
-                    {editMode ? 'Done Editing' : 'Edit Posts'}
-                  </button>
-                )}
+              {canEditProfile && userData.portfolio && userData.portfolio.length > 0 && (
+                <button
+                  className='button button-primary' // Changed from button-danger
+                  style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                  onClick={() => setEditMode(!editMode)}>
+                  {editMode ? 'Done Editing' : 'Edit Posts'}
+                </button>
+              )}
             </div>
             <div className='portfolio-grid-section'>
               {userData.portfolio && userData.portfolio.length > 0 ? (
-                userData.portfolio.map((item, index) => {  // Changed from portfolioModels
-                  const mediaUrl = item.mediaUrl;         // Get from item object
-                  const thumbnailUrl = item.thumbnailUrl;  // Get from item object
+                userData.portfolio.map((item, index) => {
+                  // Changed from portfolioModels
+                  const mediaUrl = item.mediaUrl; // Get from item object
+                  const thumbnailUrl = item.thumbnailUrl; // Get from item object
 
                   // Determine media type
                   const isGlbModel =
@@ -579,7 +578,7 @@ const ProfileSettings: React.FC = () => {
                         if (!editMode) {
                           navigate(`/user/${userData.username}/portfolio/${index}`, {
                             state: {
-                              title: item.title,           // Now we have title!
+                              title: item.title, // Now we have title!
                               description: item.description, // And description!
                               mediaUrl: item.mediaUrl,
                               thumbnailUrl: item.thumbnailUrl,
@@ -594,7 +593,7 @@ const ProfileSettings: React.FC = () => {
                             {index > 0 && (
                               <button
                                 className='reorder-arrow reorder-left'
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   handleMovePortfolioItem(index, 'left');
                                 }}
@@ -602,10 +601,10 @@ const ProfileSettings: React.FC = () => {
                                 ←
                               </button>
                             )}
-                            {index < userData.portfolio!.length - 1 && (  // Changed
+                            {index < userData.portfolio!.length - 1 && ( // Changed
                               <button
                                 className='reorder-arrow reorder-right'
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   handleMovePortfolioItem(index, 'right');
                                 }}
@@ -616,7 +615,7 @@ const ProfileSettings: React.FC = () => {
                           </div>
                           <button
                             className='portfolio-delete-button'
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               if (window.confirm('Delete this item?')) {
                                 handleDeleteSingleItem(index);
@@ -659,17 +658,18 @@ const ProfileSettings: React.FC = () => {
                         />
                       ) : isVideo ? (
                         // Video without thumbnail - show play icon
-                        <div style={{
-                          width: '100%',
-                          height: '200px',
-                          background: '#000',
-                          borderRadius: '8px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          fontSize: '3rem',
-                        }}>
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '200px',
+                            background: '#000',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '3rem',
+                          }}>
                           ▶️
                         </div>
                       ) : (
