@@ -78,6 +78,8 @@ const useThreeViewport = (modelPath: string | null) => {
     rotation: THREE.Euler;
   } | null>(null);
 
+  const keysPressed: Record<string, boolean> = {};
+
   /**
    * Main scene setup and teardown lifecycle.
    * Initializes the renderer, scene, lighting, controls, and loads the model.
@@ -146,42 +148,16 @@ const useThreeViewport = (modelPath: string | null) => {
     cameraRef.current = camera;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const camera = cameraRef.current;
-      if (!camera) return;
-
-      // Get forward vector
-      const forward = new THREE.Vector3();
-      camera.getWorldDirection(forward);
-
-      // Get right vector
-      const right = new THREE.Vector3();
-      right.crossVectors(forward, camera.up).normalize();
-
-      // Up vector (global Y)
-      const up = new THREE.Vector3(0, 1, 0);
-
-      switch (event.key) {
-        case 'ArrowUp':
-        case 'w':
-          camera.position.addScaledVector(up, panning_sensitivity);
-          break;
-        case 'ArrowDown':
-        case 's':
-          camera.position.addScaledVector(up, -panning_sensitivity);
-          break;
-        case 'ArrowLeft':
-        case 'a':
-          camera.position.addScaledVector(right, -panning_sensitivity);
-          break;
-        case 'ArrowRight':
-        case 'd':
-          camera.position.addScaledVector(right, panning_sensitivity);
-          break;
-      }
+      keysPressed[event.key] = true;
     };
 
     window.addEventListener('keydown', handleKeyDown);
 
+    const handleKeyUp = (event: KeyboardEvent) => {
+      keysPressed[event.key] = false;
+    };
+
+    window.addEventListener('keyup', handleKeyUp);
 
     /**
      * Handles zooming via mouse wheel events.
@@ -281,6 +257,29 @@ const useThreeViewport = (modelPath: string | null) => {
     // --- Render loop ---
     const animate = () => {
       requestAnimationFrame(animate);
+
+      if (camera && scene) {
+        const target = new THREE.Vector3(0, 0, 0); // center of scene
+        const distance = camera.position.distanceTo(target);
+        const moveSpeed = distance * panning_sensitivity; // speed scales with distance
+
+        const forward = new THREE.Vector3();
+        camera.getWorldDirection(forward);
+
+        const right = new THREE.Vector3();
+        right.crossVectors(forward, camera.up).normalize();
+
+        const up = new THREE.Vector3(0, 1, 0);
+
+        // Smooth motion based on keysPressed
+        if (keysPressed.ArrowUp || keysPressed.w) camera.position.addScaledVector(up, moveSpeed);
+        if (keysPressed.ArrowDown || keysPressed.s) camera.position.addScaledVector(up, -moveSpeed);
+        if (keysPressed.ArrowLeft || keysPressed.a) camera.position.addScaledVector(right, -moveSpeed);
+        if (keysPressed.ArrowRight || keysPressed.d) camera.position.addScaledVector(right, moveSpeed);
+        if (keysPressed.q) camera.position.addScaledVector(up, moveSpeed);
+        if (keysPressed.e) camera.position.addScaledVector(up, -moveSpeed);
+      }
+
       renderer.render(scene, camera);
     };
     animate();
@@ -291,6 +290,8 @@ const useThreeViewport = (modelPath: string | null) => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('wheel', handleWheel);
       renderer.dispose();
       scene.clear();
