@@ -4,6 +4,14 @@ import useUserContext from '../../../../hooks/useUserContext';
 import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
 
+const handleDownload = (mediaSize: string) => {
+  const confirmed = window.confirm(`This file is ${mediaSize}. Are you sure you want to download it?`);
+  if (!confirmed) return;
+
+  {/* Logic for downloading the file */}
+
+};
+
 /**
  * Component to display a single gallery post from a community gallery.
  */
@@ -50,10 +58,7 @@ const GalleryPostPage = () => {
                 incrementDownloads();
                 window.open(post.media, '_blank');
               }}>
-              <span style={{ color: "blue", whiteSpace: "nowrap", fontSize: '11px' }}>
-                {post.mediaSize}
-              </span>
-              <Download size={20} color='blue' /> {post.downloads}
+              <Download size={20} onClick={() => handleDownload(post.mediaSize)} color='blue' /> {post.downloads}
             </span>
           )}
           {isAuthor && (
