@@ -16,7 +16,7 @@ type GalleryComponentProps = {
  * Component to display a gallery of posts for a community.
  */
 const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
-  const { filteredGalleryPosts, error, handleIncrementViews } =
+  const { filteredGalleryPosts, error, handleIncrementViews, loading } =
     useGalleryComponentPage(communityID);
   const navigate = useNavigate();
   const [sortType, setSortType] = useState<
@@ -189,6 +189,17 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
           onClick={prevPage}>
           <ChevronLeft size={22} />
         </button>}
+
+        {/* If loading, display loading state */}
+        {loading && 
+          <div className="grid-container">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="grid-cell"></div>
+          ))}
+        </div>}
+
+        {/* If not loading, display carousel */}
+        {!loading && 
         <div className='galleryGrid carouselPage'>
           {visibleItems.map(post => (
             <div
@@ -205,7 +216,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
               {renderMedia(post)}
             </div>
           ))}
-        </div>
+        </div>}
         {(sortedPosts.length > itemsPerPage) && <button
           className='carouselArrow right'
           onClick={nextPage}>
