@@ -1,7 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useUserContext from './useUserContext';
-import { uploadPortfolioModel } from '../services/userService';
 import toast from 'react-hot-toast';
 
 /**
