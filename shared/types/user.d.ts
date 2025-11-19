@@ -50,7 +50,7 @@ export interface User extends UserCredentials {
   profilePicture?: string; // profile image
   bannerImage?: string; // banner image
   resumeFile?: string; // downloadable CV/resume
-  portfolio?: PortfolioItem[]; 
+  portfolio?: PortfolioItem[];
   portfolioModels?: string[]; // URLs to 3D models
   portfolioThumbnails?: string[];
   externalLinks?: {

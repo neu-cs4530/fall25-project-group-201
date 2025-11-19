@@ -15,7 +15,6 @@ const ProfileSettings: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useUserContext();
   const [editMode, setEditMode] = useState(false);
-  const [itemsToDelete, setItemsToDelete] = useState<number[]>([]);
   const {
     userData,
     setUserData,
