@@ -15,15 +15,31 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
  * @param {number} far - Far clipping plane.
  * @returns {THREE.Matrix4} The resulting orthographic projection matrix.
  */
-const createOrthographicMatrix = (left: number, right: number, top: number, bottom: number, near: number, far: number) => {
+const createOrthographicMatrix = (
+  left: number,
+  right: number,
+  top: number,
+  bottom: number,
+  near: number,
+  far: number,
+) => {
   const lr = 1 / (right - left);
   const bt = 1 / (top - bottom);
   const nf = 1 / (far - near);
   const m = new THREE.Matrix4();
   m.set(
-    2 * lr, 0, 0, 0,
-    0, 2 * bt, 0, 0,
-    0, 0, -2 * nf, 0,
+    2 * lr,
+    0,
+    0,
+    0,
+    0,
+    2 * bt,
+    0,
+    0,
+    0,
+    0,
+    -2 * nf,
+    0,
     -(right + left) * lr,
     -(top + bottom) * bt,
     -(far + near) * nf,
@@ -108,11 +124,13 @@ const useThreeViewport = (modelPath: string | null) => {
     /**
      * Handles mouse up events.
      */
-    const handleMouseUp = () => { isDragging = false; };
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
-    
+
     // --- Lighting setup ---
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xbebebe, 1.0);
     scene.add(hemiLight);
@@ -128,7 +146,7 @@ const useThreeViewport = (modelPath: string | null) => {
     // --- Ground ---
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(1000, 1000),
-      new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 10 })
+      new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 10 }),
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
@@ -159,7 +177,9 @@ const useThreeViewport = (modelPath: string | null) => {
 
     loader.load(modelPath, gltf => {
       const model = gltf.scene;
-      model.traverse((child: Object3D) => { if (child instanceof Mesh) child.castShadow = true; });
+      model.traverse((child: Object3D) => {
+        if (child instanceof Mesh) child.castShadow = true;
+      });
       scene.add(model);
 
       // Center, scale, and ground-align the model
@@ -192,7 +212,7 @@ const useThreeViewport = (modelPath: string | null) => {
       };
     });
 
-     /**
+    /**
      * Handles window resize events to keep the camera and renderer aligned with viewport size.
      */
     const handleResize = () => {
@@ -204,8 +224,12 @@ const useThreeViewport = (modelPath: string | null) => {
     window.addEventListener('resize', handleResize);
 
     // --- Keyboard ---
-    const handleKeyDown = (e: KeyboardEvent) => { keysPressed.current[e.key] = true; };
-    const handleKeyUp = (e: KeyboardEvent) => { keysPressed.current[e.key] = false; };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = true;
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = false;
+    };
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
@@ -229,13 +253,17 @@ const useThreeViewport = (modelPath: string | null) => {
         camera.getWorldDirection(forward);
         const right = new THREE.Vector3();
         right.crossVectors(forward, camera.up).normalize();
-        const up = new THREE.Vector3(0,1,0);
+        const up = new THREE.Vector3(0, 1, 0);
         const moveSpeed = panSensitivity;
 
-        if (keysPressed.current.w || keysPressed.current.ArrowUp) camera.position.addScaledVector(up, moveSpeed);
-        if (keysPressed.current.s || keysPressed.current.ArrowDown) camera.position.addScaledVector(up, -moveSpeed);
-        if (keysPressed.current.a || keysPressed.current.ArrowLeft) camera.position.addScaledVector(right, -moveSpeed);
-        if (keysPressed.current.d || keysPressed.current.ArrowRight) camera.position.addScaledVector(right, moveSpeed);
+        if (keysPressed.current.w || keysPressed.current.ArrowUp)
+          camera.position.addScaledVector(up, moveSpeed);
+        if (keysPressed.current.s || keysPressed.current.ArrowDown)
+          camera.position.addScaledVector(up, -moveSpeed);
+        if (keysPressed.current.a || keysPressed.current.ArrowLeft)
+          camera.position.addScaledVector(right, -moveSpeed);
+        if (keysPressed.current.d || keysPressed.current.ArrowRight)
+          camera.position.addScaledVector(right, moveSpeed);
       }
 
       if (camera && scene) renderer.render(scene, camera);
@@ -253,7 +281,8 @@ const useThreeViewport = (modelPath: string | null) => {
       renderer.dispose();
       scene.clear();
       dracoLoader.dispose();
-      if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
+      if (renderer.domElement.parentNode)
+        renderer.domElement.parentNode.removeChild(renderer.domElement);
     };
   }, [modelPath]);
 
@@ -266,7 +295,7 @@ const useThreeViewport = (modelPath: string | null) => {
     const init = initialCameraState.current;
     const orthoInit = orthoCameraState.current;
     if (!scene || !camera || !init) return;
-    scene.rotation.set(0,0,0);
+    scene.rotation.set(0, 0, 0);
 
     if (isPerspective) {
       camera.position.copy(init.position);
@@ -279,7 +308,7 @@ const useThreeViewport = (modelPath: string | null) => {
 
   /**
    * Toggles between perspective and orthographic camera projections.
-  */
+   */
   const handleTogglePerspective = () => {
     const camera = cameraRef.current;
     const container = containerRef.current;
@@ -289,10 +318,20 @@ const useThreeViewport = (modelPath: string | null) => {
 
     if (isPerspective) {
       const scale = 1.0;
-      const orthoMatrix = createOrthographicMatrix(-scale*aspect, scale*aspect, scale, -scale, 0.1, 1000);
+      const orthoMatrix = createOrthographicMatrix(
+        -scale * aspect,
+        scale * aspect,
+        scale,
+        -scale,
+        0.1,
+        1000,
+      );
       camera.projectionMatrix.copy(orthoMatrix);
       camera.projectionMatrixInverse.copy(orthoMatrix.clone().invert());
-      orthoCameraState.current = { position: camera.position.clone(), rotation: camera.rotation.clone() };
+      orthoCameraState.current = {
+        position: camera.position.clone(),
+        rotation: camera.rotation.clone(),
+      };
       setIsPerspective(false);
     } else {
       camera.fov = init.fov;
