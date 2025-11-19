@@ -12,6 +12,7 @@ export interface Media {
   filepathLocation: string;
   fileBuffer?: base64;
   user: string;
+  fileSize?: string;
 }
 
 /**
