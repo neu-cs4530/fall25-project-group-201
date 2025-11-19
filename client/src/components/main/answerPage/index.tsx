@@ -35,6 +35,7 @@ const AnswerPage = () => {
         meta={getMetaData(new Date(question.askDateTime))}
         mediaPath={question.mediaPath}
         mediaUrl={question.mediaUrl}
+        mediaSize={question.mediaSize}
       />
       <CommentSection
         comments={question.comments}
