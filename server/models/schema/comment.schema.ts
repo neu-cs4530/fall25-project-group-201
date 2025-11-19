@@ -28,6 +28,10 @@ const commentSchema: Schema = new Schema(
     mediaPath: {
       type: String,
     },
+    mediaSize: {
+      type: String,
+      required: false,
+    },
   },
   { collection: 'Comment' },
 );

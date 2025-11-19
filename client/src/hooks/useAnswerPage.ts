@@ -11,6 +11,7 @@ import useUserContext from './useUserContext';
 import addComment from '../services/commentService';
 import { getQuestionById } from '../services/questionService';
 import mediaService from '../services/mediaService';
+import { DatabaseMedia } from '../types/types';
 
 /**
  * Custom React hook for managing the Answer Page functionality.
@@ -53,7 +54,7 @@ const useAnswerPage = () => {
    * @param {File} file - The media file to upload.
    * @returns {Promise<string | undefined>} The uploaded file path or `undefined` on failure.
    */
-  const handleAddMedia = async (file: File): Promise<string | undefined> => {
+  const handleAddMedia = async (file: File): Promise<DatabaseMedia | undefined> => {
     if (!file || !file.name) {
       setHandleAddMediaError('File with valid path is required');
       return;
@@ -84,7 +85,7 @@ const useAnswerPage = () => {
       formData.append('filepathLocation', file.name);
 
       const newMedia = await mediaService.addMedia(user.username, formData);
-      return newMedia.filepathLocation;
+      return newMedia;
     } catch (err) {
       return undefined;
     }

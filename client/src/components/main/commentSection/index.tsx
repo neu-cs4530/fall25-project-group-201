@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getMetaData } from '../../../tool';
-import { Comment, DatabaseComment } from '../../../types/types';
+import { Comment, DatabaseComment, DatabaseMedia } from '../../../types/types';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import { FaLink } from 'react-icons/fa';
@@ -19,7 +19,7 @@ import ThreeViewport from '../threeViewport';
 interface CommentSectionProps {
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
-  handleAddMedia: (file: File) => Promise<string | undefined>;
+  handleAddMedia: (file: File) => Promise<DatabaseMedia | undefined>;
   handleAddMediaError: string | null;
 }
 
@@ -30,7 +30,7 @@ interface CommentSectionProps {
  * @component
  * @param {DatabaseComment[]} comments - Array of existing comments to display.
  * @param {(comment: Comment) => void} handleAddComment - Function called to post a new comment.
- * @param {(file: File) => Promise<string | undefined>} handleAddMedia - Function that uploads media files.
+ * @param {(file: File) => Promise<DatabaseMedia | undefined>} handleAddMedia - Function that uploads media files.
  * @param {string | null} handleAddMediaError - Error message for media upload issues.
  * @returns A rendered comment section with media upload and markdown support.
  */
@@ -49,6 +49,8 @@ const CommentSection = ({
   const [mediaError, setMediaError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  let tempMediaPath: string | undefined;
+  let mediaSize: string | undefined;
 
   /**
    * Validates whether a provided string is a valid media URL.
@@ -92,14 +94,26 @@ const CommentSection = ({
     setTextErr('');
     setMediaError(null);
 
-    let tempMediaPath: string | undefined;
-
     if (file) {
-      tempMediaPath = await handleAddMedia(file);
-      if (!tempMediaPath) {
+      const res_media = await handleAddMedia(file);
+      if (!res_media) {
         setMediaError('Failed to upload media');
         return;
       }
+
+      if (!res_media.filepathLocation) {
+        setMediaError('Filepath location of media is undefined.');
+        return;
+      }
+
+      tempMediaPath = res_media.filepathLocation;
+
+      if (!res_media.fileSize) {
+        setMediaError('Media size is undefined');
+        return;
+      }
+
+      mediaSize = res_media.fileSize;
     }
 
     if (mediaUrl) {
@@ -115,6 +129,7 @@ const CommentSection = ({
       commentDateTime: new Date(),
       ...(file ? { mediaPath: tempMediaPath } : {}),
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
+      ...(mediaSize ? { mediaSize: mediaSize } : {}),
     };
 
     await handleAddComment(newComment);
