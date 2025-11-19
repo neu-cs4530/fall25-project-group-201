@@ -44,6 +44,7 @@ export interface Question {
   community: ObjectId | null;
   mediaUrl?: string;
   mediaPath?: string;
+  mediaSize?: string;
 }
 
 /**

@@ -44,6 +44,10 @@ const questionSchema: Schema = new Schema(
     },
     mediaUrl: { type: String },
     mediaPath: { type: String },
+    mediaSize: {
+      type: String,
+      required: false,
+    },
   },
   { collection: 'Question' },
 );
