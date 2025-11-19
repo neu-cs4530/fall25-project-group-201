@@ -15,31 +15,15 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
  * @param {number} far - Far clipping plane.
  * @returns {THREE.Matrix4} The resulting orthographic projection matrix.
  */
-const createOrthographicMatrix = (
-  left: number,
-  right: number,
-  top: number,
-  bottom: number,
-  near: number,
-  far: number,
-) => {
+const createOrthographicMatrix = (left: number, right: number, top: number, bottom: number, near: number, far: number) => {
   const lr = 1 / (right - left);
   const bt = 1 / (top - bottom);
   const nf = 1 / (far - near);
   const m = new THREE.Matrix4();
   m.set(
-    2 * lr,
-    0,
-    0,
-    0,
-    0,
-    2 * bt,
-    0,
-    0,
-    0,
-    0,
-    -2 * nf,
-    0,
+    2 * lr, 0, 0, 0,
+    0, 2 * bt, 0, 0,
+    0, 0, -2 * nf, 0,
     -(right + left) * lr,
     -(top + bottom) * bt,
     -(far + near) * nf,
@@ -60,7 +44,6 @@ const useThreeViewport = (modelPath: string | null) => {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const targetZRef = useRef<number>(1);
 
   const [isPerspective, setIsPerspective] = useState(true);
 
@@ -78,7 +61,7 @@ const useThreeViewport = (modelPath: string | null) => {
     rotation: THREE.Euler;
   } | null>(null);
 
-  const keysPressed: Record<string, boolean> = {};
+  const keysPressed = useRef<Record<string, boolean>>({});
 
   /**
    * Main scene setup and teardown lifecycle.
@@ -90,11 +73,12 @@ const useThreeViewport = (modelPath: string | null) => {
     // --- Scene setup ---
     const scene = new THREE.Scene();
     sceneRef.current = scene;
+
     let isDragging = false;
     let previousMouseX = 0;
     let previousMouseY = 0;
-    const sensitivity = 0.005;
-    const panning_sensitivity = 0.005; // sensitivity for panning (moving the camera up/down/left/right)
+    const rotationSensitivity = 0.005;
+    const panSensitivity = 0.02; // sensitivity for panning (moving the camera up/down/left/right)
 
     /**
      * Handles mouse down events to begin rotating the scene.
@@ -115,28 +99,40 @@ const useThreeViewport = (modelPath: string | null) => {
       if (!isDragging) return;
       const deltaX = event.clientX - previousMouseX;
       const deltaY = event.clientY - previousMouseY;
-      scene.rotation.y += deltaX * sensitivity;
-      scene.rotation.x += deltaY * sensitivity;
+      scene.rotation.y += deltaX * rotationSensitivity;
+      scene.rotation.x += deltaY * rotationSensitivity;
       previousMouseX = event.clientX;
       previousMouseY = event.clientY;
     };
 
     /**
-     * Handles mouse up events to stop rotating the scene.
+     * Handles mouse up events.
      */
-    const handleMouseUp = () => {
-      if (!isDragging) return;
-      isDragging = false;
-    };
-
+    const handleMouseUp = () => { isDragging = false; };
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
-
+    
     // --- Lighting setup ---
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xbebebe, 1.0);
     scene.add(hemiLight);
     scene.background = new THREE.Color(0xf5f5f5);
+
+    // --- Directional + ambient light ---
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(3, 5, 5);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+    scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+
+    // --- Ground ---
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(1000, 1000),
+      new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 10 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
 
     // --- Camera setup ---
     const camera = new THREE.PerspectiveCamera(
@@ -147,37 +143,7 @@ const useThreeViewport = (modelPath: string | null) => {
     );
     cameraRef.current = camera;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      keysPressed[event.key] = true;
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      keysPressed[event.key] = false;
-    };
-
-    window.addEventListener('keyup', handleKeyUp);
-
-    /**
-     * Handles zooming via mouse wheel events.
-     * Moves the camera along its forward vector.
-     * @param {WheelEvent} event - Browser wheel event.
-     */
-    const handleWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      const camera = cameraRef.current;
-      if (!camera) return;
-
-      const direction = new THREE.Vector3();
-      camera.getWorldDirection(direction);
-      const zoomAmount = event.deltaY * 0.001;
-      camera.position.addScaledVector(direction, zoomAmount);
-      targetZRef.current = camera.position.z;
-    };
-    containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
-
-    // --- Renderer setup ---
+    // --- Renderer ---
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     rendererRef.current = renderer;
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
@@ -185,22 +151,7 @@ const useThreeViewport = (modelPath: string | null) => {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     containerRef.current.appendChild(renderer.domElement);
 
-    // --- Directional + ambient light ---
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(3, 5, 5);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-    scene.add(new THREE.AmbientLight(0xffffff, 1.1));
-
-    // --- Ground plane ---
-    const groundGeo = new THREE.PlaneGeometry(1000, 1000, 1, 1);
-    const groundMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 10 });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    scene.add(ground);
-
-    // --- Load model using GLTF + DRACO ---
+    // --- Load Model ---
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
@@ -208,9 +159,7 @@ const useThreeViewport = (modelPath: string | null) => {
 
     loader.load(modelPath, gltf => {
       const model = gltf.scene;
-      model.traverse((child: Object3D) => {
-        if (child instanceof Mesh) child.castShadow = true;
-      });
+      model.traverse((child: Object3D) => { if (child instanceof Mesh) child.castShadow = true; });
       scene.add(model);
 
       // Center, scale, and ground-align the model
@@ -243,7 +192,7 @@ const useThreeViewport = (modelPath: string | null) => {
       };
     });
 
-    /**
+     /**
      * Handles window resize events to keep the camera and renderer aligned with viewport size.
      */
     const handleResize = () => {
@@ -254,33 +203,42 @@ const useThreeViewport = (modelPath: string | null) => {
     };
     window.addEventListener('resize', handleResize);
 
+    // --- Keyboard ---
+    const handleKeyDown = (e: KeyboardEvent) => { keysPressed.current[e.key] = true; };
+    const handleKeyUp = (e: KeyboardEvent) => { keysPressed.current[e.key] = false; };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    // --- Wheel zoom ---
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const camera = cameraRef.current;
+      if (!camera) return;
+      const dir = new THREE.Vector3();
+      camera.getWorldDirection(dir);
+      camera.position.addScaledVector(dir, e.deltaY * 0.001);
+    };
+    containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
+
     // --- Render loop ---
     const animate = () => {
       requestAnimationFrame(animate);
 
       if (camera && scene) {
-        const target = new THREE.Vector3(0, 0, 0); // center of scene
-        const distance = camera.position.distanceTo(target);
-        const moveSpeed = distance * panning_sensitivity; // speed scales with distance
-
         const forward = new THREE.Vector3();
         camera.getWorldDirection(forward);
-
         const right = new THREE.Vector3();
         right.crossVectors(forward, camera.up).normalize();
+        const up = new THREE.Vector3(0,1,0);
+        const moveSpeed = panSensitivity;
 
-        const up = new THREE.Vector3(0, 1, 0);
-
-        // Smooth motion based on keysPressed
-        if (keysPressed.ArrowUp || keysPressed.w) camera.position.addScaledVector(up, moveSpeed);
-        if (keysPressed.ArrowDown || keysPressed.s) camera.position.addScaledVector(up, -moveSpeed);
-        if (keysPressed.ArrowLeft || keysPressed.a) camera.position.addScaledVector(right, -moveSpeed);
-        if (keysPressed.ArrowRight || keysPressed.d) camera.position.addScaledVector(right, moveSpeed);
-        if (keysPressed.q) camera.position.addScaledVector(up, moveSpeed);
-        if (keysPressed.e) camera.position.addScaledVector(up, -moveSpeed);
+        if (keysPressed.current.w || keysPressed.current.ArrowUp) camera.position.addScaledVector(up, moveSpeed);
+        if (keysPressed.current.s || keysPressed.current.ArrowDown) camera.position.addScaledVector(up, -moveSpeed);
+        if (keysPressed.current.a || keysPressed.current.ArrowLeft) camera.position.addScaledVector(right, -moveSpeed);
+        if (keysPressed.current.d || keysPressed.current.ArrowRight) camera.position.addScaledVector(right, moveSpeed);
       }
 
-      renderer.render(scene, camera);
+      if (camera && scene) renderer.render(scene, camera);
     };
     animate();
 
@@ -292,13 +250,10 @@ const useThreeViewport = (modelPath: string | null) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('wheel', handleWheel);
       renderer.dispose();
       scene.clear();
       dracoLoader.dispose();
-      if (renderer.domElement.parentNode) {
-        renderer.domElement.parentNode.removeChild(renderer.domElement);
-      }
+      if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
     };
   }, [modelPath]);
 
@@ -311,50 +266,33 @@ const useThreeViewport = (modelPath: string | null) => {
     const init = initialCameraState.current;
     const orthoInit = orthoCameraState.current;
     if (!scene || !camera || !init) return;
+    scene.rotation.set(0,0,0);
 
-    scene.rotation.set(0, 0, 0);
     if (isPerspective) {
       camera.position.copy(init.position);
       camera.rotation.copy(init.rotation);
-      targetZRef.current = init.position.z;
     } else if (orthoInit) {
       camera.position.copy(orthoInit.position);
       camera.rotation.copy(orthoInit.rotation);
-      targetZRef.current = orthoInit.position.z;
     }
   };
 
   /**
    * Toggles between perspective and orthographic camera projections.
-   */
+  */
   const handleTogglePerspective = () => {
     const camera = cameraRef.current;
     const container = containerRef.current;
     const init = initialCameraState.current;
     if (!camera || !container || !init) return;
-
     const aspect = container.clientWidth / container.clientHeight;
 
     if (isPerspective) {
-      const scale = 2.0;
-      const orthoMatrix = createOrthographicMatrix(
-        -scale * aspect,
-        scale * aspect,
-        scale,
-        -scale,
-        0.1,
-        1000,
-      );
+      const scale = 1.0;
+      const orthoMatrix = createOrthographicMatrix(-scale*aspect, scale*aspect, scale, -scale, 0.1, 1000);
       camera.projectionMatrix.copy(orthoMatrix);
       camera.projectionMatrixInverse.copy(orthoMatrix.clone().invert());
-      const target = new THREE.Vector3(0, 0, 0);
-      const orthoPosition = init.position.clone().multiplyScalar(0.1);
-      camera.position.copy(orthoPosition);
-      camera.lookAt(target);
-      orthoCameraState.current = {
-        position: orthoPosition.clone(),
-        rotation: camera.rotation.clone(),
-      };
+      orthoCameraState.current = { position: camera.position.clone(), rotation: camera.rotation.clone() };
       setIsPerspective(false);
     } else {
       camera.fov = init.fov;
@@ -362,9 +300,6 @@ const useThreeViewport = (modelPath: string | null) => {
       camera.near = init.near;
       camera.far = init.far;
       camera.updateProjectionMatrix();
-      camera.position.copy(init.position);
-      camera.rotation.copy(init.rotation);
-      targetZRef.current = init.position.z;
       setIsPerspective(true);
     }
   };
