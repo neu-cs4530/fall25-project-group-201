@@ -49,7 +49,7 @@ const useGalleryComponentPage = (communityID: string) => {
   const [selectedType, setSelectedType] = useState<MediaType>('all');
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
-  const [loading, setLoading ] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   /**
    * Responsive grid adjustment
@@ -72,16 +72,16 @@ const useGalleryComponentPage = (communityID: string) => {
    * Fetch all gallery posts for the community and filter by communityID.
    */
   const fetchGalleryPosts = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const resGalleryPosts = await getGalleryPosts();
       const filtered = resGalleryPosts.filter(p => p.community === communityID);
       setAllGalleryPosts(filtered);
       setError(null);
-      setLoading(false)
+      setLoading(false);
     } catch {
       setError('Failed to fetch gallery posts.');
-      setLoading(true)
+      setLoading(true);
     }
   }, [communityID]);
 

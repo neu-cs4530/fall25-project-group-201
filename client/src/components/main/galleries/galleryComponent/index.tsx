@@ -183,45 +183,46 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       )}
 
       <div className='carouselContainer'>
-        {(sortedPosts.length > itemsPerPage) &&
-        <button
-          className='carouselArrow left'
-          onClick={prevPage}>
-          <ChevronLeft size={22} />
-        </button>}
+        {sortedPosts.length > itemsPerPage && (
+          <button className='carouselArrow left' onClick={prevPage}>
+            <ChevronLeft size={22} />
+          </button>
+        )}
 
         {/* If loading, display loading state */}
-        {loading && 
-          <div className="grid-container">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="grid-cell"></div>
-          ))}
-        </div>}
+        {loading && (
+          <div className='grid-container'>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className='grid-cell'></div>
+            ))}
+          </div>
+        )}
 
         {/* If not loading, display carousel */}
-        {!loading && 
-        <div className='galleryGrid carouselPage'>
-          {visibleItems.map(post => (
-            <div
-              key={post._id.toString()}
-              className='galleryCard'
-              onClick={async () => {
-                try {
-                  await handleIncrementViews(post);
-                } catch {
-                  setLocalError('Failed to increment views.');
-                }
-                navigate(`/gallery/${post._id.toString()}`);
-              }}>
-              {renderMedia(post)}
-            </div>
-          ))}
-        </div>}
-        {(sortedPosts.length > itemsPerPage) && <button
-          className='carouselArrow right'
-          onClick={nextPage}>
-          <ChevronRight size={22} />
-        </button>}
+        {!loading && (
+          <div className='galleryGrid carouselPage'>
+            {visibleItems.map(post => (
+              <div
+                key={post._id.toString()}
+                className='galleryCard'
+                onClick={async () => {
+                  try {
+                    await handleIncrementViews(post);
+                  } catch {
+                    setLocalError('Failed to increment views.');
+                  }
+                  navigate(`/gallery/${post._id.toString()}`);
+                }}>
+                {renderMedia(post)}
+              </div>
+            ))}
+          </div>
+        )}
+        {sortedPosts.length > itemsPerPage && (
+          <button className='carouselArrow right' onClick={nextPage}>
+            <ChevronRight size={22} />
+          </button>
+        )}
       </div>
 
       {sortedPosts.length > itemsPerPage && (

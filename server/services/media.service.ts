@@ -37,14 +37,10 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
   }
 };
 
-const deleteMedia = async (
-  filepathLocation: string
-): Promise<MediaResponse> => {
+const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => {
   try {
     // Decode URL-encoded characters (like %2F → /)
     const decodedPath = decodeURIComponent(filepathLocation);
-
-    console.log('decoded path, ', decodedPath)
 
     // Find and delete the document
     const deleted = await MediaModel.findOneAndDelete({ filepathLocation: decodedPath });

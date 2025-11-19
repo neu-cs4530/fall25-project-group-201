@@ -7,9 +7,7 @@ import {
   toggleGalleryPostLikes,
   deleteGalleryPost,
 } from '../services/galleryService';
-import {
-  deleteMedia
-} from '../services/mediaService';
+import { deleteMedia } from '../services/mediaService';
 import useUserContext from './useUserContext';
 import { DatabaseGalleryPost } from '../types/types';
 
