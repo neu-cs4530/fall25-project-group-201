@@ -58,6 +58,7 @@ const NewGalleryPostPage = () => {
   const handleAddMedia = () => {
     if (mediaUrl) {
       setUploadedMediaPath(undefined);
+      setMediaSize(undefined)
     }
   };
 
