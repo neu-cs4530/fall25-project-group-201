@@ -92,6 +92,7 @@ const useThreeViewport = (modelPath: string | null) => {
     let previousMouseX = 0;
     let previousMouseY = 0;
     const sensitivity = 0.005;
+    const panning_sensitivity = 0.005; // sensitivity for panning (moving the camera up/down/left/right)
 
     /**
      * Handles mouse down events to begin rotating the scene.
@@ -143,6 +144,44 @@ const useThreeViewport = (modelPath: string | null) => {
       1000,
     );
     cameraRef.current = camera;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const camera = cameraRef.current;
+      if (!camera) return;
+
+      // Get forward vector
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+
+      // Get right vector
+      const right = new THREE.Vector3();
+      right.crossVectors(forward, camera.up).normalize();
+
+      // Up vector (global Y)
+      const up = new THREE.Vector3(0, 1, 0);
+
+      switch (event.key) {
+        case 'ArrowUp':
+        case 'w':
+          camera.position.addScaledVector(up, panning_sensitivity);
+          break;
+        case 'ArrowDown':
+        case 's':
+          camera.position.addScaledVector(up, -panning_sensitivity);
+          break;
+        case 'ArrowLeft':
+        case 'a':
+          camera.position.addScaledVector(right, -panning_sensitivity);
+          break;
+        case 'ArrowRight':
+        case 'd':
+          camera.position.addScaledVector(right, panning_sensitivity);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
 
     /**
      * Handles zooming via mouse wheel events.
