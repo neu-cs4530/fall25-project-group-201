@@ -183,12 +183,12 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       )}
 
       <div className='carouselContainer'>
+        {(sortedPosts.length > itemsPerPage) &&
         <button
           className='carouselArrow left'
-          onClick={prevPage}
-          disabled={sortedPosts.length <= itemsPerPage}>
+          onClick={prevPage}>
           <ChevronLeft size={22} />
-        </button>
+        </button>}
         <div className='galleryGrid carouselPage'>
           {visibleItems.map(post => (
             <div
@@ -206,12 +206,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             </div>
           ))}
         </div>
-        <button
+        {(sortedPosts.length > itemsPerPage) && <button
           className='carouselArrow right'
-          onClick={nextPage}
-          disabled={sortedPosts.length <= itemsPerPage}>
+          onClick={nextPage}>
           <ChevronRight size={22} />
-        </button>
+        </button>}
       </div>
 
       {sortedPosts.length > itemsPerPage && (
