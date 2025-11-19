@@ -31,24 +31,24 @@ const UploadPortfolioModel = () => {
       <h2>Upload Portfolio Media</h2>
 
       <div className='form-section'>
-        <label htmlFor='title'>Model Title</label>
+        <label htmlFor='title'>Project Title</label>
         <input
           id='title'
           type='text'
           value={title}
           onChange={e => setTitle(e.target.value)}
-          placeholder='Give your 3D model a name'
+          placeholder='Give your piece a name'
         />
         {titleErr && <p className='error'>{titleErr}</p>}
       </div>
 
       <div className='form-section'>
-        <label htmlFor='description'>Model Description</label>
+        <label htmlFor='description'>Project Description</label>
         <textarea
           id='description'
           value={description}
           onChange={e => setDescription(e.target.value)}
-          placeholder='Describe your 3D model, techniques used, etc.'
+          placeholder='Describe your project, techniques used, etc.'
         />
         {descriptionErr && <p className='error'>{descriptionErr}</p>}
       </div>

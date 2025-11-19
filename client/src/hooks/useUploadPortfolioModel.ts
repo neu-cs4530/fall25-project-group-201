@@ -31,7 +31,7 @@ const useUploadPortfolioModel = () => {
     let isValid = true;
 
     if (!title) {
-      setTitleErr('Model title cannot be empty');
+      setTitleErr('Media title cannot be empty');
       isValid = false;
     } else if (title.length > 100) {
       setTitleErr('Title cannot be more than 100 characters');
@@ -41,7 +41,7 @@ const useUploadPortfolioModel = () => {
     }
 
     if (!description) {
-      setDescriptionErr('Model description cannot be empty');
+      setDescriptionErr('Media description cannot be empty');
       isValid = false;
     } else {
       setDescriptionErr('');

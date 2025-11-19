@@ -17,6 +17,8 @@ import {
   saveUser,
   updateUser,
 } from '../services/user.service';
+import fs from 'fs';
+import path from 'path';
 
 const userController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
@@ -482,79 +484,80 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Uploads a portfolio model AND thumbnail for a user.
-   */
-  /**
    * Uploads a portfolio model/media AND thumbnail for a user.
-   * Supports both file uploads and URL embeds.
    */
   const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { username, thumbnail, mediaUrl } = req.body;
-      const file = req.file;
+  try {
+    const { username, thumbnail, mediaUrl } = req.body;
+    const file = req.file;
 
-      if (!file && !mediaUrl) {
-        res.status(400).json({ error: 'Either a file or media URL is required' });
-        return;
-      }
-      if (!username) {
-        res.status(400).json({ error: 'Username missing' });
-        return;
-      }
-
-      let mediaToStore: string;
-
-      // If URL is provided, use it directly
-      if (mediaUrl) {
-        mediaToStore = mediaUrl;
-      } else if (file) {
-        // Convert file to base64
-        const isGlbFile = file.originalname.toLowerCase().endsWith('.glb');
-        if (isGlbFile && !thumbnail) {
-          res.status(400).json({ error: 'Thumbnail required for 3D models' });
-          return;
-        }
-        mediaToStore = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
-      } else {
-        res.status(400).json({ error: 'No media provided' });
-        return;
-      }
-
-      const user = await getUserByUsername(username);
-      if ('error' in user) {
-        throw new Error('User not found');
-      }
-
-      const currentModels = user.portfolioModels || [];
-      const currentThumbnails = user.portfolioThumbnails || [];
-
-      // Fill missing thumbnails with empty strings
-      while (currentThumbnails.length < currentModels.length) {
-        currentThumbnails.push('');
-      }
-
-      const updatedModels = [...currentModels, mediaToStore];
-      const updatedThumbnails = [...currentThumbnails, thumbnail || ''];
-
-      const updatedUser = await updateUser(username, {
-        portfolioModels: updatedModels,
-        portfolioThumbnails: updatedThumbnails,
-      });
-
-      if ('error' in updatedUser) {
-        throw new Error(updatedUser.error);
-      }
-
-      socket.emit('userUpdate', {
-        user: updatedUser,
-        type: 'updated',
-      });
-
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      res.status(500).send(`Error uploading portfolio model: ${error}`);
+    if (!file && !mediaUrl) {
+      res.status(400).json({ error: 'Either a file or media URL is required' });
+      return;
     }
-  };
+    if (!username) {
+      res.status(400).json({ error: 'Username missing' });
+      return;
+    }
+
+    let mediaToStore: string;
+
+    // If URL is provided (YouTube, etc.), use it directly
+    if (mediaUrl) {
+      mediaToStore = mediaUrl;
+    } else if (file) {
+      // Save file to filesystem instead of base64
+      const userDir = path.resolve(__dirname, '../../client/public/userData', username);
+      
+      if (!fs.existsSync(userDir)) {
+        fs.mkdirSync(userDir, { recursive: true });
+      }
+
+      const filename = file.originalname;
+      const destPath = path.join(userDir, filename);
+      fs.writeFileSync(destPath, file.buffer);
+
+      // Store only the path
+      mediaToStore = `/userData/${username}/${filename}`;
+    } else {
+      res.status(400).json({ error: 'No media provided' });
+      return;
+    }
+
+    const user = await getUserByUsername(username);
+    if ('error' in user) {
+      throw new Error('User not found');
+    }
+
+    const currentModels = user.portfolioModels || [];
+    const currentThumbnails = user.portfolioThumbnails || [];
+
+    while (currentThumbnails.length < currentModels.length) {
+      currentThumbnails.push('');
+    }
+
+    const updatedModels = [...currentModels, mediaToStore];
+    const updatedThumbnails = [...currentThumbnails, thumbnail || ''];
+
+    const updatedUser = await updateUser(username, {
+      portfolioModels: updatedModels,
+      portfolioThumbnails: updatedThumbnails,
+    });
+
+    if ('error' in updatedUser) {
+      throw new Error(updatedUser.error);
+    }
+
+    socket.emit('userUpdate', {
+      user: updatedUser,
+      type: 'updated',
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).send(`Error uploading portfolio model: ${error}`);
+  }
+};
 
   /**
    * Creates or updates a testimonial from one user to another.
@@ -726,6 +729,90 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+ * Reorders portfolio items by swapping two indices.
+ */
+const reorderPortfolioItems = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { username, fromIndex, toIndex } = req.body;
+
+    if (!username || typeof fromIndex !== 'number' || typeof toIndex !== 'number') {
+      res.status(400).json({ error: 'Missing required fields' });
+      return;
+    }
+
+    const user = await getUserByUsername(username);
+    if ('error' in user) {
+      throw new Error('User not found');
+    }
+
+    const models = [...(user.portfolioModels || [])];
+    const thumbnails = [...(user.portfolioThumbnails || [])];
+
+    // Swap items
+    [models[fromIndex], models[toIndex]] = [models[toIndex], models[fromIndex]];
+    [thumbnails[fromIndex], thumbnails[toIndex]] = [thumbnails[toIndex], thumbnails[fromIndex]];
+
+    const updatedUser = await updateUser(username, {
+      portfolioModels: models,
+      portfolioThumbnails: thumbnails,
+    });
+
+    if ('error' in updatedUser) {
+      throw new Error(updatedUser.error);
+    }
+
+    socket.emit('userUpdate', {
+      user: updatedUser,
+      type: 'updated',
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).send(`Error reordering portfolio items: ${error}`);
+  }
+};
+
+/**
+ * Deletes a single portfolio item by index.
+ */
+const deleteSinglePortfolioItem = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { username, index } = req.body;
+
+    if (!username || typeof index !== 'number') {
+      res.status(400).json({ error: 'Missing required fields' });
+      return;
+    }
+
+    const user = await getUserByUsername(username);
+    if ('error' in user) {
+      throw new Error('User not found');
+    }
+
+    const models = (user.portfolioModels || []).filter((_, i) => i !== index);
+    const thumbnails = (user.portfolioThumbnails || []).filter((_, i) => i !== index);
+
+    const updatedUser = await updateUser(username, {
+      portfolioModels: models,
+      portfolioThumbnails: thumbnails,
+    });
+
+    if ('error' in updatedUser) {
+      throw new Error(updatedUser.error);
+    }
+
+    socket.emit('userUpdate', {
+      user: updatedUser,
+      type: 'updated',
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).send(`Error deleting portfolio item: ${error}`);
+  }
+};
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -739,6 +826,8 @@ const userController = (socket: FakeSOSocket) => {
   router.patch('/updateCustomColors', updateCustomColors);
   router.patch('/updateCustomFont', updateCustomFont);
   router.patch('/updatePortfolioMedia', updatePortfolioMedia);
+  router.patch('/reorderPortfolioItems', reorderPortfolioItems);  // ADD THIS
+router.delete('/deleteSinglePortfolioItem', deleteSinglePortfolioItem);
   router.delete('/deletePortfolioItems', deletePortfolioItems);
   router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);

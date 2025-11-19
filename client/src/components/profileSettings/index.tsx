@@ -14,7 +14,7 @@ import useUserContext from '../../hooks/useUserContext';
 const ProfileSettings: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useUserContext();
-  const [deleteMode, setDeleteMode] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [itemsToDelete, setItemsToDelete] = useState<number[]>([]);
   const {
     userData,
@@ -75,55 +75,60 @@ const ProfileSettings: React.FC = () => {
     navigate(`/user/${userData?.username}/upload-portfolio`);
   };
 
-  const handleDeletePortfolioItems = async () => {
-    if (itemsToDelete.length === 0) {
-      setDeleteMode(false);
-      return;
-    }
+  const handleMovePortfolioItem = async (index: number, direction: 'left' | 'right') => {
+    if (!userData?.portfolioModels) return;
+
+    const newIndex = direction === 'left' ? index - 1 : index + 1;
+
+    if (newIndex < 0 || newIndex >= userData.portfolioModels.length) return;
 
     try {
-      // Send only the indices to delete, not the entire arrays
-      const res = await fetch('/api/user/deletePortfolioItems', {
-        method: 'DELETE',
+      const res = await fetch('/api/user/reorderPortfolioItems', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: userData?.username,
-          indices: itemsToDelete,
+          username: userData.username,
+          fromIndex: index,
+          toIndex: newIndex,
         }),
       });
 
       if (res.ok) {
         const updatedUser = await res.json();
         setUserData(updatedUser);
-        toast.success(`Deleted ${itemsToDelete.length} item(s)`);
-        setDeleteMode(false);
-        setItemsToDelete([]);
+        toast.success('Order updated!');
       } else {
-        toast.error('Failed to delete items');
+        toast.error('Failed to update order');
       }
     } catch (err) {
-      toast.error('Error deleting items');
+      toast.error('Error updating order');
     }
   };
 
-  if (loading) {
-    return (
-      <div
-        className='profile-settings'
-        style={
-          {
-            '--color-primary': userData?.customColors?.primary || '#2563eb',
-            '--color-accent': userData?.customColors?.accent || '#16a34a',
-            '--color-bg': userData?.customColors?.background || '#f2f4f7',
-            'fontFamily': userData?.customFont || 'Inter',
-          } as React.CSSProperties
-        }>
-        <div className='profile-card'>
-          <h2>Loading user data...</h2>
-        </div>
-      </div>
-    );
-  }
+  const handleDeleteSingleItem = async (index: number) => {
+    if (!userData?.portfolioModels) return;
+
+    try {
+      const res = await fetch('/api/user/deleteSinglePortfolioItem', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: userData.username,
+          index,
+        }),
+      });
+
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setUserData(updatedUser);
+        toast.success('Item deleted!');
+      } else {
+        toast.error('Failed to delete item');
+      }
+    } catch (err) {
+      toast.error('Error deleting item');
+    }
+  };
 
   return (
     <div
@@ -147,10 +152,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.bannerImage
                 ? {
-                    backgroundImage: `url(${userData.bannerImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.bannerImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {!userData?.bannerImage && <span>Banner Image</span>}
@@ -175,10 +180,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.profilePicture
                 ? {
-                    backgroundImage: `url(${userData.profilePicture})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.profilePicture})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {!userData?.profilePicture && <span>Profile Picture</span>}
@@ -539,17 +544,10 @@ const ProfileSettings: React.FC = () => {
                 userData.portfolioModels &&
                 userData.portfolioModels.length > 0 && (
                   <button
-                    className='button button-danger'
+                    className='button button-primary'  // Changed from button-danger
                     style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-                    onClick={() => {
-                      if (deleteMode) {
-                        handleDeletePortfolioItems();
-                      } else {
-                        setDeleteMode(true);
-                        setItemsToDelete([]);
-                      }
-                    }}>
-                    {deleteMode ? 'Done Deleting' : 'Delete Media'}
+                    onClick={() => setEditMode(!editMode)}>
+                    {editMode ? 'Done Editing' : 'Edit Posts'}
                   </button>
                 )}
             </div>
@@ -574,16 +572,11 @@ const ProfileSettings: React.FC = () => {
                       key={index}
                       className='portfolio-model-item'
                       style={{
-                        cursor: deleteMode ? 'pointer' : isGlbModel ? 'pointer' : 'default',
+                        cursor: !editMode && isGlbModel ? 'pointer' : 'default',
                         position: 'relative',
-                        border: itemsToDelete.includes(index) ? '3px solid #dc2626' : 'none',
                       }}
                       onClick={() => {
-                        if (deleteMode) {
-                          setItemsToDelete(prev =>
-                            prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index],
-                          );
-                        } else if (isGlbModel) {
+                        if (!editMode && isGlbModel) {
                           navigate(`/user/${userData.username}/portfolio/${index}`, {
                             state: {
                               modelUrl: mediaUrl,
@@ -592,29 +585,46 @@ const ProfileSettings: React.FC = () => {
                           });
                         }
                       }}>
-                      {/* Delete mode indicator */}
-                      {deleteMode && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: '-10px',
-                            right: '-10px',
-                            width: '30px',
-                            height: '30px',
-                            background: itemsToDelete.includes(index) ? '#dc2626' : '#6b7280',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '20px',
-                            color: 'white',
-                            fontWeight: 'bold',
-                            zIndex: 10,
-                            border: '2px solid white',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                          }}>
-                          {itemsToDelete.includes(index) ? '✓' : '−'}
-                        </div>
+                      {/* Edit mode - Reorder arrows AND delete */}
+                      {editMode && (
+                        <>
+                          <div className='portfolio-reorder-controls'>
+                            {index > 0 && (
+                              <button
+                                className='reorder-arrow reorder-left'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMovePortfolioItem(index, 'left');
+                                }}
+                                title='Move left'>
+                                ←
+                              </button>
+                            )}
+                            {index < userData.portfolioModels!.length - 1 && (
+                              <button
+                                className='reorder-arrow reorder-right'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMovePortfolioItem(index, 'right');
+                                }}
+                                title='Move right'>
+                                →
+                              </button>
+                            )}
+                          </div>
+                          {/* Delete button in top-right corner */}
+                          <button
+                            className='portfolio-delete-button'
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm('Delete this item?')) {
+                                handleDeleteSingleItem(index);
+                              }
+                            }}
+                            title='Delete'>
+                            ✕
+                          </button>
+                        </>
                       )}
                       {isGlbModel && thumbnailUrl ? (
                         // 3D model with thumbnail
@@ -1002,8 +1012,6 @@ const ProfileSettings: React.FC = () => {
                     <option value='Open Sans'>Open Sans</option>
                     <option value='Montserrat'>Montserrat</option>
                     <option value='Lato'>Lato</option>
-                    <option value='Poppins'>Poppins</option>
-                    <option value='Playfair Display'>Playfair Display</option>
                     <option value='Courier New'>Courier New (Monospace)</option>
                   </select>
                 </div>
