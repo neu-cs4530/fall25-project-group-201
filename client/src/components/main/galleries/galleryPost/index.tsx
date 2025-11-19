@@ -50,6 +50,9 @@ const GalleryPostPage = () => {
                 incrementDownloads();
                 window.open(post.media, '_blank');
               }}>
+              <span style={{ color: "blue", whiteSpace: "nowrap", fontSize: '11px' }}>
+                {post.mediaSize}
+              </span>
               <Download size={20} color='blue' /> {post.downloads}
             </span>
           )}
