@@ -76,11 +76,11 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleMovePortfolioItem = async (index: number, direction: 'left' | 'right') => {
-    if (!userData?.portfolioModels) return;
+    if (!userData?.portfolio) return;
 
     const newIndex = direction === 'left' ? index - 1 : index + 1;
 
-    if (newIndex < 0 || newIndex >= userData.portfolioModels.length) return;
+    if (newIndex < 0 || newIndex >= userData.portfolio.length) return;
 
     try {
       const res = await fetch('/api/user/reorderPortfolioItems', {
@@ -106,7 +106,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleDeleteSingleItem = async (index: number) => {
-    if (!userData?.portfolioModels) return;
+    if (!userData?.portfolio) return;
 
     try {
       const res = await fetch('/api/user/deleteSinglePortfolioItem', {
@@ -186,7 +186,6 @@ const ProfileSettings: React.FC = () => {
                 }
                 : {}
             }>
-            {!userData?.profilePicture && <span>Profile Picture</span>}
             {canEditProfile && (
               <label className='upload-overlay-label-small'>
                 <input
@@ -541,8 +540,8 @@ const ProfileSettings: React.FC = () => {
               }}>
               <h4 style={{ margin: 0 }}>Portfolio</h4>
               {canEditProfile &&
-                userData.portfolioModels &&
-                userData.portfolioModels.length > 0 && (
+                userData.portfolio &&
+                userData.portfolio.length > 0 && (
                   <button
                     className='button button-primary'  // Changed from button-danger
                     style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
@@ -552,9 +551,10 @@ const ProfileSettings: React.FC = () => {
                 )}
             </div>
             <div className='portfolio-grid-section'>
-              {userData.portfolioModels && userData.portfolioModels.length > 0 ? (
-                userData.portfolioModels.map((mediaUrl, index) => {
-                  const thumbnailUrl = userData.portfolioThumbnails?.[index];
+              {userData.portfolio && userData.portfolio.length > 0 ? (
+                userData.portfolio.map((item, index) => {  // Changed from portfolioModels
+                  const mediaUrl = item.mediaUrl;         // Get from item object
+                  const thumbnailUrl = item.thumbnailUrl;  // Get from item object
 
                   // Determine media type
                   const isGlbModel =
@@ -569,23 +569,25 @@ const ProfileSettings: React.FC = () => {
 
                   return (
                     <div
-                      key={index}
+                      key={item._id?.toString() || `item-${index}`}
                       className='portfolio-model-item'
                       style={{
-                        cursor: !editMode && isGlbModel ? 'pointer' : 'default',
+                        cursor: !editMode ? 'pointer' : 'default',
                         position: 'relative',
                       }}
                       onClick={() => {
-                        if (!editMode && isGlbModel) {
+                        if (!editMode) {
                           navigate(`/user/${userData.username}/portfolio/${index}`, {
                             state: {
-                              modelUrl: mediaUrl,
-                              title: `Portfolio Model ${index + 1}`,
+                              title: item.title,           // Now we have title!
+                              description: item.description, // And description!
+                              mediaUrl: item.mediaUrl,
+                              thumbnailUrl: item.thumbnailUrl,
                             },
                           });
                         }
                       }}>
-                      {/* Edit mode - Reorder arrows AND delete */}
+                      {/* Edit mode controls */}
                       {editMode && (
                         <>
                           <div className='portfolio-reorder-controls'>
@@ -600,7 +602,7 @@ const ProfileSettings: React.FC = () => {
                                 ←
                               </button>
                             )}
-                            {index < userData.portfolioModels!.length - 1 && (
+                            {index < userData.portfolio!.length - 1 && (  // Changed
                               <button
                                 className='reorder-arrow reorder-right'
                                 onClick={(e) => {
@@ -612,7 +614,6 @@ const ProfileSettings: React.FC = () => {
                               </button>
                             )}
                           </div>
-                          {/* Delete button in top-right corner */}
                           <button
                             className='portfolio-delete-button'
                             onClick={(e) => {
@@ -626,11 +627,12 @@ const ProfileSettings: React.FC = () => {
                           </button>
                         </>
                       )}
-                      {isGlbModel && thumbnailUrl ? (
-                        // 3D model with thumbnail
+
+                      {/* Show thumbnail if available (prioritize thumbnails for ALL media) */}
+                      {thumbnailUrl ? (
                         <img
                           src={thumbnailUrl}
-                          alt={`Portfolio model ${index + 1}`}
+                          alt={item.title}
                           style={{
                             width: '100%',
                             height: '200px',
@@ -647,7 +649,7 @@ const ProfileSettings: React.FC = () => {
                         // Display image directly
                         <img
                           src={mediaUrl}
-                          alt={`Portfolio ${index + 1}`}
+                          alt={item.title}
                           style={{
                             width: '100%',
                             height: '200px',
@@ -656,58 +658,20 @@ const ProfileSettings: React.FC = () => {
                           }}
                         />
                       ) : isVideo ? (
-                        // Display video or video embed
-                        (() => {
-                          // Check if it's a YouTube/Vimeo URL
-                          const youtubeMatch = mediaUrl.match(
-                            /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
-                          );
-                          const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
-
-                          if (youtubeMatch) {
-                            return (
-                              <iframe
-                                src={`https://www.youtube.com/embed/${youtubeMatch[1]}`}
-                                style={{
-                                  width: '100%',
-                                  height: '200px',
-                                  borderRadius: '8px',
-                                  border: 'none',
-                                }}
-                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                                allowFullScreen
-                              />
-                            );
-                          } else if (vimeoMatch) {
-                            return (
-                              <iframe
-                                src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
-                                style={{
-                                  width: '100%',
-                                  height: '200px',
-                                  borderRadius: '8px',
-                                  border: 'none',
-                                }}
-                                allow='autoplay; fullscreen'
-                                allowFullScreen
-                              />
-                            );
-                          } else {
-                            // Regular video file
-                            return (
-                              <video
-                                src={mediaUrl}
-                                controls
-                                style={{
-                                  width: '100%',
-                                  height: '200px',
-                                  objectFit: 'cover',
-                                  borderRadius: '8px',
-                                }}
-                              />
-                            );
-                          }
-                        })()
+                        // Video without thumbnail - show play icon
+                        <div style={{
+                          width: '100%',
+                          height: '200px',
+                          background: '#000',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: '3rem',
+                        }}>
+                          ▶️
+                        </div>
                       ) : (
                         // Unknown media type
                         <div

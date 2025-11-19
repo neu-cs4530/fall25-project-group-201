@@ -27,7 +27,7 @@ import NewGalleryPostPage from './main/galleries/NewGalleryPostPage';
 import ThreeViewport from './main/threeViewport';
 import GalleryPostViewport from './main/threeViewport/GalleryPostViewport';
 import UploadPortfolioModel from './main/uploadPortfolioModel';
-import PortfolioViewerPage from './main/threeViewport/PortfolioViewerPage';
+import PortfolioViewerPage from "./main/threeViewport/PortfolioViewerPage";
 import GalleryPostPage from './main/galleries/galleryPost';
 
 const ProtectedRoute = ({

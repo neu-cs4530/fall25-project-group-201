@@ -484,80 +484,84 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Uploads a portfolio model/media AND thumbnail for a user.
+   * Uploads a portfolio item with title, description, and media.
    */
   const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { username, thumbnail, mediaUrl } = req.body;
-    const file = req.file;
+    try {
+      const { username, thumbnail, mediaUrl, title, description } = req.body;
+      const file = req.file;
 
-    if (!file && !mediaUrl) {
-      res.status(400).json({ error: 'Either a file or media URL is required' });
-      return;
-    }
-    if (!username) {
-      res.status(400).json({ error: 'Username missing' });
-      return;
-    }
-
-    let mediaToStore: string;
-
-    // If URL is provided (YouTube, etc.), use it directly
-    if (mediaUrl) {
-      mediaToStore = mediaUrl;
-    } else if (file) {
-      // Save file to filesystem instead of base64
-      const userDir = path.resolve(__dirname, '../../client/public/userData', username);
-      
-      if (!fs.existsSync(userDir)) {
-        fs.mkdirSync(userDir, { recursive: true });
+      if (!file && !mediaUrl) {
+        res.status(400).json({ error: 'Either a file or media URL is required' });
+        return;
+      }
+      if (!username) {
+        res.status(400).json({ error: 'Username missing' });
+        return;
+      }
+      if (!title) {
+        res.status(400).json({ error: 'Title is required' });
+        return;
       }
 
-      const filename = file.originalname;
-      const destPath = path.join(userDir, filename);
-      fs.writeFileSync(destPath, file.buffer);
+      let mediaToStore: string;
 
-      // Store only the path
-      mediaToStore = `/userData/${username}/${filename}`;
-    } else {
-      res.status(400).json({ error: 'No media provided' });
-      return;
+      // If URL is provided (YouTube, etc.), use it directly
+      if (mediaUrl) {
+        mediaToStore = mediaUrl;
+      } else if (file) {
+        // Save file to filesystem instead of base64
+        const userDir = path.resolve(__dirname, '../../client/public/userData', username);
+
+        if (!fs.existsSync(userDir)) {
+          fs.mkdirSync(userDir, { recursive: true });
+        }
+
+        const filename = file.originalname;
+        const destPath = path.join(userDir, filename);
+        fs.writeFileSync(destPath, file.buffer);
+
+        // Store only the path
+        mediaToStore = `/userData/${username}/${filename}`;
+      } else {
+        res.status(400).json({ error: 'No media provided' });
+        return;
+      }
+
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        throw new Error('User not found');
+      }
+
+      const currentPortfolio = user.portfolio || [];
+
+      // Create new portfolio item object
+      const newItem = {
+        title: title.trim(),
+        description: description?.trim() || '',
+        mediaUrl: mediaToStore,
+        thumbnailUrl: thumbnail || '',
+        uploadedAt: new Date(),
+      };
+
+      const updatedPortfolio = [...currentPortfolio, newItem];
+
+      const updatedUser = await updateUser(username, { portfolio: updatedPortfolio });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error uploading portfolio item: ${error}`);
     }
-
-    const user = await getUserByUsername(username);
-    if ('error' in user) {
-      throw new Error('User not found');
-    }
-
-    const currentModels = user.portfolioModels || [];
-    const currentThumbnails = user.portfolioThumbnails || [];
-
-    while (currentThumbnails.length < currentModels.length) {
-      currentThumbnails.push('');
-    }
-
-    const updatedModels = [...currentModels, mediaToStore];
-    const updatedThumbnails = [...currentThumbnails, thumbnail || ''];
-
-    const updatedUser = await updateUser(username, {
-      portfolioModels: updatedModels,
-      portfolioThumbnails: updatedThumbnails,
-    });
-
-    if ('error' in updatedUser) {
-      throw new Error(updatedUser.error);
-    }
-
-    socket.emit('userUpdate', {
-      user: updatedUser,
-      type: 'updated',
-    });
-
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).send(`Error uploading portfolio model: ${error}`);
-  }
-};
+  };
 
   /**
    * Creates or updates a testimonial from one user to another.
@@ -730,86 +734,120 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
- * Reorders portfolio items by swapping two indices.
- */
-const reorderPortfolioItems = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { username, fromIndex, toIndex } = req.body;
+  * Reorders portfolio items by swapping two indices.
+  */
+  const reorderPortfolioItems = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, fromIndex, toIndex } = req.body;
 
-    if (!username || typeof fromIndex !== 'number' || typeof toIndex !== 'number') {
-      res.status(400).json({ error: 'Missing required fields' });
-      return;
+      if (!username || typeof fromIndex !== 'number' || typeof toIndex !== 'number') {
+        res.status(400).json({ error: 'Missing required fields' });
+        return;
+      }
+
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        throw new Error('User not found');
+      }
+
+      const portfolio = [...(user.portfolio || [])];
+
+      // Swap items
+      [portfolio[fromIndex], portfolio[toIndex]] = [portfolio[toIndex], portfolio[fromIndex]];
+
+      const updatedUser = await updateUser(username, { portfolio });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error reordering portfolio items: ${error}`);
     }
+  };
 
-    const user = await getUserByUsername(username);
-    if ('error' in user) {
-      throw new Error('User not found');
-    }
-
-    const models = [...(user.portfolioModels || [])];
-    const thumbnails = [...(user.portfolioThumbnails || [])];
-
-    // Swap items
-    [models[fromIndex], models[toIndex]] = [models[toIndex], models[fromIndex]];
-    [thumbnails[fromIndex], thumbnails[toIndex]] = [thumbnails[toIndex], thumbnails[fromIndex]];
-
-    const updatedUser = await updateUser(username, {
-      portfolioModels: models,
-      portfolioThumbnails: thumbnails,
-    });
-
-    if ('error' in updatedUser) {
-      throw new Error(updatedUser.error);
-    }
-
-    socket.emit('userUpdate', {
-      user: updatedUser,
-      type: 'updated',
-    });
-
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).send(`Error reordering portfolio items: ${error}`);
-  }
-};
-
-/**
+  /**
  * Deletes a single portfolio item by index.
  */
-const deleteSinglePortfolioItem = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { username, index } = req.body;
+  const deleteSinglePortfolioItem = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, index } = req.body;
 
-    if (!username || typeof index !== 'number') {
-      res.status(400).json({ error: 'Missing required fields' });
-      return;
+      if (!username || typeof index !== 'number') {
+        res.status(400).json({ error: 'Missing required fields' });
+        return;
+      }
+
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        throw new Error('User not found');
+      }
+
+      const portfolio = (user.portfolio || []).filter((_, i) => i !== index);
+
+      const updatedUser = await updateUser(username, { portfolio });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error deleting portfolio item: ${error}`);
     }
+  };
+
+  /**
+ * Migrates old portfolioModels/Thumbnails arrays to new portfolio structure.
+ * This is a one-time migration endpoint.
+ */
+const migratePortfolioData = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { username } = req.body;
 
     const user = await getUserByUsername(username);
     if ('error' in user) {
       throw new Error('User not found');
     }
 
-    const models = (user.portfolioModels || []).filter((_, i) => i !== index);
-    const thumbnails = (user.portfolioThumbnails || []).filter((_, i) => i !== index);
+    // Skip if already migrated or no old data
+    if (!user.portfolioModels || user.portfolioModels.length === 0) {
+      res.status(200).json({ message: 'No migration needed', user });
+      return;
+    }
 
-    const updatedUser = await updateUser(username, {
-      portfolioModels: models,
-      portfolioThumbnails: thumbnails,
+    const migratedPortfolio = user.portfolioModels.map((mediaUrl, index) => ({
+      title: `Portfolio Item ${index + 1}`,
+      description: '',
+      mediaUrl,
+      thumbnailUrl: user.portfolioThumbnails?.[index] || '',
+      uploadedAt: new Date(),
+    }));
+
+    const updatedUser = await updateUser(username, { 
+      portfolio: migratedPortfolio,
+      portfolioModels: [],  // Clear old data
+      portfolioThumbnails: []
     });
 
     if ('error' in updatedUser) {
       throw new Error(updatedUser.error);
     }
 
-    socket.emit('userUpdate', {
-      user: updatedUser,
-      type: 'updated',
-    });
-
     res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(500).send(`Error deleting portfolio item: ${error}`);
+    res.status(500).send(`Error migrating portfolio: ${error}`);
   }
 };
 
@@ -826,8 +864,9 @@ const deleteSinglePortfolioItem = async (req: Request, res: Response): Promise<v
   router.patch('/updateCustomColors', updateCustomColors);
   router.patch('/updateCustomFont', updateCustomFont);
   router.patch('/updatePortfolioMedia', updatePortfolioMedia);
-  router.patch('/reorderPortfolioItems', reorderPortfolioItems);  // ADD THIS
-router.delete('/deleteSinglePortfolioItem', deleteSinglePortfolioItem);
+  router.post('/migratePortfolio', migratePortfolioData);
+  router.patch('/reorderPortfolioItems', reorderPortfolioItems);
+  router.delete('/deleteSinglePortfolioItem', deleteSinglePortfolioItem);
   router.delete('/deletePortfolioItems', deletePortfolioItems);
   router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
