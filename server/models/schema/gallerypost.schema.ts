@@ -58,6 +58,10 @@ const galleryPostSchema: Schema = new Schema(
       type: [String],
       default: [],
     },
+    mediaSize: {
+      type: String,
+      required: true,
+    }
   },
   { collection: 'GalleryPost' },
 );

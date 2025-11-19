@@ -25,6 +25,7 @@ const useNewGalleryPost = () => {
   const [thumbnailMediaErr, setThumbnailMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
+  const [ mediaSize, setMediaSize ] = useState<string | undefined>(undefined);
   const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(
     undefined,
   );
@@ -67,6 +68,15 @@ const useNewGalleryPost = () => {
       setMediaErr('');
     }
 
+    if (!mediaSize) {
+      setMediaErr(
+        'Media file size is undefined.',
+      );
+      isValid = false;
+    } else {
+      setMediaErr('');
+    }
+
     // Check for 3D model thumbnail if media is glb
     if (mediaPath?.endsWith('.glb') && !thumbnailMediaPath) {
       setThumbnailMediaErr('You must upload a thumbnail for 3D models.');
@@ -102,6 +112,7 @@ const useNewGalleryPost = () => {
       views: 0,
       downloads: 0,
       likes: [],
+      mediaSize: mediaSize!,
     };
 
     try {
@@ -153,6 +164,8 @@ const useNewGalleryPost = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
+    mediaSize, 
+    setMediaSize,
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,
