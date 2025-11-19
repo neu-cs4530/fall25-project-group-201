@@ -18,7 +18,6 @@ const ProfileSettings: React.FC = () => {
   const {
     userData,
     setUserData,
-    loading,
     editBioMode,
     newBio,
     newPassword,
