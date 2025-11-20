@@ -55,6 +55,7 @@ describe('Gallery Post Controller', () => {
         media: '/test_user/testMedia.png',
         community: '65e9b58910afe6e94fc6e6dd',
         postedAt: new Date('2024-06-06'),
+        tags: [],
       };
 
       const created = {
@@ -63,7 +64,6 @@ describe('Gallery Post Controller', () => {
         views: 0,
         downloads: 0,
         likes: [],
-        tags: [],
       };
 
       createGalleryPostSpy.mockResolvedValueOnce(created);
@@ -92,6 +92,7 @@ describe('Gallery Post Controller', () => {
         user: 'test',
         media: '/x.png',
         community: '123',
+        tags: [],
       });
 
       expect(res.status).toBe(500);
