@@ -56,10 +56,18 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
+    const { tags } = req.body;
+
+    if (!tags || !Array.isArray(tags)) {
+      res.status(400).send('Tags must be provided as an array.');
+      return;
+    }
+
     const galleryPost: GalleryPost = {
       ...req.body,
       views: 0,
       downloads: 0,
+      tags
     };
 
     try {

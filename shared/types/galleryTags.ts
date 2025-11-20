@@ -1,4 +1,7 @@
 
+/**
+ * Enum for gallery post tags.
+ */
 export const GalleryTags = [
   'graphic_design',
   'illustration',
