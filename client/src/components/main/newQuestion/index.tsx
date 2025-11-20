@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
@@ -41,6 +41,7 @@ const NewQuestion = () => {
 
   const { user: currentUser } = useUserContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
 
   /**
    * Handles changes to the media URL input.
@@ -62,8 +63,11 @@ const NewQuestion = () => {
   };
 
   const handleAddCameraRef = () => {
-    let tempText = text;
-    setText(tempText + " #camera" + "-" + "t(1,2,3)" + "-" + "r(0,90,0)");
+    if (rotationSetting) {
+      let tempText = text;
+      setText(tempText + " #camera" + "-" + "t(1,2,3)" + "-"
+        + `r(${rotationSetting[0]},${rotationSetting[1]},${rotationSetting[2]})`);
+    }
   }
 
   /**
@@ -250,7 +254,7 @@ const NewQuestion = () => {
           {mediaPath?.endsWith('.glb') && (
             <div className='model-preview'>
               <p>3D Model Preview:</p>
-              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting}/>
               <button
                 type='button'
                 className='delete-media-btn'

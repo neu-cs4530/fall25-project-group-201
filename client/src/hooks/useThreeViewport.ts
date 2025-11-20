@@ -55,7 +55,7 @@ const createOrthographicMatrix = (
  * @param {string | null} modelPath - Path to the 3D model (GLB) to load. If null, the scene initializes empty.
  * @returns Object containing scene control refs and functions.
  */
-const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] | null) => {
+const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] | null, setRotationSetting?:  React.Dispatch<React.SetStateAction<number[] | null>>) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -78,11 +78,11 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
     rotation: THREE.Euler;
   } | null>(null);
 
-  /**
+/**
    * Main scene setup and teardown lifecycle.
    * Initializes the renderer, scene, lighting, controls, and loads the model.
    */
-  useEffect(() => {
+    useEffect(() => {
     if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
@@ -114,6 +114,9 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
       const deltaY = event.clientY - previousMouseY;
       scene.rotation.y += deltaX * sensitivity;
       scene.rotation.x += deltaY * sensitivity;
+      if (setRotationSetting) {
+        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
+      }
       previousMouseX = event.clientX;
       previousMouseY = event.clientY;
     };
@@ -144,7 +147,7 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
     );
     cameraRef.current = camera;
 
-    /**
+     /**
      * Handles zooming via mouse wheel events.
      * Moves the camera along its forward vector.
      * @param {WheelEvent} event - Browser wheel event.
@@ -162,7 +165,7 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
     };
     containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
 
-    // --- Renderer setup ---
+     // --- Renderer setup ---
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     rendererRef.current = renderer;
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
@@ -193,6 +196,7 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
 
     loader.load(modelPath, gltf => {
       const model = gltf.scene;
+      model.userData.isModel = true;
       model.traverse((child: Object3D) => {
         if (child instanceof Mesh) child.castShadow = true;
       });
@@ -211,15 +215,9 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
       box.setFromObject(model);
       model.position.y -= box.min.y;
 
-      console.log(rotationSetting)
-
       // Apply rotation after centering and scaling
       if (rotationSetting) {
-        model.rotation.set(
-          THREE.MathUtils.degToRad(rotationSetting[0]),
-          THREE.MathUtils.degToRad(rotationSetting[1]),
-          THREE.MathUtils.degToRad(rotationSetting[2])
-        );
+        model.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
       }
 
       // Frame model in view
@@ -240,7 +238,7 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
       };
     });
 
-    /**
+     /**
      * Handles window resize events to keep the camera and renderer aligned with viewport size.
      */
     const handleResize = () => {
@@ -272,12 +270,25 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
     };
-  }, [modelPath, rotationSetting]);
+  }, [modelPath]);
 
+  // --- Rotation update effect (runs whenever rotationSetting changes) ---
+    useEffect(() => {
+      if (!rotationSetting) return;
+      const scene = sceneRef.current;
+      if (!scene) return;
+
+      const model = scene.children.find(obj => obj.userData?.isModel);
+      if (!model) return;
+
+      scene.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
+    }, [rotationSetting]);
+
+  
   /**
    * Resets the camera to its initial position and rotation based on current view mode.
    */
-  const handleResetCamera = () => {
+    const handleResetCamera = () => {
     const scene = sceneRef.current;
     const camera = cameraRef.current;
     const init = initialCameraState.current;

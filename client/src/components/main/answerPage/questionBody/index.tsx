@@ -47,31 +47,37 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
 
   const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
 
-  // Example input: "#camera-t(1,2,3)-r(0,90,0) ."
   const handleCameraRefClick = (cameraRef: string) => {
-    // Remove leading "#camera-" prefix
-    const ref = cameraRef.replace(/^#camera-/, '');
+  // Remove leading "#camera-" prefix
+  const ref = cameraRef.replace(/^#camera-/, '');
 
-    // Regex: match t(...) and optional r(...)
-    const regex = /t\(([^)]+)\)(?:-r\(([^)]+)\))?/;
-    const match = ref.match(regex);
+  // Regex supporting decimals, negatives, and optional rotation
+  // Matches t(x,y,z) and optional -r(x,y,z)
+  const regex = /t\(\s*([^)]+?)\s*\)(?:-r\(\s*([^)]+?)\s*\))?/;
+  const match = ref.match(regex);
 
-    if (!match) {
-      console.error('Invalid cameraRef format:', cameraRef);
-      return;
-    }
+  if (!match) {
+    console.error('Invalid cameraRef format:', cameraRef);
+    return;
+  }
 
-    // Translation is required
-    const translation = match[1].split(',').map(Number); // [1,2,3]
+  // Translation is required → split and parse safely
+  const translation = match[1]
+    .split(',')
+    .map(v => Number(v.trim())); // handles decimals / negatives
 
-    // Rotation is optional
-    const rotation = match[2].split(',').map(Number); // [0,90,0]
+  // Rotation is optional
+  const rotation = match[2]
+    ? match[2].split(',').map(v => Number(v.trim()))
+    : null;
 
-    console.log('Translation:', translation);
-    console.log('Rotation:', rotation);
+  console.log('Translation:', translation);
+  console.log('Rotation:', rotation);
 
+  if (rotation) {
     setRotationSetting(rotation);
-  };
+  }
+};
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
@@ -81,35 +87,43 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
         {!isGLB && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
         {isGLB && 
           <Markdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              a: ({ href, children }) => {
-                // Detect camera links
-                if (href?.startsWith('#camera-')) {
-                  const cameraRef = href.replace('#', ''); // "camera-t(1,2,3)-r(0,90,0)"
-                  return (
-                    <span
-                      style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
-                      onClick={() => handleCameraRefClick(cameraRef)}
-                    >
-                      {children} {/* children contains the displayed text */}
-                    </span>
-                  );
-                }
-                // Normal links
-                return <a href={href}>{children}</a>;
-              },
+  remarkPlugins={[remarkGfm]}
+  components={{
+    a: ({ href, children }) => {
+      // Detect camera links
+      if (href && href.startsWith('#camera-')) {
+        // We want: "camera-t(1,2,3)-r(0,90,0)"
+        const cleanRef = href.replace(/^#/, '');
+
+        return (
+          <span
+            style={{
+              color: 'blue',
+              cursor: 'pointer',
+              textDecoration: 'underline'
             }}
+            onClick={() => handleCameraRefClick(cleanRef)}
           >
-            {preprocessCameraRefs(text)}
-          </Markdown>
+            {children} 
+          </span>
+        );
+      }
+
+      // Normal links
+      return <a href={href}>{children}</a>;
+    },
+  }}
+>
+  {preprocessCameraRefs(text)}
+</Markdown>
+
           }
 
 
         {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
           <div className='three-wrapper'>
-            <ThreeViewport key={mediaPath} modelPath={mediaPath} rotationSetting={rotationSetting} />
+            <ThreeViewport key={mediaPath} modelPath={mediaPath} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting}/>
           </div>
         )}
 
