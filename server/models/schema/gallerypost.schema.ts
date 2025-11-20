@@ -62,6 +62,7 @@ const galleryPostSchema: Schema = new Schema(
     mediaSize: {
       type: String,
       required: true,
+    },
     tags: {
       type: [String],
       enum: GALLERY_TAGS,
