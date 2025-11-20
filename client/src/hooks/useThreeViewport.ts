@@ -49,7 +49,7 @@ const createOrthographicMatrix = (
 };
 
 function countTopologicalEdges(geometry: THREE.BufferGeometry) {
-  const pos = geometry.attributes.position;
+  const pos = geometry.getAttribute('position') as THREE.BufferAttribute;
   const index = geometry.index;
 
   // Build unique vertex map (same as vertex function)
@@ -85,9 +85,9 @@ function countTopologicalEdges(geometry: THREE.BufferGeometry) {
   return edges.size;
 }
 
-function getVid(pos: THREE.BufferAttribute, vertMap: Map<string, number>, i: number) {
+function getVid(pos: THREE.BufferAttribute, vertMap: Map<string, number>, i: number): number {
   const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
-  return vertMap.get(key);
+  return vertMap.get(key)!;
 }
 
 function addEdge(edgeSet: Set<string>, a: number, b: number) {
