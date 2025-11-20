@@ -61,6 +61,11 @@ const NewQuestion = () => {
     }
   };
 
+  const handleAddCameraRef = () => {
+    let tempText = text;
+    setText(tempText + " #camera" + "-" + "t(1,2,3)" + "-" + "r(0,90,0)");
+  }
+
   /**
    * Handles file uploads for media attachments.
    * Calls `handleFileChange` from the hook and uploads the file to the backend.
@@ -132,6 +137,16 @@ const NewQuestion = () => {
           placeholder='Describe your question in detail'
         />
         {textErr && <p className='error'>{textErr}</p>}
+
+        {/* Provide ability to add a camera reference if the mediaPath ends with .glb */}
+        {mediaPath?.endsWith('.glb') && (
+        <button
+          type='button'
+          onClick={() => {
+            handleAddCameraRef()
+          }}>
+          Button
+        </button>)}
       </div>
 
       <div className='form-section'>
