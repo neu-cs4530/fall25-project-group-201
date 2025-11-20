@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Request } from 'express';
+import { GalleryTag, GalleryTags } from './galleryTags';
 
 /**
  * Represents a Gallery post
@@ -22,6 +23,7 @@ export interface GalleryPost {
   views: number;
   downloads: number;
   likes: string[];
+  tags: GalleryTag[];
 }
 
 /**
@@ -53,6 +55,7 @@ export interface CreateGalleryPostRequest extends Request {
     views: number;
     downloads: number;
     likes: string[];
+    tags: GalleryTag[];
   };
 }
 
