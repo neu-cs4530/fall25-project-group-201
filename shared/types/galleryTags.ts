@@ -17,4 +17,5 @@ export const GALLERY_TAGS = [
   'motion_graphics',
   'concept_art',
 ] as const;
+
 export type GalleryTag = (typeof GALLERY_TAGS)[number];
