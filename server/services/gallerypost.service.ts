@@ -3,7 +3,7 @@ import GalleryPostModel from '../models/gallerypost.model';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { ObjectId } from 'mongodb';
-import { GalleryTags } from '@fake-stack-overflow/shared/types/galleryTags';
+import { GALLERY_TAGS } from '@fake-stack-overflow/shared/types/galleryTags';
 
 /**
  * Fetches all gallery posts from the database.
@@ -36,7 +36,7 @@ export const createGalleryPost = async (galleryPost: GalleryPost): Promise<Galle
       throw new Error('Tags must be an array');
     }
 
-    const invalidTags = galleryPost.tags.filter(tag => !GalleryTags.includes(tag));
+    const invalidTags = galleryPost.tags.filter(tag => !GALLERY_TAGS.includes(tag));
     if (invalidTags.length > 0) {
       throw new Error(`Invalid tags: ${invalidTags.join(', ')}`);
     }

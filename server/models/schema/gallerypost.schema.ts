@@ -1,4 +1,4 @@
-import { GalleryTags } from '@fake-stack-overflow/shared/types/galleryTags';
+import { GALLERY_TAGS } from '@fake-stack-overflow/shared/types/galleryTags';
 import { Schema } from 'mongoose';
 
 /**
@@ -61,7 +61,7 @@ const galleryPostSchema: Schema = new Schema(
     },
     tags: {
       type: [String],
-      enum: GalleryTags,
+      enum: GALLERY_TAGS,
       default: [],
       required: false,
     },

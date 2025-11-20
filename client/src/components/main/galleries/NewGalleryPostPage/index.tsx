@@ -3,7 +3,7 @@ import './index.css';
 import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
 import useNewGalleryPost from '../../../../hooks/useNewGalleryPost';
-import { GalleryTags } from '@fake-stack-overflow/shared/types/galleryTags';
+import { GALLERY_TAGS, GalleryTag } from '@fake-stack-overflow/shared/types/galleryTags';
 
 /**
  * Component to display a form for creating a new gallery post
@@ -182,7 +182,7 @@ const NewGalleryPostPage = () => {
       <div className='form-section'>
         <label>Tags</label>
         <div className='tags-container'>
-          {GalleryTags.map(tag => (
+          {GALLERY_TAGS.map((tag: GalleryTag) => (
             <label key={tag} className='tag-checkbox'>
               <input type='checkbox' checked={tags.includes(tag)} onChange={() => toggleTag(tag)} />
               {tag.replace(/_/g, ' ')}
