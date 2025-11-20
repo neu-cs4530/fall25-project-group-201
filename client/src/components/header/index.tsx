@@ -34,80 +34,74 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="header">
-      <div className="header-left" onClick={() => navigate('/')}>
-        <img src="/images/logo.png" alt="Logo" className="header-logo" />
+    <header className='header'>
+      <div className='header-left' onClick={() => navigate('/')}>
+        <img src='/images/logo.png' alt='Logo' className='header-logo' />
       </div>
 
-      <div className="header-center">
-        <div className="search-wrapper">
-          <Search size={18} className="searchIcon" />
-      <input
-            id="searchBar"
-            className="search-input"
-            placeholder="Search…"
-            type="text"
-        value={val}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-      />
+      <div className='header-center'>
+        <div className='search-wrapper'>
+          <Search size={18} className='searchIcon' />
+          <input
+            id='searchBar'
+            className='search-input'
+            placeholder='Search…'
+            type='text'
+            value={val}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+          />
         </div>
       </div>
 
-      <div className="header-right">
-        <div ref={menuRef} className="profile-dropdown-container">
+      <div className='header-right'>
+        <div ref={menuRef} className='profile-dropdown-container'>
           {currentUser && (
-            <div className="profile-trigger" onClick={() => setOpen((prev) => !prev)}>
+            <div className='profile-trigger' onClick={() => setOpen(prev => !prev)}>
               <div
-                className="navbar-profile-icon"
+                className='navbar-profile-icon'
                 style={{
                   backgroundImage: currentUser.profilePicture
                     ? `url(${currentUser.profilePicture})`
                     : 'url(/default-profile.png)',
-                }}
-              ></div>
-              
+                }}></div>
+
               <svg
-                className={`dropdown-arrow ${open ? "open" : ""}`}
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-              >
+                className={`dropdown-arrow ${open ? 'open' : ''}`}
+                width='16'
+                height='16'
+                viewBox='0 0 24 24'>
                 <path
-                  d="M7 10l5 5 5-5"
-                  stroke="black"
-                  strokeWidth="2"
-                  fill="none"
-                  strokeLinecap="round"
+                  d='M7 10l5 5 5-5'
+                  stroke='black'
+                  strokeWidth='2'
+                  fill='none'
+                  strokeLinecap='round'
                 />
               </svg>
             </div>
           )}
 
           {open && (
-            <div className="profile-menu">
+            <div className='profile-menu'>
               <div
-                className="profile-menu-item"
+                className='profile-menu-item'
                 onClick={() => {
                   setOpen(false);
                   navigate(`/user/${currentUser.username}`);
-                }}
-              >
+                }}>
                 Profile
               </div>
 
               <div
-                className="profile-menu-item"
-                onClick={() =>
-                  logout({ logoutParams: { returnTo: window.location.origin } })
-                }
-              >
+                className='profile-menu-item'
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
                 Log Out
               </div>
             </div>
           )}
         </div>
-    </div>
+      </div>
     </header>
   );
 };
