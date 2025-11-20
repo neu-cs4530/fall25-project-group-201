@@ -113,25 +113,25 @@ const CommentSection = ({
     setMediaError(null);
 
     if (file) {
-      const res_media = await handleAddMedia(file);
-      if (!res_media) {
+      const resMedia = await handleAddMedia(file);
+      if (!resMedia) {
         setMediaError('Failed to upload media');
         return;
       }
 
-      if (!res_media.filepathLocation) {
+      if (!resMedia.filepathLocation) {
         setMediaError('Filepath location of media is undefined.');
         return;
       }
 
-      tempMediaPath = res_media.filepathLocation;
+      tempMediaPath = resMedia.filepathLocation;
 
-      if (!res_media.fileSize) {
+      if (!resMedia.fileSize) {
         setMediaError('Media size is undefined');
         return;
       }
 
-      mediaSize = res_media.fileSize;
+      mediaSize = resMedia.fileSize;
     }
 
     if (mediaUrl) {

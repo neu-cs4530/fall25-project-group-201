@@ -32,7 +32,6 @@ const NewGalleryPostPage = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
-    mediaSize,
     setMediaSize,
     postGalleryPost,
     handleFileChange,

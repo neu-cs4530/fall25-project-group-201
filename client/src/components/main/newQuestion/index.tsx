@@ -33,7 +33,6 @@ const NewQuestion = () => {
     setMediaUrl,
     mediaPath,
     setUploadedMediaPath,
-    mediaSize,
     setMediaSize,
     postQuestion,
     communityList,

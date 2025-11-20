@@ -48,6 +48,53 @@ const createOrthographicMatrix = (
   return m;
 };
 
+function countTopologicalEdges(geometry: THREE.BufferGeometry) {
+  const pos = geometry.attributes.position;
+  const index = geometry.index;
+
+  // Build unique vertex map (same as vertex function)
+  const vertMap = new Map<string, number>();
+  let vid = 0;
+
+  for (let i = 0; i < pos.count; i += 1) {
+    const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
+    if (!vertMap.has(key)) vertMap.set(key, (vid += 1));
+  }
+
+  // Make index array (handle non-indexed geometry)
+  const idx = index ? index.array : [...Array(pos.count).keys()];
+
+  // Build a set of unique edges
+  const edges = new Set<string>();
+
+  for (let i = 0; i < idx.length; i += 3) {
+    const a = idx[i];
+    const b = idx[i + 1];
+    const c = idx[i + 2];
+
+    // convert to topological vertex IDs
+    const va = getVid(pos, vertMap, a);
+    const vb = getVid(pos, vertMap, b);
+    const vc = getVid(pos, vertMap, c);
+
+    addEdge(edges, va, vb);
+    addEdge(edges, vb, vc);
+    addEdge(edges, vc, va);
+  }
+
+  return edges.size;
+}
+
+function getVid(pos: THREE.BufferAttribute, vertMap: Map<string, number>, i: number) {
+  const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
+  return vertMap.get(key);
+}
+
+function addEdge(edgeSet: Set<string>, a: number, b: number) {
+  const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+  edgeSet.add(key);
+}
+
 /**
  * React hook that sets up a Three.js viewport with optional model loading,
  * camera controls, and orthographic/perspective toggle.
@@ -85,7 +132,7 @@ const useThreeViewport = (modelPath: string | null) => {
     const pos = geometry.attributes.position;
     const unique = new Set<string>();
 
-    for (let i = 0; i < pos.count; i++) {
+    for (let i = 0; i < pos.count; i += 1) {
       const x = pos.getX(i).toFixed(5);
       const y = pos.getY(i).toFixed(5);
       const z = pos.getZ(i).toFixed(5);
@@ -94,53 +141,6 @@ const useThreeViewport = (modelPath: string | null) => {
     }
 
     return unique.size;
-  }
-
-  function countTopologicalEdges(geometry: THREE.BufferGeometry) {
-    const pos = geometry.attributes.position;
-    const index = geometry.index;
-
-    // Build unique vertex map (same as vertex function)
-    const vertMap = new Map<string, number>();
-    let vid = 0;
-
-    for (let i = 0; i < pos.count; i++) {
-      const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
-      if (!vertMap.has(key)) vertMap.set(key, vid++);
-    }
-
-    // Make index array (handle non-indexed geometry)
-    const idx = index ? index.array : [...Array(pos.count).keys()];
-
-    // Build a set of unique edges
-    const edges = new Set<string>();
-
-    for (let i = 0; i < idx.length; i += 3) {
-      const a = idx[i];
-      const b = idx[i + 1];
-      const c = idx[i + 2];
-
-      // convert to topological vertex IDs
-      const va = getVid(pos, vertMap, a);
-      const vb = getVid(pos, vertMap, b);
-      const vc = getVid(pos, vertMap, c);
-
-      addEdge(edges, va, vb);
-      addEdge(edges, vb, vc);
-      addEdge(edges, vc, va);
-    }
-
-    return edges.size;
-  }
-
-  function getVid(pos: THREE.BufferAttribute, vertMap: Map<string, number>, i: number) {
-    const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
-    return vertMap.get(key);
-  }
-
-  function addEdge(edgeSet: Set<string>, a: number, b: number) {
-    const key = a < b ? `${a}-${b}` : `${b}-${a}`;
-    edgeSet.add(key);
   }
 
   /**
