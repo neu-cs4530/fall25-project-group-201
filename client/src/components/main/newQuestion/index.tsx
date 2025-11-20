@@ -33,7 +33,7 @@ const NewQuestion = () => {
     setMediaUrl,
     mediaPath,
     setUploadedMediaPath,
-    mediaSize, 
+    mediaSize,
     setMediaSize,
     postQuestion,
     communityList,
@@ -103,7 +103,7 @@ const NewQuestion = () => {
       if (data?.filepathLocation) {
         setUploadedMediaPath(data.filepathLocation);
         if (data.fileSize) {
-          setMediaSize(data.fileSize)
+          setMediaSize(data.fileSize);
         }
         setMediaErr(null);
       } else {
@@ -232,7 +232,7 @@ const NewQuestion = () => {
                 onClick={() => {
                   setMediaUrl('');
                   setUploadedMediaPath(undefined);
-                  setMediaSize(undefined)
+                  setMediaSize(undefined);
                 }}>
                 Remove
               </button>

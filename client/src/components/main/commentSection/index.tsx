@@ -83,11 +83,14 @@ const CommentSection = ({
   }
 
   const handleDownload = (mediaSize: string, extension: string) => {
-    const confirmed = window.confirm(`This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`);
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
     if (!confirmed) return;
 
-    {/* Logic for downloading the file */}
-
+    {
+      /* Logic for downloading the file */
+    }
   };
 
   function getExtension(path: string): string {
@@ -325,9 +328,17 @@ const CommentSection = ({
                       })()}
                   </div>
                   <small className='comment-meta'>
-                    {comment.mediaPath && comment.mediaSize && 
-                      <Download className='comment-download-icon' size={20} onClick={() => handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))} style={{ cursor: 'pointer' }} color='blue' />
-                    }
+                    {comment.mediaPath && comment.mediaSize && (
+                      <Download
+                        className='comment-download-icon'
+                        size={20}
+                        onClick={() =>
+                          handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))
+                        }
+                        style={{ cursor: 'pointer' }}
+                        color='blue'
+                      />
+                    )}
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
                   </small>
                 </li>

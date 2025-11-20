@@ -24,8 +24,16 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 
-  const { containerRef, sceneRef, rendererRef, handleResetCamera, handleTogglePerspective, modelVerts, modelEdges, modelFaces } =
-    useThreeViewport(activeModel);
+  const {
+    containerRef,
+    sceneRef,
+    rendererRef,
+    handleResetCamera,
+    handleTogglePerspective,
+    modelVerts,
+    modelEdges,
+    modelFaces,
+  } = useThreeViewport(activeModel);
 
   // HDRI Hook Integration
   const { currentPreset, switchPreset, isLoading } = useHDRI({

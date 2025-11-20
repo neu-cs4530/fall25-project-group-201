@@ -25,11 +25,14 @@ interface QuestionBodyProps {
 }
 
 const handleDownload = (mediaSize: string, extension: string) => {
-  const confirmed = window.confirm(`This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`);
+  const confirmed = window.confirm(
+    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+  );
   if (!confirmed) return;
 
-  {/* Logic for downloading the file */}
-
+  {
+    /* Logic for downloading the file */
+  }
 };
 
 function getExtension(path: string): string {
@@ -50,7 +53,15 @@ function getExtension(path: string): string {
  * @param mediaPath File path to the uploaded media
  * @param mediaUrl Url to the attached media
  */
-const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, mediaSize }: QuestionBodyProps) => {
+const QuestionBody = ({
+  views,
+  text,
+  askby,
+  meta,
+  mediaPath,
+  mediaUrl,
+  mediaSize,
+}: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
   const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
@@ -120,9 +131,14 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, mediaSize
         )}
       </div>
 
-      {mediaPath && mediaSize && ext &&
-      <Download size={20} onClick={() => handleDownload(mediaSize, ext)} color='blue' style={{ cursor: 'pointer' }}/>
-      }
+      {mediaPath && mediaSize && ext && (
+        <Download
+          size={20}
+          onClick={() => handleDownload(mediaSize, ext)}
+          color='blue'
+          style={{ cursor: 'pointer' }}
+        />
+      )}
 
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>

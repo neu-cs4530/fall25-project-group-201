@@ -25,7 +25,7 @@ const useNewGalleryPost = () => {
   const [thumbnailMediaErr, setThumbnailMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
-  const [ mediaSize, setMediaSize ] = useState<string | undefined>(undefined);
+  const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
   const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(
     undefined,
   );
@@ -69,9 +69,7 @@ const useNewGalleryPost = () => {
     }
 
     if (!mediaSize) {
-      setMediaErr(
-        'Media file size is undefined.',
-      );
+      setMediaErr('Media file size is undefined.');
       isValid = false;
     } else {
       setMediaErr('');
@@ -164,7 +162,7 @@ const useNewGalleryPost = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
-    mediaSize, 
+    mediaSize,
     setMediaSize,
     postGalleryPost,
     handleFileChange,

@@ -6,12 +6,12 @@ import {
   VoteUpdatePayload,
   PopulatedDatabaseQuestion,
   PopulatedDatabaseAnswer,
+  DatabaseMedia,
 } from '../types/types';
 import useUserContext from './useUserContext';
 import addComment from '../services/commentService';
 import { getQuestionById } from '../services/questionService';
 import mediaService from '../services/mediaService';
-import { DatabaseMedia } from '../types/types';
 
 /**
  * Custom React hook for managing the Answer Page functionality.

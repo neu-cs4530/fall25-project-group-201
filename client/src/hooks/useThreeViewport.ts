@@ -143,7 +143,6 @@ const useThreeViewport = (modelPath: string | null) => {
     edgeSet.add(key);
   }
 
-
   /**
    * Main scene setup and teardown lifecycle.
    * Initializes the renderer, scene, lighting, controls, and loads the model.
@@ -433,7 +432,7 @@ const useThreeViewport = (modelPath: string | null) => {
     isPerspective,
     modelVerts,
     modelFaces,
-    modelEdges
+    modelEdges,
   };
 };
 

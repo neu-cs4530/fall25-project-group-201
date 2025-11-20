@@ -32,7 +32,7 @@ const NewGalleryPostPage = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
-    mediaSize, 
+    mediaSize,
     setMediaSize,
     postGalleryPost,
     handleFileChange,
@@ -58,7 +58,7 @@ const NewGalleryPostPage = () => {
   const handleAddMedia = () => {
     if (mediaUrl) {
       setUploadedMediaPath(undefined);
-      setMediaSize(undefined)
+      setMediaSize(undefined);
     }
   };
 

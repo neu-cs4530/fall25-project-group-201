@@ -5,11 +5,14 @@ import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
 
 const handleDownload = (mediaSize: string, extension: string) => {
-  const confirmed = window.confirm(`This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`);
+  const confirmed = window.confirm(
+    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+  );
   if (!confirmed) return;
 
-  {/* Logic for downloading the file */}
-
+  {
+    /* Logic for downloading the file */
+  }
 };
 
 /**
@@ -58,7 +61,12 @@ const GalleryPostPage = () => {
                 incrementDownloads();
                 window.open(post.media, '_blank');
               }}>
-              <Download size={20} onClick={() => handleDownload(post.mediaSize, ext)} color='blue' /> {post.downloads}
+              <Download
+                size={20}
+                onClick={() => handleDownload(post.mediaSize, ext)}
+                color='blue'
+              />{' '}
+              {post.downloads}
             </span>
           )}
           {isAuthor && (
