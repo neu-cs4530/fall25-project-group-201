@@ -55,7 +55,13 @@ const createOrthographicMatrix = (
  * @param {string | null} modelPath - Path to the 3D model (GLB) to load. If null, the scene initializes empty.
  * @returns Object containing scene control refs and functions.
  */
-const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] | null, setRotationSetting?:  React.Dispatch<React.SetStateAction<number[] | null>>) => {
+const useThreeViewport = (
+  modelPath: string | null, 
+  rotationSetting?: number[] | null, 
+  setRotationSetting?:  React.Dispatch<React.SetStateAction<number[] | null>>,
+  translationSetting?: number[] | null, 
+  setTranslationSetting?:  React.Dispatch<React.SetStateAction<number[] | null>>,
+) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -162,6 +168,10 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
       const zoomAmount = event.deltaY * 0.001;
       camera.position.addScaledVector(direction, zoomAmount);
       targetZRef.current = camera.position.z;
+
+      if (setTranslationSetting) {
+        setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+      }
     };
     containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
 
@@ -218,6 +228,11 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
       // Apply rotation after centering and scaling
       if (rotationSetting) {
         model.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
+      }
+
+      // Apply translation setting
+      if (translationSetting) {
+        camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
       }
 
       // Frame model in view
@@ -283,6 +298,15 @@ const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] |
 
       scene.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
     }, [rotationSetting]);
+
+  
+    // --- Translation update effect (runs whenever translationSetting changes) ---
+    useEffect(() => {
+      if (!translationSetting) return;
+      const camera = cameraRef.current;
+      
+      camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
+    }, [translationSetting]);
 
   
   /**

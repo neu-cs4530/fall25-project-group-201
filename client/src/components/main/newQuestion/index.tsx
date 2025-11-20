@@ -42,6 +42,7 @@ const NewQuestion = () => {
   const { user: currentUser } = useUserContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
+  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
 
   /**
    * Handles changes to the media URL input.
@@ -63,12 +64,24 @@ const NewQuestion = () => {
   };
 
   const handleAddCameraRef = () => {
-    if (rotationSetting) {
-      let tempText = text;
-      const [rx, ry, rz] = rotationSetting.map(v => Number(v.toFixed(2))); // round to 2 decimal places
-      setText(tempText + " #camera" + "-" + "t(1,2,3)" + "-"
-        + `r(${rx},${ry},${rz})`);
+
+    let translationSettingToSend = translationSetting;
+    let rotatationSettingToSend = rotationSetting;
+
+    if (!translationSetting) { 
+      translationSettingToSend = [0,0,0] 
     }
+    if (!rotationSetting) { 
+      rotatationSettingToSend = [0,0,0] 
+    }
+
+    console.log(translationSetting)
+    console.log(rotationSetting)
+
+    let tempText = text;
+    const [tx, ty, tz] = translationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
+    const [rx, ry, rz] = rotatationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
+    setText(tempText + " #camera" + "-" + `t(${tx},${ty},${tz})` + "-" + `r(${rx},${ry},${rz})`);
   }
 
   /**
@@ -255,7 +268,7 @@ const NewQuestion = () => {
           {mediaPath?.endsWith('.glb') && (
             <div className='model-preview'>
               <p>3D Model Preview:</p>
-              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting}/>
+              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting} translationSetting={translationSetting} setTranslationSetting={setTranslationSetting}/>
               <button
                 type='button'
                 className='delete-media-btn'

@@ -46,6 +46,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
   const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
+  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
 
   const handleCameraRefClick = (cameraRef: string) => {
   // Remove leading "#camera-" prefix
@@ -76,6 +77,10 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
 
   if (rotation) {
     setRotationSetting(rotation);
+  }
+
+  if (translation) {
+    setTranslationSetting(translation);
   }
 };
 
@@ -123,7 +128,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
         {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
           <div className='three-wrapper'>
-            <ThreeViewport key={mediaPath} modelPath={mediaPath} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting}/>
+            <ThreeViewport key={mediaPath} modelPath={mediaPath} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting} translationSetting={translationSetting} setTranslationSetting={setTranslationSetting}/>
           </div>
         )}
 
