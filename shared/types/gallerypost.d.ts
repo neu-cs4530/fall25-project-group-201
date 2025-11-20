@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 import { Request } from 'express';
-import { GALLERY_TAGS } from './galleryTags';
 
 /**
  * Represents a Gallery post
