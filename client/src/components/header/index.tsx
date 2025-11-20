@@ -45,7 +45,7 @@ const Header = () => {
           <input
             id='searchBar'
             className='search-input'
-            placeholder='Search…'
+            placeholder='Search questions…'
             type='text'
             value={val}
             onChange={handleInputChange}
