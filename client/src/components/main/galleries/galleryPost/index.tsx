@@ -63,7 +63,7 @@ const GalleryPostPage = () => {
               }}>
               <Download
                 size={20}
-                onClick={() => handleDownload(post.mediaSize, ext)}
+                onClick={() => handleDownload(post.mediaSize, ext!)}
                 color='blue'
               />{' '}
               {post.downloads}
