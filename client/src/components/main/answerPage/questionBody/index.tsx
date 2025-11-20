@@ -3,6 +3,7 @@ import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
 import { preprocessCameraRefs } from '../../cameraRef/CameraRef';
+import { useState } from 'react';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -44,6 +45,34 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
   const isVideoUrl = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
+  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
+
+  // Example input: "#camera-t(1,2,3)-r(0,90,0) ."
+  const handleCameraRefClick = (cameraRef: string) => {
+    // Remove leading "#camera-" prefix
+    const ref = cameraRef.replace(/^#camera-/, '');
+
+    // Regex: match t(...) and optional r(...)
+    const regex = /t\(([^)]+)\)(?:-r\(([^)]+)\))?/;
+    const match = ref.match(regex);
+
+    if (!match) {
+      console.error('Invalid cameraRef format:', cameraRef);
+      return;
+    }
+
+    // Translation is required
+    const translation = match[1].split(',').map(Number); // [1,2,3]
+
+    // Rotation is optional
+    const rotation = match[2].split(',').map(Number); // [0,90,0]
+
+    console.log('Translation:', translation);
+    console.log('Rotation:', rotation);
+
+    setRotationSetting(rotation);
+  };
+
   return (
     <div id='questionBody' className='questionBody right_padding'>
       <div className='bold_title answer_question_view'>{views} views</div>
@@ -55,14 +84,15 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
             remarkPlugins={[remarkGfm]}
             components={{
               a: ({ href, children }) => {
+                // Detect camera links
                 if (href?.startsWith('#camera-')) {
-                  const cameraRef = href.replace('#camera-', '');
+                  const cameraRef = href.replace('#', ''); // "camera-t(1,2,3)-r(0,90,0)"
                   return (
                     <span
                       style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
-                      onClick={() => alert(`Clicked camera ref: ${cameraRef}`)}
+                      onClick={() => handleCameraRefClick(cameraRef)}
                     >
-                      @{children}
+                      {children} {/* children contains the displayed text */}
                     </span>
                   );
                 }
@@ -72,13 +102,14 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
             }}
           >
             {preprocessCameraRefs(text)}
-          </Markdown>}
+          </Markdown>
+          }
 
 
         {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
           <div className='three-wrapper'>
-            <ThreeViewport key={mediaPath} modelPath={mediaPath} />
+            <ThreeViewport key={mediaPath} modelPath={mediaPath} rotationSetting={rotationSetting} />
           </div>
         )}
 

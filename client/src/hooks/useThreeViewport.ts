@@ -55,7 +55,7 @@ const createOrthographicMatrix = (
  * @param {string | null} modelPath - Path to the 3D model (GLB) to load. If null, the scene initializes empty.
  * @returns Object containing scene control refs and functions.
  */
-const useThreeViewport = (modelPath: string | null) => {
+const useThreeViewport = (modelPath: string | null, rotationSetting?: number[] | null) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -196,6 +196,7 @@ const useThreeViewport = (modelPath: string | null) => {
       model.traverse((child: Object3D) => {
         if (child instanceof Mesh) child.castShadow = true;
       });
+
       scene.add(model);
 
       // Center, scale, and ground-align the model
@@ -209,6 +210,17 @@ const useThreeViewport = (modelPath: string | null) => {
       model.scale.setScalar(scale);
       box.setFromObject(model);
       model.position.y -= box.min.y;
+
+      console.log(rotationSetting)
+
+      // Apply rotation after centering and scaling
+      if (rotationSetting) {
+        model.rotation.set(
+          THREE.MathUtils.degToRad(rotationSetting[0]),
+          THREE.MathUtils.degToRad(rotationSetting[1]),
+          THREE.MathUtils.degToRad(rotationSetting[2])
+        );
+      }
 
       // Frame model in view
       const radius = box.getBoundingSphere(new THREE.Sphere()).radius;
@@ -260,7 +272,7 @@ const useThreeViewport = (modelPath: string | null) => {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
     };
-  }, [modelPath]);
+  }, [modelPath, rotationSetting]);
 
   /**
    * Resets the camera to its initial position and rotation based on current view mode.

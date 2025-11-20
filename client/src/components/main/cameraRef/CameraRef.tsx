@@ -5,7 +5,7 @@ interface CameraRefProps {
 }
 
 export const preprocessCameraRefs = (text: string) => {
-  return text.replace(/@(\w+)/g, '[$1](#camera-$1)');
+  return text.replace(/(#camera-[\w\(\),-]+)/g, '[$1]($1)');
 };
 
 const CameraRef: React.FC<CameraRefProps> = ({ cameraRef }) => {

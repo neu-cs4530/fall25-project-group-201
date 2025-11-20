@@ -11,6 +11,7 @@ import cameraIcon from '../../../../public/icons/cameraIcon.png';
 interface ThreeViewportProps {
   modelPath?: string | null;
   allowUpload?: boolean;
+  rotationSetting?: number[] | null;
 }
 
 const HDRI_PRESETS = [
@@ -20,12 +21,12 @@ const HDRI_PRESETS = [
   { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
-const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportProps) => {
+const ThreeViewport = ({ modelPath = null, allowUpload = false, rotationSetting = [0,0,0]}: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 
   const { containerRef, sceneRef, rendererRef, handleResetCamera, handleTogglePerspective } =
-    useThreeViewport(activeModel);
+    useThreeViewport(activeModel, rotationSetting);
 
   // HDRI Hook Integration
   const { currentPreset, switchPreset, isLoading } = useHDRI({
