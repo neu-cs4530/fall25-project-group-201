@@ -4,7 +4,7 @@ import { validateHyperlink } from '../tool';
 import { addGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
 import { GalleryPost } from '../types/types';
-
+import { GalleryTag, GalleryTags } from '@fake-stack-overflow/shared/types/galleryTags';
 /**
  * Custom hook for managing a new gallery post form, including state, validation,
  * file handling, media, and submission logic.
@@ -28,6 +28,8 @@ const useNewGalleryPost = () => {
   const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(
     undefined,
   );
+  const [tags, setTags] = useState<GalleryTag[]>([]);
+  const [tagErr, setTagErr] = useState<string>('');
   const { communityID } = useParams<{ communityID: string }>();
 
   /**
@@ -82,6 +84,13 @@ const useNewGalleryPost = () => {
       setCommunityErr('');
     }
 
+    if (tags.length === 0) {
+      setTagErr('Please select at least one tag.');
+      isValid = false;
+    } else {
+      setTagErr('');
+    }
+
     return isValid;
   };
 
@@ -102,6 +111,7 @@ const useNewGalleryPost = () => {
       views: 0,
       downloads: 0,
       likes: [],
+      tags,
     };
 
     try {
@@ -136,6 +146,19 @@ const useNewGalleryPost = () => {
     setUploadedThumbnailMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
   };
 
+  /**
+   * Toggles the state of attaching a tag to a post.
+   * @param tag - The selected tag
+   */
+  const toggleTag = (tag: GalleryTag) => {
+    setTags(prev =>
+      prev.includes(tag)
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+
   return {
     title,
     setTitle,
@@ -156,6 +179,9 @@ const useNewGalleryPost = () => {
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,
+    tags,
+    toggleTag,
+    tagErr,
   };
 };
 

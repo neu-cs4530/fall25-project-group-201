@@ -3,6 +3,7 @@ import './index.css';
 import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
 import useNewGalleryPost from '../../../../hooks/useNewGalleryPost';
+import { GalleryTags } from '@fake-stack-overflow/shared/types/galleryTags';
 
 /**
  * Component to display a form for creating a new gallery post
@@ -35,6 +36,9 @@ const NewGalleryPostPage = () => {
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,
+    tags,
+    tagErr,
+    toggleTag,
   } = useNewGalleryPost();
 
   const { user: currentUser } = useUserContext();
@@ -173,6 +177,23 @@ const NewGalleryPostPage = () => {
           placeholder='Share more details about your project'
         />
         {textErr && <p className='error'>{textErr}</p>}
+      </div>
+
+      <div className="form-section">
+        <label>Tags</label>
+        <div className="tags-container">
+          {GalleryTags.map(tag => (
+            <label key={tag} className="tag-checkbox">
+              <input
+                type="checkbox"
+                checked={tags.includes(tag)}
+                onChange={() => toggleTag(tag)}
+              />
+              {tag.replace(/_/g, ' ')}  
+            </label>
+          ))}
+        </div>
+        {tagErr && <p className="error">{tagErr}</p>}
       </div>
 
       <div className='form-section media-section'>
