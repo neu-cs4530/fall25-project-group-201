@@ -67,7 +67,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
       ...req.body,
       views: 0,
       downloads: 0,
-      tags
+      tags,
     };
 
     try {

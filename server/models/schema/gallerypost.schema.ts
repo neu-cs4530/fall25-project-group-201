@@ -64,7 +64,7 @@ const galleryPostSchema: Schema = new Schema(
       enum: GalleryTags,
       default: [],
       required: false,
-    }
+    },
   },
   { collection: 'GalleryPost' },
 );
