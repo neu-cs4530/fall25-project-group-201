@@ -4,7 +4,7 @@ import { validateHyperlink } from '../tool';
 import { addGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
 import { GalleryPost } from '../types/types';
-import { GalleryTag } from '@fake-stack-overflow/shared/types/galleryTags';
+import { GalleryTag } from '../types/galleryTags';
 
 /**
  * Custom hook for managing a new gallery post form, including state, validation,
