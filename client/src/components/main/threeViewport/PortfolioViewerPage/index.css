@@ -1,0 +1,61 @@
+.galleryPostPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: #fff;
+}
+
+.mediaWrapper {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.mediaWrapper iframe,
+.mediaWrapper video,
+.mediaWrapper img {
+  max-height: 600px;
+  max-width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.postInfo {
+  width: 100%;
+  text-align: left;
+}
+
+.postInfo h1 {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.postMeta {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.postStats {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.statItem.delete {
+  color: red;
+}
+
+.postDescription {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}

@@ -41,6 +41,7 @@ describe('Gallery Post Service', () => {
     downloads: 0,
     likes: [],
     mediaSize: '13 GB',
+    tags: [],
   };
 
   const mockGalleryPostInputWithThumbnail: GalleryPost = {

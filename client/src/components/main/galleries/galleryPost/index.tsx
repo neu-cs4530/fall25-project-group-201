@@ -37,6 +37,7 @@ const GalleryPostPage = () => {
   const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
   const youTubeId = getYouTubeVideoId(url);
   const vimeoId = getVimeoVideoId(url);
+  const formatTag = (tag: string) => tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   return (
     <div className='galleryPostPage'>
@@ -75,6 +76,16 @@ const GalleryPostPage = () => {
             </span>
           )}
         </div>
+
+        {post.tags && post.tags.length > 0 && (
+          <div className='postTags'>
+            {post.tags.map(tag => (
+              <span key={tag} className='tagChip'>
+                {formatTag(tag)}
+              </span>
+            ))}
+          </div>
+        )}
 
         <p className='postDescription'>{post.description}</p>
       </div>

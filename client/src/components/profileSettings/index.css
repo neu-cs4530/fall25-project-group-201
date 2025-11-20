@@ -369,8 +369,8 @@
 
 .profile-settings .upload-overlay-label-small {
   position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
+  bottom: 10px;
+  right: 10px;
   cursor: pointer;
 }
 
@@ -383,8 +383,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   transition: background 0.2s;
 }
 
@@ -435,4 +435,70 @@
   gap: 0.5rem;
   color: #6b7280;
   font-weight: 500;
+}
+
+.profile-settings .portfolio-reorder-controls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.profile-settings .reorder-arrow {
+  pointer-events: auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.9);
+  color: white;
+  border: 2px solid white;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-settings .reorder-arrow:hover {
+  background: var(--color-accent);
+  transform: scale(1.1);
+}
+
+.profile-settings .reorder-arrow:active {
+  transform: scale(0.95);
+}
+
+.profile-settings .portfolio-delete-button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  border: 2px solid white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.profile-settings .portfolio-delete-button:hover {
+  background: rgba(153, 27, 27, 0.95);
+  transform: scale(1.1);
 }

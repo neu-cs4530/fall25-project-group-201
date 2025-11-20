@@ -23,6 +23,7 @@ export interface GalleryPost {
   downloads: number;
   likes: string[];
   mediaSize: string;
+  tags: GalleryTag[];
 }
 
 /**
@@ -55,6 +56,7 @@ export interface CreateGalleryPostRequest extends Request {
     downloads: number;
     likes: string[];
     mediaSize: string;
+    tags: GalleryTag[];
   };
 }
 
