@@ -1,4 +1,4 @@
-import { GALLERY_TAGS } from '@fake-stack-overflow/shared/types/galleryTags';
+import { GALLERY_TAGS } from '../../types/galleryTags';
 import { Schema } from 'mongoose';
 
 /**

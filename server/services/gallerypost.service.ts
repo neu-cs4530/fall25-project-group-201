@@ -3,7 +3,7 @@ import GalleryPostModel from '../models/gallerypost.model';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { ObjectId } from 'mongodb';
-import { GALLERY_TAGS } from '@fake-stack-overflow/shared/types/galleryTags';
+import { GALLERY_TAGS } from '../types/galleryTags';
 
 /**
  * Fetches all gallery posts from the database.
