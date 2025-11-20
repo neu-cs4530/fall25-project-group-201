@@ -7,6 +7,7 @@ import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
+import { Download } from 'lucide-react';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -79,6 +80,20 @@ const CommentSection = ({
     } catch {
       return false;
     }
+  }
+
+  const handleDownload = (mediaSize: string, extension: string) => {
+    const confirmed = window.confirm(`This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`);
+    if (!confirmed) return;
+
+    {/* Logic for downloading the file */}
+
+  };
+
+  function getExtension(path: string): string {
+    const lastDot = path.lastIndexOf('.');
+    if (lastDot === -1) return '';
+    return path.slice(lastDot + 1).toLowerCase();
   }
 
   /**
@@ -310,6 +325,9 @@ const CommentSection = ({
                       })()}
                   </div>
                   <small className='comment-meta'>
+                    {comment.mediaPath && comment.mediaSize && 
+                      <Download className='comment-download-icon' size={20} onClick={() => handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))} style={{ cursor: 'pointer' }} color='blue' />
+                    }
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
                   </small>
                 </li>
