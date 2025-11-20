@@ -15,6 +15,7 @@ const mockGalleryPost: DatabaseGalleryPost = {
   views: 0,
   downloads: 0,
   likes: [],
+  tags: [],
 };
 
 const mockGalleryPost2: DatabaseGalleryPost = {
@@ -28,6 +29,7 @@ const mockGalleryPost2: DatabaseGalleryPost = {
   views: 0,
   downloads: 0,
   likes: [],
+  tags: [],
 };
 
 const createGalleryPostSpy = jest.spyOn(gallerypostService, 'createGalleryPost');
@@ -61,6 +63,7 @@ describe('Gallery Post Controller', () => {
         views: 0,
         downloads: 0,
         likes: [],
+        tags: [],
       };
 
       createGalleryPostSpy.mockResolvedValueOnce(created);
