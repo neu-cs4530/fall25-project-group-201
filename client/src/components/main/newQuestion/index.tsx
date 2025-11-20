@@ -65,8 +65,9 @@ const NewQuestion = () => {
   const handleAddCameraRef = () => {
     if (rotationSetting) {
       let tempText = text;
+      const [rx, ry, rz] = rotationSetting.map(v => Number(v.toFixed(2))); // round to 2 decimal places
       setText(tempText + " #camera" + "-" + "t(1,2,3)" + "-"
-        + `r(${rotationSetting[0]},${rotationSetting[1]},${rotationSetting[2]})`);
+        + `r(${rx},${ry},${rz})`);
     }
   }
 
