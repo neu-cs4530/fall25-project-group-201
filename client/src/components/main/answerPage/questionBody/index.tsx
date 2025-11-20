@@ -2,6 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
+import { preprocessCameraRefs } from '../../cameraRef/CameraRef';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -48,7 +49,31 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
       <div className='bold_title answer_question_view'>{views} views</div>
 
       <div className='answer_question_text'>
-        <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
+        {!isGLB && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
+        {isGLB && 
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ href, children }) => {
+                if (href?.startsWith('#camera-')) {
+                  const cameraRef = href.replace('#camera-', '');
+                  return (
+                    <span
+                      style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+                      onClick={() => alert(`Clicked camera ref: ${cameraRef}`)}
+                    >
+                      @{children}
+                    </span>
+                  );
+                }
+                // Normal links
+                return <a href={href}>{children}</a>;
+              },
+            }}
+          >
+            {preprocessCameraRefs(text)}
+          </Markdown>}
+
 
         {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
