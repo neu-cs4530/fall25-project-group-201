@@ -76,7 +76,7 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     setVisibleTooltip(null);
   };
 
-  const {buttonRef, popoverRef, isVisible, toggleVisibility} = useInfoPopover();
+  const { isVisible, toggleVisibility } = useInfoPopover();
 
   return (
     <div className='viewport-card'>
@@ -97,14 +97,11 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
         ⤢
       </div>
 
-      <div
-        className='info-icon'
-        onClick={toggleVisibility}
-      >
+      <div className='info-icon' onClick={toggleVisibility}>
         ⓘ
       </div>
 
-      {isVisible && <InfoPopover/>}
+      {isVisible && <InfoPopover />}
 
       {/* <InfoPopover/> */}
 

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from 'react';
 
 const useInfoPopover = () => {
   const [isVisible, setIsVisible] = useState(false); // Manages the visibility state of the popover
@@ -12,7 +12,7 @@ const useInfoPopover = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        popoverRef.current && 
+        popoverRef.current &&
         buttonRef.current &&
         !popoverRef.current.contains(event.target as Node) &&
         !buttonRef.current.contains(event.target as Node)
@@ -27,10 +27,10 @@ const useInfoPopover = () => {
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-    }
+    };
   }, [isVisible]);
 
-  return {buttonRef, popoverRef, isVisible, toggleVisibility}
+  return { buttonRef, popoverRef, isVisible, toggleVisibility };
 };
 
 export default useInfoPopover;
