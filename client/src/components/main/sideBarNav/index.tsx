@@ -2,6 +2,16 @@ import { useState } from 'react';
 import './index.css';
 import { NavLink, useLocation } from 'react-router-dom';
 import useUserContext from '../../../hooks/useUserContext';
+import {
+  MessageCircleQuestionMark,
+  Hash,
+  MessageCircle,
+  Users,
+  Gamepad2,
+  Users as CommunitiesIcon,
+  Bookmark,
+  ChevronDown,
+} from 'lucide-react';
 
 /**
  * The SideBarNav component has a sidebar navigation menu for all the main pages.
@@ -21,62 +31,78 @@ const SideBarNav = () => {
     location.pathname === path ? 'message-option-selected ' : '';
 
   return (
-    <div id='sideBarNav' className='sideBarNav'>
+    <div id="sideBarNav" className="sideBarNav">
       <NavLink
-        to='/home'
-        id='menu_questions'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        to="/home"
+        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
+      >
+        <MessageCircleQuestionMark size={16} className="menu-icon" />
         Questions
       </NavLink>
+
       <NavLink
-        to='/tags'
-        id='menu_tag'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        to="/tags"
+        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
+      >
+        <Hash size={16} className="menu-icon" />
         Tags
       </NavLink>
-      <NavLink
-        to='/messaging'
-        id='menu_messaging'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
-        onClick={toggleOptions}>
+
+      <div className={`menu_button ${location.pathname.startsWith('/messaging') ? 'menu_selected' : ''}`} onClick={toggleOptions}>
+        <MessageCircle size={16} className="menu-icon" />
         Messaging
-      </NavLink>
+        <ChevronDown
+          size={16}
+          className={`dropdown-arrow ${showOptions ? 'open' : ''}`}
+        />
+      </div>
+
       {showOptions && (
-        <div className='additional-options'>
+        <div className="additional-options">
           <NavLink
-            to='/messaging'
-            className={`menu_button message-options ${isActiveOption('/messaging')}`}>
+            to="/messaging"
+            className={`menu_button message-options ${isActiveOption('/messaging')}`}
+          >
             Global Messages
           </NavLink>
           <NavLink
-            to='/messaging/direct-message'
-            className={`menu_button message-options ${isActiveOption('/messaging/direct-message')}`}>
+            to="/messaging/direct-message"
+            className={`menu_button message-options ${isActiveOption('/messaging/direct-message')}`}
+          >
             Direct Messages
           </NavLink>
         </div>
       )}
+
       <NavLink
-        to='/users'
-        id='menu_users'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        to="/users"
+        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
+      >
+        <Users size={16} className="menu-icon" />
         Users
       </NavLink>
+
       <NavLink
-        to='/games'
-        id='menu_games'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        to="/games"
+        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
+      >
+        <Gamepad2 size={16} className="menu-icon" />
         Games
       </NavLink>
+
       <NavLink
-        to='/communities'
-        id='menu_communities'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        to="/communities"
+        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
+      >
+        <CommunitiesIcon size={16} className="menu-icon" />
         Communities
       </NavLink>
+
       <NavLink
         to={`/collections/${user.username}`}
-        id='menu_collections'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
+      >
+        <Bookmark size={16} className="menu-icon" />
         My Collections
       </NavLink>
     </div>
