@@ -60,3 +60,19 @@
   font-size: 0.9rem;
   line-height: 1.4;
 }
+
+.postTags {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tagChip {
+  background: #f1f1f1;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #444;
+  border: 1px solid #ddd;
+}

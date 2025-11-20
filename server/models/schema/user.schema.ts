@@ -51,6 +51,19 @@ const userSchema: Schema = new Schema(
       type: String,
       default: '',
     },
+    portfolio: {
+      type: [
+        {
+          title: { type: String, required: true },
+          description: { type: String, default: '' },
+          mediaUrl: { type: String, required: true },
+          thumbnailUrl: { type: String, default: '' },
+          uploadedAt: { type: Date, default: Date.now },
+          _id: { type: Schema.Types.ObjectId, auto: true },
+        },
+      ],
+      default: [],
+    },
     // implement other implementations of 3D models
     portfolioModels: {
       type: [String],

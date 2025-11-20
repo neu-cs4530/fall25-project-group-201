@@ -15,6 +15,7 @@ const mockGalleryPost: DatabaseGalleryPost = {
   views: 0,
   downloads: 0,
   likes: [],
+  tags: [],
 };
 
 const mockGalleryPost2: DatabaseGalleryPost = {
@@ -28,6 +29,7 @@ const mockGalleryPost2: DatabaseGalleryPost = {
   views: 0,
   downloads: 0,
   likes: [],
+  tags: [],
 };
 
 const createGalleryPostSpy = jest.spyOn(gallerypostService, 'createGalleryPost');
@@ -53,6 +55,7 @@ describe('Gallery Post Controller', () => {
         media: '/test_user/testMedia.png',
         community: '65e9b58910afe6e94fc6e6dd',
         postedAt: new Date('2024-06-06'),
+        tags: [],
       };
 
       const created = {
@@ -89,6 +92,7 @@ describe('Gallery Post Controller', () => {
         user: 'test',
         media: '/x.png',
         community: '123',
+        tags: [],
       });
 
       expect(res.status).toBe(500);

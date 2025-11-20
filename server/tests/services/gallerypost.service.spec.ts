@@ -40,6 +40,7 @@ describe('Gallery Post Service', () => {
     views: 0,
     downloads: 0,
     likes: [],
+    tags: [],
   };
 
   const mockGalleryPostInputWithThumbnail: GalleryPost = {
