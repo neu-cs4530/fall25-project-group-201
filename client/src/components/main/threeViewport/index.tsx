@@ -7,6 +7,8 @@ import './index.css';
 import orthoIcon from '../../../../public/icons/orthoIcon.png';
 import perspIcon from '../../../../public/icons/perspIcon.png';
 import cameraIcon from '../../../../public/icons/cameraIcon.png';
+import InfoPopover from './InfoPopover';
+import useInfoPopover from '../../../hooks/useInfoPopover';
 
 interface ThreeViewportProps {
   modelPath?: string | null;
@@ -74,6 +76,8 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     setVisibleTooltip(null);
   };
 
+  const { isVisible, toggleVisibility } = useInfoPopover();
+
   return (
     <div className='viewport-card'>
       <div ref={containerRef} className='viewport-canvas' />
@@ -92,6 +96,14 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
         }}>
         ⤢
       </div>
+
+      <div className='info-icon' onClick={toggleVisibility}>
+        ⓘ
+      </div>
+
+      {isVisible && <InfoPopover />}
+
+      {/* <InfoPopover/> */}
 
       <div className='upload-section'>
         {allowUpload && (
