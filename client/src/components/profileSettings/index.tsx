@@ -14,12 +14,10 @@ import useUserContext from '../../hooks/useUserContext';
 const ProfileSettings: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useUserContext();
-  const [deleteMode, setDeleteMode] = useState(false);
-  const [itemsToDelete, setItemsToDelete] = useState<number[]>([]);
+  const [editMode, setEditMode] = useState(false);
   const {
     userData,
     setUserData,
-    loading,
     editBioMode,
     newBio,
     newPassword,
@@ -75,55 +73,60 @@ const ProfileSettings: React.FC = () => {
     navigate(`/user/${userData?.username}/upload-portfolio`);
   };
 
-  const handleDeletePortfolioItems = async () => {
-    if (itemsToDelete.length === 0) {
-      setDeleteMode(false);
-      return;
-    }
+  const handleMovePortfolioItem = async (index: number, direction: 'left' | 'right') => {
+    if (!userData?.portfolio) return;
+
+    const newIndex = direction === 'left' ? index - 1 : index + 1;
+
+    if (newIndex < 0 || newIndex >= userData.portfolio.length) return;
 
     try {
-      // Send only the indices to delete, not the entire arrays
-      const res = await fetch('/api/user/deletePortfolioItems', {
-        method: 'DELETE',
+      const res = await fetch('/api/user/reorderPortfolioItems', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: userData?.username,
-          indices: itemsToDelete,
+          username: userData.username,
+          fromIndex: index,
+          toIndex: newIndex,
         }),
       });
 
       if (res.ok) {
         const updatedUser = await res.json();
         setUserData(updatedUser);
-        toast.success(`Deleted ${itemsToDelete.length} item(s)`);
-        setDeleteMode(false);
-        setItemsToDelete([]);
+        toast.success('Order updated!');
       } else {
-        toast.error('Failed to delete items');
+        toast.error('Failed to update order');
       }
     } catch (err) {
-      toast.error('Error deleting items');
+      toast.error('Error updating order');
     }
   };
 
-  if (loading) {
-    return (
-      <div
-        className='profile-settings'
-        style={
-          {
-            '--color-primary': userData?.customColors?.primary || '#2563eb',
-            '--color-accent': userData?.customColors?.accent || '#16a34a',
-            '--color-bg': userData?.customColors?.background || '#f2f4f7',
-            'fontFamily': userData?.customFont || 'Inter',
-          } as React.CSSProperties
-        }>
-        <div className='profile-card'>
-          <h2>Loading user data...</h2>
-        </div>
-      </div>
-    );
-  }
+  const handleDeleteSingleItem = async (index: number) => {
+    if (!userData?.portfolio) return;
+
+    try {
+      const res = await fetch('/api/user/deleteSinglePortfolioItem', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: userData.username,
+          index,
+        }),
+      });
+
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setUserData(updatedUser);
+        toast.success('Item deleted!');
+      } else {
+        toast.error('Failed to delete item');
+      }
+    } catch (err) {
+      toast.error('Error deleting item');
+    }
+  };
 
   return (
     <div
@@ -181,7 +184,6 @@ const ProfileSettings: React.FC = () => {
                   }
                 : {}
             }>
-            {!userData?.profilePicture && <span>Profile Picture</span>}
             {canEditProfile && (
               <label className='upload-overlay-label-small'>
                 <input
@@ -535,28 +537,21 @@ const ProfileSettings: React.FC = () => {
                 marginBottom: '1rem',
               }}>
               <h4 style={{ margin: 0 }}>Portfolio</h4>
-              {canEditProfile &&
-                userData.portfolioModels &&
-                userData.portfolioModels.length > 0 && (
-                  <button
-                    className='button button-danger'
-                    style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-                    onClick={() => {
-                      if (deleteMode) {
-                        handleDeletePortfolioItems();
-                      } else {
-                        setDeleteMode(true);
-                        setItemsToDelete([]);
-                      }
-                    }}>
-                    {deleteMode ? 'Done Deleting' : 'Delete Media'}
-                  </button>
-                )}
+              {canEditProfile && userData.portfolio && userData.portfolio.length > 0 && (
+                <button
+                  className='button button-primary' // Changed from button-danger
+                  style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                  onClick={() => setEditMode(!editMode)}>
+                  {editMode ? 'Done Editing' : 'Edit Posts'}
+                </button>
+              )}
             </div>
             <div className='portfolio-grid-section'>
-              {userData.portfolioModels && userData.portfolioModels.length > 0 ? (
-                userData.portfolioModels.map((mediaUrl, index) => {
-                  const thumbnailUrl = userData.portfolioThumbnails?.[index];
+              {userData.portfolio && userData.portfolio.length > 0 ? (
+                userData.portfolio.map((item, index) => {
+                  // Changed from portfolioModels
+                  const mediaUrl = item.mediaUrl; // Get from item object
+                  const thumbnailUrl = item.thumbnailUrl; // Get from item object
 
                   // Determine media type
                   const isGlbModel =
@@ -571,56 +566,70 @@ const ProfileSettings: React.FC = () => {
 
                   return (
                     <div
-                      key={index}
+                      key={item._id?.toString() || `item-${index}`}
                       className='portfolio-model-item'
                       style={{
-                        cursor: deleteMode ? 'pointer' : isGlbModel ? 'pointer' : 'default',
+                        cursor: !editMode ? 'pointer' : 'default',
                         position: 'relative',
-                        border: itemsToDelete.includes(index) ? '3px solid #dc2626' : 'none',
                       }}
                       onClick={() => {
-                        if (deleteMode) {
-                          setItemsToDelete(prev =>
-                            prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index],
-                          );
-                        } else if (isGlbModel) {
+                        if (!editMode) {
                           navigate(`/user/${userData.username}/portfolio/${index}`, {
                             state: {
-                              modelUrl: mediaUrl,
-                              title: `Portfolio Model ${index + 1}`,
+                              title: item.title, // Now we have title!
+                              description: item.description, // And description!
+                              mediaUrl: item.mediaUrl,
+                              thumbnailUrl: item.thumbnailUrl,
                             },
                           });
                         }
                       }}>
-                      {/* Delete mode indicator */}
-                      {deleteMode && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: '-10px',
-                            right: '-10px',
-                            width: '30px',
-                            height: '30px',
-                            background: itemsToDelete.includes(index) ? '#dc2626' : '#6b7280',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '20px',
-                            color: 'white',
-                            fontWeight: 'bold',
-                            zIndex: 10,
-                            border: '2px solid white',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                          }}>
-                          {itemsToDelete.includes(index) ? '✓' : '−'}
-                        </div>
+                      {/* Edit mode controls */}
+                      {editMode && (
+                        <>
+                          <div className='portfolio-reorder-controls'>
+                            {index > 0 && (
+                              <button
+                                className='reorder-arrow reorder-left'
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handleMovePortfolioItem(index, 'left');
+                                }}
+                                title='Move left'>
+                                ←
+                              </button>
+                            )}
+                            {index < userData.portfolio!.length - 1 && ( // Changed
+                              <button
+                                className='reorder-arrow reorder-right'
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handleMovePortfolioItem(index, 'right');
+                                }}
+                                title='Move right'>
+                                →
+                              </button>
+                            )}
+                          </div>
+                          <button
+                            className='portfolio-delete-button'
+                            onClick={e => {
+                              e.stopPropagation();
+                              if (window.confirm('Delete this item?')) {
+                                handleDeleteSingleItem(index);
+                              }
+                            }}
+                            title='Delete'>
+                            ✕
+                          </button>
+                        </>
                       )}
-                      {isGlbModel && thumbnailUrl ? (
-                        // 3D model with thumbnail
+
+                      {/* Show thumbnail if available (prioritize thumbnails for ALL media) */}
+                      {thumbnailUrl ? (
                         <img
                           src={thumbnailUrl}
-                          alt={`Portfolio model ${index + 1}`}
+                          alt={item.title}
                           style={{
                             width: '100%',
                             height: '200px',
@@ -637,7 +646,7 @@ const ProfileSettings: React.FC = () => {
                         // Display image directly
                         <img
                           src={mediaUrl}
-                          alt={`Portfolio ${index + 1}`}
+                          alt={item.title}
                           style={{
                             width: '100%',
                             height: '200px',
@@ -646,58 +655,21 @@ const ProfileSettings: React.FC = () => {
                           }}
                         />
                       ) : isVideo ? (
-                        // Display video or video embed
-                        (() => {
-                          // Check if it's a YouTube/Vimeo URL
-                          const youtubeMatch = mediaUrl.match(
-                            /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
-                          );
-                          const vimeoMatch = mediaUrl.match(/vimeo\.com\/(\d+)/);
-
-                          if (youtubeMatch) {
-                            return (
-                              <iframe
-                                src={`https://www.youtube.com/embed/${youtubeMatch[1]}`}
-                                style={{
-                                  width: '100%',
-                                  height: '200px',
-                                  borderRadius: '8px',
-                                  border: 'none',
-                                }}
-                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                                allowFullScreen
-                              />
-                            );
-                          } else if (vimeoMatch) {
-                            return (
-                              <iframe
-                                src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
-                                style={{
-                                  width: '100%',
-                                  height: '200px',
-                                  borderRadius: '8px',
-                                  border: 'none',
-                                }}
-                                allow='autoplay; fullscreen'
-                                allowFullScreen
-                              />
-                            );
-                          } else {
-                            // Regular video file
-                            return (
-                              <video
-                                src={mediaUrl}
-                                controls
-                                style={{
-                                  width: '100%',
-                                  height: '200px',
-                                  objectFit: 'cover',
-                                  borderRadius: '8px',
-                                }}
-                              />
-                            );
-                          }
-                        })()
+                        // Video without thumbnail - show play icon
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '200px',
+                            background: '#000',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '3rem',
+                          }}>
+                          ▶️
+                        </div>
                       ) : (
                         // Unknown media type
                         <div
@@ -1002,8 +974,6 @@ const ProfileSettings: React.FC = () => {
                     <option value='Open Sans'>Open Sans</option>
                     <option value='Montserrat'>Montserrat</option>
                     <option value='Lato'>Lato</option>
-                    <option value='Poppins'>Poppins</option>
-                    <option value='Playfair Display'>Playfair Display</option>
                     <option value='Courier New'>Courier New (Monospace)</option>
                   </select>
                 </div>
