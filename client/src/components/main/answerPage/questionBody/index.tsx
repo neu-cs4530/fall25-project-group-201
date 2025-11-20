@@ -2,6 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
+import { Download } from 'lucide-react';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -20,6 +21,24 @@ interface QuestionBodyProps {
   meta: string;
   mediaPath?: string;
   mediaUrl?: string;
+  mediaSize?: string;
+}
+
+const handleDownload = (mediaSize: string, extension: string) => {
+  const confirmed = window.confirm(
+    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+  );
+  if (!confirmed) return;
+
+  {
+    /* Logic for downloading the file */
+  }
+};
+
+function getExtension(path: string): string {
+  const lastDot = path.lastIndexOf('.');
+  if (lastDot === -1) return '';
+  return path.slice(lastDot + 1).toLowerCase();
 }
 
 /**
@@ -34,7 +53,15 @@ interface QuestionBodyProps {
  * @param mediaPath File path to the uploaded media
  * @param mediaUrl Url to the attached media
  */
-const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: QuestionBodyProps) => {
+const QuestionBody = ({
+  views,
+  text,
+  askby,
+  meta,
+  mediaPath,
+  mediaUrl,
+  mediaSize,
+}: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
   const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
@@ -42,6 +69,12 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
 
   const isVideoUrl = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
+
+  let ext: string | undefined = undefined;
+
+  if (mediaPath) {
+    ext = getExtension(mediaPath);
+  }
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
@@ -97,6 +130,15 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
           </div>
         )}
       </div>
+
+      {mediaPath && mediaSize && ext && (
+        <Download
+          size={20}
+          onClick={() => handleDownload(mediaSize, ext)}
+          color='blue'
+          style={{ cursor: 'pointer' }}
+        />
+      )}
 
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>

@@ -48,6 +48,53 @@ const createOrthographicMatrix = (
   return m;
 };
 
+function countTopologicalEdges(geometry: THREE.BufferGeometry) {
+  const pos = geometry.getAttribute('position') as THREE.BufferAttribute;
+  const index = geometry.index;
+
+  // Build unique vertex map (same as vertex function)
+  const vertMap = new Map<string, number>();
+  let vid = 0;
+
+  for (let i = 0; i < pos.count; i += 1) {
+    const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
+    if (!vertMap.has(key)) vertMap.set(key, (vid += 1));
+  }
+
+  // Make index array (handle non-indexed geometry)
+  const idx = index ? index.array : [...Array(pos.count).keys()];
+
+  // Build a set of unique edges
+  const edges = new Set<string>();
+
+  for (let i = 0; i < idx.length; i += 3) {
+    const a = idx[i];
+    const b = idx[i + 1];
+    const c = idx[i + 2];
+
+    // convert to topological vertex IDs
+    const va = getVid(pos, vertMap, a);
+    const vb = getVid(pos, vertMap, b);
+    const vc = getVid(pos, vertMap, c);
+
+    addEdge(edges, va, vb);
+    addEdge(edges, vb, vc);
+    addEdge(edges, vc, va);
+  }
+
+  return edges.size;
+}
+
+function getVid(pos: THREE.BufferAttribute, vertMap: Map<string, number>, i: number): number {
+  const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
+  return vertMap.get(key)!;
+}
+
+function addEdge(edgeSet: Set<string>, a: number, b: number) {
+  const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+  edgeSet.add(key);
+}
+
 /**
  * React hook that sets up a Three.js viewport with optional model loading,
  * camera controls, and orthographic/perspective toggle.
@@ -61,6 +108,9 @@ const useThreeViewport = (modelPath: string | null) => {
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const targetZRef = useRef<number>(1);
+  const [modelVerts, setModelVerts] = useState(0);
+  const [modelFaces, setModelFaces] = useState(0);
+  const [modelEdges, setModelEdges] = useState(0);
 
   const [isPerspective, setIsPerspective] = useState(true);
 
@@ -77,6 +127,21 @@ const useThreeViewport = (modelPath: string | null) => {
     position: THREE.Vector3;
     rotation: THREE.Euler;
   } | null>(null);
+
+  function countUniqueVertices(geometry: THREE.BufferGeometry) {
+    const pos = geometry.attributes.position;
+    const unique = new Set<string>();
+
+    for (let i = 0; i < pos.count; i += 1) {
+      const x = pos.getX(i).toFixed(5);
+      const y = pos.getY(i).toFixed(5);
+      const z = pos.getZ(i).toFixed(5);
+
+      unique.add(`${x},${y},${z}`);
+    }
+
+    return unique.size;
+  }
 
   /**
    * Main scene setup and teardown lifecycle.
@@ -193,9 +258,38 @@ const useThreeViewport = (modelPath: string | null) => {
 
     loader.load(modelPath, gltf => {
       const model = gltf.scene;
+
+      let totalFaces = 0;
+      let totalUniqueVerts = 0;
+      let totalEdges = 0;
+
       model.traverse((child: Object3D) => {
-        if (child instanceof Mesh) child.castShadow = true;
+        if (child instanceof Mesh) {
+          child.castShadow = true;
+
+          const geo = child.geometry;
+          totalUniqueVerts += countUniqueVertices(geo);
+          totalEdges += countTopologicalEdges(child.geometry);
+
+          const index = geo.index;
+
+          let triCount = 0;
+
+          if (index) {
+            // Indexed geometry
+            triCount = index.count / 3;
+          } else {
+            // Non-indexed geometry
+            triCount = geo.attributes.position.count / 3;
+          }
+
+          totalFaces += triCount;
+        }
       });
+
+      setModelVerts(totalUniqueVerts);
+      setModelEdges(totalEdges);
+      setModelFaces(totalFaces);
       scene.add(model);
 
       // Center, scale, and ground-align the model
@@ -336,6 +430,9 @@ const useThreeViewport = (modelPath: string | null) => {
     handleResetCamera,
     handleTogglePerspective,
     isPerspective,
+    modelVerts,
+    modelFaces,
+    modelEdges,
   };
 };
 

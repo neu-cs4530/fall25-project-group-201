@@ -15,6 +15,7 @@ export interface Comment {
   commentDateTime: Date;
   mediaUrl?: string;
   mediaPath?: string;
+  mediaSize?: string;
 }
 
 /**

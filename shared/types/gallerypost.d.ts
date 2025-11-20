@@ -22,6 +22,7 @@ export interface GalleryPost {
   views: number;
   downloads: number;
   likes: string[];
+  mediaSize: string;
   tags: GalleryTag[];
 }
 
@@ -54,6 +55,7 @@ export interface CreateGalleryPostRequest extends Request {
     views: number;
     downloads: number;
     likes: string[];
+    mediaSize: string;
     tags: GalleryTag[];
   };
 }

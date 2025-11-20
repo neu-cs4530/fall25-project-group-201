@@ -26,6 +26,7 @@ const useNewGalleryPost = () => {
   const [thumbnailMediaErr, setThumbnailMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
+  const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
   const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(
     undefined,
   );
@@ -65,6 +66,13 @@ const useNewGalleryPost = () => {
       setMediaErr(
         'Media file or link must be uploaded. How else will people be able to visualize your cool project?',
       );
+      isValid = false;
+    } else {
+      setMediaErr('');
+    }
+
+    if (!mediaSize) {
+      setMediaErr('Media file size is undefined.');
       isValid = false;
     } else {
       setMediaErr('');
@@ -112,6 +120,7 @@ const useNewGalleryPost = () => {
       views: 0,
       downloads: 0,
       likes: [],
+      mediaSize: mediaSize!,
       tags,
     };
 
@@ -172,6 +181,8 @@ const useNewGalleryPost = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
+    mediaSize,
+    setMediaSize,
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,

@@ -33,6 +33,7 @@ const NewGalleryPostPage = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
+    setMediaSize,
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,
@@ -60,6 +61,7 @@ const NewGalleryPostPage = () => {
   const handleAddMedia = () => {
     if (mediaUrl) {
       setUploadedMediaPath(undefined);
+      setMediaSize(undefined);
     }
   };
 
@@ -100,6 +102,9 @@ const NewGalleryPostPage = () => {
 
       if (data?.filepathLocation) {
         setUploadedMediaPath(data.filepathLocation);
+        if (data.fileSize) {
+          setMediaSize(data.fileSize);
+        }
         setMediaErr(null);
       } else {
         setMediaErr('Upload failed');

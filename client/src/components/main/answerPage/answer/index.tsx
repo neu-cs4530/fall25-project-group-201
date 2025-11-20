@@ -2,7 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import CommentSection from '../../commentSection';
 import './index.css';
-import { Comment, DatabaseComment } from '../../../../types/types';
+import { Comment, DatabaseComment, DatabaseMedia } from '../../../../types/types';
 
 /**
  * Interface representing the props for the AnswerView component.
@@ -19,7 +19,7 @@ interface AnswerProps {
   meta: string;
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
-  handleAddMedia: (file: File) => Promise<string | undefined>;
+  handleAddMedia: (file: File) => Promise<DatabaseMedia | undefined>;
   handleAddMediaError: string | null;
 }
 
