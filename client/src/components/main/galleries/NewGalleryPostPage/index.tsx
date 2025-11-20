@@ -179,21 +179,17 @@ const NewGalleryPostPage = () => {
         {textErr && <p className='error'>{textErr}</p>}
       </div>
 
-      <div className="form-section">
+      <div className='form-section'>
         <label>Tags</label>
-        <div className="tags-container">
+        <div className='tags-container'>
           {GalleryTags.map(tag => (
-            <label key={tag} className="tag-checkbox">
-              <input
-                type="checkbox"
-                checked={tags.includes(tag)}
-                onChange={() => toggleTag(tag)}
-              />
-              {tag.replace(/_/g, ' ')}  
+            <label key={tag} className='tag-checkbox'>
+              <input type='checkbox' checked={tags.includes(tag)} onChange={() => toggleTag(tag)} />
+              {tag.replace(/_/g, ' ')}
             </label>
           ))}
         </div>
-        {tagErr && <p className="error">{tagErr}</p>}
+        {tagErr && <p className='error'>{tagErr}</p>}
       </div>
 
       <div className='form-section media-section'>

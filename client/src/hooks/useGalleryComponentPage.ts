@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import useUserContext from './useUserContext';
 import {
   getGalleryPosts,
@@ -15,7 +14,6 @@ import { DatabaseGalleryPost } from '../types/types';
  */
 export type SortType = 'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded';
 
-
 /**
  * Types for filtering media type
  */
@@ -25,21 +23,20 @@ export type MediaType = 'all' | 'glb' | 'video' | 'image' | 'embed';
  * Allowed tag names for posts
  */
 export type Tag =
-  | "software_engineering"
-  | "fullstack"
-  | "frontend"
-  | "backend"
-  | "computer graphics"
-  | "3d_art"
-  | "modeling"
-  | "texturing"
-  | "rigging"
-  | "animation"
-  | "graphic_design"
-  | "illustration"
-  | "motion_graphics"
-  | "concept_art";
-
+  | 'software_engineering'
+  | 'fullstack'
+  | 'frontend'
+  | 'backend'
+  | 'computer graphics'
+  | '3d_art'
+  | 'modeling'
+  | 'texturing'
+  | 'rigging'
+  | 'animation'
+  | 'graphic_design'
+  | 'illustration'
+  | 'motion_graphics'
+  | 'concept_art';
 
 /**
  * Type for category dropdown
@@ -48,12 +45,11 @@ export type CategoryType = 'all' | Tag;
 
 /**
  * Custom hook for managing gallery page state
- * 
+ *
  * @param {string} communityID - ID of the community to fetch posts for
  */
 const useGalleryComponentPage = (communityID: string) => {
   const { user: currentUser } = useUserContext();
-  const navigate = useNavigate();
 
   const [allGalleryPosts, setAllGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +111,6 @@ const useGalleryComponentPage = (communityID: string) => {
   const getYouTubeVideoId = (url: string) =>
     url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] ?? null;
 
-  
   /**
    * Extract Vimeo video ID from URL
    * @param {string} url - Vimeo URL
@@ -139,11 +134,16 @@ const useGalleryComponentPage = (communityID: string) => {
       const vimeoId = getVimeoVideoId(post.media);
 
       switch (selectedType) {
-        case 'glb': return is3D;
-        case 'video': return isVideo;
-        case 'image': return isImage;
-        case 'embed': return !!youTubeId || !!vimeoId;
-        default: return true;
+        case 'glb':
+          return is3D;
+        case 'video':
+          return isVideo;
+        case 'image':
+          return isImage;
+        case 'embed':
+          return !!youTubeId || !!vimeoId;
+        default:
+          return true;
       }
     });
 
@@ -163,30 +163,38 @@ const useGalleryComponentPage = (communityID: string) => {
 
     return [...filtered].sort((a, b) => {
       switch (sortType) {
-        case 'newest': return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
-        case 'oldest': return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
-        case 'highestRated': return b.likes.length - a.likes.length;
-        case 'mostViewed': return b.views - a.views;
-        case 'mostDownloaded': return b.downloads - a.downloads;
-        default: return 0;
+        case 'newest':
+          return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+        case 'oldest':
+          return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
+        case 'highestRated':
+          return b.likes.length - a.likes.length;
+        case 'mostViewed':
+          return b.views - a.views;
+        case 'mostDownloaded':
+          return b.downloads - a.downloads;
+        default:
+          return 0;
       }
     });
   }, [allGalleryPosts, selectedType, selectedCategory, sortType, searchQuery]);
 
-  /** 
+  /**
    * Current visible items based on pagination
    */
   const visibleItems = useMemo(
     () => filteredGalleryPosts.slice(startIndex, startIndex + itemsPerPage),
-    [filteredGalleryPosts, startIndex, itemsPerPage]
+    [filteredGalleryPosts, startIndex, itemsPerPage],
   );
 
   /**
    * Go to next page of carousel
    */
   const nextPage = () =>
-    setStartIndex(prev => (prev + itemsPerPage >= filteredGalleryPosts.length ? 0 : prev + itemsPerPage));
-  
+    setStartIndex(prev =>
+      prev + itemsPerPage >= filteredGalleryPosts.length ? 0 : prev + itemsPerPage,
+    );
+
   /**
    * Go to previous page of carousel
    */
@@ -194,12 +202,12 @@ const useGalleryComponentPage = (communityID: string) => {
     setStartIndex(prev =>
       prev - itemsPerPage < 0
         ? Math.max(filteredGalleryPosts.length - itemsPerPage, 0)
-        : prev - itemsPerPage
+        : prev - itemsPerPage,
     );
 
   /*
    * Check if the current user is the author of a post
-   */  
+   */
   const isAuthor = (post: DatabaseGalleryPost) => post.user === currentUser.username;
 
   /**
@@ -224,7 +232,7 @@ const useGalleryComponentPage = (communityID: string) => {
       await incrementGalleryPostViews(post._id.toString(), currentUser.username);
       await fetchGalleryPosts();
     } catch (err) {
-      console.error('Failed to increment views', err);
+      setError('Failed to increment views');
     }
   };
 
@@ -238,7 +246,7 @@ const useGalleryComponentPage = (communityID: string) => {
       window.open(post.media, '_blank');
       await fetchGalleryPosts();
     } catch (err) {
-      console.error(err);
+      setError('Failed to increment downloads');
     }
   };
 
@@ -251,7 +259,7 @@ const useGalleryComponentPage = (communityID: string) => {
       await toggleGalleryPostLikes(post._id.toString(), currentUser.username);
       await fetchGalleryPosts();
     } catch (err) {
-      console.error(err);
+      setError('Failed to toggle likes');
     }
   };
 

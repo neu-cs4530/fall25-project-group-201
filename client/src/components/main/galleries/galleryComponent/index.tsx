@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './index.css';
-import useGalleryComponentPage, { MediaType, CategoryType, SortType } from '../../../../hooks/useGalleryComponentPage';
+import useGalleryComponentPage, {
+  MediaType,
+  CategoryType,
+  SortType,
+} from '../../../../hooks/useGalleryComponentPage';
 import { DatabaseGalleryPost } from '@fake-stack-overflow/shared';
 
 /**
@@ -49,8 +53,10 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     const isEmbed = post.media.includes('youtu') || post.media.includes('vimeo');
 
     if (isImage || is3D)
-      return <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className="media" />;
-    if (isVideo) return <video src={post.media} controls muted className="media" />;
+      return (
+        <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className='media' />
+      );
+    if (isVideo) return <video src={post.media} controls muted className='media' />;
     if (isEmbed) {
       let embedUrl = post.media;
       if (post.media.includes('youtu.be')) {
@@ -67,11 +73,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
       }
       return (
         <iframe
-          className="media"
+          className='media'
           src={embedUrl}
-          width="800"
-          height="450"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          width='800'
+          height='450'
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
           allowFullScreen
         />
       );
@@ -80,47 +86,44 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
   };
 
   return (
-    <div className="galleryContainer">
+    <div className='galleryContainer'>
       {/* Filters */}
-      <div className="filtersContainer">
-        <div className="filterBlock">
-          <label className="filterLabel">SORT BY</label>
-        <select
-          value={sortType}
+      <div className='filtersContainer'>
+        <div className='filterBlock'>
+          <label className='filterLabel'>SORT BY</label>
+          <select
+            value={sortType}
             onChange={e => setSortType(e.target.value as SortType)}
-            className="sortSelect"
-          >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="highestRated">Most Liked</option>
-            <option value="mostViewed">Most Viewed</option>
-            <option value="mostDownloaded">Most Downloaded</option>
-        </select>
+            className='sortSelect'>
+            <option value='newest'>Newest</option>
+            <option value='oldest'>Oldest</option>
+            <option value='highestRated'>Most Liked</option>
+            <option value='mostViewed'>Most Viewed</option>
+            <option value='mostDownloaded'>Most Downloaded</option>
+          </select>
         </div>
 
-        <div className="filterBlock">
-          <label className="filterLabel">MEDIA TYPE</label>
-        <select
-          value={selectedType}
+        <div className='filterBlock'>
+          <label className='filterLabel'>MEDIA TYPE</label>
+          <select
+            value={selectedType}
             onChange={e => setSelectedType(e.target.value as MediaType)}
-            className="sortSelect"
-          >
-            <option value="all">All</option>
-            <option value="glb">3D Models</option>
-            <option value="video">Videos</option>
-            <option value="image">Images</option>
-            <option value="embed">Embeds</option>
-        </select>
-      </div>
+            className='sortSelect'>
+            <option value='all'>All</option>
+            <option value='glb'>3D Models</option>
+            <option value='video'>Videos</option>
+            <option value='image'>Images</option>
+            <option value='embed'>Embeds</option>
+          </select>
+        </div>
 
-        <div className="filterBlock">
-          <label className="filterLabel">CATEGORY</label>
+        <div className='filterBlock'>
+          <label className='filterLabel'>CATEGORY</label>
           <select
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value as CategoryType)}
-            className="sortSelect"
-          >
-            <option value="all">All</option>
+            className='sortSelect'>
+            <option value='all'>All</option>
             {allTags.map(tag => (
               <option key={tag} value={tag}>
                 {tag.replace(/_/g, ' ')}
@@ -129,44 +132,46 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
           </select>
         </div>
 
-        <div className="filterBlock">
-          <label className="filterLabel">&nbsp;</label>
-        <button
-            className="resetFiltersButton"
-            onClick={() => resetFilters()}
-          >
+        <div className='filterBlock'>
+          <label className='filterLabel'>&nbsp;</label>
+          <button className='resetFiltersButton' onClick={() => resetFilters()}>
             Reset
           </button>
         </div>
 
         {/* Search bar */}
-        <div className="filterBlock searchBlock">
-          <div className="searchWrapper">
-            <Search size={18} className="searchIcon" />
+        <div className='filterBlock searchBlock'>
+          <div className='searchWrapper'>
+            <Search size={18} className='searchIcon' />
             <input
-              type="text"
-              placeholder="Search posts..."
+              type='text'
+              placeholder='Search posts...'
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="searchInput"
+              className='searchInput'
             />
           </div>
         </div>
       </div>
 
-      {(error || localError) && <div className="error">{error || localError}</div>}
-      {filteredGalleryPosts.length === 0 && <div className="noGalleryPosts">No gallery posts yet!</div>}
+      {(error || localError) && <div className='error'>{error || localError}</div>}
+      {filteredGalleryPosts.length === 0 && (
+        <div className='noGalleryPosts'>No gallery posts yet!</div>
+      )}
 
       {/* Carousel */}
-      <div className="carouselContainer">
-        <button className="carouselArrow left" onClick={prevPage} disabled={filteredGalleryPosts.length <= itemsPerPage}>
+      <div className='carouselContainer'>
+        <button
+          className='carouselArrow left'
+          onClick={prevPage}
+          disabled={filteredGalleryPosts.length <= itemsPerPage}>
           <ChevronLeft size={22} />
         </button>
-        <div className="galleryGrid carouselPage">
+        <div className='galleryGrid carouselPage'>
           {visibleItems.map(post => (
             <div
               key={post._id.toString()}
-              className="galleryCard"
+              className='galleryCard'
               onClick={async () => {
                 try {
                   await handleIncrementViews(post);
@@ -174,20 +179,23 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                 } catch {
                   setLocalError('Failed to increment views.');
                 }
-              }}
-            >
+              }}>
               {renderMedia(post)}
             </div>
           ))}
         </div>
-        <button className="carouselArrow right" onClick={nextPage} disabled={filteredGalleryPosts.length <= itemsPerPage}>
+        <button
+          className='carouselArrow right'
+          onClick={nextPage}
+          disabled={filteredGalleryPosts.length <= itemsPerPage}>
           <ChevronRight size={22} />
         </button>
       </div>
 
       {filteredGalleryPosts.length > itemsPerPage && (
-        <div className="carouselPageIndicator">
-          Page {Math.floor(startIndex / itemsPerPage) + 1} of {Math.ceil(filteredGalleryPosts.length / itemsPerPage)}
+        <div className='carouselPageIndicator'>
+          Page {Math.floor(startIndex / itemsPerPage) + 1} of{' '}
+          {Math.ceil(filteredGalleryPosts.length / itemsPerPage)}
         </div>
       )}
     </div>

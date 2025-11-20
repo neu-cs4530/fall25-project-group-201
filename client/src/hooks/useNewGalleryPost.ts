@@ -4,7 +4,8 @@ import { validateHyperlink } from '../tool';
 import { addGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
 import { GalleryPost } from '../types/types';
-import { GalleryTag, GalleryTags } from '@fake-stack-overflow/shared/types/galleryTags';
+import { GalleryTag } from '@fake-stack-overflow/shared/types/galleryTags';
+
 /**
  * Custom hook for managing a new gallery post form, including state, validation,
  * file handling, media, and submission logic.
@@ -151,13 +152,8 @@ const useNewGalleryPost = () => {
    * @param tag - The selected tag
    */
   const toggleTag = (tag: GalleryTag) => {
-    setTags(prev =>
-      prev.includes(tag)
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    );
+    setTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
   };
-
 
   return {
     title,
