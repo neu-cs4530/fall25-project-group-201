@@ -2,8 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
-import { preprocessCameraRefs } from '../../cameraRef/CameraRef';
-import { useState } from 'react';
+import { preprocessCameraRefs } from '../../cameraRef/CameraRefUtils';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -61,7 +60,6 @@ const QuestionBody = ({
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
   const handleCameraRefClick = (cameraRef: string) => {
-    console.log(cameraRef);
     // Remove leading "#camera-" prefix
     const ref = cameraRef.replace(/^#camera-/, '');
 
@@ -71,7 +69,6 @@ const QuestionBody = ({
     const match = ref.match(regex);
 
     if (!match) {
-      console.error('Invalid cameraRef format:', cameraRef);
       return;
     }
 
@@ -80,9 +77,6 @@ const QuestionBody = ({
 
     // Rotation is optional
     const rotation = match[2] ? match[2].split(',').map(v => Number(v.trim())) : null;
-
-    console.log('Translation:', translation);
-    console.log('Rotation:', rotation);
 
     if (rotation) {
       setRotationSetting(rotation);

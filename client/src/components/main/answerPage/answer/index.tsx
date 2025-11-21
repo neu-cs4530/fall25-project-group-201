@@ -3,7 +3,7 @@ import remarkGfm from 'remark-gfm';
 import CommentSection from '../../commentSection';
 import './index.css';
 import { Comment, DatabaseComment } from '../../../../types/types';
-import { preprocessCameraRefs } from '../../cameraRef/CameraRef';
+import { preprocessCameraRefs } from '../../cameraRef/CameraRefUtils';
 
 /**
  * Interface representing the props for the AnswerView component.
@@ -59,7 +59,6 @@ const AnswerView = ({
     const match = ref.match(regex);
 
     if (!match) {
-      console.error('Invalid cameraRef format:', cameraRef);
       return;
     }
 
@@ -68,9 +67,6 @@ const AnswerView = ({
 
     // Rotation is optional
     const rotation = match[2] ? match[2].split(',').map(v => Number(v.trim())) : null;
-
-    console.log('Translation:', translation);
-    console.log('Rotation:', rotation);
 
     if (rotation) {
       setRotationSetting(rotation);

@@ -4,11 +4,9 @@ interface CameraRefProps {
   cameraRef: string;
 }
 
-export const preprocessCameraRefs = (text: string) => {
-  return text.replace(/(#camera-[A-Za-z]+\(.*?\)(?:-[A-Za-z]+\(.*?\))?)/g, '[$1]($1)');
-};
+// Removed the helper export to fix Fast Refresh warning
 
-const CameraRef: React.FC<CameraRefProps> = ({ cameraRef }) => {
+export default function CameraRef({ cameraRef }: CameraRefProps) {
   return (
     <span
       style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
@@ -16,6 +14,4 @@ const CameraRef: React.FC<CameraRefProps> = ({ cameraRef }) => {
       @{cameraRef}
     </span>
   );
-};
-
-export default CameraRef;
+}

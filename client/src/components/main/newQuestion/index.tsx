@@ -74,9 +74,6 @@ const NewQuestion = () => {
       rotatationSettingToSend = [0, 0, 0];
     }
 
-    console.log(translationSetting);
-    console.log(rotationSetting);
-
     const tempText = text;
     const [tx, ty, tz] = translationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
     const [rx, ry, rz] = rotatationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
