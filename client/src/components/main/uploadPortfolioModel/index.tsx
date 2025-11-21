@@ -92,9 +92,9 @@ const UploadPortfolioModel = () => {
           <div className='model-preview'>
             <p>3D Model Preview:</p>
             <div>
-              <ThreeViewport 
+              <ThreeViewport
                 key={previewFilePath}
-                modelPath={previewFilePath.toString()} 
+                modelPath={previewFilePath.toString()}
                 rotationSetting={null}
                 setRotationSetting={undefined}
                 translationSetting={null}
