@@ -133,7 +133,7 @@ const NewGalleryPostPage = () => {
     const allowedExtensions = ['.png', '.jpg', '.jpeg'];
     const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
-      setThumbnailMediaErr('Unsupported file type');
+      setThumbnailMediaErr('Unsupported file type. Please upload an image file (jpg, png)');
       return;
     }
 
