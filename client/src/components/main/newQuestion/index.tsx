@@ -38,6 +38,8 @@ const NewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
+    downloadPermission,
+    setDownloadPermission,
   } = useNewQuestion();
 
   const { user: currentUser } = useUserContext();
@@ -269,7 +271,17 @@ const NewQuestion = () => {
               <p>3D Model Preview:</p>
               <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
               <div className="form-check form-switch">
-                <input className="form-check-input" type="checkbox" role="switch" id="switchCheckChecked" defaultChecked />
+                <input 
+                  className="form-check-input" 
+                  checked={downloadPermission}
+                  onChange={(e) => {
+                    console.log('Checkbox changed to: ', e.target.checked)
+                    setDownloadPermission(e.target.checked)
+                  }}    
+                  type="checkbox" 
+                  role="switch" 
+                  id="switchCheckChecked" 
+                />
                 <label className="form-check-label" htmlFor="switchCheckChecked">Allow others to download model</label>
               </div>
             </div>

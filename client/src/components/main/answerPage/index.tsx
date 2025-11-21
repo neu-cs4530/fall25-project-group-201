@@ -36,6 +36,7 @@ const AnswerPage = () => {
         mediaPath={question.mediaPath}
         mediaUrl={question.mediaUrl}
         mediaSize={question.mediaSize}
+        permitDownload={question.permitDownload}
       />
       <CommentSection
         comments={question.comments}

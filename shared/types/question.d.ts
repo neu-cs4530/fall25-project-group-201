@@ -4,6 +4,7 @@ import { Answer, PopulatedDatabaseAnswer } from './answer';
 import { DatabaseTag, Tag } from './tag';
 import { Comment, DatabaseComment } from './comment';
 import { DatabaseCommunity } from './community';
+import { Media } from './media';
 
 /**
  * Type representing the possible ordering options for questions.
@@ -45,6 +46,7 @@ export interface Question {
   mediaUrl?: string;
   mediaPath?: string;
   mediaSize?: string;
+  permitDownload?: boolean;
 }
 
 /**

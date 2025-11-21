@@ -22,6 +22,7 @@ interface QuestionBodyProps {
   mediaPath?: string;
   mediaUrl?: string;
   mediaSize?: string;
+  permitDownload?: boolean;
 }
 
 const handleDownload = (mediaSize: string, extension: string) => {
@@ -61,6 +62,7 @@ const QuestionBody = ({
   mediaPath,
   mediaUrl,
   mediaSize,
+  permitDownload
 }: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
@@ -131,18 +133,19 @@ const QuestionBody = ({
         )}
       </div>
 
-      {mediaPath && mediaSize && ext && (
-        <Download
-          size={20}
-          onClick={() => handleDownload(mediaSize, ext)}
-          color='blue'
-          style={{ cursor: 'pointer' }}
-        />
-      )}
-
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
+        {permitDownload && mediaPath && mediaSize && ext && (
+          <div>
+            <Download
+              size={20}
+              onClick={() => handleDownload(mediaSize, ext)}
+              color='blue'
+              style={{ cursor: 'pointer' }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

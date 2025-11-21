@@ -48,6 +48,10 @@ const questionSchema: Schema = new Schema(
       type: String,
       required: false,
     },
+    permitDownload: {
+      type: Boolean,
+      default: true,
+    },
   },
   { collection: 'Question' },
 );
