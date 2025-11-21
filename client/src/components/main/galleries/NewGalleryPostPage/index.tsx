@@ -40,6 +40,9 @@ const NewGalleryPostPage = () => {
     tags,
     tagErr,
     toggleTag,
+    projectLink,
+    setProjectLink,
+    projectLinkErr,
   } = useNewGalleryPost();
 
   const { user: currentUser } = useUserContext();
@@ -61,7 +64,7 @@ const NewGalleryPostPage = () => {
   const handleAddMedia = () => {
     if (mediaUrl) {
       setUploadedMediaPath(undefined);
-      setMediaSize(undefined);
+      setMediaSize('URL'); // ✅ instead of undefined
     }
   };
 
@@ -195,6 +198,18 @@ const NewGalleryPostPage = () => {
           ))}
         </div>
         {tagErr && <p className='error'>{tagErr}</p>}
+      </div>
+
+      <div className='form-section'>
+        <label htmlFor='projectLink'>Project Link (GitHub, etc.)</label>
+        <input
+          id='projectLink'
+          type='text'
+          placeholder='Paste your project link here'
+          value={projectLink}
+          onChange={setProjectLink}
+        />
+        {projectLinkErr && <p className='error'>{projectLinkErr}</p>}
       </div>
 
       <div className='form-section media-section'>

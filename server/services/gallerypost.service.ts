@@ -41,7 +41,14 @@ export const createGalleryPost = async (galleryPost: GalleryPost): Promise<Galle
       throw new Error(`Invalid tags: ${invalidTags.join(', ')}`);
     }
 
-    const newGalleryPost = await GalleryPostModel.create(galleryPost);
+    // Explicitly ensure required fields
+    const postData: GalleryPost = {
+      ...galleryPost,
+      mediaSize: galleryPost.mediaSize,
+      ...(galleryPost.link ? { link: galleryPost.link } : {}),
+    };
+
+    const newGalleryPost = await GalleryPostModel.create(postData);
 
     if (!newGalleryPost) {
       throw new Error('Failed to create gallery post');

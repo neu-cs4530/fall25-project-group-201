@@ -24,6 +24,7 @@ export interface GalleryPost {
   likes: string[];
   mediaSize: string;
   tags: GalleryTag[];
+  link?: string;
 }
 
 /**
@@ -57,6 +58,7 @@ export interface CreateGalleryPostRequest extends Request {
     likes: string[];
     mediaSize: string;
     tags: GalleryTag[];
+    link?: string;
   };
 }
 

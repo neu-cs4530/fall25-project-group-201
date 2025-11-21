@@ -76,3 +76,13 @@
   color: #444;
   border: 1px solid #ddd;
 }
+
+.postLink {
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+}
+
+.postLink a {
+  color: #1e90ff;
+  text-decoration: underline;
+}

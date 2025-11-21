@@ -62,6 +62,7 @@ const galleryPostSchema: Schema = new Schema(
     mediaSize: {
       type: String,
       required: true,
+      default: '',
     },
     tags: {
       type: [String],
@@ -69,6 +70,10 @@ const galleryPostSchema: Schema = new Schema(
       default: [],
       required: false,
     },
+    link: {
+      type: String,
+      default: '',
+    }
   },
   { collection: 'GalleryPost' },
 );

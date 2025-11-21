@@ -88,6 +88,15 @@ const GalleryPostPage = () => {
         )}
 
         <p className='postDescription'>{post.description}</p>
+
+        {post.link && (
+          <p className='postLink'>
+            Project Link:{' '}
+            <a href={post.link} target='_blank' rel='noopener noreferrer'>
+              {post.link}
+            </a>
+          </p>
+        )}
       </div>
 
       <div className='mediaWrapper'>

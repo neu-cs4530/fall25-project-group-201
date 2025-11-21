@@ -32,6 +32,8 @@ const useNewGalleryPost = () => {
   );
   const [tags, setTags] = useState<GalleryTag[]>([]);
   const [tagErr, setTagErr] = useState<string>('');
+  const [projectLink, setProjectLink] = useState<string>('');
+  const [projectLinkErr, setProjectLinkErr] = useState<string>('');
   const { communityID } = useParams<{ communityID: string }>();
 
   /**
@@ -63,19 +65,16 @@ const useNewGalleryPost = () => {
     }
 
     if (!mediaUrl && !mediaPath) {
-      setMediaErr(
-        'Media file or link must be uploaded. How else will people be able to visualize your cool project?',
-      );
+      setMediaErr('Media file or link must be uploaded.');
       isValid = false;
     } else {
       setMediaErr('');
     }
 
-    if (!mediaSize) {
+    // Only check mediaSize if uploading a file
+    if (mediaPath && !mediaSize) {
       setMediaErr('Media file size is undefined.');
       isValid = false;
-    } else {
-      setMediaErr('');
     }
 
     // Check for 3D model thumbnail if media is glb
@@ -100,6 +99,13 @@ const useNewGalleryPost = () => {
       setTagErr('');
     }
 
+    if (projectLink && !validateHyperlink(projectLink)) {
+      setProjectLinkErr('Invalid URL format.');
+      isValid = false;
+    } else {
+      setProjectLinkErr('');
+    }
+
     return isValid;
   };
 
@@ -122,6 +128,7 @@ const useNewGalleryPost = () => {
       likes: [],
       mediaSize: mediaSize!,
       tags,
+      ...(projectLink ? { link: projectLink } : {}),
     };
 
     try {
@@ -143,6 +150,7 @@ const useNewGalleryPost = () => {
     if (!file) return;
 
     setUploadedMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
+    setMediaSize(`${file.size} bytes`); // <-- set the media size here
   };
 
   /**
@@ -163,6 +171,11 @@ const useNewGalleryPost = () => {
   const toggleTag = (tag: GalleryTag) => {
     setTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
   };
+
+  const handleProjectLinkChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setProjectLink(e.target.value);
+  };
+
 
   return {
     title,
@@ -189,6 +202,9 @@ const useNewGalleryPost = () => {
     tags,
     toggleTag,
     tagErr,
+    projectLink,
+    setProjectLink: handleProjectLinkChange,
+    projectLinkErr,
   };
 };
 
