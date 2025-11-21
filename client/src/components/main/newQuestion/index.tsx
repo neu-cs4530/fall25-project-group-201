@@ -3,6 +3,7 @@ import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import ThreeViewport from '../threeViewport';
+import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 
 /**
  * NewQuestion component allows users to submit a new question with:
@@ -270,20 +271,7 @@ const NewQuestion = () => {
             <div className='model-preview'>
               <p>3D Model Preview:</p>
               <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
-              <div className="form-check form-switch">
-                <input 
-                  className="form-check-input" 
-                  checked={downloadPermission}
-                  onChange={(e) => {
-                    console.log('Checkbox changed to: ', e.target.checked)
-                    setDownloadPermission(e.target.checked)
-                  }}    
-                  type="checkbox" 
-                  role="switch" 
-                  id="switchCheckChecked" 
-                />
-                <label className="form-check-label" htmlFor="switchCheckChecked">Allow others to download model</label>
-              </div>
+              <PermissionCheckbox permission={downloadPermission} setPermission={setDownloadPermission} />
             </div>
           )}
 
