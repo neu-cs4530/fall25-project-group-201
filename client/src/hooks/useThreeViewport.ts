@@ -281,44 +281,75 @@ const useThreeViewport = (
     window.addEventListener('resize', handleResize);
 
     // --- Render loop ---
-    const animate = () => {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
+const animate = () => {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 
-      const forward = new THREE.Vector3();
-      camera.getWorldDirection(forward);
-      const right = new THREE.Vector3();
-      right.crossVectors(forward, camera.up).normalize();
-      const up = new THREE.Vector3(0, 1, 0);
-      const moveSpeed = panSensitivity;
+  const forward = new THREE.Vector3();
+  camera.getWorldDirection(forward);
+  const right = new THREE.Vector3();
+  right.crossVectors(forward, camera.up).normalize();
+  const up = new THREE.Vector3(0, 1, 0);
+  const moveSpeed = panSensitivity;
 
-      if (keysPressed.current.w || keysPressed.current.ArrowUp) {
-        camera.position.addScaledVector(up, moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
-        }
-      }
-      if (keysPressed.current.s || keysPressed.current.ArrowDown){
-        camera.position.addScaledVector(up, -moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
-        }
-      }
-      if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
-        camera.position.addScaledVector(right, -moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
-        }
-      }
-      if (keysPressed.current.d || keysPressed.current.ArrowRight) {
-        camera.position.addScaledVector(right, moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
-        }
-      }
+  // --- Camera movement (optional, can keep or remove) ---
+  if (keysPressed.current.w || keysPressed.current.ArrowUp) {
+    camera.position.addScaledVector(up, moveSpeed);
+    if (setTranslationSetting) {
+      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+    }
+  }
+  if (keysPressed.current.s || keysPressed.current.ArrowDown) {
+    camera.position.addScaledVector(up, -moveSpeed);
+    if (setTranslationSetting) {
+      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+    }
+  }
+  if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
+    camera.position.addScaledVector(right, -moveSpeed);
+    if (setTranslationSetting) {
+      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+    }
+  }
+  if (keysPressed.current.d || keysPressed.current.ArrowRight) {
+    camera.position.addScaledVector(right, moveSpeed);
+    if (setTranslationSetting) {
+      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+    }
+  }
 
-      
-    };
+  // --- Model rotation based on WASD ---
+  const model = scene.children.find(obj => obj.userData?.isModel) as THREE.Object3D | undefined;
+  if (model) {
+    const rotateSpeed = 0.02; // radians per frame, tweak as needed
+
+    if (keysPressed.current.w) {
+      scene.rotation.x -= rotateSpeed; // rotate forward
+      if (setRotationSetting) {
+        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
+      }
+    }
+    if (keysPressed.current.s) {
+      scene.rotation.x += rotateSpeed; // rotate backward
+      if (setRotationSetting) {
+        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
+      }
+    }
+    if (keysPressed.current.a) {
+      scene.rotation.y += rotateSpeed; // rotate left
+      if (setRotationSetting) {
+        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
+      }
+    }
+    if (keysPressed.current.d) {
+      scene.rotation.y -= rotateSpeed; // rotate right
+      if (setRotationSetting) {
+        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
+      }
+    }
+  }
+};
+
     animate();
 
     // --- Cleanup ---
