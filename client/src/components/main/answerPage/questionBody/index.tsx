@@ -22,6 +22,10 @@ interface QuestionBodyProps {
   meta: string;
   mediaPath?: string;
   mediaUrl?: string;
+  rotationSetting?: number[] | null;
+  setRotationSetting:  React.Dispatch<React.SetStateAction<number[] | null>>;
+  translationSetting?: number[] | null;
+  setTranslationSetting:  React.Dispatch<React.SetStateAction<number[] | null>>;
 }
 
 /**
@@ -36,7 +40,7 @@ interface QuestionBodyProps {
  * @param mediaPath File path to the uploaded media
  * @param mediaUrl Url to the attached media
  */
-const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: QuestionBodyProps) => {
+const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, rotationSetting, setRotationSetting, translationSetting, setTranslationSetting }: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
   const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
@@ -44,9 +48,6 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
 
   const isVideoUrl = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
-
-  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
-  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
 
   const handleCameraRefClick = (cameraRef: string) => {
   // Remove leading "#camera-" prefix

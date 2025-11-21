@@ -242,6 +242,10 @@ const useThreeViewport = (
       camera.position.set(0, radius * 0.8, cameraZ * 1.2);
       camera.lookAt(0, radius * 0.3, 0);
 
+      if (setTranslationSetting) {
+        setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+      }
+
       // Save initial camera state
       initialCameraState.current = {
         position: camera.position.clone(),
@@ -304,7 +308,6 @@ const useThreeViewport = (
     useEffect(() => {
       if (!translationSetting) return;
       const camera = cameraRef.current;
-      
       camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
     }, [translationSetting]);
 

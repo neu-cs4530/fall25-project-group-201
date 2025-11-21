@@ -24,7 +24,7 @@ const HDRI_PRESETS = [
   { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
-const ThreeViewport = ({ modelPath = null, allowUpload = false, translationSetting = [0,0,0], setTranslationSetting, rotationSetting = [0,0,0], setRotationSetting}: ThreeViewportProps, ) => {
+const ThreeViewport = ({ modelPath = null, allowUpload = false, translationSetting = [0,0.77,3.02], setTranslationSetting, rotationSetting = [0,0,0], setRotationSetting}: ThreeViewportProps, ) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 

@@ -69,7 +69,7 @@ const NewQuestion = () => {
     let rotatationSettingToSend = rotationSetting;
 
     if (!translationSetting) { 
-      translationSettingToSend = [0,0,0] 
+      translationSettingToSend = [0,0.77,3.02] 
     }
     if (!rotationSetting) { 
       rotatationSettingToSend = [0,0,0] 
