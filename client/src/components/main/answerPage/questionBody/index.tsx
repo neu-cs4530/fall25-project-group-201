@@ -50,6 +50,7 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, rotationS
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
   const handleCameraRefClick = (cameraRef: string) => {
+  console.log(cameraRef)
   // Remove leading "#camera-" prefix
   const ref = cameraRef.replace(/^#camera-/, '');
 

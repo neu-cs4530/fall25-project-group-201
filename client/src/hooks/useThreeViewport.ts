@@ -67,6 +67,7 @@ const useThreeViewport = (
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const targetZRef = useRef<number>(1);
+  const keysPressed = useRef<Record<string, boolean>>({});
 
   const [isPerspective, setIsPerspective] = useState(true);
 
@@ -98,6 +99,7 @@ const useThreeViewport = (
     let previousMouseX = 0;
     let previousMouseY = 0;
     const sensitivity = 0.005;
+    const panSensitivity = 0.02;
 
     /**
      * Handles mouse down events to begin rotating the scene.
@@ -109,6 +111,16 @@ const useThreeViewport = (
       previousMouseX = event.clientX;
       previousMouseY = event.clientY;
     };
+
+    // --- Keyboard ---
+    const handleKeyDown = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = true;
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = false;
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
     /**
      * Handles mouse move events to rotate the scene.
@@ -272,6 +284,40 @@ const useThreeViewport = (
     const animate = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
+
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+      const right = new THREE.Vector3();
+      right.crossVectors(forward, camera.up).normalize();
+      const up = new THREE.Vector3(0, 1, 0);
+      const moveSpeed = panSensitivity;
+
+      if (keysPressed.current.w || keysPressed.current.ArrowUp) {
+        camera.position.addScaledVector(up, moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+        }
+      }
+      if (keysPressed.current.s || keysPressed.current.ArrowDown){
+        camera.position.addScaledVector(up, -moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+        }
+      }
+      if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
+        camera.position.addScaledVector(right, -moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+        }
+      }
+      if (keysPressed.current.d || keysPressed.current.ArrowRight) {
+        camera.position.addScaledVector(right, moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+        }
+      }
+
+      
     };
     animate();
 
