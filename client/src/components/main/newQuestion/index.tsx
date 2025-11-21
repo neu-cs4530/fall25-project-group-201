@@ -163,7 +163,7 @@ const NewQuestion = () => {
           onClick={() => {
             handleAddCameraRef()
           }}>
-          Button
+          Add Camera Reference
         </button>)}
       </div>
 
