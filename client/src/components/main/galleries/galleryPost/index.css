@@ -102,8 +102,6 @@
   font-size: 0.9rem;
   font-weight: 500;
   transition: background 0.2s ease, transform 0.1s ease;
-
-  /* ⭐ Anchor left */
   align-self: flex-start;
 }
 
