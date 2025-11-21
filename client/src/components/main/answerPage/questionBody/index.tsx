@@ -25,15 +25,16 @@ interface QuestionBodyProps {
   permitDownload?: boolean;
 }
 
-const handleDownload = (mediaSize: string, extension: string) => {
+const handleDownload = (mediaSize: string, extension: string, mediaPath: string) => {
   const confirmed = window.confirm(
     `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
   );
   if (!confirmed) return;
 
-  {
-    /* Logic for downloading the file */
-  }
+  const link = document.createElement('a');
+  link.href = mediaPath;
+  link.download = `file.${extension}`;
+  link.click();
 };
 
 function getExtension(path: string): string {
@@ -140,7 +141,7 @@ const QuestionBody = ({
           <div className='download-label'>
             <Download
               size={20}
-              onClick={() => handleDownload(mediaSize, ext)}
+              onClick={() => handleDownload(mediaSize, ext, mediaPath)}
               color='#007BFF'
               style={{ cursor: 'pointer' }}
             />

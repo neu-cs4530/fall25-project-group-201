@@ -5,15 +5,16 @@ import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
 import { Link } from 'react-router-dom';
 
-const handleDownload = (mediaSize: string, extension: string) => {
+const handleDownload = (mediaSize: string, extension: string, mediaPath: string) => {
   const confirmed = window.confirm(
     `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
   );
   if (!confirmed) return;
 
-  {
-    /* Logic for downloading the file */
-  }
+  const link = document.createElement('a');
+  link.href = mediaPath;
+  link.download = `file.${extension}`;
+  link.click();
 };
 
 /**
@@ -83,7 +84,10 @@ const GalleryPostPage = () => {
                 }}>
                 <Download
                   size={20}
-                  onClick={() => handleDownload(post.mediaSize, ext!)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(post.mediaSize, ext!, url);
+                  }}
                   color='#007BFF'
                 />{' '}
                 {post.downloads}
