@@ -3,6 +3,7 @@ import remarkGfm from 'remark-gfm';
 import CommentSection from '../../commentSection';
 import './index.css';
 import { Comment, DatabaseComment } from '../../../../types/types';
+import { preprocessCameraRefs } from '../../cameraRef/CameraRef';
 
 /**
  * Interface representing the props for the AnswerView component.
@@ -21,6 +22,9 @@ interface AnswerProps {
   handleAddComment: (comment: Comment) => void;
   handleAddMedia: (file: File) => Promise<string | undefined>;
   handleAddMediaError: string | null;
+  setRotationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  setTranslationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  glbMedia: boolean;
 }
 
 /**
@@ -41,22 +45,97 @@ const AnswerView = ({
   handleAddComment,
   handleAddMedia,
   handleAddMediaError,
-}: AnswerProps) => (
-  <div className='answer right_padding'>
-    <div id='answerText' className='answerText'>
-      {<Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
+  setRotationSetting,
+  setTranslationSetting,
+  glbMedia,
+}: AnswerProps) => {
+
+  const handleCameraRefClick = (cameraRef: string) => {
+    // Remove leading "#camera-" prefix
+    const ref = cameraRef.replace(/^#camera-/, '');
+
+    // Regex supporting decimals, negatives, and optional rotation
+    // Matches t(x,y,z) and optional -r(x,y,z)
+    const regex = /t\(\s*([^)]+?)\s*\)(?:-r\(\s*([^)]+?)\s*\))?/;
+    const match = ref.match(regex);
+
+    if (!match) {
+      console.error('Invalid cameraRef format:', cameraRef);
+      return;
+    }
+
+    // Translation is required → split and parse safely
+    const translation = match[1]
+      .split(',')
+      .map(v => Number(v.trim())); // handles decimals / negatives
+
+    // Rotation is optional
+    const rotation = match[2]
+      ? match[2].split(',').map(v => Number(v.trim()))
+      : null;
+
+    console.log('Translation:', translation);
+    console.log('Rotation:', rotation);
+
+    if (rotation) {
+      setRotationSetting(rotation);
+    }
+
+    if (translation) {
+      setTranslationSetting(translation);
+    }
+  };
+
+  return (
+    <div className='answer right_padding'>
+      <div id='answerText' className='answerText'>
+        {!glbMedia && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
+        {glbMedia && 
+        <Markdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            a: ({ href, children }) => {
+              // Detect camera links
+              if (href && href.startsWith('#camera-')) {
+                // We want: "camera-t(1,2,3)-r(0,90,0)"
+                const cleanRef = href.replace(/^#/, '');
+
+                return (
+                  <span
+                    style={{
+                      color: 'blue',
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                    onClick={() => handleCameraRefClick(cleanRef)}
+                  >
+                    {children}
+                  </span>
+                );
+              }
+
+              // Normal links
+              return <a href={href}>{children}</a>;
+            },
+          }}
+        >
+          {preprocessCameraRefs(text)}
+        </Markdown>}
+      </div>
+
+      <div className='answerAuthor'>
+        <div className='answer_author'>{ansBy}</div>
+        <div className='answer_question_meta'>{meta}</div>
+      </div>
+
+      <CommentSection
+        comments={comments}
+        handleAddComment={handleAddComment}
+        handleAddMedia={handleAddMedia}
+        handleAddMediaError={handleAddMediaError}
+      />
     </div>
-    <div className='answerAuthor'>
-      <div className='answer_author'>{ansBy}</div>
-      <div className='answer_question_meta'>{meta}</div>
-    </div>
-    <CommentSection
-      comments={comments}
-      handleAddComment={handleAddComment}
-      handleAddMedia={handleAddMedia}
-      handleAddMediaError={handleAddMediaError}
-    />
-  </div>
-);
+  );
+};
 
 export default AnswerView;

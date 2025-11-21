@@ -68,6 +68,9 @@ const AnswerPage = () => {
             }
             handleAddMedia={handleAddMedia}
             handleAddMediaError={handleAddMediaError}
+            setRotationSetting={setRotationSetting}
+            setTranslationSetting={setTranslationSetting}
+            glbMedia={question.mediaPath?.toLowerCase().endsWith('.glb') === true}
           />
           <button onClick={handleDummyButtonClick}></button>
         </>
@@ -75,12 +78,17 @@ const AnswerPage = () => {
       <button
         className='bluebtn ansButton'
         onClick={() => {
-          const t = translationSetting.map(n => Number(n).toFixed(2));
-          const r = rotationSetting.map(n => Number(n).toFixed(2));
+          if (translationSetting && rotationSetting) {
+            const t = translationSetting.map(n => Number(n).toFixed(2));
+            const r = rotationSetting.map(n => Number(n).toFixed(2));
 
-          const cameraRef = `#camera-t(${t[0]},${t[1]},${t[2]})-r(${r[0]},${r[1]},${r[2]})`;
+            const cameraRef = `#camera-t(${t[0]},${t[1]},${t[2]})-r(${r[0]},${r[1]},${r[2]})`;
 
-          handleNewAnswer(cameraRef);
+            handleNewAnswer(cameraRef);
+          }
+          else {
+            handleNewAnswer("no_cam_ref")
+          }
         }}>
         Answer Question
       </button>

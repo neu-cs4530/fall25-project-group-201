@@ -10,6 +10,13 @@ import { useLocation } from "react-router-dom";
 const NewAnswerPage = () => {
   const { text, textErr, setText, postAnswer } = useAnswerForm();
   const location = useLocation();
+  let isGLBMedia = false;
+
+  if (location.hash.startsWith("#camera-")) {
+    isGLBMedia = true;
+  } else {
+    isGLBMedia = false;
+  } 
 
   // remove the leading "#"
   const cameraRef = location.hash.slice(1);
@@ -28,10 +35,9 @@ const NewAnswerPage = () => {
         setState={setText}
         err={textErr}
       />
-      <button onClick={handleUpdateText}>Button to add cam ref</button>
+      {isGLBMedia && <button onClick={handleUpdateText}>Button to add cam ref</button>}
       <h5>
         <i>Markdown formatting is supported.</i>
-        <div>{cameraRef}</div>
       </h5>
       <div className='btn_indicator_container'>
         <button className='form_postBtn' onClick={postAnswer}>
