@@ -137,13 +137,19 @@ const QuestionBody = ({
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
         {permitDownload && mediaPath && mediaSize && ext && (
-          <div>
+          <div className='download-label'>
             <Download
               size={20}
               onClick={() => handleDownload(mediaSize, ext)}
-              color='blue'
+              color='#007BFF'
               style={{ cursor: 'pointer' }}
             />
+            <div>Download 3D model</div>
+          </div>
+        )}
+        {!permitDownload && mediaPath && mediaSize && ext && (
+          <div className='download-disabled'>
+            <div>Download disabled</div>
           </div>
         )}
       </div>

@@ -125,3 +125,14 @@
   height: 100%;
   border-radius: 6px;
 }
+
+.download-label {
+  color:#007BFF;
+  gap: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.download-disabled {
+  color: gray;
+}

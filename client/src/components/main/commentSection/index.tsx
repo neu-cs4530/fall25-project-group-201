@@ -8,6 +8,7 @@ import useUserContext from '../../../hooks/useUserContext';
 import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
 import { Download } from 'lucide-react';
+import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -50,6 +51,7 @@ const CommentSection = ({
   const [mediaError, setMediaError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [permitDownload, setPermitDownload] = useState<boolean>(true);
   let tempMediaPath: string | undefined;
   let mediaSize: string | undefined;
 
@@ -148,6 +150,7 @@ const CommentSection = ({
       ...(file ? { mediaPath: tempMediaPath } : {}),
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
       ...(mediaSize ? { mediaSize: mediaSize } : {}),
+      ...((file && tempMediaPath?.endsWith('.glb') ? { permitDownload} : {})),
     };
 
     await handleAddComment(newComment);
@@ -291,6 +294,10 @@ const CommentSection = ({
                 </div>
               )}
             </div>
+            {(file && file.name.endsWith('.glb')) && (
+              <PermissionCheckbox permission={permitDownload} setPermission={setPermitDownload} />
+            )}
+
             {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
             {mediaError && <small className='error'>{mediaError}</small>}
             {textErr && <small className='error'>{textErr}</small>}
@@ -328,7 +335,7 @@ const CommentSection = ({
                       })()}
                   </div>
                   <small className='comment-meta'>
-                    {comment.mediaPath && comment.mediaSize && (
+                    {comment.permitDownload && comment.mediaPath && comment.mediaSize && (
                       <Download
                         className='comment-download-icon'
                         size={20}
@@ -336,7 +343,7 @@ const CommentSection = ({
                           handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))
                         }
                         style={{ cursor: 'pointer' }}
-                        color='blue'
+                        color='#007BFF'
                       />
                     )}
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}

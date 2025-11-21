@@ -16,7 +16,7 @@ export interface Comment {
   mediaUrl?: string;
   mediaPath?: string;
   mediaSize?: string;
-  permitDownload: boolean;
+  permitDownload?: boolean;
 }
 
 /**

@@ -32,6 +32,10 @@ const commentSchema: Schema = new Schema(
       type: String,
       required: false,
     },
+    permitDownload: {
+      type: Boolean,
+      default: true,
+    },
   },
   { collection: 'Comment' },
 );
