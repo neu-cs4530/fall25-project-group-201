@@ -1,5 +1,9 @@
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Heart, Eye } from 'lucide-react';
 import ThreeViewport from '../index';
+import useUserContext from '../../../../hooks/useUserContext';
+import { incrementPortfolioViews, togglePortfolioLike } from '../../../../services/userService';
 import './index.css';
 
 type PortfolioItem = {
@@ -7,14 +11,50 @@ type PortfolioItem = {
   description?: string;
   mediaUrl: string;
   thumbnailUrl?: string;
+  views?: string[];
+  likes?: string[];
 };
 
 export default function PortfolioViewerPage() {
-  const { username } = useParams();
+  const { username, index } = useParams();
   const location = useLocation() as { state?: PortfolioItem };
   const navigate = useNavigate();
+  const { user } = useUserContext();
 
-  const item = location.state;
+  const [item, setItem] = useState<PortfolioItem | null>(location.state || null);
+
+  useEffect(() => {
+    if (!username || !index || !user.username) return;
+
+    incrementPortfolioViews(username, parseInt(index), user.username).then(() => {
+      setItem(prev => {
+        if (!prev) return prev;
+
+        const currentViews = prev.views || [];
+        if (currentViews.includes(user.username)) return prev;
+
+        return { ...prev, views: [...currentViews, user.username] };
+      });
+    });
+  }, [username, index, user.username]);
+
+  const handleToggleLike = async () => {
+    if (!username || !index || !user.username || !item) {
+      return;
+    }
+
+    await togglePortfolioLike(username, parseInt(index), user.username);
+
+    const currentLikes = item.likes || [];
+    const alreadyLiked = currentLikes.includes(user.username);
+
+    setItem({
+      ...item,
+      likes: alreadyLiked
+        ? currentLikes.filter(u => u !== user.username)
+        : [...currentLikes, user.username],
+    });
+  };
 
   if (!item?.mediaUrl) {
     return (
@@ -36,6 +76,8 @@ export default function PortfolioViewerPage() {
   const isVideo = url.toLowerCase().endsWith('.mp4') || youTubeId || vimeoId;
   const isImage = !is3D && !isVideo;
 
+  const isLiked = item.likes?.includes(user.username) || false;
+
   return (
     <div className='galleryPostPage'>
       <div className='postInfo'>
@@ -55,6 +97,17 @@ export default function PortfolioViewerPage() {
         </button>
 
         <h1>{item.title}</h1>
+
+        {/* Stats (likes and views) */}
+        <div className='postStats'>
+          <span className='statItem' onClick={handleToggleLike} style={{ cursor: 'pointer' }}>
+            <Heart size={20} color={isLiked ? 'red' : 'gray'} fill={isLiked ? 'red' : 'none'} />
+            {item.likes?.length || 0}
+          </span>
+          <span className='statItem'>
+            <Eye size={20} /> {item.views?.length || 0}
+          </span>
+        </div>
 
         {item.description && <p className='postDescription'>{item.description}</p>}
       </div>

@@ -576,10 +576,12 @@ const ProfileSettings: React.FC = () => {
                         if (!editMode) {
                           navigate(`/user/${userData.username}/portfolio/${index}`, {
                             state: {
-                              title: item.title, // Now we have title!
-                              description: item.description, // And description!
+                              title: item.title,
+                              description: item.description,
                               mediaUrl: item.mediaUrl,
                               thumbnailUrl: item.thumbnailUrl,
+                              views: item.views || [],
+                              likes: item.likes || [],
                             },
                           });
                         }
