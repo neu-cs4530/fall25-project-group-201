@@ -63,7 +63,7 @@ const QuestionBody = ({
   mediaPath,
   mediaUrl,
   mediaSize,
-  permitDownload
+  permitDownload,
 }: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 

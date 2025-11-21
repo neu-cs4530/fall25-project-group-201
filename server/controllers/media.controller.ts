@@ -25,7 +25,7 @@ const mediaController = (socket: FakeSOSocket) => {
         filepathLocation,
         fileBuffer: file.buffer,
         user,
-        isDownloadable
+        isDownloadable,
       };
 
       const newMedia = await mediaService.addMedia(media);

@@ -274,7 +274,10 @@ const NewGalleryPostPage = () => {
                   {previewFilePath && (
                     <ThreeViewport key={previewFilePath} modelPath={previewFilePath.toString()} />
                   )}
-                  <PermissionCheckbox permission={downloadPermission} setPermission={setDownloadPermission}/>
+                  <PermissionCheckbox
+                    permission={downloadPermission}
+                    setPermission={setDownloadPermission}
+                  />
                 </div>
               </div>
             </>

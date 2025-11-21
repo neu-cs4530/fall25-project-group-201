@@ -123,7 +123,7 @@ const useNewGalleryPost = () => {
       likes: [],
       mediaSize: mediaSize!,
       tags,
-      ...((mediaPath && mediaPath.endsWith('.glb')) ? {permitDownload: downloadPermission} : {})
+      ...(mediaPath && mediaPath.endsWith('.glb') ? { permitDownload: downloadPermission } : {}),
     };
 
     try {

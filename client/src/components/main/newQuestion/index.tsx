@@ -202,9 +202,9 @@ const NewQuestion = () => {
               type='button'
               className='delete-media-btn'
               onClick={async () => {
-                const isEmbedded = mediaUrl && !mediaPath
-                const isGLB = mediaPath && mediaPath.endsWith('.glb')
-                const isUploadedImgOrVid = mediaPath && !mediaPath.endsWith('.glb')
+                const isEmbedded = mediaUrl && !mediaPath;
+                const isGLB = mediaPath && mediaPath.endsWith('.glb');
+                const isUploadedImgOrVid = mediaPath && !mediaPath.endsWith('.glb');
 
                 if (isEmbedded) {
                   setMediaUrl('');
@@ -271,7 +271,10 @@ const NewQuestion = () => {
             <div className='model-preview'>
               <p>3D Model Preview:</p>
               <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
-              <PermissionCheckbox permission={downloadPermission} setPermission={setDownloadPermission} />
+              <PermissionCheckbox
+                permission={downloadPermission}
+                setPermission={setDownloadPermission}
+              />
             </div>
           )}
 

@@ -119,8 +119,6 @@ const useNewQuestion = () => {
       if (res && res._id) {
         navigate('/home');
       }
-
-      console.log('downloadPermission', downloadPermission);
     } catch (err) {
       setMediaErr('Failed to post question');
     }

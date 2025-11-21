@@ -76,12 +76,11 @@ const GalleryPostPage = () => {
             <span className='statItem'>
               <Eye size={20} /> {post.views}
             </span>
-            {(is3D && post.permitDownload) && (
-              <span
-                className='statItem'>
+            {is3D && post.permitDownload && (
+              <span className='statItem'>
                 <Download
                   size={20}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     handleDownload(post.mediaSize, ext!, url);
                   }}
@@ -90,11 +89,8 @@ const GalleryPostPage = () => {
                 {post.downloads}
               </span>
             )}
-            {(!post.permitDownload) && (
-              <span
-                className='statItem download-disabled'>
-                  Downloads disabled
-              </span>
+            {!post.permitDownload && (
+              <span className='statItem download-disabled'>Downloads disabled</span>
             )}
             {isAuthor && (
               <span className='statItem delete' onClick={removePost}>

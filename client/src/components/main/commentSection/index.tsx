@@ -151,7 +151,7 @@ const CommentSection = ({
       ...(file ? { mediaPath: tempMediaPath } : {}),
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
       ...(mediaSize ? { mediaSize: mediaSize } : {}),
-      ...((file && tempMediaPath?.endsWith('.glb') ? { permitDownload} : {})),
+      ...(file && tempMediaPath?.endsWith('.glb') ? { permitDownload } : {}),
     };
 
     await handleAddComment(newComment);
@@ -295,7 +295,7 @@ const CommentSection = ({
                 </div>
               )}
             </div>
-            {(file && file.name.endsWith('.glb')) && (
+            {file && file.name.endsWith('.glb') && (
               <PermissionCheckbox permission={permitDownload} setPermission={setPermitDownload} />
             )}
 
@@ -344,7 +344,11 @@ const CommentSection = ({
                           className='comment-download-icon'
                           size={20}
                           onClick={() =>
-                            handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!), comment.mediaPath!)
+                            handleDownload(
+                              comment.mediaSize!,
+                              getExtension(comment.mediaPath!),
+                              comment.mediaPath!,
+                            )
                           }
                           style={{ cursor: 'pointer' }}
                           color='#007BFF'
@@ -352,9 +356,7 @@ const CommentSection = ({
                       </div>
                     )}
                     {!comment.permitDownload && comment.mediaPath && comment.mediaSize && (
-                      <div className='download-disabled'>
-                        Download disabled
-                      </div>
+                      <div className='download-disabled'>Download disabled</div>
                     )}
                   </small>
                 </li>
