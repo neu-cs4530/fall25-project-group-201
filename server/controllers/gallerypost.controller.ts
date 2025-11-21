@@ -74,8 +74,8 @@ const galleryPostController = (socket: FakeSOSocket) => {
       downloads: 0,
       likes: [],
       tags,
-      link: link ?? '',       // always include link as string
-      mediaSize,             // required
+      link: link ?? '', // always include link as string
+      mediaSize, // required
     };
 
     try {

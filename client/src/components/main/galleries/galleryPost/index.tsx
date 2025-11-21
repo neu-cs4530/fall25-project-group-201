@@ -114,15 +114,11 @@ const GalleryPostPage = () => {
         {isVideo && <video src={url} controls muted className='postMedia'></video>}
       </div>
       {post.link && (
-        <button
-          className="viewProjectBtn"
-          onClick={() => window.open(post.link, "_blank")}
-        >
-        <ExternalLink size={18} />
+        <button className='viewProjectBtn' onClick={() => window.open(post.link, '_blank')}>
+          <ExternalLink size={18} />
           View Project
         </button>
       )}
-
     </div>
   );
 };

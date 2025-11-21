@@ -159,22 +159,21 @@ const useNewGalleryPost = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowedTypes = ["image/jpeg", "image/png"];
+    const allowedTypes = ['image/jpeg', 'image/png'];
 
     const isValidMime = allowedTypes.includes(file.type);
 
-    const extension = file.name.split(".").pop()?.toLowerCase();
-    const allowedExtensions = ["jpg", "jpeg", "png"];
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const allowedExtensions = ['jpg', 'jpeg', 'png'];
     const isValidExtension = extension && allowedExtensions.includes(extension);
 
     if (!isValidMime && !isValidExtension) {
-      e.target.value = "";
+      e.target.value = '';
       return;
     }
 
     setUploadedThumbnailMediaPath(`/userData/${user.username}/${file.name}`);
   };
-
 
   /**
    * Toggles the state of attaching a tag to a post.
@@ -191,7 +190,6 @@ const useNewGalleryPost = () => {
   const handleProjectLinkChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProjectLink(e.target.value);
   };
-
 
   return {
     title,

@@ -75,7 +75,7 @@ const galleryPostSchema: Schema = new Schema(
     link: {
       type: String,
       default: '',
-    }
+    },
   },
   { collection: 'GalleryPost' },
 );
