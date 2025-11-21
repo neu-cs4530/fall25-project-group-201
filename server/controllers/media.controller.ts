@@ -11,7 +11,7 @@ const mediaController = (socket: FakeSOSocket) => {
   router.post('/create', upload.single('file'), async (req: Request, res: Response) => {
     try {
       const file = req.file;
-      const { user, filepathLocation } = req.body;
+      const { user, filepathLocation, isDownloadable } = req.body;
 
       if (!file) {
         return res.status(400).json({ error: 'File missing' });
@@ -25,6 +25,7 @@ const mediaController = (socket: FakeSOSocket) => {
         filepathLocation,
         fileBuffer: file.buffer,
         user,
+        isDownloadable
       };
 
       const newMedia = await mediaService.addMedia(media);

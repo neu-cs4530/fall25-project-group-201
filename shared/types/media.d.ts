@@ -13,6 +13,7 @@ export interface Media {
   fileBuffer?: base64;
   user: string;
   fileSize?: string;
+  isDownloadable: boolean;
 }
 
 /**

@@ -193,6 +193,41 @@ const NewQuestion = () => {
               style={{ display: 'none' }}
             />
           </label>
+
+          {(mediaUrl || mediaPath) && (
+            <button
+              type='button'
+              className='delete-media-btn'
+              onClick={async () => {
+                const isEmbedded = mediaUrl && !mediaPath
+                const isGLB = mediaPath && mediaPath.endsWith('.glb')
+                const isUploadedImgOrVid = mediaPath && !mediaPath.endsWith('.glb')
+
+                if (isEmbedded) {
+                  setMediaUrl('');
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                } else if (isGLB) {
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                } else if (isUploadedImgOrVid) {
+                  try {
+                    await fetch('/api/media/delete', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ filepathLocation: mediaPath }),
+                    });
+                  } catch (err) {
+                    /* eslint-disable no-console */
+                    console.warn('Optional: could not delete file on server', err);
+                  }
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                }
+              }}>
+              Remove
+            </button>
+          )}
         </div>
 
         {mediaErr && <p className='error'>{mediaErr}</p>}
@@ -225,16 +260,6 @@ const NewQuestion = () => {
                   );
                 })()
               )}
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={() => {
-                  setMediaUrl('');
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
             </div>
           )}
 
@@ -243,15 +268,10 @@ const NewQuestion = () => {
             <div className='model-preview'>
               <p>3D Model Preview:</p>
               <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={() => {
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
+              <div className="form-check form-switch">
+                <input className="form-check-input" type="checkbox" role="switch" id="switchCheckChecked" defaultChecked />
+                <label className="form-check-label" htmlFor="switchCheckChecked">Allow others to download model</label>
+              </div>
             </div>
           )}
 
@@ -268,26 +288,6 @@ const NewQuestion = () => {
                   Your browser does not support the video tag.
                 </video>
               ) : null}
-
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={async () => {
-                  try {
-                    await fetch('/api/media/delete', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ filepathLocation: mediaPath }),
-                    });
-                  } catch (err) {
-                    /* eslint-disable no-console */
-                    console.warn('Optional: could not delete file on server', err);
-                  }
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
             </div>
           )}
         </div>
