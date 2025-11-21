@@ -12,9 +12,9 @@ interface ThreeViewportProps {
   modelPath?: string | null;
   allowUpload?: boolean;
   rotationSetting?: number[] | null;
-  setRotationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  setRotationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>;
   translationSetting?: number[] | null;
-  setTranslationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  setTranslationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>;
 }
 
 const HDRI_PRESETS = [

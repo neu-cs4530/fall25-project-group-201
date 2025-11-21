@@ -332,10 +332,6 @@ const useThreeViewport = (
       }
       if (scene) {
         // traverse and dispose geometries/materials if you need to free GPU memory
-        scene.traverse((obj: Object3D) => {
-          // dispose geometries/materials if present
-          // (left minimal here; extend as needed)
-        });
         scene.clear();
       }
       // remove canvas
@@ -442,10 +438,6 @@ const useThreeViewport = (
         };
       },
       undefined,
-      err => {
-        // loading error — you can surface this if you want
-        // console.error('model load error', err);
-      },
     );
 
     return () => {
