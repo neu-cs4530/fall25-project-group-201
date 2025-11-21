@@ -20,7 +20,8 @@ const handleDownload = (mediaSize: string, extension: string) => {
  * Component to display a single gallery post from a community gallery.
  */
 const GalleryPostPage = () => {
-  const { post, postUser, error, incrementDownloads, toggleLike, removePost } = useGalleryPostPage();
+  const { post, postUser, error, incrementDownloads, toggleLike, removePost } =
+    useGalleryPostPage();
   const { user } = useUserContext();
 
   if (error) return <div className='postError'>{error}</div>;
@@ -79,9 +80,12 @@ const GalleryPostPage = () => {
                 onClick={() => {
                   incrementDownloads();
                   window.open(post.media, '_blank');
-                }}
-              >
-                <Download size={20} onClick={() => handleDownload(post.mediaSize, ext!)} color='blue' />{' '}
+                }}>
+                <Download
+                  size={20}
+                  onClick={() => handleDownload(post.mediaSize, ext!)}
+                  color='blue'
+                />{' '}
                 {post.downloads}
               </span>
             )}
@@ -105,7 +109,6 @@ const GalleryPostPage = () => {
 
         <p className='postDescription'>{post.description}</p>
       </div>
-
 
       <div className='mediaWrapper'>
         {is3D && <ThreeViewport modelPath={post.media} />}

@@ -9,8 +9,7 @@ import {
 } from '../services/galleryService';
 import { getUserByUsername } from '../services/userService';
 import useUserContext from './useUserContext';
-import { DatabaseGalleryPost } from '../types/types';
-import { SafeDatabaseUser } from '../types/types';
+import { DatabaseGalleryPost, SafeDatabaseUser } from '../types/types';
 
 /**
  * Custom hook for managing a single gallery post page.
