@@ -6,14 +6,6 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 /**
  * Creates an orthographic projection matrix manually.
- *
- * @param {number} left - Left plane of the frustum.
- * @param {number} right - Right plane of the frustum.
- * @param {number} top - Top plane of the frustum.
- * @param {number} bottom - Bottom plane of the frustum.
- * @param {number} near - Near clipping plane.
- * @param {number} far - Far clipping plane.
- * @returns {THREE.Matrix4} The resulting orthographic projection matrix.
  */
 const createOrthographicMatrix = (
   left: number,
@@ -48,13 +40,6 @@ const createOrthographicMatrix = (
   return m;
 };
 
-/**
- * React hook that sets up a Three.js viewport with optional model loading,
- * camera controls, and orthographic/perspective toggle.
- *
- * @param {string | null} modelPath - Path to the 3D model (GLB) to load. If null, the scene initializes empty.
- * @returns Object containing scene control refs and functions.
- */
 const useThreeViewport = (
   modelPath: string | null,
   rotationSetting?: number[] | null,
@@ -85,12 +70,37 @@ const useThreeViewport = (
     rotation: THREE.Euler;
   } | null>(null);
 
+  // Refs to mirror incoming props so the animation loop and handlers can use them
+  const rotationSettingRef = useRef<number[] | null | undefined>(rotationSetting);
+  const translationSettingRef = useRef<number[] | null | undefined>(translationSetting);
+  const setRotationSettingRef = useRef<typeof setRotationSetting | undefined>(setRotationSetting);
+  const setTranslationSettingRef = useRef<typeof setTranslationSetting | undefined>(
+    setTranslationSetting,
+  );
+
+  // keep refs up-to-date when parents pass new values
+  useEffect(() => {
+    rotationSettingRef.current = rotationSetting;
+  }, [rotationSetting]);
+
+  useEffect(() => {
+    translationSettingRef.current = translationSetting;
+  }, [translationSetting]);
+
+  useEffect(() => {
+    setRotationSettingRef.current = setRotationSetting;
+  }, [setRotationSetting]);
+
+  useEffect(() => {
+    setTranslationSettingRef.current = setTranslationSetting;
+  }, [setTranslationSetting]);
+
   /**
-   * Main scene setup and teardown lifecycle.
-   * Initializes the renderer, scene, lighting, controls, and loads the model.
+   * Initialization effect — runs once on mount.
+   * Does NOT reference reactive props directly (uses refs when runtime access needed).
    */
   useEffect(() => {
-    if (!containerRef.current || !modelPath) return;
+    if (!containerRef.current) return;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -101,61 +111,6 @@ const useThreeViewport = (
     const sensitivity = 0.005;
     const panSensitivity = 0.02;
 
-    /**
-     * Handles mouse down events to begin rotating the scene.
-     * @param {MouseEvent} event - Browser mouse down event.
-     */
-    const handleMouseDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) return;
-      isDragging = true;
-      previousMouseX = event.clientX;
-      previousMouseY = event.clientY;
-    };
-
-    // --- Keyboard ---
-    const handleKeyDown = (e: KeyboardEvent) => {
-      keysPressed.current[e.key] = true;
-    };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      keysPressed.current[e.key] = false;
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    /**
-     * Handles mouse move events to rotate the scene.
-     * @param {MouseEvent} event - Browser mouse move event.
-     */
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!isDragging) return;
-      const deltaX = event.clientX - previousMouseX;
-      const deltaY = event.clientY - previousMouseY;
-      scene.rotation.y += deltaX * sensitivity;
-      scene.rotation.x += deltaY * sensitivity;
-      if (setRotationSetting) {
-        setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
-      }
-      previousMouseX = event.clientX;
-      previousMouseY = event.clientY;
-    };
-
-    /**
-     * Handles mouse up events to stop rotating the scene.
-     */
-    const handleMouseUp = () => {
-      if (!isDragging) return;
-      isDragging = false;
-    };
-
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // --- Lighting setup ---
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xbebebe, 1.0);
-    scene.add(hemiLight);
-    scene.background = new THREE.Color(0xf5f5f5);
-
     // --- Camera setup ---
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -165,11 +120,69 @@ const useThreeViewport = (
     );
     cameraRef.current = camera;
 
-    /**
-     * Handles zooming via mouse wheel events.
-     * Moves the camera along its forward vector.
-     * @param {WheelEvent} event - Browser wheel event.
-     */
+    // --- Renderer setup ---
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    rendererRef.current = renderer;
+    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    containerRef.current.appendChild(renderer.domElement);
+
+    // lighting / ground
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xbebebe, 1.0);
+    scene.add(hemiLight);
+    scene.background = new THREE.Color(0xf5f5f5);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(3, 5, 5);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+    scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+
+    const groundGeo = new THREE.PlaneGeometry(1000, 1000, 1, 1);
+    const groundMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 10 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // --- Input handlers (use refs inside handlers) ---
+    const handleMouseDown = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) return;
+      isDragging = true;
+      previousMouseX = event.clientX;
+      previousMouseY = event.clientY;
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!isDragging) return;
+      const deltaX = event.clientX - previousMouseX;
+      const deltaY = event.clientY - previousMouseY;
+      scene.rotation.y += deltaX * sensitivity;
+      scene.rotation.x += deltaY * sensitivity;
+
+      // write back to parent if setter exists (via ref)
+      if (setRotationSettingRef.current) {
+        setRotationSettingRef.current([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+      }
+
+      previousMouseX = event.clientX;
+      previousMouseY = event.clientY;
+    };
+
+    const handleMouseUp = () => {
+      if (!isDragging) return;
+      isDragging = false;
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = true;
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = false;
+    };
+
+    // wheel/zoom handler uses cameraRef + setterRef
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
       const camera = cameraRef.current;
@@ -181,97 +194,22 @@ const useThreeViewport = (
       camera.position.addScaledVector(direction, zoomAmount);
       targetZRef.current = camera.position.z;
 
-      if (setTranslationSetting) {
-        setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+      if (setTranslationSettingRef.current) {
+        setTranslationSettingRef.current([camera.position.x, camera.position.y, camera.position.z]);
       }
     };
-    containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
 
-    // --- Renderer setup ---
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    rendererRef.current = renderer;
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    containerRef.current.appendChild(renderer.domElement);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove);
+    // wheel listener attached to container element (passive: false so preventDefault works)
+    const handleWheelContainer = containerRef.current; // capture the ref value
+    if (!handleWheelContainer) return;
+    handleWheelContainer.addEventListener('wheel', handleWheel, { passive: false });
 
-    // --- Directional + ambient light ---
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(3, 5, 5);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-    scene.add(new THREE.AmbientLight(0xffffff, 1.1));
-
-    // --- Ground plane ---
-    const groundGeo = new THREE.PlaneGeometry(1000, 1000, 1, 1);
-    const groundMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 10 });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    scene.add(ground);
-
-    // --- Load model using GLTF + DRACO ---
-    const loader = new GLTFLoader();
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-    loader.setDRACOLoader(dracoLoader);
-
-    loader.load(modelPath, gltf => {
-      const model = gltf.scene;
-      model.userData.isModel = true;
-      model.traverse((child: Object3D) => {
-        if (child instanceof Mesh) child.castShadow = true;
-      });
-
-      scene.add(model);
-
-      // Center, scale, and ground-align the model
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      model.position.sub(center);
-
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale = 1.5 / maxDim;
-      model.scale.setScalar(scale);
-      box.setFromObject(model);
-      model.position.y -= box.min.y;
-
-      // Apply rotation after centering and scaling
-      if (rotationSetting) {
-        model.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
-      }
-
-      // Apply translation setting
-      if (translationSetting) {
-        camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
-      }
-
-      // Frame model in view
-      const radius = box.getBoundingSphere(new THREE.Sphere()).radius;
-      const fov = camera.fov * (Math.PI / 180);
-      const cameraZ = radius / Math.sin(fov / 2);
-      camera.position.set(0, radius * 0.8, cameraZ * 1.2);
-      camera.lookAt(0, radius * 0.3, 0);
-
-      if (setTranslationSetting) {
-        setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
-      }
-
-      // Save initial camera state
-      initialCameraState.current = {
-        position: camera.position.clone(),
-        rotation: camera.rotation.clone(),
-        fov: camera.fov,
-        aspect: camera.aspect,
-        near: camera.near,
-        far: camera.far,
-      };
-    });
-
-    /**
-     * Handles window resize events to keep the camera and renderer aligned with viewport size.
-     */
+    // --- Resize handler ---
     const handleResize = () => {
       if (!containerRef.current) return;
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
@@ -280,110 +218,261 @@ const useThreeViewport = (
     };
     window.addEventListener('resize', handleResize);
 
-    // --- Render loop ---
+    // --- Animation loop ---
+    let stopped = false;
     const animate = () => {
+      if (stopped) return;
       requestAnimationFrame(animate);
-      renderer.render(scene, camera);
 
+      // camera & movement
+      const cam = cameraRef.current!;
+      const sceneCur = sceneRef.current!;
       const forward = new THREE.Vector3();
-      camera.getWorldDirection(forward);
+      cam.getWorldDirection(forward);
       const right = new THREE.Vector3();
-      right.crossVectors(forward, camera.up).normalize();
+      right.crossVectors(forward, cam.up).normalize();
       const up = new THREE.Vector3(0, 1, 0);
       const moveSpeed = panSensitivity;
 
-      // --- Camera movement (optional, can keep or remove) ---
       if (keysPressed.current.w || keysPressed.current.ArrowUp) {
-        camera.position.addScaledVector(up, moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        cam.position.addScaledVector(up, moveSpeed);
+        if (setTranslationSettingRef.current) {
+          setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
       if (keysPressed.current.s || keysPressed.current.ArrowDown) {
-        camera.position.addScaledVector(up, -moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        cam.position.addScaledVector(up, -moveSpeed);
+        if (setTranslationSettingRef.current) {
+          setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
       if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
-        camera.position.addScaledVector(right, -moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        cam.position.addScaledVector(right, -moveSpeed);
+        if (setTranslationSettingRef.current) {
+          setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
       if (keysPressed.current.d || keysPressed.current.ArrowRight) {
-        camera.position.addScaledVector(right, moveSpeed);
-        if (setTranslationSetting) {
-          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        cam.position.addScaledVector(right, moveSpeed);
+        if (setTranslationSettingRef.current) {
+          setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
 
-      // --- Model rotation based on WASD ---
-      const model = scene.children.find(obj => obj.userData?.isModel) as THREE.Object3D | undefined;
+      // model rotation with WASD (affects scene rotation)
+      const model = sceneCur.children.find(obj => obj.userData?.isModel) as
+        | THREE.Object3D
+        | undefined;
       if (model) {
-        const rotateSpeed = 0.02; // radians per frame, tweak as needed
-
+        const rotateSpeed = 0.02;
         if (keysPressed.current.w) {
-          scene.rotation.x -= rotateSpeed; // rotate forward
-          if (setRotationSetting) {
-            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          sceneCur.rotation.x -= rotateSpeed;
+          if (setRotationSettingRef.current) {
+            setRotationSettingRef.current([
+              sceneCur.rotation.x,
+              sceneCur.rotation.y,
+              sceneCur.rotation.z,
+            ]);
           }
         }
         if (keysPressed.current.s) {
-          scene.rotation.x += rotateSpeed; // rotate backward
-          if (setRotationSetting) {
-            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          sceneCur.rotation.x += rotateSpeed;
+          if (setRotationSettingRef.current) {
+            setRotationSettingRef.current([
+              sceneCur.rotation.x,
+              sceneCur.rotation.y,
+              sceneCur.rotation.z,
+            ]);
           }
         }
         if (keysPressed.current.a) {
-          scene.rotation.y += rotateSpeed; // rotate left
-          if (setRotationSetting) {
-            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          sceneCur.rotation.y += rotateSpeed;
+          if (setRotationSettingRef.current) {
+            setRotationSettingRef.current([
+              sceneCur.rotation.x,
+              sceneCur.rotation.y,
+              sceneCur.rotation.z,
+            ]);
           }
         }
         if (keysPressed.current.d) {
-          scene.rotation.y -= rotateSpeed; // rotate right
-          if (setRotationSetting) {
-            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          sceneCur.rotation.y -= rotateSpeed;
+          if (setRotationSettingRef.current) {
+            setRotationSettingRef.current([
+              sceneCur.rotation.x,
+              sceneCur.rotation.y,
+              sceneCur.rotation.z,
+            ]);
           }
         }
       }
+
+      renderer.render(sceneCur, cam);
     };
 
     animate();
 
-    // --- Cleanup ---
+    // cleanup
     return () => {
+      stopped = true;
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('wheel', handleWheel);
-      renderer.dispose();
-      scene.clear();
-      dracoLoader.dispose();
+      if (handleWheelContainer) {
+        handleWheelContainer.removeEventListener('wheel', handleWheel);
+      }
+      // dispose renderer and clear scene
+      try {
+        renderer.dispose();
+      } catch (e) {
+        // ignore dispose errors
+      }
+      if (scene) {
+        // traverse and dispose geometries/materials if you need to free GPU memory
+        scene.traverse((obj: Object3D) => {
+          // dispose geometries/materials if present
+          // (left minimal here; extend as needed)
+        });
+        scene.clear();
+      }
+      // remove canvas
       if (renderer.domElement.parentNode) {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
+      rendererRef.current = null;
+      sceneRef.current = null;
+      cameraRef.current = null;
+    };
+    // run only on mount/unmount
+  }, []);
+
+  /**
+   * Model load effect: only triggers when modelPath changes.
+   * Uses existing scene & camera (created by the initialization effect).
+   */
+  useEffect(() => {
+    if (!modelPath) return;
+    const scene = sceneRef.current;
+    const camera = cameraRef.current;
+    const renderer = rendererRef.current;
+    if (!scene || !camera || !renderer || !containerRef.current) return;
+
+    const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    loader.setDRACOLoader(dracoLoader);
+
+    let loadedModel: THREE.Object3D | null = null;
+    let active = true;
+
+    loader.load(
+      modelPath,
+      gltf => {
+        if (!active) return;
+        const model = gltf.scene;
+        model.userData.isModel = true;
+        model.traverse((child: Object3D) => {
+          if ((child as Mesh) instanceof Mesh) (child as Mesh).castShadow = true;
+        });
+
+        // Remove any previous model
+        const prev = scene.children.find(obj => obj.userData?.isModel) as
+          | THREE.Object3D
+          | undefined;
+        if (prev) {
+          scene.remove(prev);
+        }
+
+        scene.add(model);
+        loadedModel = model;
+
+        // Center, scale, and ground-align the model
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        model.position.sub(center);
+
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const scale = 1.5 / maxDim;
+        model.scale.setScalar(scale);
+        box.setFromObject(model);
+        model.position.y -= box.min.y;
+
+        // Apply last-known rotationSetting (from ref)
+        const rs = rotationSettingRef.current;
+        if (rs) {
+          model.rotation.set(rs[0], rs[1], rs[2]);
+        }
+
+        // Apply last-known translationSetting (from ref) to camera if present
+        const ts = translationSettingRef.current;
+        if (ts && camera) {
+          camera.position.set(ts[0], ts[1], ts[2]);
+        }
+
+        // Frame model in view (safe fallback if camera not yet positioned)
+        const radius = box.getBoundingSphere(new THREE.Sphere()).radius;
+        const fov = camera.fov * (Math.PI / 180);
+        if (fov > 0) {
+          const cameraZ = radius / Math.sin(fov / 2);
+          camera.position.set(0, radius * 0.8, cameraZ * 1.2);
+          camera.lookAt(0, radius * 0.3, 0);
+        }
+
+        // inform parent of new translation if setter present
+        if (setTranslationSettingRef.current) {
+          setTranslationSettingRef.current([
+            camera.position.x,
+            camera.position.y,
+            camera.position.z,
+          ]);
+        }
+
+        // Save initial camera state
+        initialCameraState.current = {
+          position: camera.position.clone(),
+          rotation: camera.rotation.clone(),
+          fov: camera.fov,
+          aspect: camera.aspect,
+          near: camera.near,
+          far: camera.far,
+        };
+      },
+      undefined,
+      err => {
+        // loading error — you can surface this if you want
+        // console.error('model load error', err);
+      },
+    );
+
+    return () => {
+      active = false;
+      // remove loaded model if any
+      if (loadedModel && scene) {
+        scene.remove(loadedModel);
+      }
+      dracoLoader.dispose();
     };
   }, [modelPath]);
 
-  // --- Rotation update effect (runs whenever rotationSetting changes) ---
+  // Lightweight effect: if parent changes rotationSetting prop, apply it to the scene immediately.
   useEffect(() => {
     if (!rotationSetting) return;
     const scene = sceneRef.current;
     if (!scene) return;
 
-    const model = scene.children.find(obj => obj.userData?.isModel);
-    if (!model) return;
-
     scene.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
   }, [rotationSetting]);
 
-  // --- Translation update effect (runs whenever translationSetting changes) ---
+  // Lightweight effect: if parent changes translationSetting prop, apply it to the camera immediately.
   useEffect(() => {
     if (!translationSetting) return;
     const camera = cameraRef.current;
+    if (!camera) return;
+
     camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
   }, [translationSetting]);
 

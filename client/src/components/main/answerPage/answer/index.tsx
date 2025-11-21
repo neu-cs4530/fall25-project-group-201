@@ -3,7 +3,7 @@ import remarkGfm from 'remark-gfm';
 import CommentSection from '../../commentSection';
 import './index.css';
 import { Comment, DatabaseComment } from '../../../../types/types';
-import { preprocessCameraRefs } from '../../cameraRef/CameraRefUtils';
+import preprocessCameraRefs from '../../cameraRef/CameraRefUtils';
 
 /**
  * Interface representing the props for the AnswerView component.

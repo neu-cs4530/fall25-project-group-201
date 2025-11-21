@@ -2,7 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
-import { preprocessCameraRefs } from '../../cameraRef/CameraRefUtils';
+import preprocessCameraRefs from '../../cameraRef/CameraRefUtils';
 
 /**
  * Interface representing the props for the QuestionBody component.
