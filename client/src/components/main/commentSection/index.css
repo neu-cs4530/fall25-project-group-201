@@ -90,7 +90,7 @@
   color: #666;
   display: flex;
   justify-content: space-between;
-  max-width: 80%;
+  max-width: 600px;
 }
 
 .comment-media {
