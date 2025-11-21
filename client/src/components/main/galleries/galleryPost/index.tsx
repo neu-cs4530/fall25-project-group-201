@@ -1,5 +1,5 @@
 import './index.css';
-import { Heart, Eye, Download, Trash2 } from 'lucide-react';
+import { Heart, Eye, Download, Trash2, ExternalLink } from 'lucide-react';
 import useUserContext from '../../../../hooks/useUserContext';
 import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
@@ -88,15 +88,6 @@ const GalleryPostPage = () => {
         )}
 
         <p className='postDescription'>{post.description}</p>
-
-        {post.link && (
-          <p className='postLink'>
-            Project Link:{' '}
-            <a href={post.link} target='_blank' rel='noopener noreferrer'>
-              {post.link}
-            </a>
-          </p>
-        )}
       </div>
 
       <div className='mediaWrapper'>
@@ -122,6 +113,16 @@ const GalleryPostPage = () => {
         )}
         {isVideo && <video src={url} controls muted className='postMedia'></video>}
       </div>
+      {post.link && (
+        <button
+          className="viewProjectBtn"
+          onClick={() => window.open(post.link, "_blank")}
+        >
+        <ExternalLink size={18} />
+          View Project
+        </button>
+      )}
+
     </div>
   );
 };

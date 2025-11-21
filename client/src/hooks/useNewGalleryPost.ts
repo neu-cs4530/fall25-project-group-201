@@ -71,13 +71,11 @@ const useNewGalleryPost = () => {
       setMediaErr('');
     }
 
-    // Only check mediaSize if uploading a file
     if (mediaPath && !mediaSize) {
       setMediaErr('Media file size is undefined.');
       isValid = false;
     }
 
-    // Check for 3D model thumbnail if media is glb
     if (mediaPath?.endsWith('.glb') && !thumbnailMediaPath) {
       setThumbnailMediaErr('You must upload a thumbnail for 3D models.');
       isValid = false;
@@ -186,6 +184,10 @@ const useNewGalleryPost = () => {
     setTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
   };
 
+  /**
+   * Handles the upload of the project link
+   * @param e  - the change event
+   */
   const handleProjectLinkChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProjectLink(e.target.value);
   };

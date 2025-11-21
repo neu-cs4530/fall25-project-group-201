@@ -10,6 +10,12 @@ import { Request } from 'express';
  * - `thumbnailMedia`: thumbnailMedia URL or thumbnailMedia path for the gallery post, if the media is 3D (.glb file)
  * - `community`: communityID to which this gallery post belongs.
  * - `postedAt`: when the galler post was posted.
+ * - 'views': the cumulative number of views of the post
+ * - 'downloads': the cumulative number of downloads of the post
+ * - 'likes': a list of each user that liked the post
+ * - 'media size': the file size of the uploaded media
+ * - 'tags': the category tags of the project
+ * - 'link': the external project link
  */
 export interface GalleryPost {
   title: string;
