@@ -502,7 +502,7 @@ const useThreeViewport = (
     const aspect = container.clientWidth / container.clientHeight;
 
     if (isPerspective) {
-      const scale = 2.0;
+      const scale = 1.0;
       const orthoMatrix = createOrthographicMatrix(
         -scale * aspect,
         scale * aspect,

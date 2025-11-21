@@ -247,7 +247,14 @@ const NewGalleryPostPage = () => {
                 <p>3D Model Preview:</p>
                 <div>
                   {previewFilePath && (
-                    <ThreeViewport key={previewFilePath} modelPath={previewFilePath.toString()} />
+                    <ThreeViewport 
+                      key={previewFilePath}
+                      modelPath={previewFilePath.toString()} 
+                      rotationSetting={null}
+                      setRotationSetting={undefined}
+                      translationSetting={null}
+                      setTranslationSetting={undefined}
+                    />
                   )}
                 </div>
               </div>

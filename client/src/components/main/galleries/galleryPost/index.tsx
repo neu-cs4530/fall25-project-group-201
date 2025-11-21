@@ -3,6 +3,7 @@ import { Heart, Eye, Download, Trash2 } from 'lucide-react';
 import useUserContext from '../../../../hooks/useUserContext';
 import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
+import {useState } from 'react';
 
 /**
  * Component to display a single gallery post from a community gallery.
@@ -26,7 +27,7 @@ const GalleryPostPage = () => {
   const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
   const youTubeId = getYouTubeVideoId(url);
   const vimeoId = getVimeoVideoId(url);
-
+  
   return (
     <div className='galleryPostPage'>
       <div className='postInfo'>
@@ -64,7 +65,14 @@ const GalleryPostPage = () => {
       </div>
 
       <div className='mediaWrapper'>
-        {is3D && <ThreeViewport modelPath={post.media} />}
+        {is3D && 
+        <ThreeViewport 
+          modelPath={post.media} 
+          rotationSetting={null}
+          setRotationSetting={undefined}
+          translationSetting={null}
+          setTranslationSetting={undefined}
+        />}
         {youTubeId && (
           <iframe
             width='800'
