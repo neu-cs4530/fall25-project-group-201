@@ -5,18 +5,6 @@ import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
 import { Link } from 'react-router-dom';
 
-const handleDownload = (mediaSize: string, extension: string, mediaPath: string) => {
-  const confirmed = window.confirm(
-    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-  );
-  if (!confirmed) return;
-
-  const link = document.createElement('a');
-  link.href = mediaPath;
-  link.download = `file.${extension}`;
-  link.click();
-};
-
 /**
  * Component to display a single gallery post from a community gallery.
  */
@@ -44,6 +32,19 @@ const GalleryPostPage = () => {
   const youTubeId = getYouTubeVideoId(url);
   const vimeoId = getVimeoVideoId(url);
   const formatTag = (tag: string) => tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+  const handleDownload = (mediaSize: string, extension: string, mediaPath: string) => {
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
+    if (!confirmed) return;
+
+    const link = document.createElement('a');
+    link.href = mediaPath;
+    link.download = `file.${extension}`;
+    link.click();
+    incrementDownloads();
+  };
 
   return (
     <div className='galleryPostPage'>
@@ -77,11 +78,7 @@ const GalleryPostPage = () => {
             </span>
             {(is3D && post.permitDownload) && (
               <span
-                className='statItem'
-                onClick={() => {
-                  incrementDownloads();
-                  window.open(post.media, '_blank');
-                }}>
+                className='statItem'>
                 <Download
                   size={20}
                   onClick={(e) => {
