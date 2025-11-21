@@ -74,7 +74,7 @@ const GalleryPostPage = () => {
             <span className='statItem'>
               <Eye size={20} /> {post.views}
             </span>
-            {!(youTubeId || vimeoId) && (
+            {(is3D && post.permitDownload) && (
               <span
                 className='statItem'
                 onClick={() => {
@@ -87,6 +87,12 @@ const GalleryPostPage = () => {
                   color='#007BFF'
                 />{' '}
                 {post.downloads}
+              </span>
+            )}
+            {(!post.permitDownload) && (
+              <span
+                className='statItem download-disabled'>
+                  Downloads disabled
               </span>
             )}
             {isAuthor && (

@@ -128,3 +128,14 @@
 .usernameLink:hover {
   text-decoration: underline;
 }
+
+.download-label {
+  color:#007BFF;
+  display: flex;
+  align-items: center;
+}
+
+.download-disabled {
+  color: gray;
+  white-space: nowrap;
+}

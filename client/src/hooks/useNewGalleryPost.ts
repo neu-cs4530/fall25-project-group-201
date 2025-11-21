@@ -33,6 +33,7 @@ const useNewGalleryPost = () => {
   const [tags, setTags] = useState<GalleryTag[]>([]);
   const [tagErr, setTagErr] = useState<string>('');
   const { communityID } = useParams<{ communityID: string }>();
+  const [downloadPermission, setDownloadPermission] = useState<boolean>(true);
 
   /**
    * Function to validate the form before submitting the gallery post.
@@ -122,6 +123,7 @@ const useNewGalleryPost = () => {
       likes: [],
       mediaSize: mediaSize!,
       tags,
+      ...((mediaPath && mediaPath.endsWith('.glb')) ? {permitDownload: downloadPermission} : {})
     };
 
     try {
@@ -189,6 +191,8 @@ const useNewGalleryPost = () => {
     tags,
     toggleTag,
     tagErr,
+    downloadPermission,
+    setDownloadPermission,
   };
 };
 
