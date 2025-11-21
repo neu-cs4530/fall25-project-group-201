@@ -27,11 +27,6 @@ const mediaSchema = new Schema(
       type: String,
       required: true,
     },
-    isDownloadable: {
-      type: Boolean,
-      required: true,
-      default: true,
-    },
   },
   { collection: 'Media' },
 );

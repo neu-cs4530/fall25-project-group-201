@@ -44,7 +44,6 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
       filepathLocation: `/userData/${media.user}/${filename}`,
       user: media.user,
       fileSize,
-      isDownloadable: media.isDownloadable,
     };
 
     const mediaDoc = new MediaModel(mediaToSave);
