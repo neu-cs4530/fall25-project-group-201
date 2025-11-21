@@ -75,7 +75,12 @@ const AnswerPage = () => {
       <button
         className='bluebtn ansButton'
         onClick={() => {
-          handleNewAnswer();
+          const t = translationSetting.map(n => Number(n).toFixed(2));
+          const r = rotationSetting.map(n => Number(n).toFixed(2));
+
+          const cameraRef = `#camera-t(${t[0]},${t[1]},${t[2]})-r(${r[0]},${r[1]},${r[2]})`;
+
+          handleNewAnswer(cameraRef);
         }}>
         Answer Question
       </button>
