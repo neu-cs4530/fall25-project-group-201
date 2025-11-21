@@ -335,18 +335,26 @@ const CommentSection = ({
                       })()}
                   </div>
                   <small className='comment-meta'>
-                    {comment.permitDownload && comment.mediaPath && comment.mediaSize && (
-                      <Download
-                        className='comment-download-icon'
-                        size={20}
-                        onClick={() =>
-                          handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))
-                        }
-                        style={{ cursor: 'pointer' }}
-                        color='#007BFF'
-                      />
-                    )}
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
+                    {comment.permitDownload && comment.mediaPath && comment.mediaSize && (
+                      <div className='download-label'>
+                        Download model
+                        <Download
+                          className='comment-download-icon'
+                          size={20}
+                          onClick={() =>
+                            handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))
+                          }
+                          style={{ cursor: 'pointer' }}
+                          color='#007BFF'
+                        />
+                      </div>
+                    )}
+                    {!comment.permitDownload && comment.mediaPath && comment.mediaSize && (
+                      <div className='download-disabled'>
+                        Download disabled
+                      </div>
+                    )}
                   </small>
                 </li>
               ))
