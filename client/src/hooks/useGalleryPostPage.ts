@@ -7,8 +7,9 @@ import {
   toggleGalleryPostLikes,
   deleteGalleryPost,
 } from '../services/galleryService';
+import { getUserByUsername } from '../services/userService';
 import useUserContext from './useUserContext';
-import { DatabaseGalleryPost } from '../types/types';
+import { DatabaseGalleryPost, SafeDatabaseUser } from '../types/types';
 
 /**
  * Custom hook for managing a single gallery post page.
@@ -29,6 +30,7 @@ const useGalleryPostPage = () => {
   const navigate = useNavigate();
 
   const [post, setPost] = useState<DatabaseGalleryPost | null>(null);
+  const [postUser, setPostUser] = useState<SafeDatabaseUser | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   /**
@@ -44,6 +46,13 @@ const useGalleryPostPage = () => {
         return;
       }
       setPost(found);
+
+      try {
+        const userData = await getUserByUsername(found.user);
+        setPostUser(userData);
+      } catch {
+        setPostUser(null);
+      }
     } catch {
       setError('Failed to load post.');
     }
@@ -62,7 +71,7 @@ const useGalleryPostPage = () => {
           await incrementGalleryPostViews(postId, user.username);
           sessionStorage.setItem(sessionKey, 'true');
         }
-      } catch (err) {
+      } catch {
         setError('Failed to increment views.');
       } finally {
         await fetchPost();
@@ -114,6 +123,7 @@ const useGalleryPostPage = () => {
 
   return {
     post,
+    postUser,
     error,
     incrementDownloads,
     toggleLike,
