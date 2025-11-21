@@ -5,18 +5,14 @@ interface CameraRefProps {
 }
 
 export const preprocessCameraRefs = (text: string) => {
-  return text.replace(
-    /(#camera-[A-Za-z]+\(.*?\)(?:-[A-Za-z]+\(.*?\))?)/g,
-    '[$1]($1)'
-  );
+  return text.replace(/(#camera-[A-Za-z]+\(.*?\)(?:-[A-Za-z]+\(.*?\))?)/g, '[$1]($1)');
 };
 
 const CameraRef: React.FC<CameraRefProps> = ({ cameraRef }) => {
   return (
     <span
       style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
-      onClick={() => alert(`Clicked on mention: ${cameraRef}`)}
-    >
+      onClick={() => alert(`Clicked on mention: ${cameraRef}`)}>
       @{cameraRef}
     </span>
   );

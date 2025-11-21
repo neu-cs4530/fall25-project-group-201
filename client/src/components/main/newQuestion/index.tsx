@@ -64,25 +64,24 @@ const NewQuestion = () => {
   };
 
   const handleAddCameraRef = () => {
-
     let translationSettingToSend = translationSetting;
     let rotatationSettingToSend = rotationSetting;
 
-    if (!translationSetting) { 
-      translationSettingToSend = [0,0.77,3.02] 
+    if (!translationSetting) {
+      translationSettingToSend = [0, 0.77, 3.02];
     }
-    if (!rotationSetting) { 
-      rotatationSettingToSend = [0,0,0] 
+    if (!rotationSetting) {
+      rotatationSettingToSend = [0, 0, 0];
     }
 
-    console.log(translationSetting)
-    console.log(rotationSetting)
+    console.log(translationSetting);
+    console.log(rotationSetting);
 
-    let tempText = text;
+    const tempText = text;
     const [tx, ty, tz] = translationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
     const [rx, ry, rz] = rotatationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
-    setText(tempText + " #camera" + "-" + `t(${tx},${ty},${tz})` + "-" + `r(${rx},${ry},${rz})`);
-  }
+    setText(tempText + ' #camera' + '-' + `t(${tx},${ty},${tz})` + '-' + `r(${rx},${ry},${rz})`);
+  };
 
   /**
    * Handles file uploads for media attachments.
@@ -158,13 +157,14 @@ const NewQuestion = () => {
 
         {/* Provide ability to add a camera reference if the mediaPath ends with .glb */}
         {mediaPath?.endsWith('.glb') && (
-        <button
-          type='button'
-          onClick={() => {
-            handleAddCameraRef()
-          }}>
-          Add Camera Reference
-        </button>)}
+          <button
+            type='button'
+            onClick={() => {
+              handleAddCameraRef();
+            }}>
+            Add Camera Reference
+          </button>
+        )}
       </div>
 
       <div className='form-section'>
@@ -268,7 +268,14 @@ const NewQuestion = () => {
           {mediaPath?.endsWith('.glb') && (
             <div className='model-preview'>
               <p>3D Model Preview:</p>
-              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting} translationSetting={translationSetting} setTranslationSetting={setTranslationSetting}/>
+              <ThreeViewport
+                key={mediaPath}
+                modelPath={mediaPath.toString()}
+                rotationSetting={rotationSetting}
+                setRotationSetting={setRotationSetting}
+                translationSetting={translationSetting}
+                setTranslationSetting={setTranslationSetting}
+              />
               <button
                 type='button'
                 className='delete-media-btn'

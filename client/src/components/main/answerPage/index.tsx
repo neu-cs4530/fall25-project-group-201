@@ -29,9 +29,9 @@ const AnswerPage = () => {
   if (!question) return null;
 
   const handleDummyButtonClick = () => {
-    setTranslationSetting([0,1.29,6.28])
-    setRotationSetting([0.75,-3.16,0])
-  }
+    setTranslationSetting([0, 1.29, 6.28]);
+    setRotationSetting([0.75, -3.16, 0]);
+  };
 
   return (
     <>
@@ -85,9 +85,8 @@ const AnswerPage = () => {
             const cameraRef = `#camera-t(${t[0]},${t[1]},${t[2]})-r(${r[0]},${r[1]},${r[2]})`;
 
             handleNewAnswer(cameraRef);
-          }
-          else {
-            handleNewAnswer("no_cam_ref")
+          } else {
+            handleNewAnswer('no_cam_ref');
           }
         }}>
         Answer Question

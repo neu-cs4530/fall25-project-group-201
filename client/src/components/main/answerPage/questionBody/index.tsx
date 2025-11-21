@@ -23,9 +23,9 @@ interface QuestionBodyProps {
   mediaPath?: string;
   mediaUrl?: string;
   rotationSetting?: number[] | null;
-  setRotationSetting:  React.Dispatch<React.SetStateAction<number[] | null>>;
+  setRotationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
   translationSetting?: number[] | null;
-  setTranslationSetting:  React.Dispatch<React.SetStateAction<number[] | null>>;
+  setTranslationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
 }
 
 /**
@@ -40,7 +40,18 @@ interface QuestionBodyProps {
  * @param mediaPath File path to the uploaded media
  * @param mediaUrl Url to the attached media
  */
-const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, rotationSetting, setRotationSetting, translationSetting, setTranslationSetting }: QuestionBodyProps) => {
+const QuestionBody = ({
+  views,
+  text,
+  askby,
+  meta,
+  mediaPath,
+  mediaUrl,
+  rotationSetting,
+  setRotationSetting,
+  translationSetting,
+  setTranslationSetting,
+}: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
   const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
@@ -50,41 +61,37 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, rotationS
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
   const handleCameraRefClick = (cameraRef: string) => {
-  console.log(cameraRef)
-  // Remove leading "#camera-" prefix
-  const ref = cameraRef.replace(/^#camera-/, '');
+    console.log(cameraRef);
+    // Remove leading "#camera-" prefix
+    const ref = cameraRef.replace(/^#camera-/, '');
 
-  // Regex supporting decimals, negatives, and optional rotation
-  // Matches t(x,y,z) and optional -r(x,y,z)
-  const regex = /t\(\s*([^)]+?)\s*\)(?:-r\(\s*([^)]+?)\s*\))?/;
-  const match = ref.match(regex);
+    // Regex supporting decimals, negatives, and optional rotation
+    // Matches t(x,y,z) and optional -r(x,y,z)
+    const regex = /t\(\s*([^)]+?)\s*\)(?:-r\(\s*([^)]+?)\s*\))?/;
+    const match = ref.match(regex);
 
-  if (!match) {
-    console.error('Invalid cameraRef format:', cameraRef);
-    return;
-  }
+    if (!match) {
+      console.error('Invalid cameraRef format:', cameraRef);
+      return;
+    }
 
-  // Translation is required → split and parse safely
-  const translation = match[1]
-    .split(',')
-    .map(v => Number(v.trim())); // handles decimals / negatives
+    // Translation is required → split and parse safely
+    const translation = match[1].split(',').map(v => Number(v.trim())); // handles decimals / negatives
 
-  // Rotation is optional
-  const rotation = match[2]
-    ? match[2].split(',').map(v => Number(v.trim()))
-    : null;
+    // Rotation is optional
+    const rotation = match[2] ? match[2].split(',').map(v => Number(v.trim())) : null;
 
-  console.log('Translation:', translation);
-  console.log('Rotation:', rotation);
+    console.log('Translation:', translation);
+    console.log('Rotation:', rotation);
 
-  if (rotation) {
-    setRotationSetting(rotation);
-  }
+    if (rotation) {
+      setRotationSetting(rotation);
+    }
 
-  if (translation) {
-    setTranslationSetting(translation);
-  }
-};
+    if (translation) {
+      setTranslationSetting(translation);
+    }
+  };
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
@@ -92,45 +99,48 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl, rotationS
 
       <div className='answer_question_text'>
         {!isGLB && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
-        {isGLB && 
+        {isGLB && (
           <Markdown
-  remarkPlugins={[remarkGfm]}
-  components={{
-    a: ({ href, children }) => {
-      // Detect camera links
-      if (href && href.startsWith('#camera-')) {
-        // We want: "camera-t(1,2,3)-r(0,90,0)"
-        const cleanRef = href.replace(/^#/, '');
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ href, children }) => {
+                // Detect camera links
+                if (href && href.startsWith('#camera-')) {
+                  // We want: "camera-t(1,2,3)-r(0,90,0)"
+                  const cleanRef = href.replace(/^#/, '');
 
-        return (
-          <span
-            style={{
-              color: 'blue',
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
-            onClick={() => handleCameraRefClick(cleanRef)}
-          >
-            {children} 
-          </span>
-        );
-      }
+                  return (
+                    <span
+                      style={{
+                        color: 'blue',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                      }}
+                      onClick={() => handleCameraRefClick(cleanRef)}>
+                      {children}
+                    </span>
+                  );
+                }
 
-      // Normal links
-      return <a href={href}>{children}</a>;
-    },
-  }}
->
-  {preprocessCameraRefs(text)}
-</Markdown>
-
-          }
-
+                // Normal links
+                return <a href={href}>{children}</a>;
+              },
+            }}>
+            {preprocessCameraRefs(text)}
+          </Markdown>
+        )}
 
         {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
           <div className='three-wrapper'>
-            <ThreeViewport key={mediaPath} modelPath={mediaPath} rotationSetting={rotationSetting} setRotationSetting={setRotationSetting} translationSetting={translationSetting} setTranslationSetting={setTranslationSetting}/>
+            <ThreeViewport
+              key={mediaPath}
+              modelPath={mediaPath}
+              rotationSetting={rotationSetting}
+              setRotationSetting={setRotationSetting}
+              translationSetting={translationSetting}
+              setTranslationSetting={setTranslationSetting}
+            />
           </div>
         )}
 

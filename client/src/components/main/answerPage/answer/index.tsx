@@ -49,7 +49,6 @@ const AnswerView = ({
   setTranslationSetting,
   glbMedia,
 }: AnswerProps) => {
-
   const handleCameraRefClick = (cameraRef: string) => {
     // Remove leading "#camera-" prefix
     const ref = cameraRef.replace(/^#camera-/, '');
@@ -65,14 +64,10 @@ const AnswerView = ({
     }
 
     // Translation is required → split and parse safely
-    const translation = match[1]
-      .split(',')
-      .map(v => Number(v.trim())); // handles decimals / negatives
+    const translation = match[1].split(',').map(v => Number(v.trim())); // handles decimals / negatives
 
     // Rotation is optional
-    const rotation = match[2]
-      ? match[2].split(',').map(v => Number(v.trim()))
-      : null;
+    const rotation = match[2] ? match[2].split(',').map(v => Number(v.trim())) : null;
 
     console.log('Translation:', translation);
     console.log('Rotation:', rotation);
@@ -90,37 +85,36 @@ const AnswerView = ({
     <div className='answer right_padding'>
       <div id='answerText' className='answerText'>
         {!glbMedia && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
-        {glbMedia && 
-        <Markdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            a: ({ href, children }) => {
-              // Detect camera links
-              if (href && href.startsWith('#camera-')) {
-                // We want: "camera-t(1,2,3)-r(0,90,0)"
-                const cleanRef = href.replace(/^#/, '');
+        {glbMedia && (
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ href, children }) => {
+                // Detect camera links
+                if (href && href.startsWith('#camera-')) {
+                  // We want: "camera-t(1,2,3)-r(0,90,0)"
+                  const cleanRef = href.replace(/^#/, '');
 
-                return (
-                  <span
-                    style={{
-                      color: 'blue',
-                      cursor: 'pointer',
-                      textDecoration: 'underline'
-                    }}
-                    onClick={() => handleCameraRefClick(cleanRef)}
-                  >
-                    {children}
-                  </span>
-                );
-              }
+                  return (
+                    <span
+                      style={{
+                        color: 'blue',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                      }}
+                      onClick={() => handleCameraRefClick(cleanRef)}>
+                      {children}
+                    </span>
+                  );
+                }
 
-              // Normal links
-              return <a href={href}>{children}</a>;
-            },
-          }}
-        >
-          {preprocessCameraRefs(text)}
-        </Markdown>}
+                // Normal links
+                return <a href={href}>{children}</a>;
+              },
+            }}>
+            {preprocessCameraRefs(text)}
+          </Markdown>
+        )}
       </div>
 
       <div className='answerAuthor'>

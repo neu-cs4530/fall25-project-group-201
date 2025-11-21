@@ -12,9 +12,9 @@ interface ThreeViewportProps {
   modelPath?: string | null;
   allowUpload?: boolean;
   rotationSetting?: number[] | null;
-  setRotationSetting:  React.Dispatch<React.SetStateAction<number[] | null>>;
+  setRotationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
   translationSetting?: number[] | null;
-  setTranslationSetting:  React.Dispatch<React.SetStateAction<number[] | null>>;
+  setTranslationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
 }
 
 const HDRI_PRESETS = [
@@ -24,12 +24,25 @@ const HDRI_PRESETS = [
   { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
-const ThreeViewport = ({ modelPath = null, allowUpload = false, translationSetting = [0,0.77,3.02], setTranslationSetting, rotationSetting = [0,0,0], setRotationSetting}: ThreeViewportProps, ) => {
+const ThreeViewport = ({
+  modelPath = null,
+  allowUpload = false,
+  translationSetting = [0, 0.77, 3.02],
+  setTranslationSetting,
+  rotationSetting = [0, 0, 0],
+  setRotationSetting,
+}: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 
   const { containerRef, sceneRef, rendererRef, handleResetCamera, handleTogglePerspective } =
-    useThreeViewport(activeModel, rotationSetting, setRotationSetting, translationSetting, setTranslationSetting);
+    useThreeViewport(
+      activeModel,
+      rotationSetting,
+      setRotationSetting,
+      translationSetting,
+      setTranslationSetting,
+    );
 
   // HDRI Hook Integration
   const { currentPreset, switchPreset, isLoading } = useHDRI({

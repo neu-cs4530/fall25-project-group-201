@@ -56,11 +56,11 @@ const createOrthographicMatrix = (
  * @returns Object containing scene control refs and functions.
  */
 const useThreeViewport = (
-  modelPath: string | null, 
-  rotationSetting?: number[] | null, 
-  setRotationSetting?:  React.Dispatch<React.SetStateAction<number[] | null>>,
-  translationSetting?: number[] | null, 
-  setTranslationSetting?:  React.Dispatch<React.SetStateAction<number[] | null>>,
+  modelPath: string | null,
+  rotationSetting?: number[] | null,
+  setRotationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>,
+  translationSetting?: number[] | null,
+  setTranslationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>,
 ) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -85,11 +85,11 @@ const useThreeViewport = (
     rotation: THREE.Euler;
   } | null>(null);
 
-/**
+  /**
    * Main scene setup and teardown lifecycle.
    * Initializes the renderer, scene, lighting, controls, and loads the model.
    */
-    useEffect(() => {
+  useEffect(() => {
     if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
@@ -133,7 +133,7 @@ const useThreeViewport = (
       scene.rotation.y += deltaX * sensitivity;
       scene.rotation.x += deltaY * sensitivity;
       if (setRotationSetting) {
-        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
+        setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
       }
       previousMouseX = event.clientX;
       previousMouseY = event.clientY;
@@ -165,7 +165,7 @@ const useThreeViewport = (
     );
     cameraRef.current = camera;
 
-     /**
+    /**
      * Handles zooming via mouse wheel events.
      * Moves the camera along its forward vector.
      * @param {WheelEvent} event - Browser wheel event.
@@ -182,12 +182,12 @@ const useThreeViewport = (
       targetZRef.current = camera.position.z;
 
       if (setTranslationSetting) {
-        setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+        setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
       }
     };
     containerRef.current.addEventListener('wheel', handleWheel, { passive: false });
 
-     // --- Renderer setup ---
+    // --- Renderer setup ---
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     rendererRef.current = renderer;
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
@@ -255,7 +255,7 @@ const useThreeViewport = (
       camera.lookAt(0, radius * 0.3, 0);
 
       if (setTranslationSetting) {
-        setTranslationSetting([camera.position.x,camera.position.y,camera.position.z])
+        setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
       }
 
       // Save initial camera state
@@ -269,7 +269,7 @@ const useThreeViewport = (
       };
     });
 
-     /**
+    /**
      * Handles window resize events to keep the camera and renderer aligned with viewport size.
      */
     const handleResize = () => {
@@ -281,74 +281,74 @@ const useThreeViewport = (
     window.addEventListener('resize', handleResize);
 
     // --- Render loop ---
-const animate = () => {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
+    const animate = () => {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
 
-  const forward = new THREE.Vector3();
-  camera.getWorldDirection(forward);
-  const right = new THREE.Vector3();
-  right.crossVectors(forward, camera.up).normalize();
-  const up = new THREE.Vector3(0, 1, 0);
-  const moveSpeed = panSensitivity;
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+      const right = new THREE.Vector3();
+      right.crossVectors(forward, camera.up).normalize();
+      const up = new THREE.Vector3(0, 1, 0);
+      const moveSpeed = panSensitivity;
 
-  // --- Camera movement (optional, can keep or remove) ---
-  if (keysPressed.current.w || keysPressed.current.ArrowUp) {
-    camera.position.addScaledVector(up, moveSpeed);
-    if (setTranslationSetting) {
-      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
-    }
-  }
-  if (keysPressed.current.s || keysPressed.current.ArrowDown) {
-    camera.position.addScaledVector(up, -moveSpeed);
-    if (setTranslationSetting) {
-      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
-    }
-  }
-  if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
-    camera.position.addScaledVector(right, -moveSpeed);
-    if (setTranslationSetting) {
-      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
-    }
-  }
-  if (keysPressed.current.d || keysPressed.current.ArrowRight) {
-    camera.position.addScaledVector(right, moveSpeed);
-    if (setTranslationSetting) {
-      setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
-    }
-  }
+      // --- Camera movement (optional, can keep or remove) ---
+      if (keysPressed.current.w || keysPressed.current.ArrowUp) {
+        camera.position.addScaledVector(up, moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        }
+      }
+      if (keysPressed.current.s || keysPressed.current.ArrowDown) {
+        camera.position.addScaledVector(up, -moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        }
+      }
+      if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
+        camera.position.addScaledVector(right, -moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        }
+      }
+      if (keysPressed.current.d || keysPressed.current.ArrowRight) {
+        camera.position.addScaledVector(right, moveSpeed);
+        if (setTranslationSetting) {
+          setTranslationSetting([camera.position.x, camera.position.y, camera.position.z]);
+        }
+      }
 
-  // --- Model rotation based on WASD ---
-  const model = scene.children.find(obj => obj.userData?.isModel) as THREE.Object3D | undefined;
-  if (model) {
-    const rotateSpeed = 0.02; // radians per frame, tweak as needed
+      // --- Model rotation based on WASD ---
+      const model = scene.children.find(obj => obj.userData?.isModel) as THREE.Object3D | undefined;
+      if (model) {
+        const rotateSpeed = 0.02; // radians per frame, tweak as needed
 
-    if (keysPressed.current.w) {
-      scene.rotation.x -= rotateSpeed; // rotate forward
-      if (setRotationSetting) {
-        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
+        if (keysPressed.current.w) {
+          scene.rotation.x -= rotateSpeed; // rotate forward
+          if (setRotationSetting) {
+            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          }
+        }
+        if (keysPressed.current.s) {
+          scene.rotation.x += rotateSpeed; // rotate backward
+          if (setRotationSetting) {
+            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          }
+        }
+        if (keysPressed.current.a) {
+          scene.rotation.y += rotateSpeed; // rotate left
+          if (setRotationSetting) {
+            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          }
+        }
+        if (keysPressed.current.d) {
+          scene.rotation.y -= rotateSpeed; // rotate right
+          if (setRotationSetting) {
+            setRotationSetting([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
+          }
+        }
       }
-    }
-    if (keysPressed.current.s) {
-      scene.rotation.x += rotateSpeed; // rotate backward
-      if (setRotationSetting) {
-        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
-      }
-    }
-    if (keysPressed.current.a) {
-      scene.rotation.y += rotateSpeed; // rotate left
-      if (setRotationSetting) {
-        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
-      }
-    }
-    if (keysPressed.current.d) {
-      scene.rotation.y -= rotateSpeed; // rotate right
-      if (setRotationSetting) {
-        setRotationSetting([scene.rotation.x,scene.rotation.y,scene.rotation.z])
-      }
-    }
-  }
-};
+    };
 
     animate();
 
@@ -369,30 +369,28 @@ const animate = () => {
   }, [modelPath]);
 
   // --- Rotation update effect (runs whenever rotationSetting changes) ---
-    useEffect(() => {
-      if (!rotationSetting) return;
-      const scene = sceneRef.current;
-      if (!scene) return;
+  useEffect(() => {
+    if (!rotationSetting) return;
+    const scene = sceneRef.current;
+    if (!scene) return;
 
-      const model = scene.children.find(obj => obj.userData?.isModel);
-      if (!model) return;
+    const model = scene.children.find(obj => obj.userData?.isModel);
+    if (!model) return;
 
-      scene.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
-    }, [rotationSetting]);
+    scene.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
+  }, [rotationSetting]);
 
-  
-    // --- Translation update effect (runs whenever translationSetting changes) ---
-    useEffect(() => {
-      if (!translationSetting) return;
-      const camera = cameraRef.current;
-      camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
-    }, [translationSetting]);
+  // --- Translation update effect (runs whenever translationSetting changes) ---
+  useEffect(() => {
+    if (!translationSetting) return;
+    const camera = cameraRef.current;
+    camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
+  }, [translationSetting]);
 
-  
   /**
    * Resets the camera to its initial position and rotation based on current view mode.
    */
-    const handleResetCamera = () => {
+  const handleResetCamera = () => {
     const scene = sceneRef.current;
     const camera = cameraRef.current;
     const init = initialCameraState.current;
