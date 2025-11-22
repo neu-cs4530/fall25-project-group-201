@@ -61,7 +61,7 @@
 }
 
 .gallery-upload-button {
-  background-color: #2563eb;
+  background-color: #3b82f6;
   color: #fff;
   font-weight: 600;
   border: none;
@@ -76,7 +76,7 @@
 }
 
 .gallery-upload-button:hover {
-  background-color: #1d4ed8;
+  background-color: #2563eb;
 }
 
 .gallery-upload-button:active {
