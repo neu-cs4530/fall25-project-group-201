@@ -238,9 +238,18 @@ const NewGalleryPostPage = () => {
               {errors.thumbnailMedia && <p className='error'>{errors.thumbnailMedia}</p>}
               <div className='model-preview'>
                 <p>3D Model Preview:</p>
-                {previewFilePath && (
-                  <ThreeViewport key={previewFilePath} modelPath={previewFilePath} />
-                )}
+                <div>
+                  {previewFilePath && (
+                    <ThreeViewport
+                      key={previewFilePath}
+                      modelPath={previewFilePath.toString()}
+                      rotationSetting={null}
+                      setRotationSetting={undefined}
+                      translationSetting={null}
+                      setTranslationSetting={undefined}
+                    />
+                  )}
+                </div>
               </div>
             </>
           )}

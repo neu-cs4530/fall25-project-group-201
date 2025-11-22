@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
@@ -42,6 +42,8 @@ const NewQuestion = () => {
 
   const { user: currentUser } = useUserContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
+  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
 
   /**
    * Handles changes to the media URL input.
@@ -61,6 +63,23 @@ const NewQuestion = () => {
       setUploadedMediaPath(undefined);
       setMediaSize(undefined);
     }
+  };
+
+  const handleAddCameraRef = () => {
+    let translationSettingToSend = translationSetting;
+    let rotatationSettingToSend = rotationSetting;
+
+    if (!translationSetting) {
+      translationSettingToSend = [0, 0.77, 3.02];
+    }
+    if (!rotationSetting) {
+      rotatationSettingToSend = [0, 0, 0];
+    }
+
+    const tempText = text;
+    const [tx, ty, tz] = translationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
+    const [rx, ry, rz] = rotatationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
+    setText(tempText + ' #camera' + '-' + `t(${tx},${ty},${tz})` + '-' + `r(${rx},${ry},${rz})`);
   };
 
   /**
@@ -138,6 +157,17 @@ const NewQuestion = () => {
           placeholder='Describe your question in detail'
         />
         {textErr && <p className='error'>{textErr}</p>}
+
+        {/* Provide ability to add a camera reference if the mediaPath ends with .glb */}
+        {mediaPath?.endsWith('.glb') && (
+          <button
+            type='button'
+            onClick={() => {
+              handleAddCameraRef();
+            }}>
+            Add Camera Reference
+          </button>
+        )}
       </div>
 
       <div className='form-section'>
@@ -242,7 +272,14 @@ const NewQuestion = () => {
           {mediaPath?.endsWith('.glb') && (
             <div className='model-preview'>
               <p>3D Model Preview:</p>
-              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+              <ThreeViewport
+                key={mediaPath}
+                modelPath={mediaPath.toString()}
+                rotationSetting={rotationSetting}
+                setRotationSetting={setRotationSetting}
+                translationSetting={translationSetting}
+                setTranslationSetting={setTranslationSetting}
+              />
               <button
                 type='button'
                 className='delete-media-btn'

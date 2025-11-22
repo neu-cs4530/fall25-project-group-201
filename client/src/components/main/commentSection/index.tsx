@@ -50,6 +50,8 @@ const CommentSection = ({
   const [mediaError, setMediaError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
+  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
   let tempMediaPath: string | undefined;
   let mediaSize: string | undefined;
 
@@ -313,6 +315,10 @@ const CommentSection = ({
                               <ThreeViewport
                                 key={comment.mediaPath}
                                 modelPath={comment.mediaPath}
+                                rotationSetting={rotationSetting}
+                                setRotationSetting={setRotationSetting}
+                                translationSetting={translationSetting}
+                                setTranslationSetting={setTranslationSetting}
                               />
                             </div>
                           );
