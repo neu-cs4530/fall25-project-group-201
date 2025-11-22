@@ -44,6 +44,7 @@ const NewQuestion = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
   const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
+  const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
 
   /**
    * Handles changes to the media URL input.
@@ -92,6 +93,8 @@ const NewQuestion = () => {
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const tempFileUrl = URL.createObjectURL(file);
+    setPreviewFilePath(tempFileUrl);
 
     setUploadedMediaPath(undefined);
     setMediaSize(undefined);
@@ -273,8 +276,8 @@ const NewQuestion = () => {
             <div className='model-preview'>
               <p>3D Model Preview:</p>
               <ThreeViewport
-                key={mediaPath}
-                modelPath={mediaPath.toString()}
+                key={previewFilePath}
+                modelPath={previewFilePath}
                 rotationSetting={rotationSetting}
                 setRotationSetting={setRotationSetting}
                 translationSetting={translationSetting}
@@ -298,10 +301,10 @@ const NewQuestion = () => {
               <p>File Preview:</p>
 
               {mediaPath.match(/\.(jpeg|jpg|png|gif)$/i) ? (
-                <img src={mediaPath} alt='Uploaded media' />
+                <img src={previewFilePath} alt='Uploaded media' />
               ) : mediaPath.match(/\.(mp4|webm|ogg)$/i) ? (
                 <video controls>
-                  <source src={mediaPath} type='video/mp4' />
+                  <source src={previewFilePath} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>
               ) : null}
