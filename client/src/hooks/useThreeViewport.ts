@@ -390,13 +390,13 @@ const useThreeViewport = (
         }
       }
       if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
-        cam.position.addScaledVector(right, -moveSpeed);
+        cam.position.addScaledVector(right, moveSpeed);
         if (setTranslationSettingRef.current) {
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
       if (keysPressed.current.d || keysPressed.current.ArrowRight) {
-        cam.position.addScaledVector(right, moveSpeed);
+        cam.position.addScaledVector(right, -moveSpeed);
         if (setTranslationSettingRef.current) {
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
@@ -429,7 +429,7 @@ const useThreeViewport = (
           }
         }
         if (keysPressed.current.a) {
-          sceneCur.rotation.y += rotateSpeed;
+          sceneCur.rotation.y -= rotateSpeed;
           if (setRotationSettingRef.current) {
             setRotationSettingRef.current([
               sceneCur.rotation.x,
@@ -439,7 +439,7 @@ const useThreeViewport = (
           }
         }
         if (keysPressed.current.d) {
-          sceneCur.rotation.y -= rotateSpeed;
+          sceneCur.rotation.y += rotateSpeed;
           if (setRotationSettingRef.current) {
             setRotationSettingRef.current([
               sceneCur.rotation.x,
