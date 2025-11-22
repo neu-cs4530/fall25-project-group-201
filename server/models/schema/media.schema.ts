@@ -19,6 +19,10 @@ const mediaSchema = new Schema(
       type: String,
       required: false,
     },
+    fileSize: {
+      type: String,
+      required: false,
+    },
     user: {
       type: String,
       required: true,

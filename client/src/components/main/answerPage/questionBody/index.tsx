@@ -3,6 +3,7 @@ import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
 import preprocessCameraRefs from '../../cameraRef/CameraRefUtils';
+import { Download } from 'lucide-react';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -25,6 +26,24 @@ interface QuestionBodyProps {
   setRotationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
   translationSetting?: number[] | null;
   setTranslationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  mediaSize?: string;
+}
+
+const handleDownload = (mediaSize: string, extension: string) => {
+  const confirmed = window.confirm(
+    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+  );
+  if (!confirmed) return;
+
+  {
+    /* Logic for downloading the file */
+  }
+};
+
+function getExtension(path: string): string {
+  const lastDot = path.lastIndexOf('.');
+  if (lastDot === -1) return '';
+  return path.slice(lastDot + 1).toLowerCase();
 }
 
 /**
@@ -50,6 +69,7 @@ const QuestionBody = ({
   setRotationSetting,
   translationSetting,
   setTranslationSetting,
+  mediaSize,
 }: QuestionBodyProps) => {
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
@@ -86,10 +106,15 @@ const QuestionBody = ({
       setTranslationSetting(translation);
     }
   };
+  let ext: string | undefined = undefined;
+
+  if (mediaPath) {
+    ext = getExtension(mediaPath);
+  }
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
-      <div className='bold_title answer_question_view'>{views} views</div>
+      <div className='answer_question_view'>{views} views</div>
 
       <div className='answer_question_text'>
         {!isGLB && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
@@ -178,6 +203,15 @@ const QuestionBody = ({
           </div>
         )}
       </div>
+
+      {mediaPath && mediaSize && ext && (
+        <Download
+          size={20}
+          onClick={() => handleDownload(mediaSize, ext)}
+          color='blue'
+          style={{ cursor: 'pointer' }}
+        />
+      )}
 
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>

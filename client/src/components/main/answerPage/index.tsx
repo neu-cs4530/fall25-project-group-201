@@ -48,6 +48,7 @@ const AnswerPage = () => {
         setRotationSetting={setRotationSetting}
         translationSetting={translationSetting}
         setTranslationSetting={setTranslationSetting}
+        mediaSize={question.mediaSize}
       />
       <CommentSection
         comments={question.comments}

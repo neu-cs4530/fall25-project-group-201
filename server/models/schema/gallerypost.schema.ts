@@ -1,3 +1,4 @@
+import { GALLERY_TAGS } from '../../types/galleryTags';
 import { Schema } from 'mongoose';
 
 /**
@@ -16,6 +17,8 @@ import { Schema } from 'mongoose';
  * - views
  * - downloads
  * - likes
+ * - media size
+ * - link
  */
 const galleryPostSchema: Schema = new Schema(
   {
@@ -33,7 +36,7 @@ const galleryPostSchema: Schema = new Schema(
     },
     media: {
       type: String,
-      required: true,
+      required: false,
     },
     community: {
       type: String,
@@ -57,6 +60,22 @@ const galleryPostSchema: Schema = new Schema(
     likes: {
       type: [String],
       default: [],
+    },
+    mediaSize: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    tags: {
+      type: [String],
+      enum: GALLERY_TAGS,
+      default: [],
+      required: false,
+    },
+    link: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   { collection: 'GalleryPost' },

@@ -28,4 +28,17 @@ export const addMedia = async (user: string, formData: FormData): Promise<Databa
   return res.data;
 };
 
-export default { addMedia };
+export const deleteMedia = async (filepathLocation: string): Promise<DatabaseMedia> => {
+  // Encode entire path so Express reads it as one param
+  const encoded = encodeURIComponent(filepathLocation);
+
+  const res = await axios.delete(`${MEDIA_API_URL}/delete/${encoded}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error while deleting media');
+  }
+
+  return res.data;
+};
+
+export default { addMedia, deleteMedia };

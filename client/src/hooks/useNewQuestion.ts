@@ -27,6 +27,7 @@ const useNewQuestion = () => {
   const [mediaErr, setMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
+  const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
 
   const [communityList, setCommunityList] = useState<DatabaseCommunity[]>([]);
 
@@ -108,6 +109,7 @@ const useNewQuestion = () => {
       community: community ? community._id : null,
       ...(mediaUrl ? { mediaUrl } : {}),
       ...(mediaPath ? { mediaPath } : {}),
+      ...(mediaSize ? { mediaSize } : {}),
     };
 
     try {
@@ -171,6 +173,8 @@ const useNewQuestion = () => {
     mediaUrl,
     setMediaUrl,
     mediaPath,
+    mediaSize,
+    setMediaSize,
     setUploadedMediaPath,
     postQuestion,
     communityList,

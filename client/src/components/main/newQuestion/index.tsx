@@ -33,6 +33,7 @@ const NewQuestion = () => {
     setMediaUrl,
     mediaPath,
     setUploadedMediaPath,
+    setMediaSize,
     postQuestion,
     communityList,
     handleDropdownChange,
@@ -60,6 +61,7 @@ const NewQuestion = () => {
   const handleAddMedia = () => {
     if (mediaUrl) {
       setUploadedMediaPath(undefined);
+      setMediaSize(undefined);
     }
   };
 
@@ -92,6 +94,7 @@ const NewQuestion = () => {
     if (!file) return;
 
     setUploadedMediaPath(undefined);
+    setMediaSize(undefined);
     if (fileInputRef.current) fileInputRef.current.value = '';
 
     handleFileChange(e);
@@ -117,6 +120,9 @@ const NewQuestion = () => {
 
       if (data?.filepathLocation) {
         setUploadedMediaPath(data.filepathLocation);
+        if (data.fileSize) {
+          setMediaSize(data.fileSize);
+        }
         setMediaErr(null);
       } else {
         setMediaErr('Upload failed');
@@ -255,6 +261,7 @@ const NewQuestion = () => {
                 onClick={() => {
                   setMediaUrl('');
                   setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
                 }}>
                 Remove
               </button>
@@ -278,6 +285,7 @@ const NewQuestion = () => {
                 className='delete-media-btn'
                 onClick={() => {
                   setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
                 }}>
                 Remove
               </button>
@@ -313,6 +321,7 @@ const NewQuestion = () => {
                     console.warn('Optional: could not delete file on server', err);
                   }
                   setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
                 }}>
                 Remove
               </button>

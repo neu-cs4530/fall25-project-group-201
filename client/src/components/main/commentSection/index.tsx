@@ -2,11 +2,12 @@ import { useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getMetaData } from '../../../tool';
-import { Comment, DatabaseComment } from '../../../types/types';
+import { Comment, DatabaseComment, DatabaseMedia } from '../../../types/types';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
+import { Download } from 'lucide-react';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -19,7 +20,7 @@ import ThreeViewport from '../threeViewport';
 interface CommentSectionProps {
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
-  handleAddMedia: (file: File) => Promise<string | undefined>;
+  handleAddMedia: (file: File) => Promise<DatabaseMedia | undefined>;
   handleAddMediaError: string | null;
 }
 
@@ -30,7 +31,7 @@ interface CommentSectionProps {
  * @component
  * @param {DatabaseComment[]} comments - Array of existing comments to display.
  * @param {(comment: Comment) => void} handleAddComment - Function called to post a new comment.
- * @param {(file: File) => Promise<string | undefined>} handleAddMedia - Function that uploads media files.
+ * @param {(file: File) => Promise<DatabaseMedia | undefined>} handleAddMedia - Function that uploads media files.
  * @param {string | null} handleAddMediaError - Error message for media upload issues.
  * @returns A rendered comment section with media upload and markdown support.
  */
@@ -51,6 +52,8 @@ const CommentSection = ({
   const [file, setFile] = useState<File | null>(null);
   const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
   const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
+  let tempMediaPath: string | undefined;
+  let mediaSize: string | undefined;
 
   /**
    * Validates whether a provided string is a valid media URL.
@@ -81,6 +84,23 @@ const CommentSection = ({
     }
   }
 
+  const handleDownload = (mediaSize: string, extension: string) => {
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
+    if (!confirmed) return;
+
+    {
+      /* Logic for downloading the file */
+    }
+  };
+
+  function getExtension(path: string): string {
+    const lastDot = path.lastIndexOf('.');
+    if (lastDot === -1) return '';
+    return path.slice(lastDot + 1).toLowerCase();
+  }
+
   /**
    * Handles the posting of a new comment.
    * Validates input, uploads media if attached, and resets input state on success.
@@ -94,14 +114,26 @@ const CommentSection = ({
     setTextErr('');
     setMediaError(null);
 
-    let tempMediaPath: string | undefined;
-
     if (file) {
-      tempMediaPath = await handleAddMedia(file);
-      if (!tempMediaPath) {
+      const resMedia = await handleAddMedia(file);
+      if (!resMedia) {
         setMediaError('Failed to upload media');
         return;
       }
+
+      if (!resMedia.filepathLocation) {
+        setMediaError('Filepath location of media is undefined.');
+        return;
+      }
+
+      tempMediaPath = resMedia.filepathLocation;
+
+      if (!resMedia.fileSize) {
+        setMediaError('Media size is undefined');
+        return;
+      }
+
+      mediaSize = resMedia.fileSize;
     }
 
     if (mediaUrl) {
@@ -117,6 +149,7 @@ const CommentSection = ({
       commentDateTime: new Date(),
       ...(file ? { mediaPath: tempMediaPath } : {}),
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
+      ...(mediaSize ? { mediaSize: mediaSize } : {}),
     };
 
     await handleAddComment(newComment);
@@ -301,6 +334,17 @@ const CommentSection = ({
                       })()}
                   </div>
                   <small className='comment-meta'>
+                    {comment.mediaPath && comment.mediaSize && (
+                      <Download
+                        className='comment-download-icon'
+                        size={20}
+                        onClick={() =>
+                          handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))
+                        }
+                        style={{ cursor: 'pointer' }}
+                        color='blue'
+                      />
+                    )}
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
                   </small>
                 </li>

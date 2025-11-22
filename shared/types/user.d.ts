@@ -25,6 +25,18 @@ export interface Testimonial {
 }
 
 /**
+ * Represents a portfolio item with metadata
+ */
+export interface PortfolioItem {
+  _id?: string;
+  title: string;
+  description: string;
+  mediaUrl: string;
+  thumbnailUrl?: string;
+  uploadedAt: Date;
+}
+
+/**
  * Represents a user document, including user credentials and additional details.
  * - `username`: The unique username of the user.
  * - `password`: The user's password.
@@ -38,6 +50,7 @@ export interface User extends UserCredentials {
   profilePicture?: string; // profile image
   bannerImage?: string; // banner image
   resumeFile?: string; // downloadable CV/resume
+  portfolio?: PortfolioItem[];
   portfolioModels?: string[]; // URLs to 3D models
   portfolioThumbnails?: string[];
   externalLinks?: {

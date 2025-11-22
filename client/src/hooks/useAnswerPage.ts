@@ -6,6 +6,7 @@ import {
   VoteUpdatePayload,
   PopulatedDatabaseQuestion,
   PopulatedDatabaseAnswer,
+  DatabaseMedia,
 } from '../types/types';
 import useUserContext from './useUserContext';
 import addComment from '../services/commentService';
@@ -53,7 +54,7 @@ const useAnswerPage = () => {
    * @param {File} file - The media file to upload.
    * @returns {Promise<string | undefined>} The uploaded file path or `undefined` on failure.
    */
-  const handleAddMedia = async (file: File): Promise<string | undefined> => {
+  const handleAddMedia = async (file: File): Promise<DatabaseMedia | undefined> => {
     if (!file || !file.name) {
       setHandleAddMediaError('File with valid path is required');
       return;
@@ -84,7 +85,7 @@ const useAnswerPage = () => {
       formData.append('filepathLocation', file.name);
 
       const newMedia = await mediaService.addMedia(user.username, formData);
-      return newMedia.filepathLocation;
+      return newMedia;
     } catch (err) {
       return undefined;
     }

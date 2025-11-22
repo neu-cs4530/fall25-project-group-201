@@ -184,3 +184,8 @@
 .delete-media-button:hover {
   background: #c0392b;
 }
+
+.comment-download-icon {
+  float: left;
+  padding: 2px;
+}

@@ -35,7 +35,6 @@ const CommunityPage = () => {
           <div className='gallery-header-row'>
             <h3 className='gallery-heading'>Gallery</h3>
             <div className='gallery-upload-button' onClick={handleNewGalleryPost}>
-              <div style={{ fontSize: '2rem' }}>+</div>
               <span>Upload Project</span>
             </div>
           </div>

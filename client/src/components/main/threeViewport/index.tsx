@@ -7,6 +7,8 @@ import './index.css';
 import orthoIcon from '../../../../public/icons/orthoIcon.png';
 import perspIcon from '../../../../public/icons/perspIcon.png';
 import cameraIcon from '../../../../public/icons/cameraIcon.png';
+import InfoPopover from './InfoPopover';
+import useInfoPopover from '../../../hooks/useInfoPopover';
 
 interface ThreeViewportProps {
   modelPath?: string | null;
@@ -35,8 +37,16 @@ const ThreeViewport = ({
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 
-  const { containerRef, sceneRef, rendererRef, handleResetCamera, handleTogglePerspective } =
-    useThreeViewport(
+  const {
+    containerRef,
+    sceneRef,
+    rendererRef,
+    handleResetCamera,
+    handleTogglePerspective,
+    modelVerts,
+    modelEdges,
+    modelFaces,
+  } = useThreeViewport(
       activeModel,
       rotationSetting,
       setRotationSetting,
@@ -91,6 +101,8 @@ const ThreeViewport = ({
     setVisibleTooltip(null);
   };
 
+  const { isVisible, toggleVisibility } = useInfoPopover();
+
   return (
     <div className='viewport-card'>
       <div ref={containerRef} className='viewport-canvas' />
@@ -109,6 +121,14 @@ const ThreeViewport = ({
         }}>
         ⤢
       </div>
+
+      <div className='info-icon' onClick={toggleVisibility}>
+        ⓘ
+      </div>
+
+      {isVisible && <InfoPopover />}
+
+      {/* <InfoPopover/> */}
 
       <div className='upload-section'>
         {allowUpload && (
@@ -171,6 +191,15 @@ const ThreeViewport = ({
             isLoading={isLoading || !sceneRef.current}
             presets={HDRI_PRESETS}
           />
+        )}
+
+        {/* 3D Model Information */}
+        {activeModel && (
+          <>
+            <div className='modelInfo'>Vertices: {modelVerts}</div>
+            <div className='modelInfo'>Edges: {modelEdges}</div>
+            <div className='modelInfo'>Faces: {modelFaces}</div>
+          </>
         )}
       </div>
     </div>

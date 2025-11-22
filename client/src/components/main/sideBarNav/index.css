@@ -1,43 +1,83 @@
 .sideBarNav {
   display: flex;
   flex-direction: column;
-  width: 15%;
-  border-right: dashed;
-  padding: 4% 0 4% 0;
-  align-items: center;
-}
-
-.menu_button:first-child {
-  margin-top: 0;
+  width: 250px;
+  border-right: 1px solid #ccc;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  box-sizing: border-box;
 }
 
 .menu_button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   height: 40px;
-  width: 80%;
-  margin-top: 20px;
-  border-radius: 5px;
-  text-align: center;
+  width: 100%;
+  margin-top: 8px;
+  padding-left: 50px;
+  text-align: left;
   line-height: 40px;
-  color: cornflowerblue;
+  border-radius: 0;
+  color: black;
+  text-decoration: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.menu_button:hover {
+  background: #f0f0f0;
 }
 
 .menu_selected {
-  background: #cccccc;
+  background: #ddd;
+}
+
+.menu-icon {
+  flex-shrink: 0;
+}
+
+.dropdown-arrow {
+  margin-left: auto;
+  margin-right: 12px;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
 }
 
 .additional-options {
   display: flex;
   flex-direction: column;
-  padding: 4% 0 4% 0;
-  align-items: center;
+  padding-left: 65px;
+  font-size: 0.90rem;
 }
 
 .message-options {
-  width: max-content;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding-left: 8px;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.message-options:hover {
+  background: #f0f0f0;
+  border-radius: 0;
 }
 
 .message-option-selected {
-  background: #3090e2;
-  color: white;
-  width: 110%;
+  background: #ddd;
+}
+
+.message-options .menu-icon {
+  width: 14px;
+  height: 14px;
 }

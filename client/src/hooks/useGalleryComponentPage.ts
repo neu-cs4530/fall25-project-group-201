@@ -1,5 +1,4 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import useUserContext from './useUserContext';
 import {
   getGalleryPosts,
@@ -10,48 +9,60 @@ import {
 } from '../services/galleryService';
 import { DatabaseGalleryPost } from '../types/types';
 
-type SortType = 'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded';
-type MediaType = 'all' | 'glb' | 'video' | 'image' | 'embed';
+/**
+ * Types for sorting gallery posts
+ */
+export type SortType = 'newest' | 'oldest' | 'highestRated' | 'mostViewed' | 'mostDownloaded';
 
 /**
- * Custom hook for managing gallery posts in a community page.
+ * Types for filtering media type
+ */
+export type MediaType = 'all' | 'glb' | 'video' | 'image' | 'embed';
+
+/**
+ * Allowed tag names for posts
+ */
+export type Tag =
+  | 'software_engineering'
+  | 'fullstack'
+  | 'frontend'
+  | 'backend'
+  | 'computer graphics'
+  | '3d_art'
+  | 'modeling'
+  | 'texturing'
+  | 'rigging'
+  | 'animation'
+  | 'graphic_design'
+  | 'illustration'
+  | 'motion_graphics'
+  | 'concept_art';
+
+/**
+ * Type for category dropdown
+ */
+export type CategoryType = 'all' | Tag;
+
+/**
+ * Custom hook for managing gallery page state
  *
- * Provides filtering, sorting, pagination, and post interactions (like, download, delete).
- *
- * @param {string} communityID - The ID of the community whose gallery posts should be loaded
- * @returns {{
- *   filteredGalleryPosts: DatabaseGalleryPost[];
- *   visibleItems: DatabaseGalleryPost[];
- *   error: string | null;
- *   isAuthor: (post: DatabaseGalleryPost) => boolean;
- *   sortType: SortType;
- *   setSortType: React.Dispatch<React.SetStateAction<SortType>>;
- *   selectedType: MediaType;
- *   setSelectedType: React.Dispatch<React.SetStateAction<MediaType>>;
- *   nextPage: () => void;
- *   prevPage: () => void;
- *   itemsPerPage: number;
- *   startIndex: number;
- *   handle3DMediaClick: (id: string) => void;
- *   handleDeleteGalleryPost: (post: DatabaseGalleryPost) => Promise<void>;
- *   handleIncrementDownloads: (post: DatabaseGalleryPost) => Promise<void>;
- *   handleToggleLikes: (post: DatabaseGalleryPost) => Promise<void>;
- *   refreshGallery: () => Promise<void>;
- * }}
+ * @param {string} communityID - ID of the community to fetch posts for
  */
 const useGalleryComponentPage = (communityID: string) => {
   const { user: currentUser } = useUserContext();
-  const navigate = useNavigate();
 
   const [allGalleryPosts, setAllGalleryPosts] = useState<DatabaseGalleryPost[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sortType, setSortType] = useState<SortType>('newest');
   const [selectedType, setSelectedType] = useState<MediaType>('all');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>('all');
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   /**
-   * Responsive grid adjustment
+   * Adjust number of items per page responsively based on window width
    */
   useEffect(() => {
     const updateItemsPerPage = () => {
@@ -68,16 +79,18 @@ const useGalleryComponentPage = (communityID: string) => {
   }, []);
 
   /**
-   * Fetch all gallery posts for the community and filter by communityID.
+   * Fetch all gallery posts for the current community
    */
   const fetchGalleryPosts = useCallback(async () => {
+    setLoading(true);
     try {
-      const resGalleryPosts = await getGalleryPosts();
-      const filtered = resGalleryPosts.filter(p => p.community === communityID);
-      setAllGalleryPosts(filtered);
+      const posts = await getGalleryPosts();
+      setAllGalleryPosts(posts.filter(p => p.community === communityID));
       setError(null);
+      setLoading(false);
     } catch {
       setError('Failed to fetch gallery posts.');
+      setLoading(true);
     }
   }, [communityID]);
 
@@ -86,22 +99,36 @@ const useGalleryComponentPage = (communityID: string) => {
   }, [fetchGalleryPosts]);
 
   /**
-   * Extract YouTube video ID from a URL
-   *
-   * @param {string} url - the youtube video url
+   * Compute all unique tags for the category dropdown
+   */
+  const allTags = useMemo(() => {
+    const tagSet = new Set<Tag>();
+    allGalleryPosts.forEach(p => p.tags?.forEach(t => tagSet.add(t as Tag)));
+    return Array.from(tagSet);
+  }, [allGalleryPosts]);
+
+  /**
+   * Extract YouTube video ID from URL
+   * @param {string} url - YouTube URL
+   * @returns {string | null} video ID
    */
   const getYouTubeVideoId = (url: string) =>
     url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] ?? null;
 
   /**
-   * Extract Vimeo video ID from a URL
-   *
-   * @param {string} url - the vimeo video url
+   * Extract Vimeo video ID from URL
+   * @param {string} url - Vimeo URL
+   * @returns {string | null} video ID
    */
   const getVimeoVideoId = (url: string) => url.match(/vimeo\.com\/(\d+)/)?.[1] ?? null;
 
+  /**
+   * Filtered and sorted posts based on type, category, search, and sort
+   */
   const filteredGalleryPosts = useMemo(() => {
-    const filtered = allGalleryPosts.filter(post => {
+    let filtered = allGalleryPosts;
+
+    filtered = filtered.filter(post => {
       if (!post.media) return false;
       const ext = post.media.split('.').pop()?.toLowerCase();
       const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
@@ -124,7 +151,21 @@ const useGalleryComponentPage = (communityID: string) => {
       }
     });
 
-    const sorted = [...filtered].sort((a, b) => {
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(post => post.tags?.includes(selectedCategory));
+    }
+
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(post => {
+        const titleMatch = post.title?.toLowerCase().includes(query);
+        const descMatch = post.description?.toLowerCase().includes(query);
+        const tagsMatch = post.tags?.some(tag => tag.toLowerCase().includes(query));
+        return titleMatch || descMatch || tagsMatch;
+      });
+    }
+
+    return [...filtered].sort((a, b) => {
       switch (sortType) {
         case 'newest':
           return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
@@ -140,10 +181,11 @@ const useGalleryComponentPage = (communityID: string) => {
           return 0;
       }
     });
+  }, [allGalleryPosts, selectedType, selectedCategory, sortType, searchQuery]);
 
-    return sorted;
-  }, [allGalleryPosts, selectedType, sortType]);
-
+  /**
+   * Current visible items based on pagination
+   */
   const visibleItems = useMemo(
     () => filteredGalleryPosts.slice(startIndex, startIndex + itemsPerPage),
     [filteredGalleryPosts, startIndex, itemsPerPage],
@@ -167,6 +209,11 @@ const useGalleryComponentPage = (communityID: string) => {
         : prev - itemsPerPage,
     );
 
+  /*
+   * Check if the current user is the author of a post
+   */
+  const isAuthor = (post: DatabaseGalleryPost) => post.user === currentUser.username;
+
   /**
    * Delete a gallery post
    * @param {DatabaseGalleryPost} post - The post to delete
@@ -189,8 +236,7 @@ const useGalleryComponentPage = (communityID: string) => {
       await incrementGalleryPostViews(post._id.toString(), currentUser.username);
       await fetchGalleryPosts();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to increment views', err);
+      setError('Failed to increment views');
     }
   };
 
@@ -204,8 +250,7 @@ const useGalleryComponentPage = (communityID: string) => {
       window.open(post.media, '_blank');
       await fetchGalleryPosts();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
+      setError('Failed to increment downloads');
     }
   };
 
@@ -216,39 +261,47 @@ const useGalleryComponentPage = (communityID: string) => {
   const handleToggleLikes = async (post: DatabaseGalleryPost) => {
     try {
       await toggleGalleryPostLikes(post._id.toString(), currentUser.username);
-      await fetchGalleryPosts(); // refresh posts after toggle
+      await fetchGalleryPosts();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
+      setError('Failed to toggle likes');
     }
   };
 
-  /**
-   * Navigate to 3D media view page
+  /*
+   * Reset all filters to default
    */
-  const handle3DMediaClick = (id: string) => navigate(`/galleryPostViewport/${id}`);
-
-  const refreshGallery = fetchGalleryPosts;
+  const resetFilters = () => {
+    setSortType('newest');
+    setSelectedType('all');
+    setSelectedCategory('all');
+    setStartIndex(0);
+  };
 
   return {
     filteredGalleryPosts,
     visibleItems,
     error,
-    isAuthor: (post: DatabaseGalleryPost) => post.user === currentUser.username,
+    isAuthor,
     sortType,
     setSortType,
     selectedType,
     setSelectedType,
+    selectedCategory,
+    setSelectedCategory,
+    allTags,
     nextPage,
     prevPage,
     itemsPerPage,
     startIndex,
-    handle3DMediaClick,
     handleDeleteGalleryPost,
     handleIncrementViews,
     handleIncrementDownloads,
     handleToggleLikes,
-    refreshGallery,
+    loading,
+    refreshGallery: fetchGalleryPosts,
+    resetFilters,
+    searchQuery,
+    setSearchQuery,
   };
 };
 
