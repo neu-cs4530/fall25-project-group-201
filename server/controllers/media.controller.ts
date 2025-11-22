@@ -39,6 +39,26 @@ const mediaController = (socket: FakeSOSocket) => {
     }
   });
 
+  router.delete('/delete/:filepathLocation', async (req: Request, res: Response) => {
+    try {
+      const { filepathLocation } = req.params;
+
+      if (!filepathLocation) {
+        return res.status(400).json({ error: 'Filepath missing' });
+      }
+
+      const deleted = await mediaService.deleteMedia(filepathLocation);
+
+      if ('error' in deleted) {
+        throw new Error(deleted.error);
+      }
+
+      res.status(200).json(deleted);
+    } catch (err: unknown) {
+      res.status(500).json({ error: (err as Error).message });
+    }
+  });
+
   return router;
 };
 

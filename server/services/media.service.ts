@@ -54,4 +54,22 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
   }
 };
 
-export default { addMedia };
+const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => {
+  try {
+    // Decode URL-encoded characters (like %2F → /)
+    const decodedPath = decodeURIComponent(filepathLocation);
+
+    // Find and delete the document
+    const deleted = await MediaModel.findOneAndDelete({ filepathLocation: decodedPath });
+
+    if (!deleted) {
+      return { error: 'Media not found' };
+    }
+
+    return deleted; // or return { success: true }
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+};
+
+export default { addMedia, deleteMedia };

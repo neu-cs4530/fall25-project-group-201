@@ -39,6 +39,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     resetFilters,
     searchQuery,
     setSearchQuery,
+    loading,
   } = useGalleryComponentPage(communityID);
 
   const navigate = useNavigate();
@@ -161,35 +162,48 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
       {/* Carousel */}
       <div className='carouselContainer'>
-        <button
-          className='carouselArrow left'
-          onClick={prevPage}
-          disabled={filteredGalleryPosts.length <= itemsPerPage}>
-          <ChevronLeft size={22} />
-        </button>
-        <div className='galleryGrid carouselPage'>
-          {visibleItems.map(post => (
-            <div
-              key={post._id.toString()}
-              className='galleryCard'
-              onClick={async () => {
-                try {
-                  await handleIncrementViews(post);
-                  navigate(`/gallery/${post._id.toString()}`);
-                } catch {
-                  setLocalError('Failed to increment views.');
-                }
-              }}>
-              {renderMedia(post)}
-            </div>
-          ))}
-        </div>
-        <button
-          className='carouselArrow right'
-          onClick={nextPage}
-          disabled={filteredGalleryPosts.length <= itemsPerPage}>
-          <ChevronRight size={22} />
-        </button>
+        {filteredGalleryPosts.length > itemsPerPage && (
+          <button
+            className='carouselArrow left'
+            onClick={prevPage}
+            disabled={filteredGalleryPosts.length <= itemsPerPage}>
+            <ChevronLeft size={22} />
+          </button>
+        )}
+        {/* If loading, display loading state */}
+        {loading && (
+          <div className='grid-container'>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className='grid-cell'></div>
+            ))}
+          </div>
+        )}
+        {/* If not loading, display carousel */}
+        {!loading && (
+          <div className='galleryGrid carouselPage'>
+            {visibleItems.map(post => (
+              <div
+                key={post._id.toString()}
+                className='galleryCard'
+                onClick={async () => {
+                  try {
+                    await handleIncrementViews(post);
+                    navigate(`/gallery/${post._id.toString()}`);
+                  } catch {
+                    setLocalError('Failed to increment views.');
+                  }
+                }}>
+                {renderMedia(post)}
+              </div>
+            ))}
+          </div>
+        )}
+        ;
+        {filteredGalleryPosts.length > itemsPerPage && (
+          <button className='carouselArrow right' onClick={nextPage}>
+            <ChevronRight size={22} />
+          </button>
+        )}
       </div>
 
       {filteredGalleryPosts.length > itemsPerPage && (

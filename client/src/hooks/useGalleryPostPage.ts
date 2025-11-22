@@ -7,6 +7,7 @@ import {
   toggleGalleryPostLikes,
   deleteGalleryPost,
 } from '../services/galleryService';
+import { deleteMedia } from '../services/mediaService';
 import { getUserByUsername } from '../services/userService';
 import useUserContext from './useUserContext';
 import { DatabaseGalleryPost, SafeDatabaseUser } from '../types/types';
@@ -113,6 +114,24 @@ const useGalleryPostPage = () => {
    */
   const removePost = async () => {
     if (!post) return;
+
+    // Delete media only if it is a media path not a media url (embed)
+    if (post.media.startsWith('/userData/')) {
+      try {
+        await deleteMedia(post.media);
+      } catch {
+        setError('Failed to delete media.');
+      }
+    }
+
+    if (post.thumbnailMedia) {
+      try {
+        await deleteMedia(post.thumbnailMedia);
+      } catch {
+        setError('Failed to delete thumbanail media.');
+      }
+    }
+
     try {
       await deleteGalleryPost(post._id.toString(), user.username);
       navigate(`/communities/${post.community}`);

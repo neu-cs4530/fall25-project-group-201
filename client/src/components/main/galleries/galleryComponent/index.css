@@ -259,6 +259,26 @@
   align-items: center;
 }
 
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 230px); /* 3 columns */
+  grid-template-rows: repeat(2, 190px);    /* 2 rows */
+  gap: 16px;
+  justify-content: center; /* center the grid horizontally */
+}
+
+.grid-cell {
+  background-color: #eef2fa;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Pulsing animation */
+@keyframes pulse {
+  0%, 100% { background-color:#eef2fa ; }
+  50% { background-color: #d6dbe4; }
+} 
+
 .filterBlock {
   display: flex;
   flex-direction: column;
