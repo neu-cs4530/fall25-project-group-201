@@ -26,17 +26,12 @@ export default function PortfolioViewerPage() {
   useEffect(() => {
     if (!username || !index || !user.username) return;
 
-    incrementPortfolioViews(username, parseInt(index), user.username).then(() => {
-      setItem(prev => {
-        if (!prev) return prev;
-
-        const currentViews = prev.views || [];
-
-        // views are cumulative
-        return { ...prev, views: [...currentViews, user.username] };
-      });
+    // Let the backend handle view counting
+    incrementPortfolioViews(username, parseInt(index), user.username).catch(err => {
+      console.error('Failed to increment portfolio views', err);
     });
   }, [username, index, user.username]);
+
 
   const handleToggleLike = async () => {
     if (!username || !index || !user.username || !item) {
