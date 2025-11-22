@@ -31,8 +31,8 @@ export default function PortfolioViewerPage() {
         if (!prev) return prev;
 
         const currentViews = prev.views || [];
-        if (currentViews.includes(user.username)) return prev;
 
+        // views are cumulative
         return { ...prev, views: [...currentViews, user.username] };
       });
     });

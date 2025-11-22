@@ -873,10 +873,8 @@ const userController = (socket: FakeSOSocket) => {
 
       const views = portfolio[portfolioIndex].views || [];
 
-      // Only add if not already viewed by this user
-      if (!views.includes(viewerUsername)) {
-        portfolio[portfolioIndex].views = [...views, viewerUsername];
-      }
+      // views are cumulative
+      portfolio[portfolioIndex].views = [...views, viewerUsername];
 
       const updatedUser = await updateUser(username, { portfolio });
 

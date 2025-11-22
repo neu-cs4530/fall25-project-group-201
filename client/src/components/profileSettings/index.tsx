@@ -634,9 +634,8 @@ const ProfileSettings: React.FC = () => {
                           alt={item.title}
                           style={{
                             width: '100%',
-                            height: '200px',
+                            height: '100%',
                             objectFit: 'cover',
-                            borderRadius: '8px',
                           }}
                         />
                       ) : isGlbModel ? (
@@ -651,7 +650,7 @@ const ProfileSettings: React.FC = () => {
                           alt={item.title}
                           style={{
                             width: '100%',
-                            height: '200px',
+                            height: '100%',
                             objectFit: 'cover',
                             borderRadius: '8px',
                           }}
