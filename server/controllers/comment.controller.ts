@@ -64,10 +64,7 @@ const commentController = (socket: FakeSOSocket) => {
     }
   };
 
-  const downloadCommentMediaRoute = async (
-    req: DownloadCommentMediaRequest,
-    res: Response,
-  ) => {
+  const downloadCommentMediaRoute = async (req: DownloadCommentMediaRequest, res: Response) => {
     const { id } = req.params;
 
     if (!ObjectId.isValid(id)) {
@@ -85,7 +82,7 @@ const commentController = (socket: FakeSOSocket) => {
         res.status(500).send(`Error while download media from comment`);
       }
     }
-  }
+  };
 
   router.post('/addComment', addCommentRoute);
   router.get('/downloadCommentMedia/:id', downloadCommentMediaRoute);

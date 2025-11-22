@@ -239,13 +239,13 @@ const CommentSection = ({
 
     try {
       const mediaPath = await getCommentMedia(cid);
-      
+
       const link = document.createElement('a');
       link.href = mediaPath;
       link.download = `file.${extension}`;
       link.click();
     } catch (error) {
-
+      window.alert('Something went wrong with downloading the file');
     }
   };
 

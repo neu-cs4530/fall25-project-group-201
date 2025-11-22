@@ -68,7 +68,7 @@ export const addComment = async (
   }
 };
 
-export const downloadCommentMedia = async (id: string): Promise<String | { error: string }> => {
+export const downloadCommentMedia = async (id: string): Promise<string | { error: string }> => {
   try {
     const comment = await CommentModel.findById(id);
 
@@ -77,7 +77,7 @@ export const downloadCommentMedia = async (id: string): Promise<String | { error
     }
 
     if (comment.mediaPath === undefined) {
-      throw new Error("No media to download");
+      throw new Error('No media to download');
     }
 
     if (comment.permitDownload === undefined || !comment.permitDownload) {

@@ -232,7 +232,7 @@ export const toggleGalleryPostLikeById = async (
   }
 };
 
-export const downloadGalleryPostMedia = async (id: string): Promise<String | { error: string }> => {
+export const downloadGalleryPostMedia = async (id: string): Promise<string | { error: string }> => {
   try {
     const post = await GalleryPostModel.findById(id);
 

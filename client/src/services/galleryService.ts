@@ -124,9 +124,7 @@ const toggleGalleryPostLikes = async (galleryPostID: string, username: string) =
   return res.json();
 };
 
-const getGalleryPostMedia = async (
-  galleryPostID: string,
-): Promise<string> => {
+const getGalleryPostMedia = async (galleryPostID: string): Promise<string> => {
   const res = await api.get(`${GALLERY_API_URL}/downloadGalleryPostMedia/${galleryPostID}`);
 
   if (res.status !== 200) {
@@ -134,7 +132,7 @@ const getGalleryPostMedia = async (
   }
 
   return res.data;
-}
+};
 
 export {
   addGalleryPost,

@@ -40,9 +40,7 @@ const addComment = async (
   return res.data;
 };
 
-const getCommentMedia = async (
-  id: string,
-): Promise<string> => {
+const getCommentMedia = async (id: string): Promise<string> => {
   const res = await api.get(`${COMMENT_API_URL}/downloadCommentMedia/${id}`);
 
   if (res.status !== 200) {
@@ -50,9 +48,6 @@ const getCommentMedia = async (
   }
 
   return res.data;
-}
-
-export {
-  addComment, 
-  getCommentMedia
 };
+
+export { addComment, getCommentMedia };

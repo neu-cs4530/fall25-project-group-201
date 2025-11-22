@@ -49,7 +49,7 @@ const GalleryPostPage = () => {
       link.click();
       await incrementDownloads();
     } catch (error) {
-
+      window.alert('Something went wrong with downloading the file');
     }
   };
 
@@ -87,7 +87,7 @@ const GalleryPostPage = () => {
               <span className='statItem'>
                 <Download
                   size={20}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     handleDownload(post.mediaSize, ext!, post._id.toString());
                   }}

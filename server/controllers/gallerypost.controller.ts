@@ -207,7 +207,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
         res.status(500).send(`Error while download media from question`);
       }
     }
-  }
+  };
 
   // Register routes
   router.get('/getAllGalleryPosts', getAllGalleryPostsRoute);

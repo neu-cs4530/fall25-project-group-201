@@ -106,9 +106,7 @@ const getCommunityQuestionsById = async (
   return res.data;
 };
 
-const getQuestionMedia = async (
-  questionId: string,
-): Promise<string> => {
+const getQuestionMedia = async (questionId: string): Promise<string> => {
   const res = await api.get(`${QUESTION_API_URL}/downloadQuestionMedia/${questionId}`);
 
   if (res.status !== 200) {
@@ -116,7 +114,7 @@ const getQuestionMedia = async (
   }
 
   return res.data;
-}
+};
 
 export {
   getQuestionsByFilter,

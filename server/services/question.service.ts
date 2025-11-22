@@ -282,7 +282,7 @@ export const getCommunityQuestions = async (communityId: string): Promise<Databa
   }
 };
 
-export const downloadQuestionMedia = async (qid: string): Promise<String | { error: string }> => {
+export const downloadQuestionMedia = async (qid: string): Promise<string | { error: string }> => {
   try {
     const q = await QuestionModel.findById(qid);
 
@@ -291,7 +291,7 @@ export const downloadQuestionMedia = async (qid: string): Promise<String | { err
     }
 
     if (q.mediaPath === undefined) {
-      throw new Error("No media to download");
+      throw new Error('No media to download');
     }
 
     if (q.permitDownload === undefined || !q.permitDownload) {

@@ -240,10 +240,7 @@ const questionController = (socket: FakeSOSocket) => {
     }
   };
 
-  const downloadQuestionMediaRoute = async (
-    req: DownloadQuestionMediaRequest,
-    res: Response,
-  ) => {
+  const downloadQuestionMediaRoute = async (req: DownloadQuestionMediaRequest, res: Response) => {
     const { qid } = req.params;
 
     if (!ObjectId.isValid(qid)) {
@@ -261,7 +258,7 @@ const questionController = (socket: FakeSOSocket) => {
         res.status(500).send(`Error while download media from question`);
       }
     }
-  }
+  };
 
   // add appropriate HTTP verbs and their endpoints to the router
   router.get('/getQuestion', getQuestionsByFilter);

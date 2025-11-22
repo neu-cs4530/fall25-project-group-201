@@ -27,11 +27,7 @@ interface QuestionBodyProps {
   permitDownload?: boolean;
 }
 
-const handleDownload = async (
-  mediaSize: string, 
-  extension: string,
-  qid: string,
-) => {
+const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
   const confirmed = window.confirm(
     `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
   );
@@ -39,14 +35,13 @@ const handleDownload = async (
 
   try {
     const mediaPath = await getQuestionMedia(qid);
-    
+
     const link = document.createElement('a');
     link.href = mediaPath;
     link.download = `file.${extension}`;
     link.click();
-
   } catch (error) {
-    console.log('Failed to get link')
+    window.alert('Something went wrong with downloading the file');
   }
 };
 
