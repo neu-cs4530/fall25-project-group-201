@@ -73,3 +73,9 @@ export interface GalleryPostRequest extends Request {
     username: string;
   };
 }
+
+export interface DownloadGalleryPostMediaRequest extends Request {
+  params: {
+    galleryPostID: string;
+  };
+}

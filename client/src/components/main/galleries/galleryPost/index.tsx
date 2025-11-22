@@ -4,6 +4,7 @@ import useUserContext from '../../../../hooks/useUserContext';
 import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
 import { Link } from 'react-router-dom';
+import { getGalleryPostMedia } from '../../../../services/galleryService';
 
 /**
  * Component to display a single gallery post from a community gallery.
@@ -33,17 +34,23 @@ const GalleryPostPage = () => {
   const vimeoId = getVimeoVideoId(url);
   const formatTag = (tag: string) => tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-  const handleDownload = (mediaSize: string, extension: string, mediaPath: string) => {
+  const handleDownload = async (mediaSize: string, extension: string, id: string) => {
     const confirmed = window.confirm(
       `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
     );
     if (!confirmed) return;
 
-    const link = document.createElement('a');
-    link.href = mediaPath;
-    link.download = `file.${extension}`;
-    link.click();
-    incrementDownloads();
+    try {
+      const mediaPath = await getGalleryPostMedia(id);
+
+      const link = document.createElement('a');
+      link.href = mediaPath;
+      link.download = `file.${extension}`;
+      link.click();
+      await incrementDownloads();
+    } catch (error) {
+
+    }
   };
 
   return (
@@ -80,9 +87,9 @@ const GalleryPostPage = () => {
               <span className='statItem'>
                 <Download
                   size={20}
-                  onClick={e => {
+                  onClick={(e) => {
                     e.stopPropagation();
-                    handleDownload(post.mediaSize, ext!, url);
+                    handleDownload(post.mediaSize, ext!, post._id.toString());
                   }}
                   color='#007BFF'
                 />{' '}

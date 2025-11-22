@@ -124,6 +124,18 @@ const toggleGalleryPostLikes = async (galleryPostID: string, username: string) =
   return res.json();
 };
 
+const getGalleryPostMedia = async (
+  galleryPostID: string,
+): Promise<string> => {
+  const res = await api.get(`${GALLERY_API_URL}/downloadGalleryPostMedia/${galleryPostID}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error when downloading gallery post media');
+  }
+
+  return res.data;
+}
+
 export {
   addGalleryPost,
   getGalleryPosts,
@@ -132,4 +144,5 @@ export {
   incrementGalleryPostViews,
   incrementGalleryPostDownloads,
   toggleGalleryPostLikes,
+  getGalleryPostMedia,
 };

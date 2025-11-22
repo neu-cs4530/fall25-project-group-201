@@ -73,7 +73,7 @@ export const downloadCommentMedia = async (id: string): Promise<String | { error
     const comment = await CommentModel.findById(id);
 
     if (!comment) {
-      throw new Error('Question not found');
+      throw new Error('Comment not found');
     }
 
     if (comment.mediaPath === undefined) {

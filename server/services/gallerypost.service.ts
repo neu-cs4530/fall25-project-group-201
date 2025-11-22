@@ -231,3 +231,21 @@ export const toggleGalleryPostLikeById = async (
     return { error: 'Error when toggling gallery post like' };
   }
 };
+
+export const downloadGalleryPostMedia = async (id: string): Promise<String | { error: string }> => {
+  try {
+    const post = await GalleryPostModel.findById(id);
+
+    if (!post) {
+      throw new Error('Gallery post not found');
+    }
+
+    if (post.permitDownload === undefined || !post.permitDownload) {
+      throw new Error('Downloads are not permitted');
+    }
+
+    return post.media;
+  } catch (error) {
+    return { error: 'Error when downloading gallery post media' };
+  }
+};

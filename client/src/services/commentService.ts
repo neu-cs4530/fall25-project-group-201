@@ -46,7 +46,7 @@ const getCommentMedia = async (
   const res = await api.get(`${COMMENT_API_URL}/downloadCommentMedia/${id}`);
 
   if (res.status !== 200) {
-    throw new Error('Error when downloading question media');
+    throw new Error('Error when downloading comment media');
   }
 
   return res.data;
