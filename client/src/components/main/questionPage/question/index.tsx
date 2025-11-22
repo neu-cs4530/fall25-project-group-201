@@ -33,7 +33,7 @@ const QuestionView = ({ question }: QuestionProps) => {
           handleAnswer(question._id);
         }
       }}>
-      <div className='postStats'>
+      <div className='postAnswersViews'>
         <div>{question.answers.length || 0} answers</div>
         <div>{question.views.length} views</div>
       </div>
