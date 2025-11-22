@@ -36,7 +36,7 @@ const galleryPostSchema: Schema = new Schema(
     },
     media: {
       type: String,
-      required: true,
+      required: false,
     },
     community: {
       type: String,
@@ -63,7 +63,7 @@ const galleryPostSchema: Schema = new Schema(
     },
     mediaSize: {
       type: String,
-      required: true,
+      required: false,
       default: '',
     },
     tags: {
@@ -74,6 +74,7 @@ const galleryPostSchema: Schema = new Schema(
     },
     link: {
       type: String,
+      required: false,
       default: '',
     },
   },

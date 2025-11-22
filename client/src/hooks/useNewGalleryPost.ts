@@ -7,6 +7,33 @@ import { GalleryPost } from '../types/types';
 import { GalleryTag } from '../types/galleryTags';
 
 /**
+ * State object for the new gallery post form.
+ */
+interface GalleryFormState {
+  title: string;
+  description: string;
+  mediaUrl: string;
+  mediaPath?: string;
+  mediaSize?: string;
+  thumbnailMediaPath?: string;
+  tags: GalleryTag[];
+  projectLink: string;
+}
+
+/**
+ * Error messages for the gallery post form fields.
+ */
+interface GalleryFormErrors {
+  title?: string;
+  description?: string;
+  media?: string;
+  thumbnailMedia?: string;
+  community?: string;
+  tags?: string;
+  projectLink?: string;
+}
+
+/**
  * Custom hook for managing a new gallery post form, including state, validation,
  * file handling, media, and submission logic.
  *
@@ -15,210 +42,190 @@ import { GalleryTag } from '../types/galleryTags';
 const useNewGalleryPost = () => {
   const navigate = useNavigate();
   const { user } = useUserContext();
-  const [title, setTitle] = useState<string>('');
-  const [text, setText] = useState<string>('');
-
-  const [titleErr, setTitleErr] = useState<string>('');
-  const [textErr, setTextErr] = useState<string>('');
-  const [communityErr, setCommunityErr] = useState<string>('');
-
-  const [mediaErr, setMediaErr] = useState<string | null>(null);
-  const [thumbnailMediaErr, setThumbnailMediaErr] = useState<string | null>(null);
-  const [mediaUrl, setMediaUrl] = useState<string>('');
-  const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
-  const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
-  const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(
-    undefined,
-  );
-  const [tags, setTags] = useState<GalleryTag[]>([]);
-  const [tagErr, setTagErr] = useState<string>('');
-  const [projectLink, setProjectLink] = useState<string>('');
-  const [projectLinkErr, setProjectLinkErr] = useState<string>('');
   const { communityID } = useParams<{ communityID: string }>();
 
+  const [form, setForm] = useState<GalleryFormState>({
+    title: '',
+    description: '',
+    mediaUrl: '',
+    mediaPath: undefined,
+    mediaSize: undefined,
+    thumbnailMediaPath: undefined,
+    tags: [],
+    projectLink: '',
+  });
+
+  const [errors, setErrors] = useState<GalleryFormErrors>({});
+
   /**
-   * Function to validate the form before submitting the gallery post.
+   * Validates the current form state.
    *
-   * @returns boolean - True if the form is valid, false otherwise.
+   * @returns boolean - True if the form is valid, false otherwise
    */
   const validateForm = (): boolean => {
+    const newErrors: GalleryFormErrors = {};
     let isValid = true;
 
-    if (!title) {
-      setTitleErr('Project title cannot be empty');
+    if (!form.title) {
+      newErrors.title = 'Project title cannot be empty';
       isValid = false;
-    } else if (title.length > 100) {
-      setTitleErr('Title cannot be more than 100 characters');
-      isValid = false;
-    } else {
-      setTitleErr('');
-    }
-
-    if (!text) {
-      setTextErr('Project description cannot be empty');
-      isValid = false;
-    } else if (!validateHyperlink(text)) {
-      setTextErr('Invalid hyperlink format.');
-      isValid = false;
-    } else {
-      setTextErr('');
-    }
-
-    if (!mediaUrl && !mediaPath) {
-      setMediaErr('Media file or link must be uploaded.');
-      isValid = false;
-    } else {
-      setMediaErr('');
-    }
-
-    if (mediaPath && !mediaSize) {
-      setMediaErr('Media file size is undefined.');
+    } else if (form.title.length > 100) {
+      newErrors.title = 'Title cannot be more than 100 characters';
       isValid = false;
     }
 
-    if (mediaPath?.endsWith('.glb') && !thumbnailMediaPath) {
-      setThumbnailMediaErr('You must upload a thumbnail for 3D models.');
+    if (!form.description) {
+      newErrors.description = 'Project description cannot be empty';
       isValid = false;
-    } else {
-      setThumbnailMediaErr('');
+    } else if (!validateHyperlink(form.description)) {
+      newErrors.description = 'Invalid hyperlink format.';
+      isValid = false;
+    }
+
+    if (!form.mediaUrl && !form.mediaPath) {
+      newErrors.media = 'Media file or link must be uploaded.';
+      isValid = false;
+    }
+
+    if (form.mediaPath && !form.mediaSize) {
+      newErrors.media = 'Media file size is undefined.';
+      isValid = false;
+    }
+
+    if (form.mediaPath?.endsWith('.glb') && !form.thumbnailMediaPath) {
+      newErrors.thumbnailMedia = 'You must upload a thumbnail for 3D models.';
+      isValid = false;
     }
 
     if (!communityID) {
-      setCommunityErr('Error: Community for this project is not defined');
+      newErrors.community = 'Error: Community for this project is not defined';
       isValid = false;
-    } else {
-      setCommunityErr('');
     }
 
-    if (tags.length === 0) {
-      setTagErr('Please select at least one tag.');
+    if (form.tags.length === 0) {
+      newErrors.tags = 'Please select at least one tag.';
       isValid = false;
-    } else {
-      setTagErr('');
     }
 
-    if (projectLink && !validateHyperlink(projectLink)) {
-      setProjectLinkErr('Invalid URL format.');
+    if (form.projectLink && !validateHyperlink(form.projectLink)) {
+      newErrors.projectLink = 'Invalid URL format.';
       isValid = false;
-    } else {
-      setProjectLinkErr('');
     }
 
+    setErrors(newErrors);
     return isValid;
   };
 
   /**
-   * Function to post a gallery post to the server.
+   * Submits the gallery post if the form is valid.
+   * Handles API call and navigates to the community page on success.
    */
   const postGalleryPost = async () => {
     if (!validateForm()) return;
 
     const gallerypost: GalleryPost = {
-      title,
-      description: text,
+      title: form.title,
+      description: form.description,
       user: user.username,
-      media: (mediaUrl || mediaPath)!,
-      ...(thumbnailMediaPath ? { thumbnailMedia: thumbnailMediaPath } : {}),
+      media: form.mediaUrl || form.mediaPath!,
+      ...(form.thumbnailMediaPath ? { thumbnailMedia: form.thumbnailMediaPath } : {}),
       postedAt: new Date(),
       community: communityID!,
       views: 0,
       downloads: 0,
       likes: [],
-      mediaSize: mediaSize!,
-      tags,
-      ...(projectLink ? { link: projectLink } : {}),
+      ...(form.mediaPath ? { mediaSize: form.mediaSize } : {}),
+      tags: form.tags,
+      ...(form.projectLink ? { link: form.projectLink } : {}),
     };
 
     try {
       const res = await addGalleryPost(gallerypost);
-      if (res && res._id) {
+      if (res?._id) {
         navigate(`/communities/${communityID}`);
       }
-    } catch (err) {
-      setMediaErr('Failed to post gallery post');
+    } catch {
+      setErrors(prev => ({ ...prev, media: 'Failed to post gallery post' }));
     }
   };
 
   /**
-   * Handles a file input change event by setting the uploaded media path
-   * @param {ChangeEvent<HTMLInputElement>} e - The file input change event
+   * Handles media file selection and updates form state.
+   *
+   * @param e ChangeEvent<HTMLInputElement> - File input change event
    */
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadedMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
-    setMediaSize(`${file.size} bytes`); // <-- set the media size here
+    setForm(prev => ({
+      ...prev,
+      mediaPath: `/userData/${user.username}/${file.name}`,
+      mediaSize: `${file.size} bytes`,
+      mediaUrl: '',
+    }));
+    setErrors(prev => ({ ...prev, media: undefined }));
   };
 
   /**
-   * Handles a file input change event by setting the uploaded thumbnail media path
-   * @param {ChangeEvent<HTMLInputElement>} e - The file input change event
+   * Handles thumbnail file selection for 3D models.
+   * Only allows JPEG and PNG images.
+   *
+   * @param e ChangeEvent<HTMLInputElement> - File input change event
    */
   const handleThumbnailFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const allowedTypes = ['image/jpeg', 'image/png'];
-
-    const isValidMime = allowedTypes.includes(file.type);
-
     const extension = file.name.split('.').pop()?.toLowerCase();
-    const allowedExtensions = ['jpg', 'jpeg', 'png'];
-    const isValidExtension = extension && allowedExtensions.includes(extension);
-
-    if (!isValidMime && !isValidExtension) {
+    if (!allowedTypes.includes(file.type) && !['jpg', 'jpeg', 'png'].includes(extension!)) {
       e.target.value = '';
       return;
     }
 
-    setUploadedThumbnailMediaPath(`/userData/${user.username}/${file.name}`);
+    setForm(prev => ({
+      ...prev,
+      thumbnailMediaPath: `/userData/${user.username}/${file.name}`,
+    }));
   };
 
   /**
-   * Toggles the state of attaching a tag to a post.
-   * @param tag - The selected tag
+   * Returns a change handler for text inputs and textareas.
+   *
+   * @param field keyof GalleryFormState - Field name to update
+   * @returns (e: ChangeEvent<T>) => void - Event handler to update form state
+   */
+  const handleInputChange = <T extends HTMLInputElement | HTMLTextAreaElement>(
+      field: keyof typeof form,
+    ) => (e: ChangeEvent<T>) => {
+      setForm(prev => ({
+        ...prev,
+        [field]: e.target.value,
+      }));
+    };
+
+  /**
+   * Toggles a tag in the selected tags array.
+   *
+   * @param tag GalleryTag - Tag to add or remove
    */
   const toggleTag = (tag: GalleryTag) => {
-    setTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
-  };
-
-  /**
-   * Handles the upload of the project link
-   * @param e  - the change event
-   */
-  const handleProjectLinkChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setProjectLink(e.target.value);
+    setForm(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tag) ? prev.tags.filter(t => t !== tag) : [...prev.tags, tag],
+    }));
   };
 
   return {
-    title,
-    setTitle,
-    text,
-    setText,
-    titleErr,
-    textErr,
-    mediaErr,
-    setMediaErr,
-    thumbnailMediaErr,
-    setThumbnailMediaErr,
-    mediaUrl,
-    setMediaUrl,
-    communityErr,
-    mediaPath,
-    setUploadedMediaPath,
-    setUploadedThumbnailMediaPath,
-    mediaSize,
-    setMediaSize,
+    form,
+    setForm,
+    errors,
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,
-    tags,
+    handleInputChange,
     toggleTag,
-    tagErr,
-    projectLink,
-    setProjectLink: handleProjectLinkChange,
-    projectLinkErr,
   };
 };
 
