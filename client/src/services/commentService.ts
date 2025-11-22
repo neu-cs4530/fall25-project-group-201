@@ -40,4 +40,19 @@ const addComment = async (
   return res.data;
 };
 
-export default addComment;
+const getCommentMedia = async (
+  id: string,
+): Promise<string> => {
+  const res = await api.get(`${COMMENT_API_URL}/downloadCommentMedia/${id}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error when downloading question media');
+  }
+
+  return res.data;
+}
+
+export {
+  addComment, 
+  getCommentMedia
+};

@@ -5,8 +5,9 @@ import {
   FakeSOSocket,
   PopulatedDatabaseQuestion,
   PopulatedDatabaseAnswer,
+  DownloadCommentMediaRequest,
 } from '../types/types';
-import { addComment, saveComment } from '../services/comment.service';
+import { addComment, downloadCommentMedia, saveComment } from '../services/comment.service';
 import { populateDocument } from '../utils/database.util';
 
 const commentController = (socket: FakeSOSocket) => {
@@ -63,7 +64,31 @@ const commentController = (socket: FakeSOSocket) => {
     }
   };
 
+  const downloadCommentMediaRoute = async (
+    req: DownloadCommentMediaRequest,
+    res: Response,
+  ) => {
+    const { id } = req.params;
+
+    if (!ObjectId.isValid(id)) {
+      res.status(400).send('Invalid ID format');
+      return;
+    }
+
+    try {
+      const mediaLink = await downloadCommentMedia(id);
+      res.json(mediaLink);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error while download media from comment: ${err.message}`);
+      } else {
+        res.status(500).send(`Error while download media from comment`);
+      }
+    }
+  }
+
   router.post('/addComment', addCommentRoute);
+  router.get('/downloadCommentMedia/:id', downloadCommentMediaRoute);
 
   return router;
 };

@@ -9,8 +9,8 @@ import {
   DatabaseMedia,
 } from '../types/types';
 import useUserContext from './useUserContext';
-import addComment from '../services/commentService';
-import { getQuestionById, getQuestionMedia } from '../services/questionService';
+import { addComment } from '../services/commentService';
+import { getQuestionById } from '../services/questionService';
 import mediaService from '../services/mediaService';
 
 /**

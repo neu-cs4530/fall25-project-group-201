@@ -9,6 +9,7 @@ import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
 import { Download } from 'lucide-react';
 import PermissionCheckbox from '../baseComponents/permissionCheckbox';
+import { getCommentMedia } from '../../../services/commentService';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -83,18 +84,6 @@ const CommentSection = ({
       return false;
     }
   }
-
-  const handleDownload = (mediaSize: string, extension: string, mediaPath: string) => {
-    const confirmed = window.confirm(
-      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-    );
-    if (!confirmed) return;
-
-    const link = document.createElement('a');
-    link.href = mediaPath;
-    link.download = `file.${extension}`;
-    link.click();
-  };
 
   function getExtension(path: string): string {
     const lastDot = path.lastIndexOf('.');
@@ -242,6 +231,24 @@ const CommentSection = ({
     }
   };
 
+  const handleDownload = async (mediaSize: string, extension: string, cid: string) => {
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
+    if (!confirmed) return;
+
+    try {
+      const mediaPath = await getCommentMedia(cid);
+      
+      const link = document.createElement('a');
+      link.href = mediaPath;
+      link.download = `file.${extension}`;
+      link.click();
+    } catch (error) {
+
+    }
+  };
+
   return (
     <div className='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
@@ -347,7 +354,7 @@ const CommentSection = ({
                             handleDownload(
                               comment.mediaSize!,
                               getExtension(comment.mediaPath!),
-                              comment.mediaPath!,
+                              String(comment._id),
                             )
                           }
                           style={{ cursor: 'pointer' }}

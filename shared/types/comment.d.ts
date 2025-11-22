@@ -46,6 +46,12 @@ export interface AddCommentRequest extends Request {
   };
 }
 
+export interface DownloadCommentMediaRequest extends Request {
+  params: {
+    id: string;
+  };
+}
+
 /**
  * Type representing possible responses for a Comment-related operation.
  * - Either a `DatabaseComment` object or an error message.

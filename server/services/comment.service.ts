@@ -67,3 +67,25 @@ export const addComment = async (
     return { error: `Error when adding comment: ${(error as Error).message}` };
   }
 };
+
+export const downloadCommentMedia = async (id: string): Promise<String | { error: string }> => {
+  try {
+    const comment = await CommentModel.findById(id);
+
+    if (!comment) {
+      throw new Error('Question not found');
+    }
+
+    if (comment.mediaPath === undefined) {
+      throw new Error("No media to download");
+    }
+
+    if (comment.permitDownload === undefined || !comment.permitDownload) {
+      throw new Error('Downloads are not permitted');
+    }
+
+    return comment.mediaPath;
+  } catch (error) {
+    return { error: 'Error when downloading comment media' };
+  }
+};
