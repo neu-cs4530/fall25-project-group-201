@@ -55,13 +55,15 @@ const QuestionView = ({ question }: QuestionProps) => {
       </div>
       <div className='lastActivity'>
         {question.askedBy && (
-          <Link to={`/user/${question.askedBy}`} className='usernameLink' onClick={e => e.stopPropagation()}>
+          <Link
+            to={`/user/${question.askedBy}`}
+            className='usernameLink'
+            onClick={e => e.stopPropagation()}>
             <span className='question_author'>{question.askedBy}</span>
           </Link>
         )}
         <div className='question_meta'>asked {getMetaData(new Date(question.askDateTime))}</div>
       </div>
-
 
       <button
         onClick={e => {
