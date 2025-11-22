@@ -26,6 +26,10 @@ const HDRI_PRESETS = [
   { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
+/**
+ * Represents a 3D viewport that can be interacted with. This includes orbit controls, changing
+ * HDRI settings, camera resetting, orthogonal/perspective view toggling and camera reference snapping
+ */
 const ThreeViewport = ({
   modelPath = null,
   allowUpload = false,
@@ -70,12 +74,20 @@ const ThreeViewport = ({
   const [visibleTooltip, setVisibleTooltip] = useState<string | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  /**
+   * Handles perspective/orthogonal view toggling of viewport.
+   */
   const handleCameraModeToggle = () => {
     const updatedCameraMode = !isOrthoCameraMode;
     setIsOrthoCameraMode(updatedCameraMode);
     handleTogglePerspective();
   };
 
+  /**
+   * Positions a tooltip element relative to its parent container.
+   * 
+   * @param e - mouse event that it is triggered by
+   */
   const positionTooltip = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const tooltip = e.currentTarget.querySelector('.tooltip-text') as HTMLElement;
     if (tooltip) {
