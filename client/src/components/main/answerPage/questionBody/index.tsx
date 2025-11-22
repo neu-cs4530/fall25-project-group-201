@@ -46,7 +46,7 @@ const handleDownload = async (
     link.click();
 
   } catch (error) {
-    
+    console.log('Failed to get link')
   }
 };
 

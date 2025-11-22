@@ -132,19 +132,6 @@ const useAnswerPage = () => {
     }
   };
 
-  // const handleQuestionMediaDownload = async (
-  //   qid: string
-  // ): Promise<string> => {
-  //   try {
-  //     const mediaPath = await getQuestionMedia(qid);
-    
-  //     const link = document.createElement('a');
-  //     link.href = mediaPath;
-  //     link.download = `file.${extension}`;
-  //     link.click();
-  //   }
-  // }
-
   /**
    * Fetches the full question data when the question ID or user changes.
    */

@@ -253,11 +253,6 @@ const questionController = (socket: FakeSOSocket) => {
 
     try {
       const mediaLink = await downloadQuestionMedia(qid);
-
-      if ('error' in mediaLink) {
-        throw new Error('Error while download media from question');
-      }
-
       res.json(mediaLink);
     } catch (err: unknown) {
       if (err instanceof Error) {

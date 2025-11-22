@@ -109,7 +109,7 @@ const getCommunityQuestionsById = async (
 const getQuestionMedia = async (
   questionId: string,
 ): Promise<string> => {
-  const res = await api.get(`${QUESTION_API_URL}/getQuestionMedia/${questionId}`);
+  const res = await api.get(`${QUESTION_API_URL}/downloadQuestionMedia/${questionId}`);
 
   if (res.status !== 200) {
     throw new Error('Error when downloading question media');
