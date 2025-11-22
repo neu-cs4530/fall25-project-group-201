@@ -10,7 +10,7 @@ import {
 } from '../types/types';
 import useUserContext from './useUserContext';
 import { addComment } from '../services/commentService';
-import { getQuestionById } from '../services/questionService';
+import { getQuestionById, toggleMediaPermission } from '../services/questionService';
 import mediaService from '../services/mediaService';
 
 /**
@@ -34,7 +34,7 @@ const useAnswerPage = () => {
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
   const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
-  // const []
+  const [downloadQuestionPermission, setDownloadQuestionPermission] = useState<boolean | undefined>();
 
   /**
    * Navigates the user to the "New Answer" page for the current question.
@@ -132,6 +132,20 @@ const useAnswerPage = () => {
     }
   };
 
+  const handleToggleQuestionPermission = async (): Promise<void> => {
+    if (!qid) {
+      return;
+    }
+
+    try {
+      const updatedPermission = await toggleMediaPermission(qid, user.username);
+      setDownloadQuestionPermission(updatedPermission);
+      console.log('Download permission for question is', updatedPermission);
+    } catch (error) {
+      console.error('Error toggling question:', error);
+    }
+  }
+
   /**
    * Fetches the full question data when the question ID or user changes.
    */
@@ -147,6 +161,7 @@ const useAnswerPage = () => {
       try {
         const res = await getQuestionById(questionID, user.username);
         setQuestion(res || null);
+        setDownloadQuestionPermission(res.permitDownload);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching question:', error);
@@ -204,11 +219,11 @@ const useAnswerPage = () => {
         setQuestion(prevQuestion =>
           prevQuestion
             ? {
-                ...prevQuestion,
-                answers: prevQuestion.answers.map(a =>
-                  a._id === result._id ? (result as PopulatedDatabaseAnswer) : a,
-                ),
-              }
+              ...prevQuestion,
+              answers: prevQuestion.answers.map(a =>
+                a._id === result._id ? (result as PopulatedDatabaseAnswer) : a,
+              ),
+            }
             : prevQuestion,
         );
       }
@@ -235,10 +250,10 @@ const useAnswerPage = () => {
         setQuestion(prevQuestion =>
           prevQuestion
             ? {
-                ...prevQuestion,
-                upVotes: [...voteData.upVotes],
-                downVotes: [...voteData.downVotes],
-              }
+              ...prevQuestion,
+              upVotes: [...voteData.upVotes],
+              downVotes: [...voteData.downVotes],
+            }
             : prevQuestion,
         );
       }
@@ -265,6 +280,8 @@ const useAnswerPage = () => {
     handleNewAnswer,
     handleAddMedia,
     handleAddMediaError,
+    downloadQuestionPermission,
+    handleToggleQuestionPermission,
   };
 };
 

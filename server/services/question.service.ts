@@ -303,3 +303,36 @@ export const downloadQuestionMedia = async (qid: string): Promise<string | { err
     return { error: 'Error when downloading question media' };
   }
 };
+
+export const toggleQuestionMediaPermission = async (qid: string, username: string): Promise<boolean | { error: string }> => {
+  try {
+    const result: DatabaseQuestion | null = await QuestionModel.findById(qid);
+
+    if (!result) {
+      return { error: 'Question not found!' };
+    }
+
+    // Check if user is the admin and trying to leave
+    if (result.askedBy !== username) {
+      throw new Error('Only the question asker can change download permissions.');
+    }
+
+    if (result.mediaPath === undefined || result.permitDownload === undefined) {
+      throw new Error('No media found to change permissions for.');
+    }
+
+    let updatedQuestion: DatabaseQuestion | null = await QuestionModel.findByIdAndUpdate(
+      { _id: qid },
+      { permitDownload: !result.permitDownload },
+      { new: true },
+    );
+
+    if (!updatedQuestion || updatedQuestion.permitDownload === undefined) {
+      throw new Error('Failed to update question permissions')
+    }
+
+    return updatedQuestion.permitDownload;
+  } catch {
+    return { error: 'Error when toggling question media download permissions' };
+  }
+}

@@ -4,6 +4,9 @@ import ThreeViewport from '../../threeViewport';
 import './index.css';
 import { Download } from 'lucide-react';
 import { getQuestionMedia } from '../../../../services/questionService';
+import useUserContext from '../../../../hooks/useUserContext';
+import useAnswerPage from '../../../../hooks/useAnswerPage';
+import { useState } from 'react';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -24,7 +27,6 @@ interface QuestionBodyProps {
   mediaPath?: string;
   mediaUrl?: string;
   mediaSize?: string;
-  permitDownload?: boolean;
 }
 
 const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
@@ -72,8 +74,8 @@ const QuestionBody = ({
   mediaPath,
   mediaUrl,
   mediaSize,
-  permitDownload,
 }: QuestionBodyProps) => {
+  const { user } = useUserContext();
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
   const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
@@ -82,7 +84,11 @@ const QuestionBody = ({
   const isVideoUrl = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
+  const isAuthor = askby === user.username;
+
   let ext: string | undefined = undefined;
+
+  const {downloadQuestionPermission, handleToggleQuestionPermission } = useAnswerPage();
 
   if (mediaPath) {
     ext = getExtension(mediaPath);
@@ -146,7 +152,7 @@ const QuestionBody = ({
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
-        {permitDownload && mediaPath && mediaSize && ext && (
+        {downloadQuestionPermission && mediaPath && mediaSize && ext && (
           <div className='download-label'>
             <Download
               size={20}
@@ -157,11 +163,17 @@ const QuestionBody = ({
             <div>Download 3D model</div>
           </div>
         )}
-        {!permitDownload && mediaPath && mediaSize && ext && (
+        {!downloadQuestionPermission && mediaPath && mediaSize && ext && (
           <div className='download-disabled'>
             <div>Download disabled</div>
           </div>
         )}
+        {(isAuthor && mediaPath) && (<button
+          onClick={() => {
+            handleToggleQuestionPermission();
+          }}>
+          Change download permission
+        </button>)}
       </div>
     </div>
   );

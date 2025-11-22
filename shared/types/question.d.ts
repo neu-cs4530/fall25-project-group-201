@@ -169,3 +169,10 @@ export interface DownloadQuestionMediaRequest extends Request {
     qid: string;
   };
 }
+
+export interface ToggleQuestionMediaPermissionRequest extends Request {
+  body: {
+    qid: string;
+    username: string;
+  };
+}
