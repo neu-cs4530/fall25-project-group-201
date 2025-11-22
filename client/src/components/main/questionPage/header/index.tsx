@@ -1,8 +1,13 @@
 import './index.css';
-import OrderButton from './orderButton';
+import AskQuestionButton from '../../askQuestionButton';
 import { OrderType } from '../../../../types/types';
 import { orderTypeDisplayName } from '../../../../types/constants';
-import AskQuestionButton from '../../askQuestionButton';
+
+interface QuestionHeaderProps {
+  titleText: string;
+  qcnt: number;
+  setQuestionOrder: (order: OrderType) => void;
+}
 
 /**
  * Interface representing the props for the QuestionHeader component.
@@ -11,39 +16,34 @@ import AskQuestionButton from '../../askQuestionButton';
  * qcnt - The number of questions to be displayed in the header.
  * setQuestionOrder - A function that sets the order of questions based on the selected message.
  */
-interface QuestionHeaderProps {
-  titleText: string;
-  qcnt: number;
-  setQuestionOrder: (order: OrderType) => void;
-}
-
-/**
- * QuestionHeader component displays the header section for a list of questions.
- * It includes the title, a button to ask a new question, the number of the quesions,
- * and buttons to set the order of questions.
- *
- * @param titleText - The title text to display in the header.
- * @param qcnt - The number of questions displayed in the header.
- * @param setQuestionOrder - Function to set the order of questions based on input message.
- */
 const QuestionHeader = ({ titleText, qcnt, setQuestionOrder }: QuestionHeaderProps) => (
-  <div>
-    <div className='space_between right_padding'>
-      <div className='bold_title'>{titleText}</div>
-      <AskQuestionButton />
+  <div className="questionHeader">
+    <div className="space_between">
+      <h2 className="title">{titleText}</h2>
     </div>
-    <div className='space_between right_padding'>
-      <div id='question_count'>{qcnt} questions</div>
-      <div className='btns'>
-        {Object.keys(orderTypeDisplayName).map(order => (
-          <OrderButton
-            key={order}
-            orderType={order as OrderType}
-            setQuestionOrder={setQuestionOrder}
-          />
+    <div className="space_between">
+  <div className="leftSection">
+    <div id="question_count">{qcnt} questions</div>
+    <div className="orderWrapper">
+      <label className="orderLabel" htmlFor="orderSelect">Sort By</label>
+      <select
+        id="orderSelect"
+        className="orderDropdown"
+        onChange={(e) => setQuestionOrder(e.target.value as OrderType)}
+      >
+        {Object.keys(orderTypeDisplayName).map((order) => (
+          <option key={order} value={order}>
+            {orderTypeDisplayName[order as OrderType]}
+          </option>
         ))}
-      </div>
+      </select>
     </div>
+  </div>
+  <div className="askButtonWrapper">
+    <AskQuestionButton />
+  </div>
+</div>
+
   </div>
 );
 

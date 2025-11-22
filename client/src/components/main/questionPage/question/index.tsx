@@ -3,6 +3,7 @@ import { getMetaData } from '../../../../tool';
 import { PopulatedDatabaseQuestion } from '../../../../types/types';
 import SaveToCollectionModal from '../../collections/saveToCollectionModal';
 import useQuestionView from '../../../../hooks/useQuestionView';
+import { Link } from 'react-router-dom';
 
 /**
  * Interface representing the props for the Question component.
@@ -53,10 +54,14 @@ const QuestionView = ({ question }: QuestionProps) => {
         </div>
       </div>
       <div className='lastActivity'>
-        <div className='question_author'>{question.askedBy}</div>
-        <div>&nbsp;</div>
+        {question.askedBy && (
+          <Link to={`/user/${question.askedBy}`} className='usernameLink' onClick={e => e.stopPropagation()}>
+            <span className='question_author'>{question.askedBy}</span>
+          </Link>
+        )}
         <div className='question_meta'>asked {getMetaData(new Date(question.askDateTime))}</div>
       </div>
+
 
       <button
         onClick={e => {
