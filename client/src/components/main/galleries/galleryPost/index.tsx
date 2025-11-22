@@ -48,6 +48,7 @@ const GalleryPostPage = () => {
         <div className='mainPostWrapper'>
           <div className='postInfo'>
             <h1>{post.title}</h1>
+
             <div className='postMetaWrapper'>
               <div className='postAuthor'>
                 {postUser && (
@@ -150,40 +151,6 @@ const GalleryPostPage = () => {
             <RelatedPosts posts={related} />
           </div>
         )}
-
-        <p className='postDescription'>{post.description}</p>
-      </div>
-
-      <div className='mediaWrapper'>
-        {is3D && (
-          <ThreeViewport
-            modelPath={post.media}
-            rotationSetting={null}
-            setRotationSetting={undefined}
-            translationSetting={null}
-            setTranslationSetting={undefined}
-          />
-        )}
-        {youTubeId && (
-          <iframe
-            width='800'
-            height='450'
-            src={`https://www.youtube.com/embed/${youTubeId}`}
-            allowFullScreen
-          />
-        )}
-        {vimeoId && (
-          <iframe
-            width='800'
-            height='450'
-            src={`https://player.vimeo.com/video/${vimeoId}`}
-            allowFullScreen
-          />
-        )}
-        {!is3D && !youTubeId && !vimeoId && !isVideo && (
-          <img src={url} alt={post.title} className='postMedia' />
-        )}
-        {isVideo && <video src={url} controls muted className='postMedia'></video>}
       </div>
     </div>
   );
