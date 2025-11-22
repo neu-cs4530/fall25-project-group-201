@@ -1,9 +1,9 @@
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Heart, Eye } from 'lucide-react';
 import ThreeViewport from '../index';
 import useUserContext from '../../../../hooks/useUserContext';
-import { incrementPortfolioViews, togglePortfolioLike } from '../../../../services/userService';
+import { togglePortfolioLike } from '../../../../services/userService';
 import './index.css';
 
 type PortfolioItem = {
@@ -22,16 +22,6 @@ export default function PortfolioViewerPage() {
   const { user } = useUserContext();
 
   const [item, setItem] = useState<PortfolioItem | null>(location.state || null);
-
-  useEffect(() => {
-    if (!username || !index || !user.username) return;
-
-    // Let the backend handle view counting
-    incrementPortfolioViews(username, parseInt(index), user.username).catch(err => {
-      console.error('Failed to increment portfolio views', err);
-    });
-  }, [username, index, user.username]);
-
 
   const handleToggleLike = async () => {
     if (!username || !index || !user.username || !item) {
