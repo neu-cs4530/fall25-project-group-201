@@ -47,12 +47,12 @@ const ThreeViewport = ({
     modelEdges,
     modelFaces,
   } = useThreeViewport(
-      activeModel,
-      rotationSetting,
-      setRotationSetting,
-      translationSetting,
-      setTranslationSetting,
-    );
+    activeModel,
+    rotationSetting,
+    setRotationSetting,
+    translationSetting,
+    setTranslationSetting,
+  );
 
   // HDRI Hook Integration
   const { currentPreset, switchPreset, isLoading } = useHDRI({

@@ -171,7 +171,7 @@ const useThreeViewport = (
    * Does NOT reference reactive props directly (uses refs when runtime access needed).
    */
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !modelPath) return;
 
     // --- Scene setup ---
     const scene = new THREE.Scene();
@@ -279,6 +279,13 @@ const useThreeViewport = (
     const handleWheelContainer = containerRef.current; // capture the ref value
     if (!handleWheelContainer) return;
     handleWheelContainer.addEventListener('wheel', handleWheel, { passive: false });
+
+    // --- Load model using GLTF + DRACO ---
+    const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    loader.setDRACOLoader(dracoLoader);
+
     loader.load(modelPath, gltf => {
       const model = gltf.scene;
 
@@ -479,7 +486,7 @@ const useThreeViewport = (
       cameraRef.current = null;
     };
     // run only on mount/unmount
-  }, []);
+  }, [modelPath]);
 
   /**
    * Model load effect: only triggers when modelPath changes.
