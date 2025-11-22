@@ -5,7 +5,6 @@ import ThreeViewport from '../../threeViewport';
 import useNewGalleryPost from '../../../../hooks/useNewGalleryPost';
 import { GALLERY_TAGS, GalleryTag } from '../../../../types/galleryTags';
 
-
 /**
  * Component to display a form for creating a new gallery post.
  *
@@ -26,7 +25,15 @@ import { GALLERY_TAGS, GalleryTag } from '../../../../types/galleryTags';
  * @returns React component
  */
 const NewGalleryPostPage = () => {
-  const { form, errors, postGalleryPost, handleFileChange, handleThumbnailFileChange, handleInputChange, toggleTag } = useNewGalleryPost();
+  const {
+    form,
+    errors,
+    postGalleryPost,
+    handleFileChange,
+    handleThumbnailFileChange,
+    handleInputChange,
+    toggleTag,
+  } = useNewGalleryPost();
   const { user: currentUser } = useUserContext();
   const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
 
@@ -65,10 +72,17 @@ const NewGalleryPostPage = () => {
       const data = await res.json();
 
       if (data?.filepathLocation) {
-        handleInputChange('mediaPath')({ target: { value: data.filepathLocation } } as ChangeEvent<HTMLInputElement>);
-        if (data.fileSize) handleInputChange('mediaSize')({ target: { value: data.fileSize } } as ChangeEvent<HTMLInputElement>);
+        handleInputChange('mediaPath')({
+          target: { value: data.filepathLocation },
+        } as ChangeEvent<HTMLInputElement>);
+        if (data.fileSize)
+          handleInputChange('mediaSize')({
+            target: { value: data.fileSize },
+          } as ChangeEvent<HTMLInputElement>);
       }
-    } catch {}
+    } catch {
+      // intentionally empty
+    }
   };
 
   /**
@@ -101,9 +115,13 @@ const NewGalleryPostPage = () => {
       const data = await res.json();
 
       if (data?.filepathLocation) {
-        handleInputChange('thumbnailMediaPath')({ target: { value: data.filepathLocation } } as ChangeEvent<HTMLInputElement>);
+        handleInputChange('thumbnailMediaPath')({
+          target: { value: data.filepathLocation },
+        } as ChangeEvent<HTMLInputElement>);
       }
-    } catch {}
+    } catch {
+      // intentionally empty
+    }
   };
 
   return (
@@ -139,7 +157,11 @@ const NewGalleryPostPage = () => {
         <div className='tags-container'>
           {GALLERY_TAGS.map((tag: GalleryTag) => (
             <label key={tag} className='tag-checkbox'>
-              <input type='checkbox' checked={form.tags.includes(tag)} onChange={() => toggleTag(tag)} />
+              <input
+                type='checkbox'
+                checked={form.tags.includes(tag)}
+                onChange={() => toggleTag(tag)}
+              />
               {tag.replace(/_/g, ' ')}
             </label>
           ))}
@@ -188,7 +210,7 @@ const NewGalleryPostPage = () => {
                 (() => {
                   let embedUrl = form.mediaUrl;
                   const youtubeMatch = form.mediaUrl.match(
-                    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/
+                    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/,
                   );
                   if (youtubeMatch) embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
                   const vimeoMatch = form.mediaUrl.match(/vimeo\.com\/(\d+)/);
@@ -216,7 +238,9 @@ const NewGalleryPostPage = () => {
               {errors.thumbnailMedia && <p className='error'>{errors.thumbnailMedia}</p>}
               <div className='model-preview'>
                 <p>3D Model Preview:</p>
-                {previewFilePath && <ThreeViewport key={previewFilePath} modelPath={previewFilePath} />}
+                {previewFilePath && (
+                  <ThreeViewport key={previewFilePath} modelPath={previewFilePath} />
+                )}
               </div>
             </>
           )}

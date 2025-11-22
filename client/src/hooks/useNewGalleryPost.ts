@@ -196,9 +196,9 @@ const useNewGalleryPost = () => {
    * @param field keyof GalleryFormState - Field name to update
    * @returns (e: ChangeEvent<T>) => void - Event handler to update form state
    */
-  const handleInputChange = <T extends HTMLInputElement | HTMLTextAreaElement>(
-      field: keyof typeof form,
-    ) => (e: ChangeEvent<T>) => {
+  const handleInputChange =
+    <T extends HTMLInputElement | HTMLTextAreaElement>(field: keyof typeof form) =>
+    (e: ChangeEvent<T>) => {
       setForm(prev => ({
         ...prev,
         [field]: e.target.value,

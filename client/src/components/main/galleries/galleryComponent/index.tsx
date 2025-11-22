@@ -46,7 +46,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
   /**
    * Formats the given gallery post for community page preview.
-   * 
+   *
    * @param post - the gallery post
    * @returns the gallery post thumbnail media properly formatted
    */
@@ -60,7 +60,9 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     const isEmbed = post.media.includes('youtu') || post.media.includes('vimeo');
 
     if (isImage || is3D) {
-      return <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className='media' />;
+      return (
+        <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className='media' />
+      );
     }
 
     if (isVideo) {
@@ -69,7 +71,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
           src={post.media}
           muted
           playsInline
-          preload="metadata"
+          preload='metadata'
           className='media'
           onClick={e => e.preventDefault()}
         />
@@ -77,36 +79,36 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     }
 
     if (isEmbed) {
-    let embedUrl = post.media;
-    if (post.media.includes('youtu.be')) {
-      const id = post.media.split('youtu.be/')[1];
-      embedUrl = `https://www.youtube.com/embed/${id}?controls=0&modestbranding=1`;
-    }
-    if (post.media.includes('youtube.com/watch')) {
-      const id = new URL(post.media).searchParams.get('v');
-      embedUrl = `https://www.youtube.com/embed/${id}?controls=0&modestbranding=1`;
-    }
-    if (post.media.includes('vimeo.com') && !post.media.includes('player.vimeo.com')) {
-      const id = post.media.split('vimeo.com/')[1];
-      embedUrl = `https://player.vimeo.com/video/${id}?controls=0`;
+      let embedUrl = post.media;
+      if (post.media.includes('youtu.be')) {
+        const id = post.media.split('youtu.be/')[1];
+        embedUrl = `https://www.youtube.com/embed/${id}?controls=0&modestbranding=1`;
+      }
+      if (post.media.includes('youtube.com/watch')) {
+        const id = new URL(post.media).searchParams.get('v');
+        embedUrl = `https://www.youtube.com/embed/${id}?controls=0&modestbranding=1`;
+      }
+      if (post.media.includes('vimeo.com') && !post.media.includes('player.vimeo.com')) {
+        const id = post.media.split('vimeo.com/')[1];
+        embedUrl = `https://player.vimeo.com/video/${id}?controls=0`;
+      }
+
+      return (
+        <iframe
+          className='media'
+          src={embedUrl}
+          width='800'
+          height='450'
+          frameBorder='0'
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+          allowFullScreen
+          style={{ pointerEvents: 'none' }}
+        />
+      );
     }
 
-    return (
-      <iframe
-        className='media'
-        src={embedUrl}
-        width='800'
-        height='450'
-        frameBorder='0'
-        allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-        allowFullScreen
-        style={{ pointerEvents: 'none' }}
-      />
-    );
-  }
-
-  return null;
-};
+    return null;
+  };
 
   return (
     <div className='galleryContainer'>
