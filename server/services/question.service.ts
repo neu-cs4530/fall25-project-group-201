@@ -300,6 +300,6 @@ export const downloadQuestionMedia = async (qid: string): Promise<String | { err
 
     return q.mediaPath;
   } catch (error) {
-    return { error: 'Error when saving a question' };
+    return { error: 'Error when downloading question media' };
   }
 };
