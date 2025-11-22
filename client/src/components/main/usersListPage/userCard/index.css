@@ -1,7 +1,7 @@
 .user {
   display: flex;
   flex-direction: row;
-  border-top: #000000 1px dashed;
+  border-top: #ccc 1px solid;
 }
 
 .userStats {

@@ -78,7 +78,7 @@ const QuestionBody = ({
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
-      <div className='bold_title answer_question_view'>{views} views</div>
+      <div className='answer_question_view'>{views} views</div>
 
       <div className='answer_question_text'>
         <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
