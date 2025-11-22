@@ -40,14 +40,16 @@
 .postMetaWrapper {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .postStats {
   display: flex;
-  gap: 15px;
-  align-items: center;
+  flex-direction: row;
+  gap: 10px; /* spacing between each stat */
+  align-items: center; /* vertically centers icons and numbers */
   font-size: 0.85rem;
+  flex-wrap: wrap; /* allows wrapping on smaller screens */
 }
 
 .postAuthor {
@@ -63,10 +65,11 @@
 
 .statItem {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  align-items: center; /* vertically center icon + number */
+  gap: 5px; /* space between icon and number */
   font-size: 0.85rem;
   cursor: pointer;
+  white-space: nowrap; /* prevents wrapping inside a single stat */
 }
 
 .statItem.delete {
