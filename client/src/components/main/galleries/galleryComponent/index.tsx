@@ -170,7 +170,6 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             <ChevronLeft size={22} />
           </button>
         )}
-
         {/* If loading, display loading state */}
         {loading && (
           <div className='grid-container'>
@@ -179,7 +178,6 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             ))}
           </div>
         )}
-
         {/* If not loading, display carousel */}
         {!loading && (
           <div className='galleryGrid carouselPage'>
@@ -199,12 +197,10 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
               </div>
             ))}
           </div>
-        )};
-
+        )}
+        ;
         {filteredGalleryPosts.length > itemsPerPage && (
-          <button
-            className='carouselArrow right'
-            onClick={nextPage}>
+          <button className='carouselArrow right' onClick={nextPage}>
             <ChevronRight size={22} />
           </button>
         )}
