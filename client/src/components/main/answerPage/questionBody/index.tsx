@@ -168,12 +168,15 @@ const QuestionBody = ({
             <div>Download disabled</div>
           </div>
         )}
-        {(isAuthor && mediaPath) && (<button
-          onClick={() => {
-            handleToggleQuestionPermission();
-          }}>
-          Change download permission
-        </button>)}
+        {(isAuthor && mediaPath) && (
+          <button 
+            type="button" 
+            className={`download-permission-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
+            onClick={() => {handleToggleQuestionPermission();}}
+          >
+            {downloadQuestionPermission ? '✓ Downloads On' : '✕ Downloads Off'}
+          </button>
+        )}
       </div>
     </div>
   );
