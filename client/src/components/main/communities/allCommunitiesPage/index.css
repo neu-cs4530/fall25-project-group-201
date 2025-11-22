@@ -32,9 +32,16 @@
 }
 
 .communities-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
+}
+
+.communities-list > * {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
 }
 
 .community-error {
