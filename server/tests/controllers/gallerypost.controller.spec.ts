@@ -96,6 +96,7 @@ describe('Gallery Post Controller', () => {
         media: '/x.png',
         community: '123',
         tags: [],
+        mediaSize: '1 GB',
       });
 
       expect(res.status).toBe(500);

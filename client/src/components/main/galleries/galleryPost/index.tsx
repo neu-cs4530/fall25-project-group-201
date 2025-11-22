@@ -1,5 +1,5 @@
 import './index.css';
-import { Heart, Eye, Download, Trash2 } from 'lucide-react';
+import { Heart, Eye, Download, Trash2, ExternalLink } from 'lucide-react';
 import useUserContext from '../../../../hooks/useUserContext';
 import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
@@ -83,7 +83,7 @@ const GalleryPostPage = () => {
                 }}>
                 <Download
                   size={20}
-                  onClick={() => handleDownload(post.mediaSize, ext!)}
+                  onClick={() => handleDownload(post.mediaSize || 'Unknown size', ext!)}
                   color='blue'
                 />{' '}
                 {post.downloads}
@@ -133,6 +133,14 @@ const GalleryPostPage = () => {
         )}
         {isVideo && <video src={url} controls muted className='postMedia'></video>}
       </div>
+      {post.link && (
+        <div className='viewProjectBtnWrapper'>
+          <button className='viewProjectBtn' onClick={() => window.open(post.link, '_blank')}>
+            <ExternalLink size={18} />
+            View Project
+          </button>
+        </div>
+      )}
     </div>
   );
 };

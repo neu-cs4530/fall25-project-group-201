@@ -32,6 +32,11 @@ export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { er
  */
 export const createGalleryPost = async (galleryPost: GalleryPost): Promise<GalleryPostResponse> => {
   try {
+    // Require either media file or link
+    if (!galleryPost.media && !galleryPost.link) {
+      throw new Error('You must provide either a media file or a media link.');
+    }
+
     if (!Array.isArray(galleryPost.tags)) {
       throw new Error('Tags must be an array');
     }
@@ -41,7 +46,13 @@ export const createGalleryPost = async (galleryPost: GalleryPost): Promise<Galle
       throw new Error(`Invalid tags: ${invalidTags.join(', ')}`);
     }
 
-    const newGalleryPost = await GalleryPostModel.create(galleryPost);
+    const postData = {
+      ...galleryPost,
+      ...(galleryPost.mediaSize ? { mediaSize: galleryPost.mediaSize } : {}),
+      ...(galleryPost.link ? { link: galleryPost.link } : {}),
+    };
+
+    const newGalleryPost = await GalleryPostModel.create(postData);
 
     if (!newGalleryPost) {
       throw new Error('Failed to create gallery post');
