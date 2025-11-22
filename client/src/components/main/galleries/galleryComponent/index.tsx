@@ -223,7 +223,6 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
             ))}
           </div>
         )}
-        ;
         {filteredGalleryPosts.length > itemsPerPage && (
           <button className='carouselArrow right' onClick={nextPage}>
             <ChevronRight size={22} />

@@ -85,7 +85,13 @@ const SideBarNav = () => {
 
       <NavLink
         to='/communities'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        className={() =>
+          `menu_button ${
+            location.pathname.startsWith('/communities') || location.pathname.startsWith('/gallery')
+              ? 'menu_selected'
+              : ''
+          }`
+        }>
         <CommunitiesIcon size={16} className='menu-icon' />
         Communities
       </NavLink>

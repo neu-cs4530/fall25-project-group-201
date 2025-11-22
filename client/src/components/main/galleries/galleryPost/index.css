@@ -1,9 +1,11 @@
+.defaultProfileIcon {
+  margin-right: 5px;
+  flex-shrink: 0;
+  color: #666;
+}
+
 .galleryPostPage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
-  background: #fff;
 }
 
 .mediaWrapper {
@@ -41,17 +43,19 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
 
 .postStats {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
-  gap: 10px; /* spacing between each stat */
-  align-items: center; /* vertically centers icons and numbers */
+  gap: 10px;
+  align-items: center;
   font-size: 0.85rem;
-  flex-wrap: wrap; /* allows wrapping on smaller screens */
+  width: 100%;
+  justify-content: flex-start;
 }
-
 .postAuthor {
   display: flex;
   align-items: center;
@@ -65,11 +69,11 @@
 
 .statItem {
   display: flex;
-  align-items: center; /* vertically center icon + number */
-  gap: 5px; /* space between icon and number */
+  align-items: center;
+  gap: 5px;
   font-size: 0.85rem;
   cursor: pointer;
-  white-space: nowrap; /* prevents wrapping inside a single stat */
+  white-space: nowrap;
 }
 
 .statItem.delete {
@@ -162,4 +166,32 @@
 
 .viewProjectBtn svg {
   stroke: #fff;
+}
+
+.galleryPostContentWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.postContentWrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 25px;
+}
+
+.mainPostWrapper {
+  flex: 1;
+  border-right: #ccc 1px solid;
+  padding-right: 25px;
+}
+
+.relatedPostsSidebar {
+  width: 250px;
+  flex-shrink: 0;
 }
