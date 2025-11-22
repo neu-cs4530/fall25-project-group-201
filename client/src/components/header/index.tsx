@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import useHeader from '../../hooks/useHeader';
 import './index.css';
 import useUserContext from '../../hooks/useUserContext';
-import { Search } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -58,13 +58,15 @@ const Header = () => {
         <div ref={menuRef} className='profile-dropdown-container'>
           {currentUser && (
             <div className='profile-trigger' onClick={() => setOpen(prev => !prev)}>
-              <div
-                className='navbar-profile-icon'
-                style={{
-                  backgroundImage: currentUser.profilePicture
-                    ? `url(${currentUser.profilePicture})`
-                    : 'url(/default-profile.png)',
-                }}></div>
+              {currentUser.profilePicture ? (
+                <div
+                  className='navbar-profile-icon'
+                  style={{ backgroundImage: `url(${currentUser.profilePicture})` }}
+                />
+              ) : (
+                <User className='navbar-default-icon' size={32} />
+              )}
+
 
               <svg
                 className={`dropdown-arrow ${open ? 'open' : ''}`}
