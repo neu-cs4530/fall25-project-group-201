@@ -3,6 +3,7 @@ import './index.css';
 import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
 import useNewGalleryPost from '../../../../hooks/useNewGalleryPost';
+import { GALLERY_TAGS, GalleryTag } from '../../../../types/galleryTags';
 
 /**
  * Component to display a form for creating a new gallery post
@@ -32,9 +33,13 @@ const NewGalleryPostPage = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
+    setMediaSize,
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,
+    tags,
+    tagErr,
+    toggleTag,
   } = useNewGalleryPost();
 
   const { user: currentUser } = useUserContext();
@@ -56,6 +61,7 @@ const NewGalleryPostPage = () => {
   const handleAddMedia = () => {
     if (mediaUrl) {
       setUploadedMediaPath(undefined);
+      setMediaSize(undefined);
     }
   };
 
@@ -96,6 +102,9 @@ const NewGalleryPostPage = () => {
 
       if (data?.filepathLocation) {
         setUploadedMediaPath(data.filepathLocation);
+        if (data.fileSize) {
+          setMediaSize(data.fileSize);
+        }
         setMediaErr(null);
       } else {
         setMediaErr('Upload failed');
@@ -173,6 +182,19 @@ const NewGalleryPostPage = () => {
           placeholder='Share more details about your project'
         />
         {textErr && <p className='error'>{textErr}</p>}
+      </div>
+
+      <div className='form-section'>
+        <label>Tags</label>
+        <div className='tags-container'>
+          {GALLERY_TAGS.map((tag: GalleryTag) => (
+            <label key={tag} className='tag-checkbox'>
+              <input type='checkbox' checked={tags.includes(tag)} onChange={() => toggleTag(tag)} />
+              {tag.replace(/_/g, ' ')}
+            </label>
+          ))}
+        </div>
+        {tagErr && <p className='error'>{tagErr}</p>}
       </div>
 
       <div className='form-section media-section'>

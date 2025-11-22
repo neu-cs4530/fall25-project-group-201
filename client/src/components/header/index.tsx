@@ -2,7 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import useHeader from '../../hooks/useHeader';
 import './index.css';
 import useUserContext from '../../hooks/useUserContext';
-import LogoutButton from './LogoutButton';
+import { Search } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * Header component that renders the main title and a search bar.
@@ -13,28 +15,94 @@ const Header = () => {
   const { val, handleInputChange, handleKeyDown } = useHeader();
   const { user: currentUser } = useUserContext();
   const navigate = useNavigate();
+  const { logout } = useAuth0();
+
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  /*
+   * Close dropdown when clicking outside
+   */
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div id='header' className='header'>
-      <div></div>
-      <div className='title'>Fake Stack Overflow</div>
-      <input
-        id='searchBar'
-        placeholder='Search ...'
-        type='text'
-        value={val}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-      />
-      <LogoutButton />
-      {/* <button onClick={handleSignOut} className='logout-button'>
-        Log out
-      </button> */}
-      <button
-        className='view-profile-button'
-        onClick={() => navigate(`/user/${currentUser.username}`)}>
-        View Profile
-      </button>
-    </div>
+    <header className='header'>
+      <div className='header-left' onClick={() => navigate('/')}>
+        <img src='/images/logo.png' alt='Logo' className='header-logo' />
+      </div>
+
+      <div className='header-center'>
+        <div className='search-wrapper'>
+          <Search size={18} className='searchIcon' />
+          <input
+            id='searchBar'
+            className='search-input'
+            placeholder='Search questions…'
+            type='text'
+            value={val}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
+      </div>
+
+      <div className='header-right'>
+        <div ref={menuRef} className='profile-dropdown-container'>
+          {currentUser && (
+            <div className='profile-trigger' onClick={() => setOpen(prev => !prev)}>
+              <div
+                className='navbar-profile-icon'
+                style={{
+                  backgroundImage: currentUser.profilePicture
+                    ? `url(${currentUser.profilePicture})`
+                    : 'url(/default-profile.png)',
+                }}></div>
+
+              <svg
+                className={`dropdown-arrow ${open ? 'open' : ''}`}
+                width='16'
+                height='16'
+                viewBox='0 0 24 24'>
+                <path
+                  d='M7 10l5 5 5-5'
+                  stroke='black'
+                  strokeWidth='2'
+                  fill='none'
+                  strokeLinecap='round'
+                />
+              </svg>
+            </div>
+          )}
+
+          {open && (
+            <div className='profile-menu'>
+              <div
+                className='profile-menu-item'
+                onClick={() => {
+                  setOpen(false);
+                  navigate(`/user/${currentUser.username}`);
+                }}>
+                Profile
+              </div>
+
+              <div
+                className='profile-menu-item'
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                Log Out
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
   );
 };
 

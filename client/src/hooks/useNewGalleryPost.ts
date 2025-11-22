@@ -4,6 +4,7 @@ import { validateHyperlink } from '../tool';
 import { addGalleryPost } from '../services/galleryService';
 import useUserContext from './useUserContext';
 import { GalleryPost } from '../types/types';
+import { GalleryTag } from '../types/galleryTags';
 
 /**
  * Custom hook for managing a new gallery post form, including state, validation,
@@ -25,9 +26,12 @@ const useNewGalleryPost = () => {
   const [thumbnailMediaErr, setThumbnailMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
+  const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
   const [thumbnailMediaPath, setUploadedThumbnailMediaPath] = useState<string | undefined>(
     undefined,
   );
+  const [tags, setTags] = useState<GalleryTag[]>([]);
+  const [tagErr, setTagErr] = useState<string>('');
   const { communityID } = useParams<{ communityID: string }>();
 
   /**
@@ -67,6 +71,13 @@ const useNewGalleryPost = () => {
       setMediaErr('');
     }
 
+    if (!mediaSize) {
+      setMediaErr('Media file size is undefined.');
+      isValid = false;
+    } else {
+      setMediaErr('');
+    }
+
     // Check for 3D model thumbnail if media is glb
     if (mediaPath?.endsWith('.glb') && !thumbnailMediaPath) {
       setThumbnailMediaErr('You must upload a thumbnail for 3D models.');
@@ -80,6 +91,13 @@ const useNewGalleryPost = () => {
       isValid = false;
     } else {
       setCommunityErr('');
+    }
+
+    if (tags.length === 0) {
+      setTagErr('Please select at least one tag.');
+      isValid = false;
+    } else {
+      setTagErr('');
     }
 
     return isValid;
@@ -102,6 +120,8 @@ const useNewGalleryPost = () => {
       views: 0,
       downloads: 0,
       likes: [],
+      mediaSize: mediaSize!,
+      tags,
     };
 
     try {
@@ -136,6 +156,14 @@ const useNewGalleryPost = () => {
     setUploadedThumbnailMediaPath(`/userData/${user.username}/${file.name}`); // Path used in backend
   };
 
+  /**
+   * Toggles the state of attaching a tag to a post.
+   * @param tag - The selected tag
+   */
+  const toggleTag = (tag: GalleryTag) => {
+    setTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
+  };
+
   return {
     title,
     setTitle,
@@ -153,9 +181,14 @@ const useNewGalleryPost = () => {
     mediaPath,
     setUploadedMediaPath,
     setUploadedThumbnailMediaPath,
+    mediaSize,
+    setMediaSize,
     postGalleryPost,
     handleFileChange,
     handleThumbnailFileChange,
+    tags,
+    toggleTag,
+    tagErr,
   };
 };
 

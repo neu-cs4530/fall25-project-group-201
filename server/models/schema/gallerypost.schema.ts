@@ -1,3 +1,4 @@
+import { GALLERY_TAGS } from '../../types/galleryTags';
 import { Schema } from 'mongoose';
 
 /**
@@ -57,6 +58,16 @@ const galleryPostSchema: Schema = new Schema(
     likes: {
       type: [String],
       default: [],
+    },
+    mediaSize: {
+      type: String,
+      required: true,
+    },
+    tags: {
+      type: [String],
+      enum: GALLERY_TAGS,
+      default: [],
+      required: false,
     },
   },
   { collection: 'GalleryPost' },

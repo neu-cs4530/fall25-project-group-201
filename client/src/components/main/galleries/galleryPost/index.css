@@ -28,7 +28,7 @@
 
 .postInfo h1 {
   font-size: 1.5rem;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .postMeta {
@@ -37,11 +37,28 @@
   margin-bottom: 10px;
 }
 
+.postMetaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .postStats {
   display: flex;
   gap: 15px;
-  margin-bottom: 15px;
   align-items: center;
+  font-size: 0.85rem;
+}
+
+.postAuthor {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.postAuthor .postedAt {
+  color: #666;
+  font-size: 0.8rem;
 }
 
 .statItem {
@@ -59,4 +76,55 @@
 .postDescription {
   font-size: 0.9rem;
   line-height: 1.4;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.postTags {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tagChip {
+  background: #f1f1f1;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #444;
+  border: 1px solid #ddd;
+}
+
+.usernameLink {
+  display: inline-flex;
+  align-items: center;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.usernameLink:hover {
+  text-decoration: underline;
+}
+
+.profileIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin-right: 5px;
+}
+
+.usernameLink {
+  display: inline-flex;
+  align-items: center;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.usernameLink:hover {
+  text-decoration: underline;
 }
