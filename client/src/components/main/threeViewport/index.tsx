@@ -85,7 +85,7 @@ const ThreeViewport = ({
 
   /**
    * Positions a tooltip element relative to its parent container.
-   * 
+   *
    * @param e - mouse event that it is triggered by
    */
   const positionTooltip = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

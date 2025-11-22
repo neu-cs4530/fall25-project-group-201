@@ -41,7 +41,7 @@ const createOrthographicMatrix = (
 };
 
 /**
- * Returns number of edges of a 3D model 
+ * Returns number of edges of a 3D model
  * @param geometry of the .glb file
  * @returns number of edges of the 3D model
  */
@@ -83,7 +83,7 @@ function countTopologicalEdges(geometry: THREE.BufferGeometry) {
 }
 
 /**
- * Retrieves the vertex ID for a given vertex index in a geometry. Each vertex position is 
+ * Retrieves the vertex ID for a given vertex index in a geometry. Each vertex position is
  * converted to a string key and looked up in the provided vertMap to obtain a unique integer ID
  * @param pos - the BufferAttribute containing vertex positions
  * @param vertMap that stores vertex positions to unique vertex IDs
@@ -97,7 +97,7 @@ function getVid(pos: THREE.BufferAttribute, vertMap: Map<string, number>, i: num
 
 /**
  * Adds an edge to a set of unique edges in a topological mesh
- * 
+ *
  * @param edgeSet - set storing unique edges as strings
  * @param a - first vertex ID of the edge
  * @param b - second vertex ID of the edge
@@ -108,10 +108,10 @@ function addEdge(edgeSet: Set<string>, a: number, b: number) {
 }
 
 /**
- * React hook that sets up a Three.js viewport with optional model loading, camera controls (rotating, 
- * zooming, panning, tilting), orthogonal/perspective toggle, camera resetting, and camera reference 
+ * React hook that sets up a Three.js viewport with optional model loading, camera controls (rotating,
+ * zooming, panning, tilting), orthogonal/perspective toggle, camera resetting, and camera reference
  * management.
- * 
+ *
  * @param modelPath - Path to the 3D model (GLB) to load.
  * @param rotationSetting - rotation setting (if any) for the 3D model
  * @param setRotationSetting - sets rotationSetting
@@ -382,7 +382,7 @@ const useThreeViewport = (
     });
 
     /**
-     * Handles container resizing 
+     * Handles container resizing
      */
     const handleResize = () => {
       if (!containerRef.current) return;
