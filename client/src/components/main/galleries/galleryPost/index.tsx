@@ -83,7 +83,7 @@ const GalleryPostPage = () => {
                 }}>
                 <Download
                   size={20}
-                  onClick={() => handleDownload(post.mediaSize, ext!)}
+                  onClick={() => handleDownload(post.mediaSize || 'Unknown size', ext!)}
                   color='blue'
                 />{' '}
                 {post.downloads}
@@ -134,10 +134,12 @@ const GalleryPostPage = () => {
         {isVideo && <video src={url} controls muted className='postMedia'></video>}
       </div>
       {post.link && (
-        <button className='viewProjectBtn' onClick={() => window.open(post.link, '_blank')}>
-          <ExternalLink size={18} />
-          View Project
-        </button>
+        <div className='viewProjectBtnWrapper'>
+          <button className='viewProjectBtn' onClick={() => window.open(post.link, '_blank')}>
+            <ExternalLink size={18} />
+            View Project
+          </button>
+        </div>
       )}
     </div>
   );

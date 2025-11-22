@@ -128,3 +128,35 @@
 .usernameLink:hover {
   text-decoration: underline;
 }
+
+.viewProjectBtnWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  margin-top: 20px;
+}
+
+.viewProjectBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+
+.viewProjectBtn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.viewProjectBtn svg {
+  stroke: #fff;
+}
