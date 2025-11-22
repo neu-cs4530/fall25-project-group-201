@@ -6,8 +6,9 @@ import {
   PopulatedDatabaseQuestion,
   PopulatedDatabaseAnswer,
   DownloadCommentMediaRequest,
+  ToggleCommentMediaPermissionRequest,
 } from '../types/types';
-import { addComment, downloadCommentMedia, saveComment } from '../services/comment.service';
+import { addComment, downloadCommentMedia, saveComment, toggleCommentMediaPermission } from '../services/comment.service';
 import { populateDocument } from '../utils/database.util';
 
 const commentController = (socket: FakeSOSocket) => {
@@ -84,8 +85,24 @@ const commentController = (socket: FakeSOSocket) => {
     }
   };
 
+  const toggleCommentMediaPermissionRoute = async (req: ToggleCommentMediaPermissionRequest, res: Response) => {
+    const { id, username } = req.body;
+  
+    try {
+      const updatedPermission = await toggleCommentMediaPermission(id, username);
+      res.json(updatedPermission);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error while toggling media permission from question: ${err.message}`);
+      } else {
+        res.status(500).send(`Error while toggling media permission from question`);
+      }
+    }
+  }
+
   router.post('/addComment', addCommentRoute);
   router.get('/downloadCommentMedia/:id', downloadCommentMediaRoute);
+  router.post('/toggleMediaPermission', toggleCommentMediaPermissionRoute);
 
   return router;
 };

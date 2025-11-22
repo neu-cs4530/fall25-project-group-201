@@ -50,4 +50,17 @@ const getCommentMedia = async (id: string): Promise<string> => {
   return res.data;
 };
 
-export { addComment, getCommentMedia };
+const toggleMediaPermission = async (id: string, username: string): Promise<boolean> => {
+  const data = { id, username };
+  const res = await api.post(`${COMMENT_API_URL}/toggleMediaPermission`, data);
+  if (res.status !== 200) {
+    throw new Error('Error while upvoting the question');
+  }
+  return res.data;
+}
+
+export { 
+  addComment, 
+  getCommentMedia, 
+  toggleMediaPermission,
+ };

@@ -52,6 +52,14 @@ export interface DownloadCommentMediaRequest extends Request {
   };
 }
 
+export interface ToggleCommentMediaPermissionRequest extends Request {
+  body: {
+    id: string;
+    username: string;
+  };
+}
+
+
 /**
  * Type representing possible responses for a Comment-related operation.
  * - Either a `DatabaseComment` object or an error message.

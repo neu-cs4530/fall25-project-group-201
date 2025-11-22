@@ -312,7 +312,6 @@ export const toggleQuestionMediaPermission = async (qid: string, username: strin
       return { error: 'Question not found!' };
     }
 
-    // Check if user is the admin and trying to leave
     if (result.askedBy !== username) {
       throw new Error('Only the question asker can change download permissions.');
     }
@@ -333,6 +332,6 @@ export const toggleQuestionMediaPermission = async (qid: string, username: strin
 
     return updatedQuestion.permitDownload;
   } catch {
-    return { error: 'Error when toggling question media download permissions' };
+    return { error: 'Error when toggling question media download permissions:' };
   }
 }

@@ -10,6 +10,7 @@ import ThreeViewport from '../threeViewport';
 import { Download } from 'lucide-react';
 import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 import { getCommentMedia } from '../../../services/commentService';
+import CommentPermissionButton from './commentPermissionButton';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -83,12 +84,6 @@ const CommentSection = ({
     } catch {
       return false;
     }
-  }
-
-  function getExtension(path: string): string {
-    const lastDot = path.lastIndexOf('.');
-    if (lastDot === -1) return '';
-    return path.slice(lastDot + 1).toLowerCase();
   }
 
   /**
@@ -231,24 +226,6 @@ const CommentSection = ({
     }
   };
 
-  const handleDownload = async (mediaSize: string, extension: string, cid: string) => {
-    const confirmed = window.confirm(
-      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-    );
-    if (!confirmed) return;
-
-    try {
-      const mediaPath = await getCommentMedia(cid);
-
-      const link = document.createElement('a');
-      link.href = mediaPath;
-      link.download = `file.${extension}`;
-      link.click();
-    } catch (error) {
-      window.alert('Something went wrong with downloading the file');
-    }
-  };
-
   return (
     <div className='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
@@ -344,27 +321,9 @@ const CommentSection = ({
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
-                    {comment.permitDownload && comment.mediaPath && comment.mediaSize && (
-                      <div className='download-label'>
-                        Download model
-                        <Download
-                          className='comment-download-icon'
-                          size={20}
-                          onClick={() =>
-                            handleDownload(
-                              comment.mediaSize!,
-                              getExtension(comment.mediaPath!),
-                              String(comment._id),
-                            )
-                          }
-                          style={{ cursor: 'pointer' }}
-                          color='#007BFF'
-                        />
-                      </div>
-                    )}
-                    {!comment.permitDownload && comment.mediaPath && comment.mediaSize && (
-                      <div className='download-disabled'>Download disabled</div>
-                    )}
+                    <div className='download-label'>
+                      <CommentPermissionButton comment={comment}/>
+                    </div>
                   </small>
                 </li>
               ))

@@ -174,7 +174,7 @@ const QuestionBody = ({
             className={`download-permission-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
             onClick={() => {handleToggleQuestionPermission();}}
           >
-            {downloadQuestionPermission ? '✓ Downloads On' : '✕ Downloads Off'}
+            {downloadQuestionPermission ? '✓ Downloads Allowed' : '✕ Downloads Off'}
           </button>
         )}
       </div>

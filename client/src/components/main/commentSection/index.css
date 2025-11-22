@@ -202,3 +202,16 @@
 .download-disabled {
   color: gray;
 }
+
+/* .toggle-download-button {
+  max-width: 610px;
+  display: flex;
+  justify-content: flex-end;
+  border: none;
+} */
+
+.download-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
