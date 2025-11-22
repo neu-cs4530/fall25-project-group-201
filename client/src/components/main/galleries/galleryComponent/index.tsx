@@ -162,8 +162,11 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
       {/* Carousel */}
       <div className='carouselContainer'>
-        {sortedPosts.length > itemsPerPage && (
-          <button className='carouselArrow left' onClick={prevPage}>
+        {filteredGalleryPosts.length > itemsPerPage && (
+          <button
+            className='carouselArrow left'
+            onClick={prevPage}
+            disabled={filteredGalleryPosts.length <= itemsPerPage}>
             <ChevronLeft size={22} />
           </button>
         )}
@@ -187,18 +190,21 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
                 onClick={async () => {
                   try {
                     await handleIncrementViews(post);
+                    navigate(`/gallery/${post._id.toString()}`);
                   } catch {
                     setLocalError('Failed to increment views.');
                   }
-                  navigate(`/gallery/${post._id.toString()}`);
                 }}>
                 {renderMedia(post)}
               </div>
             ))}
           </div>
-        )}
-        {sortedPosts.length > itemsPerPage && (
-          <button className='carouselArrow right' onClick={nextPage}>
+        )};
+
+        {filteredGalleryPosts.length > itemsPerPage && (
+          <button
+            className='carouselArrow right'
+            onClick={nextPage}>
             <ChevronRight size={22} />
           </button>
         )}
