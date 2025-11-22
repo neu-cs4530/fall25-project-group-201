@@ -656,7 +656,6 @@ const ProfileSettings: React.FC = () => {
                           }}
                         />
                       ) : isVideo ? (
-                        // Video without thumbnail - show play icon
                         <div
                           style={{
                             width: '100%',
