@@ -106,6 +106,18 @@ const getCommunityQuestionsById = async (
   return res.data;
 };
 
+const getQuestionMedia = async (
+  questionId: string,
+): Promise<string> => {
+  const res = await api.get(`${QUESTION_API_URL}/getQuestionMedia/${questionId}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error when downloading question media');
+  }
+
+  return res.data;
+}
+
 export {
   getQuestionsByFilter,
   getQuestionById,
@@ -113,4 +125,5 @@ export {
   upvoteQuestion,
   downvoteQuestion,
   getCommunityQuestionsById,
+  getQuestionMedia,
 };

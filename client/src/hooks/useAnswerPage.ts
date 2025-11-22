@@ -10,7 +10,7 @@ import {
 } from '../types/types';
 import useUserContext from './useUserContext';
 import addComment from '../services/commentService';
-import { getQuestionById } from '../services/questionService';
+import { getQuestionById, getQuestionMedia } from '../services/questionService';
 import mediaService from '../services/mediaService';
 
 /**
@@ -34,6 +34,7 @@ const useAnswerPage = () => {
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
   const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
+  // const []
 
   /**
    * Navigates the user to the "New Answer" page for the current question.
@@ -130,6 +131,19 @@ const useAnswerPage = () => {
       console.error('Error adding comment:', error);
     }
   };
+
+  // const handleQuestionMediaDownload = async (
+  //   qid: string
+  // ): Promise<string> => {
+  //   try {
+  //     const mediaPath = await getQuestionMedia(qid);
+    
+  //     const link = document.createElement('a');
+  //     link.href = mediaPath;
+  //     link.download = `file.${extension}`;
+  //     link.click();
+  //   }
+  // }
 
   /**
    * Fetches the full question data when the question ID or user changes.

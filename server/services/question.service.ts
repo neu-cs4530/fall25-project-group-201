@@ -281,3 +281,25 @@ export const getCommunityQuestions = async (communityId: string): Promise<Databa
     return [];
   }
 };
+
+export const downloadQuestionMedia = async (qid: string): Promise<String | { error: string }> => {
+  try {
+    const q = await QuestionModel.findById(qid);
+
+    if (!q) {
+      throw new Error('Question not found');
+    }
+
+    if (q.mediaPath === undefined) {
+      throw new Error("No media to download");
+    }
+
+    if (q.permitDownload === undefined || !q.permitDownload) {
+      throw new Error('Downloads are not permitted');
+    }
+
+    return q.mediaPath;
+  } catch (error) {
+    return { error: 'Error when saving a question' };
+  }
+};

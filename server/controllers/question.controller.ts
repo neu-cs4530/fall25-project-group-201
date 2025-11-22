@@ -9,9 +9,11 @@ import {
   FakeSOSocket,
   PopulatedDatabaseQuestion,
   CommunityQuestionsRequest,
+  DownloadQuestionMediaRequest,
 } from '../types/types';
 import {
   addVoteToQuestion,
+  downloadQuestionMedia,
   fetchAndIncrementQuestionViewsById,
   filterQuestionsByAskedBy,
   filterQuestionsBySearch,
@@ -238,6 +240,34 @@ const questionController = (socket: FakeSOSocket) => {
     }
   };
 
+  const downloadQuestionMediaRoute = async (
+    req: DownloadQuestionMediaRequest,
+    res: Response,
+  ) => {
+    const { qid } = req.params;
+
+    if (!ObjectId.isValid(qid)) {
+      res.status(400).send('Invalid ID format');
+      return;
+    }
+
+    try {
+      const mediaLink = await downloadQuestionMedia(qid);
+
+      if ('error' in mediaLink) {
+        throw new Error('Error while download media from question');
+      }
+
+      res.json(mediaLink);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error while download media from question: ${err.message}`);
+      } else {
+        res.status(500).send(`Error while download media from question`);
+      }
+    }
+  }
+
   // add appropriate HTTP verbs and their endpoints to the router
   router.get('/getQuestion', getQuestionsByFilter);
   router.get('/getQuestionById/:qid', getQuestionById);
@@ -245,6 +275,7 @@ const questionController = (socket: FakeSOSocket) => {
   router.post('/upvoteQuestion', upvoteQuestion);
   router.post('/downvoteQuestion', downvoteQuestion);
   router.get('/getCommunityQuestions/:communityId', getCommunityQuestionsRoute);
+  router.get('/downloadQuestionMedia/:qid', downloadQuestionMediaRoute);
 
   return router;
 };

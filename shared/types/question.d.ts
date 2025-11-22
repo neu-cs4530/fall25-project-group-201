@@ -163,3 +163,9 @@ export interface CommunityQuestionsRequest extends Request {
     communityId: string;
   };
 }
+
+export interface DownloadQuestionMediaRequest extends Request {
+  params: {
+    qid: string;
+  };
+}

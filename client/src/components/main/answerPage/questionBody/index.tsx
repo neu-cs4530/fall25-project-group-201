@@ -3,6 +3,7 @@ import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
 import { Download } from 'lucide-react';
+import { getQuestionMedia } from '../../../../services/questionService';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -15,6 +16,7 @@ import { Download } from 'lucide-react';
  * - mediaPath: The file path of the uploaded media file.
  */
 interface QuestionBodyProps {
+  qid: string;
   views: number;
   text: string;
   askby: string;
@@ -25,16 +27,27 @@ interface QuestionBodyProps {
   permitDownload?: boolean;
 }
 
-const handleDownload = (mediaSize: string, extension: string, mediaPath: string) => {
+const handleDownload = async (
+  mediaSize: string, 
+  extension: string,
+  qid: string,
+) => {
   const confirmed = window.confirm(
     `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
   );
   if (!confirmed) return;
 
-  const link = document.createElement('a');
-  link.href = mediaPath;
-  link.download = `file.${extension}`;
-  link.click();
+  try {
+    const mediaPath = await getQuestionMedia(qid);
+    
+    const link = document.createElement('a');
+    link.href = mediaPath;
+    link.download = `file.${extension}`;
+    link.click();
+
+  } catch (error) {
+    
+  }
 };
 
 function getExtension(path: string): string {
@@ -56,6 +69,7 @@ function getExtension(path: string): string {
  * @param mediaUrl Url to the attached media
  */
 const QuestionBody = ({
+  qid,
   views,
   text,
   askby,
@@ -141,7 +155,7 @@ const QuestionBody = ({
           <div className='download-label'>
             <Download
               size={20}
-              onClick={() => handleDownload(mediaSize, ext, mediaPath)}
+              onClick={() => handleDownload(mediaSize, ext, qid)}
               color='#007BFF'
               style={{ cursor: 'pointer' }}
             />
