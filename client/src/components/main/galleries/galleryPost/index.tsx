@@ -39,8 +39,7 @@ const GalleryPostPage = () => {
   const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
   const youTubeId = getYouTubeVideoId(url);
   const vimeoId = getVimeoVideoId(url);
-  const formatTag = (tag: string) =>
-    tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const formatTag = (tag: string) => tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   return (
     <div className='galleryPostPage'>
@@ -157,4 +156,3 @@ const GalleryPostPage = () => {
 };
 
 export default GalleryPostPage;
-

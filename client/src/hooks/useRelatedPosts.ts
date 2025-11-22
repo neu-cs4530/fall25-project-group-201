@@ -6,9 +6,9 @@ import { DatabaseGalleryPost } from '../types/types';
  * Custom hook to fetch and manage related gallery posts for a given post.
  * It filters posts from the same community, generates thumbnails for video and image media,
  * and sorts posts by relevance based on tags, keywords, and author.
- * 
+ *
  * @param {DatabaseGalleryPost | null} post - The current gallery post to find related posts for.
- * @returns {{ related: DatabaseGalleryPost[]; loading: boolean }} 
+ * @returns {{ related: DatabaseGalleryPost[]; loading: boolean }}
  *          An object containing the top 3 related posts and a loading state.
  */
 const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
@@ -19,14 +19,14 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
     if (!post) return;
 
     /**
-     * Fetch all gallery posts, filter by the same community, generate thumbnails, 
+     * Fetch all gallery posts, filter by the same community, generate thumbnails,
      * and sort by relevance based on tags, keywords, and author.
      */
     const fetchRelated = async () => {
       setLoading(true);
       const all = await getGalleryPosts();
 
-      let candidates = all.filter(p => p._id !== post._id && p.community === post.community);
+      const candidates = all.filter(p => p._id !== post._id && p.community === post.community);
 
       const keywords = `${post.title} ${post.description}`.toLowerCase();
       const titleWords = keywords.split(/\s+/).filter(w => w.length > 3);
@@ -102,7 +102,8 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
             const vimeoId = p.media.match(/vimeo\.com\/(\d+)/)?.[1];
             const ext = p.media.split('.').pop()?.toLowerCase();
 
-            if (youTubeId) p.thumbnailMedia = `https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`;
+            if (youTubeId)
+              p.thumbnailMedia = `https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`;
             else if (vimeoId) p.thumbnailMedia = `https://vumbnail.com/${vimeoId}.jpg`;
             else if (['mp4', 'webm', 'mov'].includes(ext || '')) {
               p.thumbnailMedia = await generateVideoThumbnail(p.media);
@@ -111,7 +112,7 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
             }
           }
           return p;
-        })
+        }),
       );
 
       // Sort candidates by relevance (tags, keywords, author)

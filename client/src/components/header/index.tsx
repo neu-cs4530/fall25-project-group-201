@@ -67,7 +67,6 @@ const Header = () => {
                 <User className='navbar-default-icon' size={32} />
               )}
 
-
               <svg
                 className={`dropdown-arrow ${open ? 'open' : ''}`}
                 width='16'
