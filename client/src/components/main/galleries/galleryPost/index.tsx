@@ -111,7 +111,15 @@ const GalleryPostPage = () => {
       </div>
 
       <div className='mediaWrapper'>
-        {is3D && <ThreeViewport modelPath={post.media} />}
+        {is3D && (
+          <ThreeViewport
+            modelPath={post.media}
+            rotationSetting={null}
+            setRotationSetting={undefined}
+            translationSetting={null}
+            setTranslationSetting={undefined}
+          />
+        )}
         {youTubeId && (
           <iframe
             width='800'
