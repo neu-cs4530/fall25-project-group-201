@@ -58,18 +58,26 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
-    const { tags } = req.body;
+    const { tags, link, media } = req.body;
 
     if (!tags || !Array.isArray(tags)) {
       res.status(400).send('Tags must be provided as an array.');
       return;
     }
 
+    if (!media && !link) {
+      res.status(400).send('You must provide either a media file or a media link.');
+      return;
+    }
+
     const galleryPost: GalleryPost = {
       ...req.body,
+      media,
       views: 0,
       downloads: 0,
+      likes: [],
       tags,
+      link: link ?? '',
     };
 
     try {

@@ -173,3 +173,10 @@
   transform: rotate(180deg);
   opacity: 1;
 }
+
+.navbar-default-icon {
+  color: #666;
+  cursor: pointer;
+  margin-right: 5px;
+  flex-shrink: 0;
+}

@@ -58,6 +58,7 @@ const useGalleryComponentPage = (communityID: string) => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('all');
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   /**
@@ -81,12 +82,15 @@ const useGalleryComponentPage = (communityID: string) => {
    * Fetch all gallery posts for the current community
    */
   const fetchGalleryPosts = useCallback(async () => {
+    setLoading(true);
     try {
       const posts = await getGalleryPosts();
       setAllGalleryPosts(posts.filter(p => p.community === communityID));
       setError(null);
+      setLoading(false);
     } catch {
       setError('Failed to fetch gallery posts.');
+      setLoading(true);
     }
   }, [communityID]);
 
@@ -293,6 +297,7 @@ const useGalleryComponentPage = (communityID: string) => {
     handleIncrementViews,
     handleIncrementDownloads,
     handleToggleLikes,
+    loading,
     refreshGallery: fetchGalleryPosts,
     resetFilters,
     searchQuery,

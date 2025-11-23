@@ -13,6 +13,10 @@ import useInfoPopover from '../../../hooks/useInfoPopover';
 interface ThreeViewportProps {
   modelPath?: string | null;
   allowUpload?: boolean;
+  rotationSetting?: number[] | null;
+  setRotationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>;
+  translationSetting?: number[] | null;
+  setTranslationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>;
 }
 
 const HDRI_PRESETS = [
@@ -22,7 +26,18 @@ const HDRI_PRESETS = [
   { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
-const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportProps) => {
+/**
+ * Represents a 3D viewport that can be interacted with. This includes orbit controls, changing
+ * HDRI settings, camera resetting, orthogonal/perspective view toggling and camera reference snapping
+ */
+const ThreeViewport = ({
+  modelPath = null,
+  allowUpload = false,
+  translationSetting = [0, 0.77, 3.02],
+  setTranslationSetting,
+  rotationSetting = [0, 0, 0],
+  setRotationSetting,
+}: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 
@@ -35,7 +50,13 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     modelVerts,
     modelEdges,
     modelFaces,
-  } = useThreeViewport(activeModel);
+  } = useThreeViewport(
+    activeModel,
+    rotationSetting,
+    setRotationSetting,
+    translationSetting,
+    setTranslationSetting,
+  );
 
   // HDRI Hook Integration
   const { currentPreset, switchPreset, isLoading } = useHDRI({
@@ -53,12 +74,20 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
   const [visibleTooltip, setVisibleTooltip] = useState<string | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  /**
+   * Handles perspective/orthogonal view toggling of viewport.
+   */
   const handleCameraModeToggle = () => {
     const updatedCameraMode = !isOrthoCameraMode;
     setIsOrthoCameraMode(updatedCameraMode);
     handleTogglePerspective();
   };
 
+  /**
+   * Positions a tooltip element relative to its parent container.
+   *
+   * @param e - mouse event that it is triggered by
+   */
   const positionTooltip = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const tooltip = e.currentTarget.querySelector('.tooltip-text') as HTMLElement;
     if (tooltip) {

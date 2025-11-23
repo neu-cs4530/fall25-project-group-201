@@ -851,6 +851,96 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Increments views for a portfolio item
+   */
+  const incrementPortfolioViews = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, index, viewerUsername } = req.params;
+      const portfolioIndex = parseInt(index);
+
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      const portfolio = user.portfolio || [];
+      if (portfolioIndex < 0 || portfolioIndex >= portfolio.length) {
+        res.status(404).json({ error: 'Portfolio item not found' });
+        return;
+      }
+
+      const views = portfolio[portfolioIndex].views || [];
+
+      // views are cumulative
+      portfolio[portfolioIndex].views = [...views, viewerUsername];
+
+      const updatedUser = await updateUser(username, { portfolio });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      if (!updatedUser.portfolio || !updatedUser.portfolio[portfolioIndex]) {
+        throw new Error('Portfolio item not found after update');
+      }
+
+      res.status(200).json(updatedUser.portfolio[portfolioIndex]);
+    } catch (error) {
+      res.status(500).send(`Error incrementing portfolio views: ${error}`);
+    }
+  };
+
+  /**
+   * Toggles a like for a portfolio item
+   */
+  const togglePortfolioLike = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username, index, likeUsername } = req.params;
+      const portfolioIndex = parseInt(index);
+
+      const user = await getUserByUsername(username);
+      if ('error' in user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      const portfolio = user.portfolio || [];
+      if (portfolioIndex < 0 || portfolioIndex >= portfolio.length) {
+        res.status(404).json({ error: 'Portfolio item not found' });
+        return;
+      }
+
+      const item = portfolio[portfolioIndex];
+      const likes = item.likes || [];
+      const alreadyLiked = likes.includes(likeUsername);
+
+      if (alreadyLiked) {
+        // Remove like
+        item.likes = likes.filter(u => u !== likeUsername);
+      } else {
+        // Add like
+        item.likes = [...likes, likeUsername];
+      }
+
+      const updatedUser = await updateUser(username, { portfolio });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      if (!updatedUser.portfolio || !updatedUser.portfolio[portfolioIndex]) {
+        // ADD THIS CHECK
+        throw new Error('Portfolio item not found after update');
+      }
+
+      res.status(200).json(updatedUser.portfolio[portfolioIndex]);
+    } catch (error) {
+      res.status(500).send(`Error toggling portfolio like: ${error}`);
+    }
+  };
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -874,6 +964,11 @@ const userController = (socket: FakeSOSocket) => {
   router.post('/uploadPortfolioModel', upload.single('file'), UploadPortfolioModel);
   router.post('/testimonial', createOrUpdateTestimonial);
   router.delete('/testimonial/:profileUsername', deleteTestimonial);
+  router.post(
+    '/portfolio/incrementViews/:username/:index/:viewerUsername',
+    incrementPortfolioViews,
+  );
+  router.post('/portfolio/toggleLike/:username/:index/:likeUsername', togglePortfolioLike);
   router.patch('/testimonial/approve', updateTestimonialApproval);
   return router;
 };

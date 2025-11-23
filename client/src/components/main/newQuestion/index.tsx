@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
@@ -45,6 +45,9 @@ const NewQuestion = () => {
 
   const { user: currentUser } = useUserContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
+  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
+  const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
 
   /**
    * Handles changes to the media URL input.
@@ -66,6 +69,23 @@ const NewQuestion = () => {
     }
   };
 
+  const handleAddCameraRef = () => {
+    let translationSettingToSend = translationSetting;
+    let rotatationSettingToSend = rotationSetting;
+
+    if (!translationSetting) {
+      translationSettingToSend = [0, 0.77, 3.02];
+    }
+    if (!rotationSetting) {
+      rotatationSettingToSend = [0, 0, 0];
+    }
+
+    const tempText = text;
+    const [tx, ty, tz] = translationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
+    const [rx, ry, rz] = rotatationSettingToSend!.map(v => Number(v.toFixed(2))); // round to 2 decimal places
+    setText(tempText + ' #camera' + '-' + `t(${tx},${ty},${tz})` + '-' + `r(${rx},${ry},${rz})`);
+  };
+
   /**
    * Handles file uploads for media attachments.
    * Calls `handleFileChange` from the hook and uploads the file to the backend.
@@ -76,6 +96,8 @@ const NewQuestion = () => {
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const tempFileUrl = URL.createObjectURL(file);
+    setPreviewFilePath(tempFileUrl);
 
     setUploadedMediaPath(undefined);
     setMediaSize(undefined);
@@ -141,6 +163,17 @@ const NewQuestion = () => {
           placeholder='Describe your question in detail'
         />
         {textErr && <p className='error'>{textErr}</p>}
+
+        {/* Provide ability to add a camera reference if the mediaPath ends with .glb */}
+        {mediaPath?.endsWith('.glb') && (
+          <button
+            type='button'
+            onClick={() => {
+              handleAddCameraRef();
+            }}>
+            Add Camera Reference
+          </button>
+        )}
       </div>
 
       <div className='form-section'>
@@ -270,7 +303,14 @@ const NewQuestion = () => {
           {mediaPath?.endsWith('.glb') && (
             <div className='model-preview'>
               <p>3D Model Preview:</p>
-              <ThreeViewport key={mediaPath} modelPath={mediaPath.toString()} />
+              <ThreeViewport
+                key={previewFilePath}
+                modelPath={previewFilePath}
+                rotationSetting={rotationSetting}
+                setRotationSetting={setRotationSetting}
+                translationSetting={translationSetting}
+                setTranslationSetting={setTranslationSetting}
+              />
               <PermissionCheckbox
                 permission={downloadPermission}
                 setPermission={setDownloadPermission}
@@ -284,10 +324,10 @@ const NewQuestion = () => {
               <p>File Preview:</p>
 
               {mediaPath.match(/\.(jpeg|jpg|png|gif)$/i) ? (
-                <img src={mediaPath} alt='Uploaded media' />
+                <img src={previewFilePath} alt='Uploaded media' />
               ) : mediaPath.match(/\.(mp4|webm|ogg)$/i) ? (
                 <video controls>
-                  <source src={mediaPath} type='video/mp4' />
+                  <source src={previewFilePath} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>
               ) : null}

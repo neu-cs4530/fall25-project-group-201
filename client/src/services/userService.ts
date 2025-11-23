@@ -322,6 +322,39 @@ export const updateTestimonialApproval = async (
   return response.json();
 };
 
+/**
+ * Increments views for a portfolio item
+ */
+export const incrementPortfolioViews = async (
+  username: string,
+  index: number,
+  viewerUsername: string,
+): Promise<void> => {
+  const res = await api.post(
+    `${USER_API_URL}/portfolio/incrementViews/${username}/${index}/${viewerUsername}`,
+  );
+
+  if (res.status !== 200) {
+    throw new Error('Error incrementing portfolio views');
+  }
+};
+
+/**
+ * Toggles a like for a portfolio item
+ */
+export const togglePortfolioLike = async (
+  username: string,
+  index: number,
+  likeUsername: string,
+): Promise<void> => {
+  const res = await api.post(
+    `${USER_API_URL}/portfolio/toggleLike/${username}/${index}/${likeUsername}`,
+  );
+  if (res.status !== 200) {
+    throw new Error('Error toggling portfolio like');
+  }
+};
+
 export {
   getUsers,
   getUserByUsername,

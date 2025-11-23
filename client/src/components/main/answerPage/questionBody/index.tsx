@@ -2,6 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
+import preprocessCameraRefs from '../../cameraRef/CameraRefUtils';
 import { Download } from 'lucide-react';
 import { getQuestionMedia } from '../../../../services/questionService';
 import useUserContext from '../../../../hooks/useUserContext';
@@ -25,6 +26,10 @@ interface QuestionBodyProps {
   meta: string;
   mediaPath?: string;
   mediaUrl?: string;
+  rotationSetting?: number[] | null;
+  setRotationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  translationSetting?: number[] | null;
+  setTranslationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
   mediaSize?: string;
 }
 
@@ -72,6 +77,10 @@ const QuestionBody = ({
   meta,
   mediaPath,
   mediaUrl,
+  rotationSetting,
+  setRotationSetting,
+  translationSetting,
+  setTranslationSetting,
   mediaSize,
 }: QuestionBodyProps) => {
   const { user } = useUserContext();
@@ -85,6 +94,33 @@ const QuestionBody = ({
 
   const isAuthor = askby === user.username;
 
+  const handleCameraRefClick = (cameraRef: string) => {
+    // Remove leading "#camera-" prefix
+    const ref = cameraRef.replace(/^#camera-/, '');
+
+    // Regex supporting decimals, negatives, and optional rotation
+    // Matches t(x,y,z) and optional -r(x,y,z)
+    const regex = /t\(\s*([^)]+?)\s*\)(?:-r\(\s*([^)]+?)\s*\))?/;
+    const match = ref.match(regex);
+
+    if (!match) {
+      return;
+    }
+
+    // Translation is required → split and parse safely
+    const translation = match[1].split(',').map(v => Number(v.trim())); // handles decimals / negatives
+
+    // Rotation is optional
+    const rotation = match[2] ? match[2].split(',').map(v => Number(v.trim())) : null;
+
+    if (rotation) {
+      setRotationSetting(rotation);
+    }
+
+    if (translation) {
+      setTranslationSetting(translation);
+    }
+  };
   let ext: string | undefined = undefined;
 
   const { downloadQuestionPermission, handleToggleQuestionPermission } = useAnswerPage();
@@ -95,15 +131,52 @@ const QuestionBody = ({
 
   return (
     <div id='questionBody' className='questionBody right_padding'>
-      <div className='bold_title answer_question_view'>{views} views</div>
+      <div className='answer_question_view'>{views} views</div>
 
       <div className='answer_question_text'>
-        <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
+        {!isGLB && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
+        {isGLB && (
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ href, children }) => {
+                // Detect camera links
+                if (href && href.startsWith('#camera-')) {
+                  // We want: "camera-t(1,2,3)-r(0,90,0)"
+                  const cleanRef = href.replace(/^#/, '');
+
+                  return (
+                    <span
+                      style={{
+                        color: 'blue',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                      }}
+                      onClick={() => handleCameraRefClick(cleanRef)}>
+                      {children}
+                    </span>
+                  );
+                }
+
+                // Normal links
+                return <a href={href}>{children}</a>;
+              },
+            }}>
+            {preprocessCameraRefs(text)}
+          </Markdown>
+        )}
 
         {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
           <div className='three-wrapper'>
-            <ThreeViewport key={mediaPath} modelPath={mediaPath} />
+            <ThreeViewport
+              key={mediaPath}
+              modelPath={mediaPath}
+              rotationSetting={rotationSetting}
+              setRotationSetting={setRotationSetting}
+              translationSetting={translationSetting}
+              setTranslationSetting={setTranslationSetting}
+            />
           </div>
         )}
 

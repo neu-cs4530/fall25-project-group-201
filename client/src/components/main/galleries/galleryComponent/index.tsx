@@ -39,49 +39,75 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
     resetFilters,
     searchQuery,
     setSearchQuery,
+    loading,
   } = useGalleryComponentPage(communityID);
 
   const navigate = useNavigate();
   const [localError, setLocalError] = useState<string | null>(null);
 
+  /**
+   * Formats the given gallery post for community page preview.
+   *
+   * @param post - the gallery post
+   * @returns the gallery post thumbnail media properly formatted
+   */
   const renderMedia = (post: DatabaseGalleryPost) => {
     if (!post.media) return null;
+
     const ext = post.media.split('.').pop()?.toLowerCase();
     const isVideo = ['mp4', 'webm', 'mov'].includes(ext || '');
     const isImage = ['jpg', 'jpeg', 'png'].includes(ext || '');
     const is3D = ext === 'glb';
     const isEmbed = post.media.includes('youtu') || post.media.includes('vimeo');
 
-    if (isImage || is3D)
+    if (isImage || is3D) {
       return (
         <img src={is3D ? post.thumbnailMedia : post.media} alt={post.title} className='media' />
       );
-    if (isVideo) return <video src={post.media} controls muted className='media' />;
+    }
+
+    if (isVideo) {
+      return (
+        <video
+          src={post.media}
+          muted
+          playsInline
+          preload='metadata'
+          className='media'
+          onClick={e => e.preventDefault()}
+        />
+      );
+    }
+
     if (isEmbed) {
       let embedUrl = post.media;
       if (post.media.includes('youtu.be')) {
         const id = post.media.split('youtu.be/')[1];
-        embedUrl = `https://www.youtube.com/embed/${id}`;
+        embedUrl = `https://www.youtube.com/embed/${id}?controls=0&modestbranding=1`;
       }
       if (post.media.includes('youtube.com/watch')) {
         const id = new URL(post.media).searchParams.get('v');
-        embedUrl = `https://www.youtube.com/embed/${id}`;
+        embedUrl = `https://www.youtube.com/embed/${id}?controls=0&modestbranding=1`;
       }
       if (post.media.includes('vimeo.com') && !post.media.includes('player.vimeo.com')) {
         const id = post.media.split('vimeo.com/')[1];
-        embedUrl = `https://player.vimeo.com/video/${id}`;
+        embedUrl = `https://player.vimeo.com/video/${id}?controls=0`;
       }
+
       return (
         <iframe
           className='media'
           src={embedUrl}
           width='800'
           height='450'
+          frameBorder='0'
           allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
           allowFullScreen
+          style={{ pointerEvents: 'none' }}
         />
       );
     }
+
     return null;
   };
 
@@ -161,35 +187,47 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
 
       {/* Carousel */}
       <div className='carouselContainer'>
-        <button
-          className='carouselArrow left'
-          onClick={prevPage}
-          disabled={filteredGalleryPosts.length <= itemsPerPage}>
-          <ChevronLeft size={22} />
-        </button>
-        <div className='galleryGrid carouselPage'>
-          {visibleItems.map(post => (
-            <div
-              key={post._id.toString()}
-              className='galleryCard'
-              onClick={async () => {
-                try {
-                  await handleIncrementViews(post);
-                  navigate(`/gallery/${post._id.toString()}`);
-                } catch {
-                  setLocalError('Failed to increment views.');
-                }
-              }}>
-              {renderMedia(post)}
-            </div>
-          ))}
-        </div>
-        <button
-          className='carouselArrow right'
-          onClick={nextPage}
-          disabled={filteredGalleryPosts.length <= itemsPerPage}>
-          <ChevronRight size={22} />
-        </button>
+        {filteredGalleryPosts.length > itemsPerPage && (
+          <button
+            className='carouselArrow left'
+            onClick={prevPage}
+            disabled={filteredGalleryPosts.length <= itemsPerPage}>
+            <ChevronLeft size={22} />
+          </button>
+        )}
+        {/* If loading, display loading state */}
+        {loading && (
+          <div className='grid-container'>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className='grid-cell'></div>
+            ))}
+          </div>
+        )}
+        {/* If not loading, display carousel */}
+        {!loading && (
+          <div className='galleryGrid carouselPage'>
+            {visibleItems.map(post => (
+              <div
+                key={post._id.toString()}
+                className='galleryCard'
+                onClick={async () => {
+                  try {
+                    await handleIncrementViews(post);
+                    navigate(`/gallery/${post._id.toString()}`);
+                  } catch {
+                    setLocalError('Failed to increment views.');
+                  }
+                }}>
+                {renderMedia(post)}
+              </div>
+            ))}
+          </div>
+        )}
+        {filteredGalleryPosts.length > itemsPerPage && (
+          <button className='carouselArrow right' onClick={nextPage}>
+            <ChevronRight size={22} />
+          </button>
+        )}
       </div>
 
       {filteredGalleryPosts.length > itemsPerPage && (

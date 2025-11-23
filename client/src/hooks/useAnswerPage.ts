@@ -44,8 +44,8 @@ const useAnswerPage = () => {
    * @function
    * @returns {void}
    */
-  const handleNewAnswer = () => {
-    navigate(`/new/answer/${questionID}`);
+  const handleNewAnswer = (cameraRef: string) => {
+    navigate(`/new/answer/${questionID}?${cameraRef}`);
   };
 
   /**

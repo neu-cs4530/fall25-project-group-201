@@ -1,14 +1,15 @@
 .questionBody {
   display: flex;
   flex-direction: row;
-  margin-top: 5%;
-  border-bottom: #000000 1px dashed;
+  margin-top: 25px;
+  border-bottom: #ccc 1px solid;
   gap: 2%;
 }
 
 .answer_question_view {
   width: 15%;
   flex-shrink: 0;
+  font-size:large;
   font-weight: bold;
 }
 
