@@ -42,8 +42,8 @@ export const cleanDatabase = () => {
  * Sets up the database before each test
  */
 export const setupTest = () => {
-  // cleanDatabase();
-  // seedDatabase();
+  cleanDatabase();
+  seedDatabase();
 };
 
 /**

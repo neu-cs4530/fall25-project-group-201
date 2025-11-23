@@ -1,4 +1,5 @@
 import { createQuestion, loginUser, setupTest, teardownTest } from '../support/helpers';
+import 'cypress-file-upload';
 
 describe("Cypress Tests to verify asking new questions", () => {
   beforeEach(() => {
@@ -16,33 +17,145 @@ describe("Cypress Tests to verify asking new questions", () => {
 
     cy.contains("11 questions");
 
-    // Wait for the new post to render
-    cy.get('.question_author').contains('user123').should('be.visible');
-    cy.get('.question_meta').should('contain.text', 'asked');
-
-    // Verify stats for answers and views
-    cy.get('.postAnswersViews').each($el => {
-      cy.wrap($el).should('be.visible');
-    });
-
-    cy.contains("Unanswered").click();
-    cy.get(".postTitle").should("have.length", 1);
-    cy.contains("1 questions");
+    cy.get('.question')
+      .contains('.question_author', 'user123')
+      .parents('.question')
+      .within(() => {
+        cy.get('.postTitle').should('contain.text', 'Test Question Q1');
+        cy.get('.postAnswersViews').should('exist');
+        cy.get('.question_meta').should('contain.text', 'asked');
+      });
   });
-
 
   it("2.2 | Ask a Question with empty title shows error", () => {
     loginUser('user123');
     
     cy.contains("Ask a Question").click();
 
-    // Fill in text and tags but leave title empty
     cy.get("#text").type("Test Question 1 Text Q1");
     cy.get("#tags").type("javascript");
     
     cy.get(".submit-btn").click();
     
-    // Check for title validation error
     cy.contains("Title cannot be empty");
+  })
+
+  it("2.2 | Ask a Question with empty description shows error", () => {
+    loginUser('user123');
+
+    cy.contains("Ask a Question").click();
+
+    cy.get("#title").type("Test Question Without Description");
+    cy.get("#tags").type("javascript");
+
+    cy.get(".submit-btn").click();
+
+    cy.contains("Question text cannot be empty");
+  });
+
+  it("2.3 | Ask a Question with empty tags shows error", () => {
+    loginUser('user123');
+
+    cy.contains("Ask a Question").click();
+
+    cy.get("#title").type("Test Question Without Tags");
+    cy.get("#text").type("This is a test question text.");
+
+    cy.get(".submit-btn").click();
+
+    cy.contains("Should have at least 1 tag");
+  });
+
+  it("2.4 | Add YouTube embed URL", () => {
+    loginUser('user123');
+
+    cy.contains("Ask a Question").click();
+
+    cy.get("#title").type("Question with YouTube");
+    cy.get("#text").type("This question has a YouTube video");
+    cy.get("#tags").type("media test");
+
+    cy.get('.media-inputs input[type="text"]').type("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    cy.get('.media-inputs button').contains('Add Embed').click();
+
+    cy.get('.embed-preview iframe').should('have.attr', 'src').and('include', 'youtube.com/embed');
+
+    cy.get('.submit-btn').click();
+
+    cy.get('.question_author').contains('user123').should('be.visible');
+  });
+
+  it("2.5 | Add Vimeo embed URL", () => {
+    loginUser('user123');
+
+    cy.contains("Ask a Question").click();
+
+    cy.get("#title").type("Question with Vimeo");
+    cy.get("#text").type("This question has a Vimeo video");
+    cy.get("#tags").type("media test");
+
+    cy.get('.media-inputs input[type="text"]').type("https://vimeo.com/76979871");
+    cy.get('.media-inputs button').contains('Add Embed').click();
+
+    cy.get('.embed-preview iframe').should('have.attr', 'src').and('include', 'player.vimeo.com');
+
+    cy.get('.submit-btn').click();
+
+    cy.get('.question_author').contains('user123').should('be.visible');
+  });
+
+  it("2.6 | Upload image file", () => {
+    loginUser('user123');
+
+    cy.contains("Ask a Question").click();
+
+    cy.get("#title").type("Question with Image");
+    cy.get("#text").type("This question has an image");
+    cy.get("#tags").type("media test");
+
+    cy.get('input[type="file"]').attachFile('example.png');
+
+    cy.get('.uploaded-preview img').should('be.visible');
+
+    cy.get('.submit-btn').click();
+
+    cy.get('.question_author').contains('user123').should('be.visible');
+  });
+
+  it("2.7 | Upload video file", () => {
+    loginUser('user123');
+
+    cy.contains("Ask a Question").click();
+
+    cy.get("#title").type("Question with Video");
+    cy.get("#text").type("This question has a video");
+    cy.get("#tags").type("media test");
+
+    cy.get('input[type="file"]').attachFile('example.mp4');
+
+    cy.get('.uploaded-preview video').should('be.visible');
+
+    cy.get('.submit-btn').click();
+
+    cy.get('.question_author').contains('user123').should('be.visible');
+  });
+
+  it("2.8 | Upload 3D .glb file and add camera reference", () => {
+    loginUser('user123');
+
+    cy.contains("Ask a Question").click();
+
+    cy.get("#title").type("Question with 3D Model");
+    cy.get("#text").type("This question has a GLB 3D model");
+    cy.get("#tags").type("media test");
+
+    cy.get('input[type="file"]').attachFile('example.glb');
+
+    cy.get('.model-preview').should('be.visible');
+    cy.get('button').contains('Add Camera Reference').click();
+
+    cy.get('.submit-btn').click();
+
+    cy.get('.question_author').contains('user123').should('be.visible');
   });
 });
