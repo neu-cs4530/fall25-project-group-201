@@ -11,16 +11,8 @@ import "cypress-file-upload";
 describe("Cypress Tests to verify adding new comments under a question", () => {
   beforeEach(() => {
     setupTest();
-
     loginUser("user123");
-
-    createQuestion(
-      "Test Question",
-      "Test Question Text",
-      "javascript"
-    );
-
-    cy.contains("Test Question");
+    createQuestion("Test Question", "Test Question Text", "javascript");
     openCreatedQuestion("Test Question");
 
     cy.contains("Show Comments").click();
@@ -154,4 +146,37 @@ describe("Cypress Tests to verify adding new comments under a question", () => {
 
     cy.get(".comment-media-input").should("have.value", "");
   });
+
+  it("10 | Drag & Drop a file into comment media area", () => {
+    cy.get(".media-actions").then($dropArea => {
+      // Load fixture as base64
+      cy.fixture("example.png", "base64").then(fileContent => {
+        const blob = Cypress.Blob.base64StringToBlob(fileContent, "image/png");
+        const file = new File([blob], "example.png", { type: "image/png" });
+
+        // Create DataTransfer object and add file
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+
+        // Trigger dragover and drop events
+        cy.wrap($dropArea)
+          .trigger("dragover", { dataTransfer })
+          .trigger("drop", { dataTransfer });
+      });
+    });
+
+    cy.get(".comment-textarea").type("Drag and drop comment test");
+    cy.get(".add-comment-button").click();
+
+    verifyCommentBlock({
+      index: 0,
+      expected: {
+        text: "Drag and drop comment test",
+        username: "user123",
+        mediaType: "image",
+        mediaUrl: "example.png",
+      },
+    });
+  });
+
 });

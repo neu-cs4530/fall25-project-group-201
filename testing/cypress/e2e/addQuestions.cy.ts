@@ -178,4 +178,31 @@ describe("Cypress Tests to verify asking new questions", () => {
     cy.get('.three-wrapper canvas').should('exist');
     cy.get('.question_author').contains('user123');
   });
+
+  it("2.9 | Drag & Drop file into media area", () => {
+    loginUser('user123');
+    goToAskQuestion();
+
+    // Use fixture image file
+    cy.fixture('example.png', 'base64').then(fileContent => {
+      const blob = Cypress.Blob.base64StringToBlob(fileContent, 'image/png');
+      const file = new File([blob], 'example.png', { type: 'image/png' });
+
+      // Create a DataTransfer object and add the file
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+
+      // Trigger dragover and drop events on the drag-drop area
+      cy.get('.drag-drop-area')
+        .trigger('dragover', { dataTransfer })
+        .trigger('drop', { dataTransfer });
+    });
+
+    // Check that the uploaded preview appears
+    cy.get('.uploaded-preview img')
+      .should('be.visible')
+      .and($img => {
+        expect($img.attr('src')).to.contain('example.png');
+      });
+  });
 });
