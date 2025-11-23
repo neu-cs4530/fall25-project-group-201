@@ -40,6 +40,11 @@ const createOrthographicMatrix = (
   return m;
 };
 
+/**
+ * Returns number of edges of a 3D model
+ * @param geometry of the .glb file
+ * @returns number of edges of the 3D model
+ */
 function countTopologicalEdges(geometry: THREE.BufferGeometry) {
   const pos = geometry.getAttribute('position') as THREE.BufferAttribute;
   const index = geometry.index;
@@ -77,21 +82,41 @@ function countTopologicalEdges(geometry: THREE.BufferGeometry) {
   return edges.size;
 }
 
+/**
+ * Retrieves the vertex ID for a given vertex index in a geometry. Each vertex position is
+ * converted to a string key and looked up in the provided vertMap to obtain a unique integer ID
+ * @param pos - the BufferAttribute containing vertex positions
+ * @param vertMap that stores vertex positions to unique vertex IDs
+ * @param i - index of the vertex in the BufferAttribute
+ * @returns vertex ID corresponding to the given vertex index
+ */
 function getVid(pos: THREE.BufferAttribute, vertMap: Map<string, number>, i: number): number {
   const key = `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
   return vertMap.get(key)!;
 }
 
+/**
+ * Adds an edge to a set of unique edges in a topological mesh
+ *
+ * @param edgeSet - set storing unique edges as strings
+ * @param a - first vertex ID of the edge
+ * @param b - second vertex ID of the edge
+ */
 function addEdge(edgeSet: Set<string>, a: number, b: number) {
   const key = a < b ? `${a}-${b}` : `${b}-${a}`;
   edgeSet.add(key);
 }
 
 /**
- * React hook that sets up a Three.js viewport with optional model loading,
- * camera controls, and orthographic/perspective toggle.
+ * React hook that sets up a Three.js viewport with optional model loading, camera controls (rotating,
+ * zooming, panning, tilting), orthogonal/perspective toggle, camera resetting, and camera reference
+ * management.
  *
- * @param {string | null} modelPath - Path to the 3D model (GLB) to load. If null, the scene initializes empty.
+ * @param modelPath - Path to the 3D model (GLB) to load.
+ * @param rotationSetting - rotation setting (if any) for the 3D model
+ * @param setRotationSetting - sets rotationSetting
+ * @param translationSetting - translation setting (if any) for the camera
+ * @param setTranslationSetting - sets translationSetting
  * @returns Object containing scene control refs and functions.
  */
 const useThreeViewport = (
@@ -135,7 +160,6 @@ const useThreeViewport = (
     setTranslationSetting,
   );
 
-  // keep refs up-to-date when parents pass new values
   useEffect(() => {
     rotationSettingRef.current = rotationSetting;
   }, [rotationSetting]);
@@ -151,6 +175,13 @@ const useThreeViewport = (
   useEffect(() => {
     setTranslationSettingRef.current = setTranslationSetting;
   }, [setTranslationSetting]);
+
+  /**
+   * Returns number of unique vertices of a 3D model (does not double count for vertices that
+   * make up more than one edge)
+   * @param geometry of the .glb file
+   * @returns the number of unique vertices
+   */
   function countUniqueVertices(geometry: THREE.BufferGeometry) {
     const pos = geometry.attributes.position;
     const unique = new Set<string>();
@@ -167,8 +198,7 @@ const useThreeViewport = (
   }
 
   /**
-   * Initialization effect — runs once on mount.
-   * Does NOT reference reactive props directly (uses refs when runtime access needed).
+   * Initialization
    */
   useEffect(() => {
     if (!containerRef.current || !modelPath) return;
@@ -218,6 +248,7 @@ const useThreeViewport = (
     scene.add(ground);
 
     // --- Input handlers (use refs inside handlers) ---
+
     const handleMouseDown = (event: MouseEvent) => {
       if (!containerRef.current?.contains(event.target as Node)) return;
       isDragging = true;
@@ -232,7 +263,6 @@ const useThreeViewport = (
       scene.rotation.y += deltaX * sensitivity;
       scene.rotation.x += deltaY * sensitivity;
 
-      // write back to parent if setter exists (via ref)
       if (setRotationSettingRef.current) {
         setRotationSettingRef.current([scene.rotation.x, scene.rotation.y, scene.rotation.z]);
       }
@@ -253,7 +283,6 @@ const useThreeViewport = (
       keysPressed.current[e.key] = false;
     };
 
-    // wheel/zoom handler uses cameraRef + setterRef
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
       const camera = cameraRef.current;
@@ -352,7 +381,9 @@ const useThreeViewport = (
       };
     });
 
-    // --- Resize handler ---
+    /**
+     * Handles container resizing
+     */
     const handleResize = () => {
       if (!containerRef.current) return;
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
@@ -361,8 +392,11 @@ const useThreeViewport = (
     };
     window.addEventListener('resize', handleResize);
 
-    // --- Animation loop ---
     let stopped = false;
+
+    /**
+     * Animation loop
+     */
     const animate = () => {
       if (stopped) return;
       requestAnimationFrame(animate);
@@ -390,13 +424,13 @@ const useThreeViewport = (
         }
       }
       if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
-        cam.position.addScaledVector(right, -moveSpeed);
+        cam.position.addScaledVector(right, moveSpeed);
         if (setTranslationSettingRef.current) {
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
       if (keysPressed.current.d || keysPressed.current.ArrowRight) {
-        cam.position.addScaledVector(right, moveSpeed);
+        cam.position.addScaledVector(right, -moveSpeed);
         if (setTranslationSettingRef.current) {
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
@@ -429,7 +463,7 @@ const useThreeViewport = (
           }
         }
         if (keysPressed.current.a) {
-          sceneCur.rotation.y += rotateSpeed;
+          sceneCur.rotation.y -= rotateSpeed;
           if (setRotationSettingRef.current) {
             setRotationSettingRef.current([
               sceneCur.rotation.x,
@@ -439,7 +473,7 @@ const useThreeViewport = (
           }
         }
         if (keysPressed.current.d) {
-          sceneCur.rotation.y -= rotateSpeed;
+          sceneCur.rotation.y += rotateSpeed;
           if (setRotationSettingRef.current) {
             setRotationSettingRef.current([
               sceneCur.rotation.x,
@@ -455,7 +489,9 @@ const useThreeViewport = (
 
     animate();
 
-    // cleanup
+    /**
+     * Cleanup
+     */
     return () => {
       stopped = true;
       window.removeEventListener('resize', handleResize);
@@ -593,7 +629,9 @@ const useThreeViewport = (
     };
   }, [modelPath]);
 
-  // Lightweight effect: if parent changes rotationSetting prop, apply it to the scene immediately.
+  /**
+   * Updates scene rotation if rotationSetting updates
+   */
   useEffect(() => {
     if (!rotationSetting) return;
     const scene = sceneRef.current;
@@ -602,7 +640,9 @@ const useThreeViewport = (
     scene.rotation.set(rotationSetting[0], rotationSetting[1], rotationSetting[2]);
   }, [rotationSetting]);
 
-  // Lightweight effect: if parent changes translationSetting prop, apply it to the camera immediately.
+  /**
+   * Updates camera position if translationSetting updates
+   */
   useEffect(() => {
     if (!translationSetting) return;
     const camera = cameraRef.current;

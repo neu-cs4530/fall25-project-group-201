@@ -67,3 +67,60 @@ export const addComment = async (
     return { error: `Error when adding comment: ${(error as Error).message}` };
   }
 };
+
+export const downloadCommentMedia = async (id: string): Promise<string | { error: string }> => {
+  try {
+    const comment = await CommentModel.findById(id);
+
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+
+    if (comment.mediaPath === undefined) {
+      throw new Error('No media to download');
+    }
+
+    if (comment.permitDownload === undefined || !comment.permitDownload) {
+      throw new Error('Downloads are not permitted');
+    }
+
+    return comment.mediaPath;
+  } catch (error) {
+    return { error: 'Error when downloading comment media' };
+  }
+};
+
+export const toggleCommentMediaPermission = async (
+  id: string,
+  username: string,
+): Promise<boolean | { error: string }> => {
+  try {
+    const comment = await CommentModel.findById(id);
+
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+
+    if (comment.commentBy !== username) {
+      throw new Error('Only the commment asker can change download permissions.');
+    }
+
+    if (comment.mediaPath === undefined || comment.permitDownload === undefined) {
+      throw new Error('No media found to change permissions for.');
+    }
+
+    const updatedComment: Comment | null = await CommentModel.findByIdAndUpdate(
+      { _id: id },
+      { permitDownload: !comment.permitDownload },
+      { new: true },
+    );
+
+    if (!updatedComment || updatedComment.permitDownload === undefined) {
+      throw new Error('Failed to update commment permissions');
+    }
+
+    return updatedComment.permitDownload;
+  } catch {
+    return { error: 'Error when toggling commment media download permissions' };
+  }
+};

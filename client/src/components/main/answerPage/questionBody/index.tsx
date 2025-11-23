@@ -4,6 +4,9 @@ import ThreeViewport from '../../threeViewport';
 import './index.css';
 import preprocessCameraRefs from '../../cameraRef/CameraRefUtils';
 import { Download } from 'lucide-react';
+import { getQuestionMedia } from '../../../../services/questionService';
+import useUserContext from '../../../../hooks/useUserContext';
+import useAnswerPage from '../../../../hooks/useAnswerPage';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -16,6 +19,7 @@ import { Download } from 'lucide-react';
  * - mediaPath: The file path of the uploaded media file.
  */
 interface QuestionBodyProps {
+  qid: string;
   views: number;
   text: string;
   askby: string;
@@ -29,14 +33,21 @@ interface QuestionBodyProps {
   mediaSize?: string;
 }
 
-const handleDownload = (mediaSize: string, extension: string) => {
+const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
   const confirmed = window.confirm(
     `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
   );
   if (!confirmed) return;
 
-  {
-    /* Logic for downloading the file */
+  try {
+    const mediaPath = await getQuestionMedia(qid);
+
+    const link = document.createElement('a');
+    link.href = mediaPath;
+    link.download = `file.${extension}`;
+    link.click();
+  } catch (error) {
+    window.alert('Something went wrong with downloading the file');
   }
 };
 
@@ -59,6 +70,7 @@ function getExtension(path: string): string {
  * @param mediaUrl Url to the attached media
  */
 const QuestionBody = ({
+  qid,
   views,
   text,
   askby,
@@ -71,6 +83,7 @@ const QuestionBody = ({
   setTranslationSetting,
   mediaSize,
 }: QuestionBodyProps) => {
+  const { user } = useUserContext();
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
   const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
@@ -78,6 +91,8 @@ const QuestionBody = ({
 
   const isVideoUrl = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
+
+  const isAuthor = askby === user.username;
 
   const handleCameraRefClick = (cameraRef: string) => {
     // Remove leading "#camera-" prefix
@@ -107,6 +122,8 @@ const QuestionBody = ({
     }
   };
   let ext: string | undefined = undefined;
+
+  const { downloadQuestionPermission, handleToggleQuestionPermission } = useAnswerPage();
 
   if (mediaPath) {
     ext = getExtension(mediaPath);
@@ -204,18 +221,35 @@ const QuestionBody = ({
         )}
       </div>
 
-      {mediaPath && mediaSize && ext && (
-        <Download
-          size={20}
-          onClick={() => handleDownload(mediaSize, ext)}
-          color='blue'
-          style={{ cursor: 'pointer' }}
-        />
-      )}
-
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
+        {downloadQuestionPermission && mediaPath && mediaSize && ext && (
+          <div className='download-label'>
+            <Download
+              size={20}
+              onClick={() => handleDownload(mediaSize, ext, qid)}
+              color='#007BFF'
+              style={{ cursor: 'pointer' }}
+            />
+            <div>Download 3D model</div>
+          </div>
+        )}
+        {!downloadQuestionPermission && mediaPath && mediaSize && ext && (
+          <div className='download-disabled'>
+            <div>Download disabled</div>
+          </div>
+        )}
+        {isAuthor && mediaPath && (
+          <button
+            type='button'
+            className={`download-permission-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
+            onClick={() => {
+              handleToggleQuestionPermission();
+            }}>
+            {downloadQuestionPermission ? '✓ Downloads Allowed' : '✕ Downloads Off'}
+          </button>
+        )}
       </div>
     </div>
   );

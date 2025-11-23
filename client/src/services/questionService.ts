@@ -106,6 +106,25 @@ const getCommunityQuestionsById = async (
   return res.data;
 };
 
+const getQuestionMedia = async (questionId: string): Promise<string> => {
+  const res = await api.get(`${QUESTION_API_URL}/downloadQuestionMedia/${questionId}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error when downloading question media');
+  }
+
+  return res.data;
+};
+
+const toggleMediaPermission = async (qid: string, username: string): Promise<boolean> => {
+  const data = { qid, username };
+  const res = await api.post(`${QUESTION_API_URL}/toggleMediaPermission`, data);
+  if (res.status !== 200) {
+    throw new Error('Error while upvoting the question');
+  }
+  return res.data;
+};
+
 export {
   getQuestionsByFilter,
   getQuestionById,
@@ -113,4 +132,6 @@ export {
   upvoteQuestion,
   downvoteQuestion,
   getCommunityQuestionsById,
+  getQuestionMedia,
+  toggleMediaPermission,
 };

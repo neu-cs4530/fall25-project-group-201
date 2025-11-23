@@ -4,6 +4,7 @@ import useUserContext from '../../../../hooks/useUserContext';
 import ThreeViewport from '../../threeViewport';
 import useNewGalleryPost from '../../../../hooks/useNewGalleryPost';
 import { GALLERY_TAGS, GalleryTag } from '../../../../types/galleryTags';
+import PermissionCheckbox from '../../baseComponents/permissionCheckbox';
 
 /**
  * Component to display a form for creating a new gallery post.
@@ -33,6 +34,8 @@ const NewGalleryPostPage = () => {
     handleThumbnailFileChange,
     handleInputChange,
     toggleTag,
+    downloadPermission,
+    setDownloadPermission,
   } = useNewGalleryPost();
   const { user: currentUser } = useUserContext();
   const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
@@ -249,6 +252,10 @@ const NewGalleryPostPage = () => {
                       setTranslationSetting={undefined}
                     />
                   )}
+                  <PermissionCheckbox
+                    permission={downloadPermission}
+                    setPermission={setDownloadPermission}
+                  />
                 </div>
               </div>
             </>

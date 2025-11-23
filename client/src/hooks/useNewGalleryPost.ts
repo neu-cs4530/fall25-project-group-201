@@ -43,6 +43,7 @@ const useNewGalleryPost = () => {
   const navigate = useNavigate();
   const { user } = useUserContext();
   const { communityID } = useParams<{ communityID: string }>();
+  const [downloadPermission, setDownloadPermission] = useState<boolean>(true);
 
   const [form, setForm] = useState<GalleryFormState>({
     title: '',
@@ -137,6 +138,9 @@ const useNewGalleryPost = () => {
       ...(form.mediaPath ? { mediaSize: form.mediaSize } : {}),
       tags: form.tags,
       ...(form.projectLink ? { link: form.projectLink } : {}),
+      ...(form.mediaPath && form.mediaPath.endsWith('.glb')
+        ? { permitDownload: downloadPermission }
+        : {}),
     };
 
     try {
@@ -226,6 +230,8 @@ const useNewGalleryPost = () => {
     handleThumbnailFileChange,
     handleInputChange,
     toggleTag,
+    downloadPermission,
+    setDownloadPermission,
   };
 };
 

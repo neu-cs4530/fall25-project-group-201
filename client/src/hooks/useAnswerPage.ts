@@ -9,8 +9,8 @@ import {
   DatabaseMedia,
 } from '../types/types';
 import useUserContext from './useUserContext';
-import addComment from '../services/commentService';
-import { getQuestionById } from '../services/questionService';
+import { addComment } from '../services/commentService';
+import { getQuestionById, toggleMediaPermission } from '../services/questionService';
 import mediaService from '../services/mediaService';
 
 /**
@@ -34,6 +34,9 @@ const useAnswerPage = () => {
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
   const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
+  const [downloadQuestionPermission, setDownloadQuestionPermission] = useState<
+    boolean | undefined
+  >();
 
   /**
    * Navigates the user to the "New Answer" page for the current question.
@@ -131,6 +134,19 @@ const useAnswerPage = () => {
     }
   };
 
+  const handleToggleQuestionPermission = async (): Promise<void> => {
+    if (!qid) {
+      return;
+    }
+
+    try {
+      const updatedPermission = await toggleMediaPermission(qid, user.username);
+      setDownloadQuestionPermission(updatedPermission);
+    } catch (error) {
+      window.alert('Something went wrong with changing the download permission');
+    }
+  };
+
   /**
    * Fetches the full question data when the question ID or user changes.
    */
@@ -146,14 +162,14 @@ const useAnswerPage = () => {
       try {
         const res = await getQuestionById(questionID, user.username);
         setQuestion(res || null);
+        setDownloadQuestionPermission(res.permitDownload);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching question:', error);
       }
     };
 
-    // eslint-disable-next-line no-console
-    fetchData().catch(e => console.log(e));
+    fetchData();
   }, [questionID, user.username]);
 
   /**
@@ -264,6 +280,8 @@ const useAnswerPage = () => {
     handleNewAnswer,
     handleAddMedia,
     handleAddMediaError,
+    downloadQuestionPermission,
+    handleToggleQuestionPermission,
   };
 };
 

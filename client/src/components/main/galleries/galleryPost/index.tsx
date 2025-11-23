@@ -4,16 +4,9 @@ import useUserContext from '../../../../hooks/useUserContext';
 import useGalleryPostPage from '../../../../hooks/useGalleryPostPage';
 import ThreeViewport from '../../threeViewport';
 import { Link } from 'react-router-dom';
+import { getGalleryPostMedia } from '../../../../services/galleryService';
 import useRelatedPosts from '../../../../hooks/useRelatedPosts';
 import RelatedPosts from './relatedPosts';
-
-const handleDownload = (mediaSize: string, extension: string) => {
-  const confirmed = window.confirm(
-    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-  );
-  if (!confirmed) return;
-  /* Logic for downloading the file */
-};
 
 /**
  * Component to display a single gallery post from a community gallery.
@@ -40,6 +33,25 @@ const GalleryPostPage = () => {
   const youTubeId = getYouTubeVideoId(url);
   const vimeoId = getVimeoVideoId(url);
   const formatTag = (tag: string) => tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+  const handleDownload = async (mediaSize: string, extension: string, id: string) => {
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
+    if (!confirmed) return;
+
+    try {
+      const mediaPath = await getGalleryPostMedia(id);
+
+      const link = document.createElement('a');
+      link.href = mediaPath;
+      link.download = `file.${extension}`;
+      link.click();
+      await incrementDownloads();
+    } catch (error) {
+      window.alert('Something went wrong with downloading the file');
+    }
+  };
 
   return (
     <div className='galleryPostPage'>
@@ -75,20 +87,25 @@ const GalleryPostPage = () => {
                 <span className='statItem'>
                   <Eye size={20} /> {post.views}
                 </span>
-                {!(youTubeId || vimeoId) && (
-                  <span
-                    className='statItem'
-                    onClick={() => {
-                      incrementDownloads();
-                      window.open(post.media, '_blank');
-                    }}>
+                {post.permitDownload && (
+                  <span className='statItem'>
                     <Download
                       size={20}
-                      onClick={() => handleDownload(post.mediaSize || 'Unknown size', ext!)}
-                      color='blue'
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleDownload(
+                          post.mediaSize || 'undefined size',
+                          ext!,
+                          post._id.toString(),
+                        );
+                      }}
+                      color='#007BFF'
                     />{' '}
                     {post.downloads}
                   </span>
+                )}
+                {!post.permitDownload && (
+                  <span className='statItem download-disabled'>Downloads disabled</span>
                 )}
                 {isAuthor && (
                   <span className='statItem delete' onClick={removePost}>

@@ -40,4 +40,23 @@ const addComment = async (
   return res.data;
 };
 
-export default addComment;
+const getCommentMedia = async (id: string): Promise<string> => {
+  const res = await api.get(`${COMMENT_API_URL}/downloadCommentMedia/${id}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error when downloading comment media');
+  }
+
+  return res.data;
+};
+
+const toggleMediaPermission = async (id: string, username: string): Promise<boolean> => {
+  const data = { id, username };
+  const res = await api.post(`${COMMENT_API_URL}/toggleMediaPermission`, data);
+  if (res.status !== 200) {
+    throw new Error('Error while upvoting the question');
+  }
+  return res.data;
+};
+
+export { addComment, getCommentMedia, toggleMediaPermission };

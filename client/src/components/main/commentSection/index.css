@@ -88,6 +88,9 @@
 .comment-meta {
   font-size: 0.75rem;
   color: #666;
+  display: flex;
+  justify-content: space-between;
+  max-width: 600px;
 }
 
 .comment-media {
@@ -204,4 +207,14 @@
 .media-actions.drag-over {
   border-color: #3b82f6;
   background-color: rgba(59, 130, 246, 0.1);
+}
+
+.download-label {
+  color:#007BFF;
+  display: flex;
+  align-items: center;
+}
+
+.download-disabled {
+  color: gray;
 }
