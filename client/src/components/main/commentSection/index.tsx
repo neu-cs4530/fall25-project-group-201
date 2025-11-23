@@ -86,35 +86,6 @@ const CommentSection = ({
   }
 
   /**
-   * Prompts the user to confirm a file download.
-   *
-   * @param mediaSize - Size of the media file.
-   * @param extension - File extension of the media.
-   */
-  const handleDownload = (mediaSize: string, extension: string) => {
-    const confirmed = window.confirm(
-      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-    );
-    if (!confirmed) return;
-
-    {
-      /* Logic for downloading the file */
-    }
-  };
-
-  /**
-   * Extracts the file extension from a file path.
-   *
-   * @param path - The file path or URL.
-   * @returns string - The file extension in lowercase, or empty string if none found.
-   */
-  function getExtension(path: string): string {
-    const lastDot = path.lastIndexOf('.');
-    if (lastDot === -1) return '';
-    return path.slice(lastDot + 1).toLowerCase();
-  }
-
-  /**
    * Handles the posting of a new comment.
    * Validates input, uploads media if attached, and resets input state on success.
    */
@@ -405,9 +376,6 @@ const CommentSection = ({
                       <Download
                         className='comment-download-icon'
                         size={20}
-                        onClick={() =>
-                          handleDownload(comment.mediaSize!, getExtension(comment.mediaPath!))
-                        }
                         style={{ cursor: 'pointer' }}
                         color='blue'
                       />
