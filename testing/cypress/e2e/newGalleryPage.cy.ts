@@ -5,18 +5,18 @@ import { unescape } from 'cypress/types/lodash';
 
 describe('Cypress tests for Creating a New Gallery Post', function () {
     beforeEach(() => {
-        setupTest();
+        //setupTest();
         auth0Login();
     });
 
     afterEach(() => {
-        teardownTest();
+        //teardownTest();
     });
 
     // Variables for test
     const testUser = 'user234'
 
-    /*it('Creates a new gallery post with image media successfully', function () {
+    it('Creates a new gallery post with image media successfully', function () {
         goToCommunities();
         viewCommunityCard('React Enthusiasts');
         cy.get('.gallery-upload-button').click()
@@ -32,7 +32,6 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
         // Verify the new gallery post exists
         verifyNewGalleryPost(title, testUser, description, tags, mediaFile, link, undefined)
     })
-
     
     it('Creates a new gallery post with video media successfully', function () {
         goToCommunities();
@@ -60,23 +59,16 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
         const description = "This is a test gallery post with 3D media"
         const tags = ['3d art']
         const mediaFile = 'test3DModel.glb'
-        const thumbailMediaFile = 'testImage.jpg'
+        const thumbailMediaFile = 'testThumbnail.jpg'
 
         createNewGalleryPost(title, description, tags, mediaFile, undefined, thumbailMediaFile)
 
         // Verify the new gallery post exists
-        cy.get('.galleryGrid.carouselPage .galleryCard')
-            .last()
-            .click();
-        cy.get('.postInfo').should('exist')
-            .contains('Test gallery post with 3D media')
-        cy.get('.usernameLink').contains('user234')
-        cy.get('.postDescription').contains('This is a test gallery post with 3D media')
-        cy.contains('.tagChip', '3d Art').should('exist');
+        verifyNewGalleryPost(title, testUser, description, tags, mediaFile, undefined, thumbailMediaFile)
         cy.get('.mediaWrapper').should('exist');
         cy.get('.viewport-card').should('exist');
         cy.get('.viewport-canvas').should('exist'); 
-    });*/
+    });
 
     it('Creates a new gallery post with YouTube embed successfully', function () {
         goToCommunities();
@@ -106,7 +98,7 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
         const description = "This is a test gallery post with Vimeo embed"
         const tags = ['3d art']
         const media = 'https://vimeo.com/49384334'
-        const embeddedMedia = 'https://vimeo.com/49384334'
+        const embeddedMedia = 'https://player.vimeo.com/video/49384334'
 
         createNewGalleryPost(title, description, tags, media, undefined, undefined)
 
@@ -116,10 +108,7 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
 })
 
 // previews!! - need to fix related bugs
-// creating new gallery post 
 // error messages if params not entered
-// supports embeds
-// supports png, video, url, and .glb
 // error messages for invalid input
 // check for other errors
 // error if thumbnail not uploaded for glb

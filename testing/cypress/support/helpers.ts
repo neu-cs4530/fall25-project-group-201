@@ -80,7 +80,7 @@ export const createNewGalleryPost = (
 
   const isEmbed = /^https?:\/\//i.test(media);
   if (isEmbed) {
-    cy.get("#embed-text").type("https://www.youtube.com/watch?v=XUwzASyHr4Q")
+    cy.get("#embed-text").type(`${media}`)
   }
 
   cy.get('.submit-btn').click()
@@ -95,9 +95,11 @@ export const verifyNewGalleryPost = (
   link?: string,
   thumbailMediaFile?: string
 ) => {
-  cy.get('.galleryGrid.carouselPage .galleryCard')
-      .last()
-      .click();
+  const dataCy = `gallery-card-${title.replace(/\s+/g, '-').toLowerCase()}`;
+  
+  cy.get(`[data-cy="${dataCy}"]`, { timeout: 10000 })
+    .should('exist')
+    .click();
   cy.get('.postInfo').should('exist')
       .contains(title)
   cy.get('.usernameLink').contains(user)
@@ -128,8 +130,8 @@ export const verifyNewGalleryPost = (
 
   const isEmbed = /^https?:\/\//i.test(media);
   if (isEmbed) {
-    cy.get('.mediaWrapper iframe').last()
-      .should('have.attr', 'src', `${media}`)
+    cy.get('iframe')
+    .should('have.attr', 'src', `${media}`);
   }
 };
 
