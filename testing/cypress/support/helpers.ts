@@ -46,41 +46,51 @@ export const auth0Login = () => {
 }
 
 export const createNewGalleryPost = (
-  title: string,
-  description: string,
-  tags: string[],
-  media: string,
+  title?: string,
+  description?: string,
+  tags?: string[],
+  media?: string,
   link?: string,
   thumbailMediaFile?: string
 ) => {
-  cy.get("#title").type(title);
-  cy.get("#text-project-description").type(description);
+  if (title) {
+    cy.get("#title").type(title);
+  }
+  
+  if (description) {
+    cy.get("#text-project-description").type(description);
+  }
+  
 
-  tags.forEach(tag => {
-    cy.contains('label.tag-checkbox', tag).click();
-  });
-
+  if (tags) {
+    tags.forEach(tag => {
+      cy.contains('label.tag-checkbox', tag).click();
+    });
+  }
+  
   if (link) {
     cy.get('#projectLink').type(link);
   }
 
-  const fileExts = ['.png', '.jpg', '.jpeg', '.mp4', '.mov', '.glb'];
-  if (fileExts.some(ext => media.endsWith(ext))) {
-    cy.get('.file-upload').click()
-    cy.get('input[type="file"]').should('exist')
-        .selectFile(`cypress/fixtures/${media}`, { force: true });
-  }
+  if (media) {
+    const fileExts = ['.png', '.jpg', '.jpeg', '.mp4', '.mov', '.glb'];
+    if (fileExts.some(ext => media.endsWith(ext))) {
+      cy.get('.file-upload').click()
+      cy.get('input[type="file"]').should('exist')
+          .selectFile(`cypress/fixtures/${media}`, { force: true });
+    }
 
-  if (thumbailMediaFile) {
-    cy.get('[data-cy="thumbnail-file"]').click()
-    cy.get('[data-cy="thumbnail-file"] input[type="file"]')
-      .should('exist')
-      .selectFile(`cypress/fixtures/${thumbailMediaFile}`, { force: true });
-  }
+    if (thumbailMediaFile) {
+      cy.get('[data-cy="thumbnail-file"]').click()
+      cy.get('[data-cy="thumbnail-file"] input[type="file"]')
+        .should('exist')
+        .selectFile(`cypress/fixtures/${thumbailMediaFile}`, { force: true });
+    }
 
-  const isEmbed = /^https?:\/\//i.test(media);
-  if (isEmbed) {
-    cy.get("#embed-text").type(`${media}`)
+    const isEmbed = /^https?:\/\//i.test(media);
+    if (isEmbed) {
+      cy.get("#embed-text").type(`${media}`)
+    }
   }
 
   cy.get('.submit-btn').click()

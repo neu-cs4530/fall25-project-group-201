@@ -32,7 +32,68 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
         // Verify the new gallery post exists
         verifyNewGalleryPost(title, testUser, description, tags, mediaFile, link, undefined)
     })
-    
+
+    it('Error message shown if no title entered in gallery post form', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click()
+
+        // Fill form to create a new gallery post
+        const description = "This is a test gallery post with image media"
+        const tags = ['3d art', 'modeling']
+        const link = 'https://www.youtube.com/watch?v=N88g_IGGHRg'
+        const mediaFile = 'testImage.jpg'
+        createNewGalleryPost(undefined, description, tags, mediaFile, link, undefined)
+
+        cy.get('.error').contains('Project title cannot be empty')
+    })
+
+    it('Error message shown if no description entered in gallery post form', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click()
+
+        // Fill form to create a new gallery post
+        const title = "Test gallery post with image media"
+        const tags = ['3d art', 'modeling']
+        const link = 'https://www.youtube.com/watch?v=N88g_IGGHRg'
+        const mediaFile = 'testImage.jpg'
+        createNewGalleryPost(title, undefined, tags, mediaFile, link, undefined)
+
+        cy.get('.error').contains('Project description cannot be empty')
+    })
+
+    it('Error message shown if no media entered in gallery post form', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click()
+
+        // Fill form to create a new gallery post
+        const title = "Test gallery post with image media"
+        const description = "This is a test gallery post with image media"
+        const tags = ['3d art', 'modeling']
+        const link = 'https://www.youtube.com/watch?v=N88g_IGGHRg'
+        createNewGalleryPost(title, description, tags, undefined, link, undefined)
+
+        cy.get('.error').contains('Media file or link must be uploaded')
+    })
+
+    it('Error message shown if .glb file selected and no thumbnail media selected in gallery post form', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click()
+
+        // Fill form to create a new gallery post
+        const title = "Test gallery post with image media"
+        const description = "This is a test gallery post with image media"
+        const tags = ['3d art', 'modeling']
+        const link = 'https://www.youtube.com/watch?v=N88g_IGGHRg'
+        const mediaFile = 'test3DModel.glb'
+        createNewGalleryPost(title, description, tags, mediaFile, link), undefined
+
+        cy.get('.error').contains('You must upload a thumbnail for 3D models')
+    })
+
     it('Creates a new gallery post with video media successfully', function () {
         goToCommunities();
         viewCommunityCard('React Enthusiasts');
@@ -108,8 +169,6 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
 })
 
 // previews!! - need to fix related bugs
-// error messages if params not entered
-// error messages for invalid input
+// error messages for invalid input - webp file
 // check for other errors
-// error if thumbnail not uploaded for glb
 // check thumbnail media in gallery component
