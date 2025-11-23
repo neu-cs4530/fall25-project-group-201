@@ -6,6 +6,7 @@ export default defineConfig({
   // the e2e or component configuration
   e2e: {
     baseUrl: 'http://localhost:4530',
+    fixturesFolder: 'cypress/fixtures',
     setupNodeEvents(on, config) {
       require("@cypress/code-coverage/task")(on, config);
       config.env = {
@@ -20,8 +21,8 @@ export default defineConfig({
     },
   },
   env: {
-    auth0_username: "user123",
-    auth0_password: "securePass123!",
+    auth0_username: "user234",
+    auth0_password: "strongP@ss234",
     auth0_domain: "dev-yipqv2u1k7drpppn.us.auth0.com",
     auth0_audience: "https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/",
     auth0_scope: "openid profile read:posts write:posts",
