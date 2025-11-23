@@ -138,7 +138,9 @@ const useNewGalleryPost = () => {
       ...(form.mediaPath ? { mediaSize: form.mediaSize } : {}),
       tags: form.tags,
       ...(form.projectLink ? { link: form.projectLink } : {}),
-      ...(form.mediaPath && form.mediaPath.endsWith('.glb') ? { permitDownload: downloadPermission } : {}),
+      ...(form.mediaPath && form.mediaPath.endsWith('.glb')
+        ? { permitDownload: downloadPermission }
+        : {}),
     };
 
     try {

@@ -79,37 +79,41 @@ const GalleryPostPage = () => {
                 <span className='postedAt'>• {new Date(post.postedAt).toLocaleString()}</span>
               </div>
 
-          <div className='postStats'>
-            <span className='statItem' onClick={toggleLike}>
-              <Heart size={20} color={post.likes.includes(user.username) ? 'red' : 'gray'} />{' '}
-              {post.likes.length}
-            </span>
-            <span className='statItem'>
-              <Eye size={20} /> {post.views}
-            </span>
-            {post.permitDownload && (
-              <span className='statItem'>
-                <Download
-                  size={20}
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleDownload(post.mediaSize || 'undefined size', ext!, post._id.toString());
-                  }}
-                  color='#007BFF'
-                />{' '}
-                {post.downloads}
-              </span>
-            )}
-            {!post.permitDownload && (
-              <span className='statItem download-disabled'>Downloads disabled</span>
-            )}
-            {isAuthor && (
-              <span className='statItem delete' onClick={removePost}>
-                <Trash2 size={20} color='red' />
-              </span>
-            )}
-          </div>
-        </div>
+              <div className='postStats'>
+                <span className='statItem' onClick={toggleLike}>
+                  <Heart size={20} color={post.likes.includes(user.username) ? 'red' : 'gray'} />{' '}
+                  {post.likes.length}
+                </span>
+                <span className='statItem'>
+                  <Eye size={20} /> {post.views}
+                </span>
+                {post.permitDownload && (
+                  <span className='statItem'>
+                    <Download
+                      size={20}
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleDownload(
+                          post.mediaSize || 'undefined size',
+                          ext!,
+                          post._id.toString(),
+                        );
+                      }}
+                      color='#007BFF'
+                    />{' '}
+                    {post.downloads}
+                  </span>
+                )}
+                {!post.permitDownload && (
+                  <span className='statItem download-disabled'>Downloads disabled</span>
+                )}
+                {isAuthor && (
+                  <span className='statItem delete' onClick={removePost}>
+                    <Trash2 size={20} color='red' />
+                  </span>
+                )}
+              </div>
+            </div>
 
             {post.tags && post.tags.length > 0 && (
               <div className='postTags'>
