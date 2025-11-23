@@ -199,3 +199,7 @@ textarea {
   border-color: #3b82f6;
   background-color: #f0f8ff;
 }
+
+.form-check {
+  padding-top: 10px;
+}

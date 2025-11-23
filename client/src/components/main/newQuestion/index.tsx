@@ -3,6 +3,7 @@ import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import ThreeViewport from '../threeViewport';
+import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 
 /**
  * NewQuestion component allows users to submit a new question with:
@@ -40,12 +41,15 @@ const NewQuestion = () => {
     handleFileChange,
     handleDrop,
     handleDragOver,
+    downloadPermission,
+    setDownloadPermission,
   } = useNewQuestion();
 
   const { user: currentUser } = useUserContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
   const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
+  const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
 
   /**
    * Handles changes to the media URL input.
@@ -94,6 +98,8 @@ const NewQuestion = () => {
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const tempFileUrl = URL.createObjectURL(file);
+    setPreviewFilePath(tempFileUrl);
 
     setUploadedMediaPath(undefined);
     setMediaSize(undefined);
@@ -225,6 +231,41 @@ const NewQuestion = () => {
               style={{ display: 'none' }}
             />
           </label>
+
+          {(mediaUrl || mediaPath) && (
+            <button
+              type='button'
+              className='delete-media-btn'
+              onClick={async () => {
+                const isEmbedded = mediaUrl && !mediaPath;
+                const isGLB = mediaPath && mediaPath.endsWith('.glb');
+                const isUploadedImgOrVid = mediaPath && !mediaPath.endsWith('.glb');
+
+                if (isEmbedded) {
+                  setMediaUrl('');
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                } else if (isGLB) {
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                } else if (isUploadedImgOrVid) {
+                  try {
+                    await fetch('/api/media/delete', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ filepathLocation: mediaPath }),
+                    });
+                  } catch (err) {
+                    /* eslint-disable no-console */
+                    console.warn('Optional: could not delete file on server', err);
+                  }
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                }
+              }}>
+              Remove
+            </button>
+          )}
         </div>
 
         {mediaErr && <p className='error'>{mediaErr}</p>}
@@ -257,16 +298,6 @@ const NewQuestion = () => {
                   );
                 })()
               )}
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={() => {
-                  setMediaUrl('');
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
             </div>
           )}
 
@@ -275,22 +306,17 @@ const NewQuestion = () => {
             <div className='model-preview'>
               <p>3D Model Preview:</p>
               <ThreeViewport
-                key={mediaPath}
-                modelPath={mediaPath.toString()}
+                key={previewFilePath}
+                modelPath={previewFilePath}
                 rotationSetting={rotationSetting}
                 setRotationSetting={setRotationSetting}
                 translationSetting={translationSetting}
                 setTranslationSetting={setTranslationSetting}
               />
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={() => {
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
+              <PermissionCheckbox
+                permission={downloadPermission}
+                setPermission={setDownloadPermission}
+              />
             </div>
           )}
 
@@ -300,33 +326,13 @@ const NewQuestion = () => {
               <p>File Preview:</p>
 
               {mediaPath.match(/\.(jpeg|jpg|png|gif)$/i) ? (
-                <img src={mediaPath} alt='Uploaded media' />
+                <img src={previewFilePath} alt='Uploaded media' />
               ) : mediaPath.match(/\.(mp4|webm|ogg)$/i) ? (
                 <video controls>
-                  <source src={mediaPath} type='video/mp4' />
+                  <source src={previewFilePath} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>
               ) : null}
-
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={async () => {
-                  try {
-                    await fetch('/api/media/delete', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ filepathLocation: mediaPath }),
-                    });
-                  } catch (err) {
-                    /* eslint-disable no-console */
-                    console.warn('Optional: could not delete file on server', err);
-                  }
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
             </div>
           )}
         </div>

@@ -31,6 +31,7 @@ export interface GalleryPost {
   mediaSize?: string;
   tags: GalleryTag[];
   link?: string;
+  permitDownload?: boolean;
 }
 
 /**
@@ -65,6 +66,7 @@ export interface CreateGalleryPostRequest extends Request {
     mediaSize?: string;
     tags: GalleryTag[];
     link?: string;
+    permitDownload?: boolean;
   };
 }
 
@@ -77,5 +79,11 @@ export interface GalleryPostRequest extends Request {
   };
   query: {
     username: string;
+  };
+}
+
+export interface DownloadGalleryPostMediaRequest extends Request {
+  params: {
+    galleryPostID: string;
   };
 }

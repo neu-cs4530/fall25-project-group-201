@@ -576,10 +576,12 @@ const ProfileSettings: React.FC = () => {
                         if (!editMode) {
                           navigate(`/user/${userData.username}/portfolio/${index}`, {
                             state: {
-                              title: item.title, // Now we have title!
-                              description: item.description, // And description!
+                              title: item.title,
+                              description: item.description,
                               mediaUrl: item.mediaUrl,
                               thumbnailUrl: item.thumbnailUrl,
+                              views: item.views || [],
+                              likes: item.likes || [],
                             },
                           });
                         }
@@ -632,9 +634,8 @@ const ProfileSettings: React.FC = () => {
                           alt={item.title}
                           style={{
                             width: '100%',
-                            height: '200px',
+                            height: '100%',
                             objectFit: 'cover',
-                            borderRadius: '8px',
                           }}
                         />
                       ) : isGlbModel ? (
@@ -649,13 +650,12 @@ const ProfileSettings: React.FC = () => {
                           alt={item.title}
                           style={{
                             width: '100%',
-                            height: '200px',
+                            height: '100%',
                             objectFit: 'cover',
                             borderRadius: '8px',
                           }}
                         />
                       ) : isVideo ? (
-                        // Video without thumbnail - show play icon
                         <div
                           style={{
                             width: '100%',

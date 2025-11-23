@@ -34,6 +34,8 @@ export interface PortfolioItem {
   mediaUrl: string;
   thumbnailUrl?: string;
   uploadedAt: Date;
+  views?: string[];
+  likes?: string[];
 }
 
 /**
