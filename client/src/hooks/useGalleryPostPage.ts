@@ -90,7 +90,6 @@ const useGalleryPostPage = () => {
     try {
       await incrementGalleryPostDownloads(post._id.toString(), user.username);
       await fetchPost();
-      window.open(post.media, '_blank');
     } catch {
       setError('Failed to increment downloads.');
     }

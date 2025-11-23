@@ -77,6 +77,10 @@ const galleryPostSchema: Schema = new Schema(
       required: false,
       default: '',
     },
+    permitDownload: {
+      type: Boolean,
+      default: true,
+    },
   },
   { collection: 'GalleryPost' },
 );

@@ -38,6 +38,7 @@ const AnswerPage = () => {
       <VoteComponent question={question} />
       <AnswerHeader ansCount={question.answers.length} title={question.title} />
       <QuestionBody
+        qid={question._id.toString()}
         views={question.views.length}
         text={question.text}
         askby={question.askedBy}

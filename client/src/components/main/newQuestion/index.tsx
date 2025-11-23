@@ -3,6 +3,7 @@ import useNewQuestion from '../../../hooks/useNewQuestion';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import ThreeViewport from '../threeViewport';
+import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 
 /**
  * NewQuestion component allows users to submit a new question with:
@@ -38,6 +39,8 @@ const NewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
+    downloadPermission,
+    setDownloadPermission,
   } = useNewQuestion();
 
   const { user: currentUser } = useUserContext();
@@ -226,6 +229,41 @@ const NewQuestion = () => {
               style={{ display: 'none' }}
             />
           </label>
+
+          {(mediaUrl || mediaPath) && (
+            <button
+              type='button'
+              className='delete-media-btn'
+              onClick={async () => {
+                const isEmbedded = mediaUrl && !mediaPath;
+                const isGLB = mediaPath && mediaPath.endsWith('.glb');
+                const isUploadedImgOrVid = mediaPath && !mediaPath.endsWith('.glb');
+
+                if (isEmbedded) {
+                  setMediaUrl('');
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                } else if (isGLB) {
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                } else if (isUploadedImgOrVid) {
+                  try {
+                    await fetch('/api/media/delete', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ filepathLocation: mediaPath }),
+                    });
+                  } catch (err) {
+                    /* eslint-disable no-console */
+                    console.warn('Optional: could not delete file on server', err);
+                  }
+                  setUploadedMediaPath(undefined);
+                  setMediaSize(undefined);
+                }
+              }}>
+              Remove
+            </button>
+          )}
         </div>
 
         {mediaErr && <p className='error'>{mediaErr}</p>}
@@ -258,16 +296,6 @@ const NewQuestion = () => {
                   );
                 })()
               )}
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={() => {
-                  setMediaUrl('');
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
             </div>
           )}
 
@@ -283,15 +311,10 @@ const NewQuestion = () => {
                 translationSetting={translationSetting}
                 setTranslationSetting={setTranslationSetting}
               />
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={() => {
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
+              <PermissionCheckbox
+                permission={downloadPermission}
+                setPermission={setDownloadPermission}
+              />
             </div>
           )}
 
@@ -308,26 +331,6 @@ const NewQuestion = () => {
                   Your browser does not support the video tag.
                 </video>
               ) : null}
-
-              <button
-                type='button'
-                className='delete-media-btn'
-                onClick={async () => {
-                  try {
-                    await fetch('/api/media/delete', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ filepathLocation: mediaPath }),
-                    });
-                  } catch (err) {
-                    /* eslint-disable no-console */
-                    console.warn('Optional: could not delete file on server', err);
-                  }
-                  setUploadedMediaPath(undefined);
-                  setMediaSize(undefined);
-                }}>
-                Remove
-              </button>
             </div>
           )}
         </div>

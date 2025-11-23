@@ -28,6 +28,7 @@ const useNewQuestion = () => {
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
   const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
+  const [downloadPermission, setDownloadPermission] = useState<boolean>(true);
 
   const [communityList, setCommunityList] = useState<DatabaseCommunity[]>([]);
 
@@ -110,6 +111,7 @@ const useNewQuestion = () => {
       ...(mediaUrl ? { mediaUrl } : {}),
       ...(mediaPath ? { mediaPath } : {}),
       ...(mediaSize ? { mediaSize } : {}),
+      ...(mediaPath ? { permitDownload: downloadPermission } : {}),
     };
 
     try {
@@ -180,6 +182,8 @@ const useNewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
+    downloadPermission,
+    setDownloadPermission,
   };
 };
 
