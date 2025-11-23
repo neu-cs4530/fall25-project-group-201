@@ -215,7 +215,11 @@ const CommentSection = ({
       );
     }
 
-    return <div className='comment-media' id='comment-media'>Error embedding URL: {text}</div>;
+    return (
+      <div className='comment-media' id='comment-media'>
+        Error embedding URL: {text}
+      </div>
+    );
   };
 
   /**
@@ -249,7 +253,7 @@ const CommentSection = ({
       </button>
 
       {showComments && (
-        <div className='comments-container' id='comments-container'> 
+        <div className='comments-container' id='comments-container'>
           <div className='add-comment'>
             <div className='input-row'>
               <textarea
@@ -259,7 +263,10 @@ const CommentSection = ({
                 className='comment-textarea'
                 id='comment-textarea'
               />
-              <button className='add-comment-button' id='add-comment-button' onClick={handleAddCommentClick}>
+              <button
+                className='add-comment-button'
+                id='add-comment-button'
+                onClick={handleAddCommentClick}>
                 Post
               </button>
             </div>
