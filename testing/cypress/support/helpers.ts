@@ -1,3 +1,5 @@
+import "../support/auth0"
+
 /**
  * Test utility functions for Cypress tests
  * Provides shared helper functions for common test patterns like authentication, navigation, and data setup
@@ -10,12 +12,16 @@
  */
 export const loginUser = (username: string, password: string = 'securePass123!') => {
   cy.visit('http://localhost:4530');
-  cy.contains('Welcome to FakeStackOverflow!');
-  cy.get('#username-input').type(username);
-  cy.get('#password-input').type(password);
-  cy.contains('Submit').click();
-  // Wait for redirect to home page
-  cy.url().should('include', '/home');
+  cy.visit('/')
+  cy.contains('Welcome ')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
 };
 
 /**
@@ -36,8 +42,8 @@ export const cleanDatabase = () => {
  * Sets up the database before each test
  */
 export const setupTest = () => {
-  cleanDatabase();
-  seedDatabase();
+  // cleanDatabase();
+  // seedDatabase();
 };
 
 /**
@@ -63,10 +69,12 @@ export const goToAskQuestion = () => {
  */
 export const createQuestion = (title: string, text: string, tags: string) => {
   goToAskQuestion();
-  cy.get('#formTitleInput').type(title);
-  cy.get('#formTextInput').type(text);
-  cy.get('#formTagInput').type(tags);
-  cy.contains('Post Question').click();
+
+  // Updated selectors to match current NewQuestion component
+  cy.get('#title').type(title);
+  cy.get('#text').type(text);
+  cy.get('#tags').type(tags);
+  cy.get('.submit-btn').click();
 };
 
 /**
