@@ -123,7 +123,7 @@ const toggleMediaPermission = async (qid: string, username: string): Promise<boo
     throw new Error('Error while upvoting the question');
   }
   return res.data;
-}
+};
 
 export {
   getQuestionsByFilter,

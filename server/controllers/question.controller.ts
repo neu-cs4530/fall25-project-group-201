@@ -262,9 +262,12 @@ const questionController = (socket: FakeSOSocket) => {
     }
   };
 
-  const toggleQuestionMediaPermissionRoute = async (req: ToggleQuestionMediaPermissionRequest, res: Response) => {
+  const toggleQuestionMediaPermissionRoute = async (
+    req: ToggleQuestionMediaPermissionRequest,
+    res: Response,
+  ) => {
     const { qid, username } = req.body;
-  
+
     try {
       const updatedPermission = await toggleQuestionMediaPermission(qid, username);
       res.json(updatedPermission);
@@ -275,7 +278,7 @@ const questionController = (socket: FakeSOSocket) => {
         res.status(500).send(`Error while toggling media permission from question`);
       }
     }
-  }
+  };
 
   // add appropriate HTTP verbs and their endpoints to the router
   router.get('/getQuestion', getQuestionsByFilter);

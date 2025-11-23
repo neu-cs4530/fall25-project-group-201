@@ -57,10 +57,6 @@ const toggleMediaPermission = async (id: string, username: string): Promise<bool
     throw new Error('Error while upvoting the question');
   }
   return res.data;
-}
+};
 
-export { 
-  addComment, 
-  getCommentMedia, 
-  toggleMediaPermission,
- };
+export { addComment, getCommentMedia, toggleMediaPermission };

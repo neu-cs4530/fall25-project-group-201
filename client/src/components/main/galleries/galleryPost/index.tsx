@@ -83,7 +83,7 @@ const GalleryPostPage = () => {
             <span className='statItem'>
               <Eye size={20} /> {post.views}
             </span>
-            {is3D && post.permitDownload && (
+            {post.permitDownload && (
               <span className='statItem'>
                 <Download
                   size={20}

@@ -304,7 +304,10 @@ export const downloadQuestionMedia = async (qid: string): Promise<string | { err
   }
 };
 
-export const toggleQuestionMediaPermission = async (qid: string, username: string): Promise<boolean | { error: string }> => {
+export const toggleQuestionMediaPermission = async (
+  qid: string,
+  username: string,
+): Promise<boolean | { error: string }> => {
   try {
     const result: DatabaseQuestion | null = await QuestionModel.findById(qid);
 
@@ -320,18 +323,18 @@ export const toggleQuestionMediaPermission = async (qid: string, username: strin
       throw new Error('No media found to change permissions for.');
     }
 
-    let updatedQuestion: DatabaseQuestion | null = await QuestionModel.findByIdAndUpdate(
+    const updatedQuestion: DatabaseQuestion | null = await QuestionModel.findByIdAndUpdate(
       { _id: qid },
       { permitDownload: !result.permitDownload },
       { new: true },
     );
 
     if (!updatedQuestion || updatedQuestion.permitDownload === undefined) {
-      throw new Error('Failed to update question permissions')
+      throw new Error('Failed to update question permissions');
     }
 
     return updatedQuestion.permitDownload;
   } catch {
     return { error: 'Error when toggling question media download permissions:' };
   }
-}
+};

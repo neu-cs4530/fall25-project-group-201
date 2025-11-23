@@ -6,7 +6,6 @@ import { Download } from 'lucide-react';
 import { getQuestionMedia } from '../../../../services/questionService';
 import useUserContext from '../../../../hooks/useUserContext';
 import useAnswerPage from '../../../../hooks/useAnswerPage';
-import { useState } from 'react';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -88,7 +87,7 @@ const QuestionBody = ({
 
   let ext: string | undefined = undefined;
 
-  const {downloadQuestionPermission, handleToggleQuestionPermission } = useAnswerPage();
+  const { downloadQuestionPermission, handleToggleQuestionPermission } = useAnswerPage();
 
   if (mediaPath) {
     ext = getExtension(mediaPath);
@@ -168,12 +167,13 @@ const QuestionBody = ({
             <div>Download disabled</div>
           </div>
         )}
-        {(isAuthor && mediaPath) && (
-          <button 
-            type="button" 
+        {isAuthor && mediaPath && (
+          <button
+            type='button'
             className={`download-permission-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
-            onClick={() => {handleToggleQuestionPermission();}}
-          >
+            onClick={() => {
+              handleToggleQuestionPermission();
+            }}>
             {downloadQuestionPermission ? '✓ Downloads Allowed' : '✕ Downloads Off'}
           </button>
         )}

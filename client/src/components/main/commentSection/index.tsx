@@ -7,9 +7,7 @@ import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
-import { Download } from 'lucide-react';
 import PermissionCheckbox from '../baseComponents/permissionCheckbox';
-import { getCommentMedia } from '../../../services/commentService';
 import CommentPermissionButton from './commentPermissionButton';
 
 /**
@@ -322,7 +320,7 @@ const CommentSection = ({
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
                     <div className='download-label'>
-                      <CommentPermissionButton comment={comment}/>
+                      <CommentPermissionButton comment={comment} />
                     </div>
                   </small>
                 </li>

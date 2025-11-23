@@ -34,7 +34,9 @@ const useAnswerPage = () => {
   const [questionID, setQuestionID] = useState<string>(qid || '');
   const [question, setQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
   const [handleAddMediaError, setHandleAddMediaError] = useState<string | null>(null);
-  const [downloadQuestionPermission, setDownloadQuestionPermission] = useState<boolean | undefined>();
+  const [downloadQuestionPermission, setDownloadQuestionPermission] = useState<
+    boolean | undefined
+  >();
 
   /**
    * Navigates the user to the "New Answer" page for the current question.
@@ -140,11 +142,10 @@ const useAnswerPage = () => {
     try {
       const updatedPermission = await toggleMediaPermission(qid, user.username);
       setDownloadQuestionPermission(updatedPermission);
-      console.log('Download permission for question is', updatedPermission);
     } catch (error) {
-      console.error('Error toggling question:', error);
+      window.alert('Something went wrong with changing the download permission');
     }
-  }
+  };
 
   /**
    * Fetches the full question data when the question ID or user changes.
@@ -168,8 +169,7 @@ const useAnswerPage = () => {
       }
     };
 
-    // eslint-disable-next-line no-console
-    fetchData().catch(e => console.log(e));
+    fetchData();
   }, [questionID, user.username]);
 
   /**
@@ -219,11 +219,11 @@ const useAnswerPage = () => {
         setQuestion(prevQuestion =>
           prevQuestion
             ? {
-              ...prevQuestion,
-              answers: prevQuestion.answers.map(a =>
-                a._id === result._id ? (result as PopulatedDatabaseAnswer) : a,
-              ),
-            }
+                ...prevQuestion,
+                answers: prevQuestion.answers.map(a =>
+                  a._id === result._id ? (result as PopulatedDatabaseAnswer) : a,
+                ),
+              }
             : prevQuestion,
         );
       }
@@ -250,10 +250,10 @@ const useAnswerPage = () => {
         setQuestion(prevQuestion =>
           prevQuestion
             ? {
-              ...prevQuestion,
-              upVotes: [...voteData.upVotes],
-              downVotes: [...voteData.downVotes],
-            }
+                ...prevQuestion,
+                upVotes: [...voteData.upVotes],
+                downVotes: [...voteData.downVotes],
+              }
             : prevQuestion,
         );
       }

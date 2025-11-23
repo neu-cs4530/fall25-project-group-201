@@ -1,30 +1,29 @@
-import { useEffect, useState } from "react";
-import useUserContext from "../../../../hooks/useUserContext";
-import { getCommentMedia, toggleMediaPermission } from "../../../../services/commentService";
-import { DatabaseComment } from "@fake-stack-overflow/shared";
+import { useEffect, useState } from 'react';
+import useUserContext from '../../../../hooks/useUserContext';
+import { getCommentMedia, toggleMediaPermission } from '../../../../services/commentService';
+import { DatabaseComment } from '@fake-stack-overflow/shared';
 import './index.css';
-import { Download } from "lucide-react";
+import { Download } from 'lucide-react';
 
 interface CommentPermissionButtonProps {
   comment: DatabaseComment;
 }
 
-const CommentPermissionButton = ({comment}: CommentPermissionButtonProps) => {
+const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
   const { user } = useUserContext();
-  const [downloadQuestionPermission, setDownloadQuestionPermission] = useState<boolean | undefined>();
+  const [downloadQuestionPermission, setDownloadQuestionPermission] = useState<
+    boolean | undefined
+  >();
   const isAuthor = comment.commentBy === user.username;
 
   const handleToggleCommentPermission = async (): Promise<void> => {
     try {
-      console.log('Comment id:', comment._id.toString())
-      console.log('user attempting:', user.username);
       const updatedPermission = await toggleMediaPermission(comment._id.toString(), user.username);
       setDownloadQuestionPermission(updatedPermission);
-      console.log('Download permission for comment is', updatedPermission);
     } catch (error) {
-      console.error('Error toggling question:', error);
+      window.alert('Something went wrong with changing the download permission');
     }
-  }
+  };
 
   /**
    * Fetches the full question data when the question ID or user changes.
@@ -46,8 +45,7 @@ const CommentPermissionButton = ({comment}: CommentPermissionButtonProps) => {
       }
     };
 
-    // eslint-disable-next-line no-console
-    fetchData().catch(e => console.log(e));
+    fetchData();
   }, [comment, user.username]);
 
   const handleDownload = async (mediaSize: string, extension: string, cid: string) => {
@@ -77,14 +75,12 @@ const CommentPermissionButton = ({comment}: CommentPermissionButtonProps) => {
   return (
     <>
       {isAuthor && (
-        <button 
-          type="button" 
+        <button
+          type='button'
           className={`download-permission-comment-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
           onClick={() => {
             handleToggleCommentPermission();
-
-          }}
-        >
+          }}>
           {downloadQuestionPermission ? '✓ Downloads Allowed' : '✕ Downloads Off'}
         </button>
       )}
@@ -110,7 +106,7 @@ const CommentPermissionButton = ({comment}: CommentPermissionButtonProps) => {
         <div className='download-disabled'>Download disabled</div>
       )}
     </>
-  )
-}
+  );
+};
 
 export default CommentPermissionButton;

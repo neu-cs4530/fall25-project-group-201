@@ -90,7 +90,10 @@ export const downloadCommentMedia = async (id: string): Promise<string | { error
   }
 };
 
-export const toggleCommentMediaPermission = async (id: string, username: string): Promise<boolean | { error: string }> => {
+export const toggleCommentMediaPermission = async (
+  id: string,
+  username: string,
+): Promise<boolean | { error: string }> => {
   try {
     const comment = await CommentModel.findById(id);
 
@@ -106,18 +109,18 @@ export const toggleCommentMediaPermission = async (id: string, username: string)
       throw new Error('No media found to change permissions for.');
     }
 
-    let updatedComment: Comment | null = await CommentModel.findByIdAndUpdate(
+    const updatedComment: Comment | null = await CommentModel.findByIdAndUpdate(
       { _id: id },
       { permitDownload: !comment.permitDownload },
       { new: true },
     );
 
     if (!updatedComment || updatedComment.permitDownload === undefined) {
-      throw new Error('Failed to update commment permissions')
+      throw new Error('Failed to update commment permissions');
     }
 
     return updatedComment.permitDownload;
   } catch {
     return { error: 'Error when toggling commment media download permissions' };
   }
-}
+};

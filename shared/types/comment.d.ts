@@ -59,7 +59,6 @@ export interface ToggleCommentMediaPermissionRequest extends Request {
   };
 }
 
-
 /**
  * Type representing possible responses for a Comment-related operation.
  * - Either a `DatabaseComment` object or an error message.
