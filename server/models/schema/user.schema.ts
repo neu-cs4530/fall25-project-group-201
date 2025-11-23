@@ -59,12 +59,14 @@ const userSchema: Schema = new Schema(
           mediaUrl: { type: String, required: true },
           thumbnailUrl: { type: String, default: '' },
           uploadedAt: { type: Date, default: Date.now },
+          views: { type: [String], default: [] },
+          likes: { type: [String], default: [] },
           _id: { type: Schema.Types.ObjectId, auto: true },
         },
       ],
       default: [],
     },
-    // implement other implementations of 3D models
+    // implement other implementations of 3D models - deprecated
     portfolioModels: {
       type: [String],
       default: [],

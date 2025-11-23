@@ -87,7 +87,7 @@ const FakeStackOverflow = ({ socket }: { socket: FakeSOSocket | null }) => {
             <Route path='/gallery/:postId' element={<GalleryPostPage />} />
             <Route path='/galleryPostViewport/:galleryPostID' element={<GalleryPostViewport />} />
             <Route path='/user/:username/upload-portfolio' element={<UploadPortfolioModel />} />
-            <Route path='/user/:username/portfolio/:projectId' element={<PortfolioViewerPage />} />
+            <Route path='/user/:username/portfolio/:index' element={<PortfolioViewerPage />} />
           </Route>
         }
       </Routes>

@@ -312,7 +312,7 @@
   cursor: pointer;
 }
 
-.profile-settings .skill-checkbox-label input[type='checkbox']:checked + span {
+.profile-settings .skill-checkbox-label input[type='checkbox']:checked+span {
   font-weight: 600;
   color: #2563eb;
 }
@@ -409,6 +409,14 @@
   border-radius: var(--radius);
   overflow: hidden;
 }
+
+.profile-settings .portfolio-model-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 
 .profile-settings .portfolio-upload-box {
   aspect-ratio: 1;
