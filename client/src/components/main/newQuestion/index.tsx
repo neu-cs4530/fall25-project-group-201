@@ -38,6 +38,8 @@ const NewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
+    handleDrop,
+    handleDragOver,
   } = useNewQuestion();
 
   const { user: currentUser } = useUserContext();
@@ -212,9 +214,9 @@ const NewQuestion = () => {
           </button>
         </div>
 
-        <div className='file-upload'>
+        <div className='file-upload drag-drop-area' onDrop={handleDrop} onDragOver={handleDragOver}>
           <label className='file-label'>
-            {fileInputRef.current?.files?.[0]?.name || 'Choose a file'}
+            {fileInputRef.current?.files?.[0]?.name || 'Drag & drop a file or click to choose'}
             <input
               ref={fileInputRef}
               type='file'
