@@ -1,5 +1,8 @@
 import { useState, useRef } from 'react';
 
+/**
+ * Custom hook that handles logic for .glb model uploads
+ */
 const useModelUpload = () => {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
