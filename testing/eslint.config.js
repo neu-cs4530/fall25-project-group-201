@@ -37,6 +37,7 @@ export default [
         'args': 'none',
         'ignoreRestSiblings': true
       }],
+      // turned off to prevent auth0 errors
       'no-unused-vars': 'off',
       'no-undef': 'off',
     },
