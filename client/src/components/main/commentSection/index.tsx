@@ -9,6 +9,7 @@ import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
 import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 import CommentPermissionButton from './commentPermissionButton';
+import xss from 'xss';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -54,6 +55,7 @@ const CommentSection = ({
   const [permitDownload, setPermitDownload] = useState<boolean>(true);
   const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
   const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
+  const [filename, setFilename] = useState<string>('');
   let tempMediaPath: string | undefined;
   let mediaSize: string | undefined;
 
@@ -91,8 +93,9 @@ const CommentSection = ({
    * Validates input, uploads media if attached, and resets input state on success.
    */
   const handleAddCommentClick = async () => {
-    if (text.trim() === '' || user.username.trim() === '') {
-      setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
+    const sanitizedText = xss(text.trim());
+    if (sanitizedText.trim() === '' || user.username.trim() === '') {
+      setTextErr(sanitizedText.trim() === '' ? 'Comment text cannot be empty' : '');
       return;
     }
 
@@ -100,6 +103,12 @@ const CommentSection = ({
     setMediaError(null);
 
     if (file) {
+      const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+                                      .replace(/\.{2,}/g, '.')
+                                      .replace(/^\.+/, '')
+                                      .substring(0, 255);
+      setFilename(sanitizedFilename);
+
       const resMedia = await handleAddMedia(file);
       if (!resMedia) {
         setMediaError('Failed to upload media');
