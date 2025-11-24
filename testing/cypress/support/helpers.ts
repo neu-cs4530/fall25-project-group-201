@@ -251,7 +251,7 @@ export const createQuestion = (title: string, text: string, tags: string, media:
   cy.get('.submit-btn').click();
 };
 
-export const test3DViewport = () => {
+export const test3DViewportOrbitControls = () => {
   cy.get('.viewport-canvas canvas')
       .should('exist');
 
@@ -303,6 +303,29 @@ export const test3DViewport = () => {
   cy.wait(300);
   cy.get('canvas').trigger('wheel', { deltaY: -1000 });
   cy.wait(300);
+};
+
+export const test3DViewportOrthoPerspToggle = () => {
+  cy.get('.viewport-canvas').should('exist')
+  cy.get('img[alt="Toggle View"]').as('toggleButton')
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
 };
 
 /**

@@ -1,4 +1,4 @@
-import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, test3DViewport, createQuestion, goToAnswerQuestion} from '../support/helpers';
+import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, test3DViewportOrbitControls, createQuestion, test3DViewportOrthoPerspToggle} from '../support/helpers';
 
 import '../support/auth0'
 import { unescape } from 'cypress/types/lodash';
@@ -36,7 +36,8 @@ describe('Cypress tests for Three Viewport controls', function () {
         cy.get('.viewport-card').should('exist');
         cy.get('.viewport-canvas').should('exist'); 
 
-        test3DViewport()
+        test3DViewportOrbitControls()
+        test3DViewportOrthoPerspToggle()
     });
 
     it('Three Viewport in Question Page supports rotation, panning, tilting, and zooming', function () {
@@ -48,7 +49,8 @@ describe('Cypress tests for Three Viewport controls', function () {
         createQuestion(title, description, tags, media)
 
         cy.contains(title).click()
-        test3DViewport()
+        test3DViewportOrbitControls()
+        test3DViewportOrthoPerspToggle()
     });
 
     it('Three Viewport in comment supports rotation, panning, tilting, and zooming', function () {
@@ -74,7 +76,8 @@ describe('Cypress tests for Three Viewport controls', function () {
         // Verify the new comment
         cy.get('.comment-section').should('exist');
         cy.get('.comment-section').within(() => {
-            test3DViewport();
+            test3DViewportOrbitControls();
+            test3DViewportOrthoPerspToggle()
         });
     });
 
