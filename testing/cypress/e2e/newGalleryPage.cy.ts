@@ -5,12 +5,12 @@ import { unescape } from 'cypress/types/lodash';
 
 describe('Cypress tests for Creating a New Gallery Post', function () {
     beforeEach(() => {
-        //setupTest();
+        setupTest();
         auth0Login();
     });
 
     afterEach(() => {
-        //teardownTest();
+        teardownTest();
     });
 
     // Variables for test
