@@ -117,7 +117,7 @@ const ThreeViewport = ({
 
   return (
     <div className='viewport-card'>
-      <div ref={containerRef} className='viewport-canvas' />
+      <div ref={containerRef} tabIndex={0} className='viewport-canvas' />
 
       <div
         className='expand-icon'
