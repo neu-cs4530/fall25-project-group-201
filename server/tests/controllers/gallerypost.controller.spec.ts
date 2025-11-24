@@ -431,7 +431,7 @@ describe('Gallery Post Controller', () => {
       };
 
       createGalleryPostSpy.mockResolvedValueOnce({
-        error: 'File size exceeds maximum allowed (50MB for .glb files)'
+        error: 'File size exceeds maximum allowed (50MB for .glb files)',
       });
 
       const res = await supertest(app)
@@ -443,4 +443,3 @@ describe('Gallery Post Controller', () => {
     });
   });
 });
-
