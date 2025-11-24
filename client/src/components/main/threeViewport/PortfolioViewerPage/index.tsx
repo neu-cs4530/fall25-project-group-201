@@ -6,7 +6,6 @@ import useUserContext from '../../../../hooks/useUserContext';
 import { togglePortfolioLike, incrementPortfolioViews } from '../../../../services/userService';
 import './index.css';
 
-
 type PortfolioItem = {
   title: string;
   description?: string;
