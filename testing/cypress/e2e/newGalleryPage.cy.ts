@@ -14,7 +14,7 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
     });
 
     // Variables for test
-    const testUser = 'user234'
+    const testUser = 'user123'
 
     it('Creates a new gallery post with image media successfully', function () {
         goToCommunities();
