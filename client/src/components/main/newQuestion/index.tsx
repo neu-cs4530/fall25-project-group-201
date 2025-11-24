@@ -126,7 +126,8 @@ const NewQuestion = () => {
 
     // check allowed ext
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
-    const ext = filename.slice(filename.lastIndexOf('.')).toLowerCase();
+    const ext = sanitizedFilename.slice(sanitizedFilename.lastIndexOf('.')).toLowerCase();
+    console.log('ext', ext)
     if (!allowedExtensions.includes(ext)) {
       setMediaErr('Unsupported file type');
       URL.revokeObjectURL(tempFileUrl);
@@ -145,7 +146,7 @@ const NewQuestion = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('user', currentUser.username);
-      formData.append('filepathLocation', filename);
+      formData.append('filepathLocation', sanitizedFilename);
 
       const res = await fetch('/api/media/create', {
         method: 'POST',

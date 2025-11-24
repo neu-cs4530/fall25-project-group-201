@@ -2,10 +2,32 @@ import express, { Response, Request } from 'express';
 import multer from 'multer';
 import mediaService from '../services/media.service';
 import { Media, FakeSOSocket } from '../types/types';
-import path from 'path';
-import fs from 'fs';
 
-const upload = multer({ storage: multer.memoryStorage() }); // memory storage
+// const allowedMimeTypes = [
+//   'image/gif',
+//   'image/jpeg',
+//   'image/png',
+//   'audio/mpeg',
+//   'video/mp4',
+//   'model/gltf-binary',
+//   'application/octet-stream',
+// ];
+
+// const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+//   if (allowedMimeTypes.includes(file.mimetype)) {
+//     cb(null, true);
+//   } else {
+//     cb(new Error(`Invalid file type: ${file.mimetype}`));
+//   }
+// };
+
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  // fileFilter,
+  // limits: {
+  //   fileSize: 50 * 1024 * 1024, // 50MB
+  // }
+}); // memory storage
 
 const mediaController = (socket: FakeSOSocket) => {
   const router = express.Router();
@@ -26,7 +48,7 @@ const mediaController = (socket: FakeSOSocket) => {
       // const uniqueFilepath = await mediaService.getUniqueFilepath(user, filepathLocation);
 
       const media: Media = {
-        filepathLocation,
+        filepathLocation, // replace with uniqueFilepath if get working
         fileBuffer: file.buffer,
         user,
       };
