@@ -238,7 +238,7 @@ describe('Profile Settings — editing', () => {
         cy.get('input[placeholder*="Paste media URL"]').type('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
         // Upload thumbnail
-        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/testImage.jpg', { force: true });
+        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
         cy.wait(1000);
 
         // Submit
@@ -378,6 +378,62 @@ describe('Profile Settings — editing', () => {
 
         cy.wait(1000);
         cy.contains('Banner image must be JPG or PNG format', { timeout: 5000 }).should('be.visible');
+    });
+
+    // TODO: move to new file, test 3d viewport info button
+    it('uploads 3D model and tests viewport info button functionality', () => {
+        // Navigate to portfolio upload
+        cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
+        cy.get('.portfolio-upload-box').click();
+        cy.url({ timeout: 10000 }).should('include', '/upload-portfolio');
+
+        // Fill out required fields
+        cy.get('input[placeholder*="Give your piece a name"]').type('Test 3D Model');
+        cy.get('textarea[placeholder*="Describe your project"]').type('Testing 3D viewport info button');
+
+        // Upload the .glb file - select the FIRST file input (model file, not thumbnail)
+        cy.get('input[type="file"]').first().selectFile('cypress/fixtures/test.glb', { force: true });
+
+        // Wait for 3D model to load in viewport
+        cy.wait(2000);
+
+        // Verify canvas (Three.js viewport) is visible
+        cy.get('canvas', { timeout: 10000 }).should('be.visible');
+        cy.log('✅ 3D viewport loaded');
+
+        // SCROLL UP to ensure the info icon is in view (not blocked by thumbnail section)
+        cy.get('canvas').scrollIntoView();
+        cy.wait(500);
+
+        // Click the info icon
+        cy.get('.info-icon', { timeout: 5000 }).should('be.visible').click();
+        cy.log('✅ Info icon clicked');
+
+        // Verify info tooltip appears with expected content
+        cy.contains('Welcome to the 3D viewport', { timeout: 5000 }).should('be.visible');
+        cy.contains('Click and drag to turn').should('be.visible');
+        cy.contains('scroll to zoom').should('be.visible');
+
+        cy.log('✅ Info tooltip displayed with correct content');
+
+        // Test closing the tooltip - click the info icon again to toggle it off
+        cy.get('.info-icon').click();
+        cy.wait(500);
+
+        // The tooltip is hidden but still exists in DOM, so check it's NOT visible
+        cy.get('#popover-content').should('not.exist');
+        cy.log('✅ Info tooltip closed successfully');
+
+        // Test toggle - open again
+        cy.get('.info-icon').click();
+        cy.wait(300);
+        cy.get('#popover-content').should('be.visible');
+        cy.log('✅ Info button toggle verified');
+
+        // Close it before ending test
+        cy.get('.info-icon').click();
+
+        cy.log('✅ 3D viewport info button functionality verified');
     });
 
     // Cleanup database ONCE after all tests
