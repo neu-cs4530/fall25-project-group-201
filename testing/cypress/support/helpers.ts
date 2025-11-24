@@ -163,6 +163,12 @@ export const verifyNewGalleryPost = (
   }
 };
 
+export const deleteGalleryPostAndVerify = (
+) => {
+  cy.get('.statItem.delete').should('exist').click()
+  cy.contains('No gallery posts yet!')
+};
+
 /**
  * Sets up the database before each test
  */
@@ -185,8 +191,8 @@ export const auth0Login = () => {
 
   cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
       // Fill in the login form
-      cy.get('input[name="username"], input[name="email"]').type('user123')
-      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('input[name="username"], input[name="email"]').type('user345')
+      cy.get('input[name="password"]').type('P@ssw0rd345', { log: false }) // hide in logs
       cy.get('button[type="submit"]:visible').click()
   })
 }
@@ -205,8 +211,8 @@ export const auth0LoginUserProfile = () => {
     cy.get('input[name="username"], input[name="email"]', { timeout: 15000 }).should('be.visible')
     
     // Fill in the login form
-    cy.get('input[name="username"], input[name="email"]').clear().type('user123')
-    cy.get('input[name="password"]').clear().type('securePass123!', { log: false })
+    cy.get('input[name="username"], input[name="email"]').clear().type('user345')
+    cy.get('input[name="password"]').clear().type('P@ssw0rd345', { log: false })
     
     // Click submit and wait for redirect
     cy.get('button[type="submit"]:visible').click()

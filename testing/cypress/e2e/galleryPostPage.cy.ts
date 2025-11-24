@@ -14,7 +14,7 @@ describe('Cypress tests for deleting a gallery Post', function () {
     });
 
     // Variables for test
-    const testUser = 'user123'
+    const testUser = 'user345'
 
     it('Creates a new gallery post with image media successfully', function () {
         goToCommunities();
@@ -34,10 +34,37 @@ describe('Cypress tests for deleting a gallery Post', function () {
         // Delete the gallery post and verify deletion
         deleteGalleryPostAndVerify();
     })
-})
 
-// delete gallery post
-// any errors
-// should not be able to delete another person's psot
-// navigation
-// other errors
+    it('Shows error message when gallery post fails', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click();
+
+        const title = "Test gallery post with video media";
+        const description = "This is a test gallery post with video media";
+        const tags = ['3d art', 'modeling'];
+        const mediaFile = 'testVideo.mp4';
+
+        createNewGalleryPost(title, description, tags, mediaFile, undefined);
+        verifyNewGalleryPost(title, testUser, description, tags, mediaFile, undefined, undefined);
+
+        // Mock media deletion to fail
+        cy.intercept({
+            method: 'DELETE',
+            url: /\/api\/media\/delete\/.*/   // regex matches any path after /delete/
+            }, {
+            statusCode: 500,
+            body: { error: 'Failed to delete media.' },
+        }).as('deleteMediaFail');
+
+        // Click delete
+        cy.get('.statItem.delete').should('exist').click();
+
+        // Wait for media deletion attempt
+        cy.wait('@deleteMediaFail');
+        
+
+        // Verify media error is displayed
+        cy.contains('Failed to delete media.').should('be.visible');
+    });
+})
