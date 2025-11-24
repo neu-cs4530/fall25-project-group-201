@@ -14,7 +14,7 @@ describe('Cypress tests for deleting a gallery Post', function () {
     });
 
     // Variables for test
-    const testUser = 'user345'
+    const testUser = 'user123'
 
     it('Creates a new gallery post with image media successfully', function () {
         goToCommunities();
