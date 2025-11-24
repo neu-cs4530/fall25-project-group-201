@@ -86,6 +86,106 @@ describe('Gallery Post Controller', () => {
       );
     });
 
+    test('should return 400 when missing title', async () => {
+      const mockReqBody = {
+        description: 'New Description',
+        user: 'test_user',
+        media: '/test_user/testMedia.png',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '13 GB',
+        tags: [],
+      };
+
+      const response = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/body/title');
+    });
+
+    test('should return 400 when missing description', async () => {
+      const mockReqBody = {
+        title: 'New Gallery Post',
+        user: 'test_user',
+        media: '/test_user/testMedia.png',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '13 GB',
+        tags: [],
+      };
+
+      const response = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/body/description');
+    });
+
+    test('should return 400 when missing user', async () => {
+      const mockReqBody = {
+        title: 'New Gallery Post',
+        description: 'New Description',
+        media: '/test_user/testMedia.png',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '13 GB',
+        tags: [],
+      };
+
+      const response = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/body/user');
+    });
+
+    test('should return 400 when missing media', async () => {
+      const mockReqBody = {
+        title: 'New Gallery Post',
+        description: 'New Description',
+        user: 'test_user',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '13 GB',
+        tags: [],
+      };
+
+      const response = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/body/media');
+    });
+
+    test('should return 400 when missing community ID', async () => {
+      const mockReqBody = {
+        title: 'New Gallery Post',
+        description: 'New Description',
+        user: 'test_user',
+        media: '/test_user/testMedia.png',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '13 GB',
+        tags: [],
+      };
+
+      const response = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/body/community');
+    });
+
     test('returns 500 on service error', async () => {
       createGalleryPostSpy.mockResolvedValueOnce({ error: 'DB error' });
 
@@ -135,6 +235,12 @@ describe('Gallery Post Controller', () => {
       expect(res.body.title).toBe(mockGalleryPost.title);
     });
 
+    test('should return 400 when missing id', async () => {
+      const response = await supertest(app).get('/api/gallery/getGalleryPost/');
+
+      expect(response.status).toBe(404);
+    });
+
     test('returns 500 when service errors', async () => {
       getByIdSpy.mockResolvedValueOnce({ error: 'Not found' });
 
@@ -157,6 +263,22 @@ describe('Gallery Post Controller', () => {
 
       expect(res.status).toBe(200);
       expect(deleteSpy).toHaveBeenCalledWith(mockGalleryPost._id.toString(), mockGalleryPost.user);
+    });
+
+    test('should return 400 when missing username', async () => {
+      const response = await supertest(app).delete(`/api/gallery/delete/${mockGalleryPost._id}`);
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/query/username');
+    });
+
+    test('should return 400 when missing gallery post ID', async () => {
+      const response = await supertest(app).delete('/api/gallery/delete/').query({
+        username: mockGalleryPost.user,
+      });
+
+      expect(response.status).toBe(404);
     });
 
     test('returns 500 when service throws', async () => {

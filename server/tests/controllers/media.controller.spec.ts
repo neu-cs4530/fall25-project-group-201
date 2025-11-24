@@ -4,8 +4,17 @@ import { app } from '../../app';
 import mediaService from '../../services/media.service';
 import { DatabaseMedia } from '../../types/types';
 
+// Mock media data
+const mockMedia: DatabaseMedia = {
+  _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
+  filepathLocation: 'dummy/filepath',
+  user: 'test_user',
+  fileSize: '13 KB',
+};
+
 // Service method spies
 const addMediaSpy = jest.spyOn(mediaService, 'addMedia');
+const deleteMediaSpy = jest.spyOn(mediaService, 'deleteMedia');
 
 describe('POST /create', () => {
   test('should create a new media successfully', async () => {
@@ -77,5 +86,46 @@ describe('POST /create', () => {
 
     expect(response.status).toBe(500);
     expect(response.text).toContain('Database error');
+  });
+});
+
+describe('DELETE /delete/:filepathLocation', () => {
+  test('should delete a media successfully', async () => {
+    deleteMediaSpy.mockResolvedValueOnce(mockMedia);
+
+    const response = await supertest(app).delete(
+      `/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(deleteMediaSpy).toHaveBeenCalledWith(`dummy/filepath`);
+  });
+
+  test('should return 400 when missing filepathLocation', async () => {
+    const response = await supertest(app).delete('/api/media/delete/');
+
+    expect(response.status).toBe(404);
+  });
+
+  test('should return 500 when service throws error', async () => {
+    deleteMediaSpy.mockRejectedValueOnce(new Error('Database error'));
+
+    const response = await supertest(app).delete(
+      `/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`,
+    );
+
+    expect(response.status).toBe(500);
+    expect(response.text).toContain('Database error');
+  });
+
+  test('should return 500 when service returns error', async () => {
+    deleteMediaSpy.mockResolvedValueOnce({ error: 'Media not found' });
+
+    const response = await supertest(app).delete(
+      `/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`,
+    );
+
+    expect(response.status).toBe(500);
+    expect(response.text).toContain('Media not found');
   });
 });

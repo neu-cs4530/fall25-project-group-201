@@ -907,6 +907,32 @@ paths:
         '500':
           $ref: '#/components/responses/ErrorResponse'
 
+  /gallery/getGalleryPost/{galleryPostID}:
+    get:
+      tags:
+        - GalleryPost
+      summary: Gets a gallery post by ID
+      parameters:
+        - in: path
+          name: galleryPostID
+          schema:
+            type: string
+            format: object-id
+          required: true
+          description: The unique ID of the gallery post to fetch.
+      responses:
+        '200':
+          description: Gallery post successfully fetched. Returns the fetched gallery post object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseGalleryPost'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+
+
   # --------------------
   # USER CONTROLLER
   # --------------------
