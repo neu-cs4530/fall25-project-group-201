@@ -745,6 +745,46 @@ describe('Profile Features - Testimonials', () => {
 
             expect(response.status).toBe(400);
         });
+
+        it('should update existing testimonial instead of creating duplicate', async () => {
+            const existingTestimonial = {
+                _id: new mongoose.Types.ObjectId(),
+                fromUsername: 'testuser',
+                fromProfilePicture: '',
+                content: 'Original content',
+                createdAt: new Date(),
+                approved: true,
+            };
+
+            const profileUser = {
+                ...mockSafeUser,
+                username: 'user123',
+                testimonials: [existingTestimonial],
+            };
+
+            getUserByUsernameSpy
+                .mockResolvedValueOnce(profileUser)
+                .mockResolvedValueOnce(mockSafeUser);
+
+            updateUserSpy.mockResolvedValueOnce({
+                ...profileUser,
+                testimonials: [{
+                    ...existingTestimonial,
+                    content: 'Updated content!',
+                    approved: false, // Needs re-approval
+                }],
+            });
+
+            const response = await supertest(app).post('/api/user/testimonial').send({
+                profileUsername: 'user123',
+                fromUsername: 'testuser',
+                content: 'Updated content!',
+            });
+
+            expect(response.status).toBe(200);
+            expect(response.body.testimonials).toHaveLength(1); // Still just 1, not 2
+            expect(response.body.testimonials[0].content).toBe('Updated content!');
+        });
     });
 });
 

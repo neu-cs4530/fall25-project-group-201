@@ -290,82 +290,116 @@ describe('Profile Settings — editing', () => {
         cy.log('Portfolio metrics verified with uploaded YouTube video');
     });
 
-    it.only('allows writing and displaying testimonials', () => {
-        // First, navigate to ANOTHER user's profile to write testimonial
-        cy.visit('/user/user234'); // Different user
+    it('displays testimonials section on profile', () => {
+        // Already on user123's profile from beforeEach
+        cy.contains('Testimonials', { timeout: 10000 }).scrollIntoView().should('be.visible');
+
+        // Verify testimonials section exists
+        cy.get('.testimonials-section').should('be.visible');
+
+        // Check if approved testimonials display (user123 has 2 approved in seed data)
+        cy.get('body').then($body => {
+            const approvedCount = $body.find('.approved-testimonials .testimonial-card').length;
+            cy.log(`Found ${approvedCount} approved testimonials`);
+
+            if (approvedCount > 0) {
+                // Verify testimonial cards display with correct info
+                cy.get('.approved-testimonials .testimonial-card').first().within(() => {
+                    cy.get('.testimonial-author').should('be.visible');
+                    cy.get('.testimonial-content').should('be.visible');
+                    cy.get('.testimonial-date').should('be.visible');
+                });
+                cy.log('Testimonials display verified');
+            }
+
+            // Check for pending testimonials (if viewing own profile)
+            if ($body.text().includes('Pending Testimonials')) {
+                cy.log('Pending testimonials section visible - can approve/reject');
+            }
+        });
+    });
+
+    it('allows writing testimonials for other users', () => {
+        // Navigate using sidebar - click "Users" link
+        cy.contains('Users').click();
+        cy.url({ timeout: 10000 }).should('include', '/users');
+
+        // Wait for users list to load
+        cy.contains('Users List', { timeout: 10000 }).should('be.visible');
+
+        // Click on user234 to view their profile
+        cy.contains('user234').click();
+        cy.url({ timeout: 10000 }).should('include', '/user/user234');
         cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
 
         // Scroll to testimonials section
         cy.contains('Testimonials', { timeout: 10000 }).scrollIntoView().should('be.visible');
 
-        // Click "Write a Testimonial" button
+        // Verify "Write a Testimonial" button appears (not on own profile)
         cy.contains('button', 'Write a Testimonial').should('be.visible').click();
 
-        // Modal should appear
+        // Modal should open
         cy.get('.testimonial-modal', { timeout: 5000 }).should('be.visible');
+        cy.get('.modal-header').should('contain', 'Write Testimonial for user234');
 
-        // Fill out testimonial
-        cy.get('.testimonial-textarea').type('This user is an excellent developer! Highly recommend working with them.');
+        // Type testimonial content
+        cy.get('.testimonial-textarea').type('Excellent developer! Great communication and problem-solving skills. Highly recommend!');
 
-        // Submit
-        cy.contains('button', 'Submit').click();
+        // Verify character count displays
+        cy.get('.character-count').should('be.visible');
 
-        // Wait for success
+        // Submit button should be enabled
+        cy.contains('button', 'Submit').should('not.be.disabled').click();
+
+        // Wait for submission
         cy.wait(1000);
 
         // Modal should close
         cy.get('.testimonial-modal').should('not.exist');
 
-        cy.log('Testimonial submitted successfully');
+        // Success toast should appear (if you have toasts)
+        // cy.contains('Testimonial submitted for review').should('be.visible');
 
-        // Now test viewing testimonials on own profile
-        cy.visit('/user/user123');
-        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
-
-        cy.contains('Testimonials').scrollIntoView().should('be.visible');
-
-        // Check if testimonials section exists
-        cy.get('.testimonials-section').should('be.visible');
-
-        // If user123 has approved testimonials (from seed data), they should display
-        cy.get('body').then($body => {
-            if ($body.find('.testimonial-card').length > 0) {
-                cy.get('.testimonial-card').should('have.length.at.least', 1);
-                cy.log('Testimonials displayed successfully');
-            } else {
-                cy.contains('No testimonials yet').should('be.visible');
-            }
-        });
+        cy.log('Successfully wrote testimonial for user234');
     });
 
-    it.only('allows writing testimonials for other users', () => {
-        // Navigate away from own profile to another user (don't use beforeEach navigation)
-        cy.visit('/user/user234', { timeout: 10000 });
+    it('allows writing and deleting testimonials', () => {
+        // Navigate to user234
+        cy.contains('Users').click();
+        cy.contains('user234').click();
+        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
 
-        // Need to wait for page, might redirect to login - handle that
-        cy.url({ timeout: 10000 }).then((url) => {
-            if (url.includes('auth0')) {
-                // Need to login again for this user
-                cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
-                    cy.get('input[name="username"], input[name="email"]').clear().type('user123');
-                    cy.get('input[name="password"]').clear().type('securePass123!', { log: false });
-                    cy.get('button[type="submit"]:visible').click();
-                });
-                cy.wait(5000);
-                cy.visit('/user/user234');
+        cy.contains('Testimonials').scrollIntoView();
+
+        // Check which button appears
+        cy.get('body').then($body => {
+            const hasExisting = $body.text().includes('Edit Your Testimonial');
+
+            if (hasExisting) {
+                // Already has testimonial - just test delete
+                cy.contains('button', 'Edit Your Testimonial').click();
+                cy.get('.testimonial-modal', { timeout: 5000 }).should('be.visible');
+                cy.contains('button', 'Delete').click();
+                cy.wait(1000);
+                cy.contains('button', 'Write a Testimonial', { timeout: 5000 }).should('be.visible');
+                cy.log('Existing testimonial deleted successfully');
+            } else {
+                // No testimonial yet - write then delete
+                cy.contains('button', 'Write a Testimonial').click();
+                cy.get('.testimonial-modal', { timeout: 5000 }).should('be.visible');
+                cy.get('.testimonial-textarea').type('Test testimonial for deletion');
+                cy.contains('button', 'Submit').click();
+                cy.wait(1000);
+
+                // Now edit and delete
+                cy.contains('button', 'Edit Your Testimonial', { timeout: 5000 }).click();
+                cy.get('.testimonial-modal').should('be.visible');
+                cy.contains('button', 'Delete').click();
+                cy.wait(1000);
+                cy.contains('button', 'Write a Testimonial').should('be.visible');
+                cy.log('New testimonial written and deleted successfully');
             }
         });
-
-        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
-        cy.contains('Testimonials').scrollIntoView();
-        cy.contains('button', 'Write a Testimonial').click();
-
-        cy.get('.testimonial-modal', { timeout: 5000 }).should('be.visible');
-        cy.get('.testimonial-textarea').type('Excellent developer to work with!');
-        cy.contains('button', 'Submit').click();
-
-        cy.wait(1000);
-        cy.log('Testimonial written for user234');
     });
 
     it('shows error when uploading .txt file as resume', () => {
