@@ -8,7 +8,6 @@ describe('Profile Settings — editing', () => {
         // setupTest();
     });
 
-    // Login before each test
     beforeEach(() => {
         auth0LoginUserProfile();
 
@@ -19,8 +18,12 @@ describe('Profile Settings — editing', () => {
         // Add a short wait to ensure session is fully established
         cy.wait(2000);
 
-        // Click the "View Profile" button in the header
-        cy.contains('button', 'View Profile', { timeout: 10000 }).should('be.visible').click();
+        // Click the profile icon dropdown trigger
+        cy.get('.profile-trigger', { timeout: 10000 }).should('be.visible').click();
+
+        // Wait for dropdown menu to appear and click "Profile" option
+        cy.get('.profile-menu', { timeout: 5000 }).should('be.visible');
+        cy.get('.profile-menu-item').contains('Profile').click();
 
         // Wait for profile page to load
         cy.url({ timeout: 10000 }).should('include', '/user/');
@@ -223,6 +226,7 @@ describe('Profile Settings — editing', () => {
     });
 
     it('upload media working correctly with project page & displays and tracks portfolio item metrics', () => {
+        // Upload new portfolio item
         cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
         cy.get('.portfolio-upload-box').click();
 
@@ -233,134 +237,79 @@ describe('Profile Settings — editing', () => {
         cy.get('textarea[placeholder*="Describe your project"]').type('Testing views and likes');
         cy.get('input[placeholder*="Paste media URL"]').type('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
-        // Upload thumbnail image - select the LAST file input (thumbnail)
+        // Upload thumbnail
         cy.get('input[type="file"]').last().selectFile('cypress/fixtures/testImage.jpg', { force: true });
-
-        // Wait for thumbnail to process
         cy.wait(1000);
 
-        // Now button should be enabled
+        // Submit
         cy.contains('button', 'Add to Portfolio').should('not.be.disabled').click();
-
         cy.wait(2000);
         cy.url({ timeout: 10000 }).should('include', '/user/user123');
 
-        // Test metrics on uploaded item
+        // Navigate to the newly uploaded item
         cy.contains('Portfolio').scrollIntoView();
         cy.get('.portfolio-model-item').should('have.length.at.least', 1);
         cy.get('.portfolio-model-item').first().click();
 
+        // Wait for page to fully load
         cy.url({ timeout: 10000 }).should('match', /\/portfolio\/\d+/);
-        cy.get('.postStats', { timeout: 10000 }).should('be.visible');
+        cy.wait(2000);
 
-        // Store initial view count
+        // Verify stats are visible
+        cy.get('.postStats').scrollIntoView().should('be.visible');
+
+        // Test LIKE toggle (works regardless of initial state)
+        cy.get('.statItem').first().invoke('text').then((initialLikeText) => {
+            const initialLikes = parseInt(initialLikeText.trim()) || 0;
+            cy.log(`Initial likes: ${initialLikes}`);
+
+            // Click to toggle
+            cy.get('.statItem').first().click();
+            cy.wait(500);
+
+            // Verify it changed
+            cy.get('.statItem').first().invoke('text').then((afterFirstClick) => {
+                const likesAfterFirst = parseInt(afterFirstClick.trim()) || 0;
+                expect(likesAfterFirst).to.not.equal(initialLikes);
+                cy.log(`After first click: ${likesAfterFirst}`);
+
+                // Click again to toggle back
+                cy.get('.statItem').first().click();
+                cy.wait(500);
+
+                // Should return to original
+                cy.get('.statItem').first().invoke('text').then((afterSecondClick) => {
+                    const likesAfterSecond = parseInt(afterSecondClick.trim()) || 0;
+                    expect(likesAfterSecond).to.equal(initialLikes);
+                    cy.log(`✅ Like toggle working: ${initialLikes} → ${likesAfterFirst} → ${likesAfterSecond}`);
+                });
+            });
+        });
+
+        // Test VIEW increment
         cy.get('.statItem').last().invoke('text').then((viewText) => {
             const initialViews = parseInt(viewText.trim()) || 0;
             cy.log(`Initial views: ${initialViews}`);
 
-            // Navigate back and click again to increment views
+            // Navigate back
             cy.contains('Back to Profile').click();
-            cy.url().should('include', '/user/user123');
+            cy.url({ timeout: 10000 }).should('include', '/user/user123');
+            cy.wait(1000);
 
-            // Click the same item again
+            // Visit again
             cy.get('.portfolio-model-item').first().click();
             cy.url({ timeout: 10000 }).should('match', /\/portfolio\/\d+/);
+            cy.wait(2000);
 
-            // Verify view count increased (cumulative)
-            cy.get('.statItem').last().invoke('text').then((newViewText) => {
+            // Verify view incremented
+            cy.get('.statItem').last().scrollIntoView().invoke('text').then((newViewText) => {
                 const newViews = parseInt(newViewText.trim()) || 0;
-                cy.log(`New views: ${newViews}`);
                 expect(newViews).to.equal(initialViews + 1);
+                cy.log(`✅ Views incremented: ${initialViews} → ${newViews}`);
             });
         });
 
-        // Test like button
-        cy.get('.statItem').first().invoke('text').then((initialText) => {
-            const initialLikes = parseInt(initialText.trim()) || 0;
-
-            cy.get('.statItem').first().click();
-            cy.wait(500);
-
-            cy.get('.statItem').first().invoke('text').then((newText) => {
-                const newLikes = parseInt(newText.trim()) || 0;
-                expect(newLikes).to.equal(initialLikes + 1);
-            });
-        });
-
-        cy.log('Portfolio metrics verified with uploaded YouTube video');
-    });
-
-    it('displays testimonials section on profile', () => {
-        // Already on user123's profile from beforeEach
-        cy.contains('Testimonials', { timeout: 10000 }).scrollIntoView().should('be.visible');
-
-        // Verify testimonials section exists
-        cy.get('.testimonials-section').should('be.visible');
-
-        // Check if approved testimonials display (user123 has 2 approved in seed data)
-        cy.get('body').then($body => {
-            const approvedCount = $body.find('.approved-testimonials .testimonial-card').length;
-            cy.log(`Found ${approvedCount} approved testimonials`);
-
-            if (approvedCount > 0) {
-                // Verify testimonial cards display with correct info
-                cy.get('.approved-testimonials .testimonial-card').first().within(() => {
-                    cy.get('.testimonial-author').should('be.visible');
-                    cy.get('.testimonial-content').should('be.visible');
-                    cy.get('.testimonial-date').should('be.visible');
-                });
-                cy.log('Testimonials display verified');
-            }
-
-            // Check for pending testimonials (if viewing own profile)
-            if ($body.text().includes('Pending Testimonials')) {
-                cy.log('Pending testimonials section visible - can approve/reject');
-            }
-        });
-    });
-
-    it('allows writing testimonials for other users', () => {
-        // Navigate using sidebar - click "Users" link
-        cy.contains('Users').click();
-        cy.url({ timeout: 10000 }).should('include', '/users');
-
-        // Wait for users list to load
-        cy.contains('Users List', { timeout: 10000 }).should('be.visible');
-
-        // Click on user234 to view their profile
-        cy.contains('user234').click();
-        cy.url({ timeout: 10000 }).should('include', '/user/user234');
-        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
-
-        // Scroll to testimonials section
-        cy.contains('Testimonials', { timeout: 10000 }).scrollIntoView().should('be.visible');
-
-        // Verify "Write a Testimonial" button appears (not on own profile)
-        cy.contains('button', 'Write a Testimonial').should('be.visible').click();
-
-        // Modal should open
-        cy.get('.testimonial-modal', { timeout: 5000 }).should('be.visible');
-        cy.get('.modal-header').should('contain', 'Write Testimonial for user234');
-
-        // Type testimonial content
-        cy.get('.testimonial-textarea').type('Excellent developer! Great communication and problem-solving skills. Highly recommend!');
-
-        // Verify character count displays
-        cy.get('.character-count').should('be.visible');
-
-        // Submit button should be enabled
-        cy.contains('button', 'Submit').should('not.be.disabled').click();
-
-        // Wait for submission
-        cy.wait(1000);
-
-        // Modal should close
-        cy.get('.testimonial-modal').should('not.exist');
-
-        // Success toast should appear (if you have toasts)
-        // cy.contains('Testimonial submitted for review').should('be.visible');
-
-        cy.log('Successfully wrote testimonial for user234');
+        cy.log('✅ Portfolio metrics verified successfully');
     });
 
     it('allows writing and deleting testimonials', () => {

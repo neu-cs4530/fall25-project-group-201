@@ -1,5 +1,5 @@
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Heart, Eye } from 'lucide-react';
 import ThreeViewport from '../index';
 import useUserContext from '../../../../hooks/useUserContext';
@@ -22,43 +22,66 @@ export default function PortfolioViewerPage() {
   const { user } = useUserContext();
 
   const [item, setItem] = useState<PortfolioItem | null>(location.state || null);
+  const hasRecordedView = useRef(false);
+
+  // Reset the ref when the route changes
+  useEffect(() => {
+    hasRecordedView.current = false;
+  }, [username, index]);
 
   useEffect(() => {
     const recordView = async () => {
-      if (!username || !index || !user.username) {
+      if (!username || !index || !user.username || hasRecordedView.current) {
         return;
       }
 
-      await incrementPortfolioViews(username, parseInt(index), user.username);
+      hasRecordedView.current = true;
 
-      // Update local state to reflect new view
-      if (item) {
-        setItem({
-          ...item,
-          views: [...(item.views || []), user.username],
+      try {
+        await incrementPortfolioViews(username, parseInt(index), user.username);
+
+        // Update local state to reflect new view
+        setItem(prevItem => {
+          if (!prevItem) return prevItem;
+          return {
+            ...prevItem,
+            views: [...(prevItem.views || []), user.username],
+          };
         });
+      } catch (error) {
+        console.error('Failed to increment view:', error);
       }
     };
 
     recordView();
-  }, [username, index, user.username, item]);
+  }, [username, index, user.username]);
 
   const handleToggleLike = async () => {
     if (!username || !index || !user.username || !item) {
       return;
     }
 
-    await togglePortfolioLike(username, parseInt(index), user.username);
-
     const currentLikes = item.likes || [];
     const alreadyLiked = currentLikes.includes(user.username);
 
+    // Optimistically update UI BEFORE API call
     setItem({
       ...item,
       likes: alreadyLiked
         ? currentLikes.filter(u => u !== user.username)
         : [...currentLikes, user.username],
     });
+
+    try {
+      await togglePortfolioLike(username, parseInt(index), user.username);
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+      // Revert on error
+      setItem({
+        ...item,
+        likes: currentLikes,
+      });
+    }
   };
 
   if (!item?.mediaUrl) {
