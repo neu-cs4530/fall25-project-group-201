@@ -99,7 +99,7 @@ describe('Gallery Post Controller', () => {
 
       const response = await supertest(app)
         .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString()})
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
       const openApiError = JSON.parse(response.text);
 
       expect(response.status).toBe(400);
@@ -119,7 +119,7 @@ describe('Gallery Post Controller', () => {
 
       const response = await supertest(app)
         .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString()})
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
       const openApiError = JSON.parse(response.text);
 
       expect(response.status).toBe(400);
@@ -139,7 +139,7 @@ describe('Gallery Post Controller', () => {
 
       const response = await supertest(app)
         .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString()})
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
       const openApiError = JSON.parse(response.text);
 
       expect(response.status).toBe(400);
@@ -159,7 +159,7 @@ describe('Gallery Post Controller', () => {
 
       const response = await supertest(app)
         .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString()})
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
       const openApiError = JSON.parse(response.text);
 
       expect(response.status).toBe(400);
@@ -179,7 +179,7 @@ describe('Gallery Post Controller', () => {
 
       const response = await supertest(app)
         .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString()})
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
       const openApiError = JSON.parse(response.text);
 
       expect(response.status).toBe(400);
@@ -236,9 +236,7 @@ describe('Gallery Post Controller', () => {
     });
 
     test('should return 400 when missing id', async () => {
-      const response = await supertest(app).get(
-        '/api/gallery/getGalleryPost/',
-      );
+      const response = await supertest(app).get('/api/gallery/getGalleryPost/');
 
       expect(response.status).toBe(404);
     });
@@ -268,9 +266,7 @@ describe('Gallery Post Controller', () => {
     });
 
     test('should return 400 when missing username', async () => {
-      const response = await supertest(app).delete(
-        `/api/gallery/delete/${mockGalleryPost._id}`,
-      );
+      const response = await supertest(app).delete(`/api/gallery/delete/${mockGalleryPost._id}`);
       const openApiError = JSON.parse(response.text);
 
       expect(response.status).toBe(400);
