@@ -258,31 +258,34 @@ describe('Profile Settings — editing', () => {
         // Verify stats are visible
         cy.get('.postStats').scrollIntoView().should('be.visible');
 
-        // Test LIKE toggle (works regardless of initial state)
-        cy.get('.statItem').first().invoke('text').then((initialLikeText) => {
-            const initialLikes = parseInt(initialLikeText.trim()) || 0;
+        // Test LIKE toggle - store initial value
+        cy.get('.statItem').first().invoke('text').then((initialText) => {
+            const initialLikes = parseInt(initialText.trim()) || 0;
             cy.log(`Initial likes: ${initialLikes}`);
 
-            // Click to toggle
+            // Click like button
             cy.get('.statItem').first().click();
-            cy.wait(500);
 
-            // Verify it changed
-            cy.get('.statItem').first().invoke('text').then((afterFirstClick) => {
-                const likesAfterFirst = parseInt(afterFirstClick.trim()) || 0;
-                expect(likesAfterFirst).to.not.equal(initialLikes);
+            // Wait for the like count to ACTUALLY change using Cypress retry-ability
+            cy.get('.statItem').first().should(($el) => {
+                const newLikes = parseInt($el.text().trim()) || 0;
+                expect(newLikes).to.not.equal(initialLikes);
+            });
+
+            cy.get('.statItem').first().invoke('text').then((afterFirstText) => {
+                const likesAfterFirst = parseInt(afterFirstText.trim()) || 0;
                 cy.log(`After first click: ${likesAfterFirst}`);
 
                 // Click again to toggle back
                 cy.get('.statItem').first().click();
-                cy.wait(500);
 
-                // Should return to original
-                cy.get('.statItem').first().invoke('text').then((afterSecondClick) => {
-                    const likesAfterSecond = parseInt(afterSecondClick.trim()) || 0;
-                    expect(likesAfterSecond).to.equal(initialLikes);
-                    cy.log(`✅ Like toggle working: ${initialLikes} → ${likesAfterFirst} → ${likesAfterSecond}`);
+                // Wait for it to change back
+                cy.get('.statItem').first().should(($el) => {
+                    const currentLikes = parseInt($el.text().trim()) || 0;
+                    expect(currentLikes).to.equal(initialLikes);
                 });
+
+                cy.log(`✅ Like toggle working: ${initialLikes} → ${likesAfterFirst} → ${initialLikes}`);
             });
         });
 
@@ -301,12 +304,13 @@ describe('Profile Settings — editing', () => {
             cy.url({ timeout: 10000 }).should('match', /\/portfolio\/\d+/);
             cy.wait(2000);
 
-            // Verify view incremented
-            cy.get('.statItem').last().scrollIntoView().invoke('text').then((newViewText) => {
-                const newViews = parseInt(newViewText.trim()) || 0;
+            // Verify view incremented - use should() for retry-ability
+            cy.get('.statItem').last().scrollIntoView().should(($el) => {
+                const newViews = parseInt($el.text().trim()) || 0;
                 expect(newViews).to.equal(initialViews + 1);
-                cy.log(`✅ Views incremented: ${initialViews} → ${newViews}`);
             });
+
+            cy.log(`✅ Views incremented: ${initialViews} → ${initialViews + 1}`);
         });
 
         cy.log('✅ Portfolio metrics verified successfully');
@@ -380,7 +384,6 @@ describe('Profile Settings — editing', () => {
         cy.contains('Banner image must be JPG or PNG format', { timeout: 5000 }).should('be.visible');
     });
 
-    // TODO: move to new file, test 3d viewport info button
     it('uploads 3D model and tests viewport info button functionality', () => {
         // Navigate to portfolio upload
         cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
