@@ -1,4 +1,4 @@
-import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, test3DViewport} from '../support/helpers';
+import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, test3DViewport, createQuestion, goToAnswerQuestion} from '../support/helpers';
 
 import '../support/auth0'
 import { unescape } from 'cypress/types/lodash';
@@ -39,7 +39,43 @@ describe('Cypress tests for Three Viewport controls', function () {
         test3DViewport()
     });
 
-})
+    it('Three Viewport in Question Page supports rotation, panning, tilting, and zooming', function () {
+        const title = "Test Question 1"
+        const description = "Test Question Description 1"
+        const tags = "react";
+        const media = 'test3DModel2.glb'
 
-// - /new/question, /question/:qid, commentSection, 
-// gallery:postId, new/galleryPost/:communityID, /user/:username/portfolio/:index, 
+        createQuestion(title, description, tags, media)
+
+        cy.contains(title).click()
+        test3DViewport()
+    });
+
+    it('Three Viewport in comment supports rotation, panning, tilting, and zooming', function () {
+        const title = "Test Question 1"
+        const description = "Test Question Description 1"
+        const tags = "react";
+        const media = 'test3DModel2.glb'
+
+        createQuestion(title, description, tags, media)
+
+        cy.contains(title).click()
+
+        cy.contains("Show Comments").click();
+
+       // Create a new comment
+        cy.get(".comment-textarea").type("Test comment with 3D model");
+        cy.get(".media-button").click()
+        cy.get('.file-input').click()
+        cy.get('input[type="file"]').should('exist')
+            .selectFile('cypress/fixtures/test3DModel.glb', { force: true });
+        cy.get('.add-comment-button').click()
+
+        // Verify the new comment
+        cy.get('.comment-section').should('exist');
+        cy.get('.comment-section').within(() => {
+            test3DViewport();
+        });
+    });
+
+})
