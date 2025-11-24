@@ -1,8 +1,9 @@
 Manual tests done for 3D Viewport: 
 
-Orbit Controls (rotating, zooming, panning, tilting)
-- /new/question
-    - Test: When user clicks and drags, the 3D Model previewed rotates as expected
+Orbit Controls (rotating, zooming, panning, tilting) - /new/question, /question/:qid, commentSection, 
+gallery:postId, new/galleryPost/:communityID, /user/:username/portfolio/:index, 
+/user/:username/upload-portfolio
+    - Test: When user clicks and drags, the 3D Model rotates as expected
         - Clicked 'Choose a file' button and selected a .glb file 
             => [EXPECTED] 3D model loaded into viewport 
             => [ACTUAL] 3D model loaded into viewport 
@@ -149,9 +150,42 @@ Orbit Controls (rotating, zooming, panning, tilting)
             - Up arrow key pressed
                 => [EXPECTED] Camera moves up, making it seem like the objects move down
                 => [ACTUAL] 3D Camera moves up, making it seem like the objects move down
-            
-        
-        
-        
-        
 
+Orthogonal/Perspective Projection Toggle - /new/question, /question/:qid, commentSection, gallery:postId, 
+new/galleryPost/:communityID, /user/:username/portfolio/:index, /user/:username/upload-portfolio
+    - Test: When the 3D viewport loads, the 3D model as orthogonal projection
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+            => [ACTUAL] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+    - Test: When the toggle button in the 3D viewport is clicked, the 3D model switches to perspective projection
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+            => [ACTUAL] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+        - Clicked toggle button 
+            => [EXPECTED] 3D model has perspective projection, with a perspective effect and looks slightly skewed 
+            => [ACTUAL] 3D model has perspective projection, with a perspective effect and looks slightly skewed 
+    - Test: When the toggle button in the 3D viewport is clicked twice, the 3D model switches to perspecive projection
+    and then back to orthogonal projection
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+            => [ACTUAL] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+        - Clicked toggle button 
+            => [EXPECTED] 3D model has perspective projection, with a perspective effect and looks slightly skewed 
+            => [ACTUAL] 3D model has perspective projection, with a perspective effect and looks slightly skewed 
+        - Clicked toggle button 
+            => [EXPECTED] 3D model has orthogonal projection and no perspective effect
+            => [ACTUAL] 3D model has orthogonal projection and no perspective effect
+    - Test: When the toggle button in the 3D viewport is clicked, clicking the reset button does not change the projection
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+            => [ACTUAL] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+        - Clicked toggle button 
+            => [EXPECTED] 3D model has perspective projection, with a perspective effect and looks slightly skewed 
+            => [ACTUAL] 3D model has perspective projection, with a perspective effect and looks slightly skewed 
+        - Clicked and dragged mouse around
+                => [EXPECTED] 3D scene rotates as expected, still with perspective effect
+                => [ACTUAL] 3D scene rotates as expected, still with perspective effect
+        - Clicked reset camera button
+            => [EXPECTED] 3D model still has perspective projection and no perspective effect, and camera is reset
+            => [ACTUAL] 3D model still has perspective projection and no perspective effect, and camera is reset
+   
