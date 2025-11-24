@@ -236,12 +236,19 @@ export const goToAskQuestion = () => {
  * @param text - Question content
  * @param tags - Space-separated tags
  */
-export const createQuestion = (title: string, text: string, tags: string) => {
+export const createQuestion = (title: string, text: string, tags: string, media: string) => {
   goToAskQuestion();
-  cy.get('#formTitleInput').type(title);
-  cy.get('#formTextInput').type(text);
-  cy.get('#formTagInput').type(tags);
-  cy.contains('Post Question').click();
+  cy.get('#title').type(title);
+  cy.get('#text').type(text);
+  cy.get('#tags').type(tags);
+
+  cy.get('.file-upload').click()
+      cy.get('input[type="file"]').should('exist')
+          .selectFile(`cypress/fixtures/${media}`, { force: true });
+
+  cy.wait(3000);
+
+  cy.get('.submit-btn').click();
 };
 
 export const test3DViewport = () => {
