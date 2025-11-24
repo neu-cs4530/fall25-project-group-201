@@ -51,7 +51,8 @@ export const createNewGalleryPost = (
   tags?: string[],
   media?: string,
   link?: string,
-  thumbailMediaFile?: string
+  thumbailMediaFile?: string,
+  embeddedMedia?: string
 ) => {
   if (title) {
     cy.get("#title").type(title);
@@ -80,6 +81,12 @@ export const createNewGalleryPost = (
           .selectFile(`cypress/fixtures/${media}`, { force: true });
     }
 
+    if (media.endsWith('.glb')) {
+      cy.get('.model-preview').contains("3D Model Preview")
+      cy.get('.viewport-card').should('exist');
+      cy.get('.viewport-canvas').should('exist'); 
+    }
+
     if (thumbailMediaFile) {
       cy.get('[data-cy="thumbnail-file"]').click()
       cy.get('[data-cy="thumbnail-file"] input[type="file"]')
@@ -90,6 +97,18 @@ export const createNewGalleryPost = (
     const isEmbed = /^https?:\/\//i.test(media);
     if (isEmbed) {
       cy.get("#embed-text").type(`${media}`)
+
+      cy.get('.embed-preview').contains('Preview')
+
+      if (/youtube\.com|youtu\.be|vimeo\.com/i.test(media)) {
+        cy.get('iframe')
+          .should('have.attr', 'src', `${embeddedMedia}`);
+      } 
+      // Check for image embeds
+      else if (/\.(jpg|jpeg|png)$/i.test(media)) {
+        cy.get('.postMedia').should('have.attr', 'src', `${embeddedMedia}`);
+      } 
+
     }
   }
 
@@ -119,29 +138,41 @@ export const verifyNewGalleryPost = (
     cy.contains('.tagChip', '3d Art').should('exist');
   });
 
-  const imgExts = ['.png', '.jpg', '.jpeg'];
-  if (imgExts.some(ext => media.endsWith(ext))) {
-    cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
-  }
-
-  const vidExts = ['.mov', '.mp4'];
-  if (vidExts.some(ext => media.endsWith(ext))) {
-    cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
-  }
-
-  if (link) {
-    cy.window().then(win => {
-        cy.spy(win, 'open').as('winOpen');
-    });
-
-    cy.get('.viewProjectBtn').click();
-    cy.get('@winOpen').should('have.been.calledOnce');
-  }
-
   const isEmbed = /^https?:\/\//i.test(media);
   if (isEmbed) {
-    cy.get('iframe')
-    .should('have.attr', 'src', `${media}`);
+    if (/youtube\.com|youtu\.be|vimeo\.com/i.test(media)) {
+      cy.get('iframe')
+        .should('have.attr', 'src', `${media}`);
+    } 
+    // Check for image embeds
+    else if (/\.(jpg|jpeg|png)$/i.test(media)) {
+      cy.get('.postMedia').should('have.attr', 'src', `${media}`);
+    } 
+  }
+  else {
+    const imgExts = ['.png', '.jpg', '.jpeg'];
+    if (imgExts.some(ext => media.endsWith(ext))) {
+      cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
+    }
+
+    const vidExts = ['.mov', '.mp4'];
+    if (vidExts.some(ext => media.endsWith(ext))) {
+      cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
+    }
+
+    if (media.endsWith('.glb')) {
+      cy.get('.viewport-card').should('exist');
+      cy.get('.viewport-canvas').should('exist'); 
+    }
+
+    if (link) {
+      cy.window().then(win => {
+          cy.spy(win, 'open').as('winOpen');
+      });
+
+      cy.get('.viewProjectBtn').click();
+      cy.get('@winOpen').should('have.been.calledOnce');
+    }
   }
 };
 

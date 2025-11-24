@@ -18,7 +18,6 @@ import PermissionCheckbox from '../../baseComponents/permissionCheckbox';
  *
  * Shows error messages for:
  * - Empty required fields
- * - Invalid URLs
  * - Missing thumbnail for .glb files
  *
  * Provides a button to post the project to the gallery.

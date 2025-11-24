@@ -48,6 +48,58 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
         cy.get('.error').contains('Project title cannot be empty')
     })
 
+    it('Error message shown if title > 100 characters in gallery post form', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click()
+
+        // Fill form to create a new gallery post
+        const title = "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+        const description = "Gallery post with long title"
+        const tags = ['3d art', 'modeling']
+        const link = 'https://www.youtube.com/watch?v=N88g_IGGHRg'
+        const mediaFile = 'testImage.jpg'
+        createNewGalleryPost(title, description, tags, mediaFile, link, undefined)
+
+        cy.get('.error').contains('Title cannot be more than 100 characters')
+    })
+
+    it('Shows error if communityID is undefined when posting', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click();
+
+        const title = "Valid title";
+        const description = "Testing undefined community";
+        const tags = ['3d art'];
+        const link = '';
+        const mediaFile = 'testImage.jpg';
+
+        // Intercept the POST request and simulate a server error
+        cy.intercept('POST', '/api/gallery/create', (req) => {
+            // Simulate backend error due to missing communityID
+            req.reply({
+            statusCode: 400,
+            body: { 
+                title: title,
+                description: description,
+                user: testUser,
+                media: mediaFile,
+                postedAt: new Date(),
+                views: 0,
+                downloads: 0,
+                likes: [],
+            },
+            });
+        }).as('addGalleryPost');
+
+        createNewGalleryPost(title, description, tags, mediaFile, link, undefined);
+
+        cy.wait('@addGalleryPost');
+
+        cy.get('.error').contains('Failed to post gallery post');
+    });
+
     it('Error message shown if no description entered in gallery post form', function () {
         goToCommunities();
         viewCommunityCard('React Enthusiasts');
@@ -143,7 +195,7 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
         const media = 'https://www.youtube.com/watch?v=XUwzASyHr4Q'
         const embeddedMedia = 'https://www.youtube.com/embed/XUwzASyHr4Q'
 
-        createNewGalleryPost(title, description, tags, media, undefined, undefined)
+        createNewGalleryPost(title, description, tags, media, undefined, undefined, embeddedMedia)
 
         // Verify the new gallery post exists
         verifyNewGalleryPost(title, testUser, description, tags, embeddedMedia, undefined, undefined)
@@ -161,14 +213,27 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
         const media = 'https://vimeo.com/49384334'
         const embeddedMedia = 'https://player.vimeo.com/video/49384334'
 
-        createNewGalleryPost(title, description, tags, media, undefined, undefined)
+        createNewGalleryPost(title, description, tags, media, undefined, undefined, embeddedMedia)
+
+        // Verify the new gallery post exists
+        verifyNewGalleryPost(title, testUser, description, tags, embeddedMedia, undefined, undefined)
+    });
+
+    it('Creates a new gallery post with an image embed successfully', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click()
+
+        // Fill form to create a new gallery post
+        const title = "Test gallery post with image embed"
+        const description = "This is a test gallery post with image embed"
+        const tags = ['3d art']
+        const media = 'https://i0.wp.com/getmimo.wpcomstaging.com/wp-content/uploads/2024/06/react_header.png?fit=1920%2C1080&ssl=1'
+        const embeddedMedia = 'https://i0.wp.com/getmimo.wpcomstaging.com/wp-content/uploads/2024/06/react_header.png?fit=1920%2C1080&ssl=1'
+
+        createNewGalleryPost(title, description, tags, media, undefined, undefined, embeddedMedia)
 
         // Verify the new gallery post exists
         verifyNewGalleryPost(title, testUser, description, tags, embeddedMedia, undefined, undefined)
     });
 })
-
-// previews!! - need to fix related bugs
-// error messages for invalid input - webp file
-// check for other errors
-// check thumbnail media in gallery component
