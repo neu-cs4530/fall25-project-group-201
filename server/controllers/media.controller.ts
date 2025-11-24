@@ -2,6 +2,8 @@ import express, { Response, Request } from 'express';
 import multer from 'multer';
 import mediaService from '../services/media.service';
 import { Media, FakeSOSocket } from '../types/types';
+import path from 'path';
+import fs from 'fs';
 
 const upload = multer({ storage: multer.memoryStorage() }); // memory storage
 
@@ -20,6 +22,8 @@ const mediaController = (socket: FakeSOSocket) => {
       } else if (!filepathLocation) {
         return res.status(400).json({ error: 'Filepath missing' });
       }
+
+      // const uniqueFilepath = await mediaService.getUniqueFilepath(user, filepathLocation);
 
       const media: Media = {
         filepathLocation,
