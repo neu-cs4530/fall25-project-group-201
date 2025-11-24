@@ -4,11 +4,6 @@ import { Object3D, Mesh } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
-interface TestWindow extends Window {
-  testCamera?: THREE.PerspectiveCamera;
-  testScene?: THREE.Scene | null;
-}
-
 /**
  * Creates an orthographic projection matrix manually.
  */
@@ -304,11 +299,11 @@ const useThreeViewport = (
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('mousemove', handleMouseMove);
+    containerRef.current.addEventListener('keydown', handleKeyDown);
+    containerRef.current.addEventListener('keyup', handleKeyUp);
+    containerRef.current.addEventListener('mousedown', handleMouseDown);
+    containerRef.current.addEventListener('mouseup', handleMouseUp);
+    containerRef.current.addEventListener('mousemove', handleMouseMove);
     // wheel listener attached to container element (passive: false so preventDefault works)
     const handleWheelContainer = containerRef.current; // capture the ref value
     if (!handleWheelContainer) return;
@@ -535,6 +530,9 @@ const useThreeViewport = (
    */
   useEffect(() => {
     if (!modelPath) return;
+
+    containerRef.current?.focus();
+
     const scene = sceneRef.current;
     const camera = cameraRef.current;
     const renderer = rendererRef.current;
@@ -655,10 +653,6 @@ const useThreeViewport = (
 
     camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
   }, [translationSetting]);
-
-  useEffect(() => {
-    (window as TestWindow).testScene = sceneRef.current;
-  }, []);
 
   /**
    * Resets the camera to its initial position and rotation based on current view mode.
