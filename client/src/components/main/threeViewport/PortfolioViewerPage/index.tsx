@@ -37,20 +37,16 @@ export default function PortfolioViewerPage() {
 
       hasRecordedView.current = true;
 
-      try {
-        await incrementPortfolioViews(username, parseInt(index), user.username);
+      await incrementPortfolioViews(username, parseInt(index), user.username);
 
-        // Update local state to reflect new view
-        setItem(prevItem => {
-          if (!prevItem) return prevItem;
-          return {
-            ...prevItem,
-            views: [...(prevItem.views || []), user.username],
-          };
-        });
-      } catch (error) {
-        console.error('Failed to increment view:', error);
-      }
+      // Update local state to reflect new view
+      setItem(prevItem => {
+        if (!prevItem) return prevItem;
+        return {
+          ...prevItem,
+          views: [...(prevItem.views || []), user.username],
+        };
+      });
     };
 
     recordView();
@@ -72,16 +68,12 @@ export default function PortfolioViewerPage() {
         : [...currentLikes, user.username],
     });
 
-    try {
-      await togglePortfolioLike(username, parseInt(index), user.username);
-    } catch (error) {
-      console.error('Failed to toggle like:', error);
-      // Revert on error
-      setItem({
-        ...item,
-        likes: currentLikes,
-      });
-    }
+    await togglePortfolioLike(username, parseInt(index), user.username);
+    // Revert on error
+    setItem({
+      ...item,
+      likes: currentLikes,
+    });
   };
 
   if (!item?.mediaUrl) {
