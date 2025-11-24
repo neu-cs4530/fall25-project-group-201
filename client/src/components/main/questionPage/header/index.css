@@ -56,7 +56,9 @@
 .askButtonWrapper {
   margin-left: auto;
   display: inline-block;
+  white-space: nowrap;
 }
+
 
 .askButtonWrapper button {
   width: auto;
