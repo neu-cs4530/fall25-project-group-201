@@ -191,19 +191,6 @@ export const teardownTest = () => {
   cleanDatabase();
 };
 
-export const auth0Login = () => {
-  cy.visit('/')
-  cy.contains('Welcome ')
-  cy.contains('button', 'Log In or Sign Up').click()
-
-  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
-      // Fill in the login form
-      cy.get('input[name="username"], input[name="email"]').type('user123')
-      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
-      cy.get('button[type="submit"]:visible').click()
-  })
-}
-
 /**
  * Auth0 login specifically for profile settings tests
  * Has longer waits and better error handling for profile page navigation
@@ -218,8 +205,8 @@ export const auth0LoginUserProfile = () => {
     cy.get('input[name="username"], input[name="email"]', { timeout: 15000 }).should('be.visible')
     
     // Fill in the login form
-    cy.get('input[name="username"], input[name="email"]').clear().type('user123')
-    cy.get('input[name="password"]').clear().type('securePass123!', { log: false })
+    cy.get('input[name="username"], input[name="email"]').clear().type('user234')
+    cy.get('input[name="password"]').clear().type('strongP@ss234', { log: false })
     
     // Click submit and wait for redirect
     cy.get('button[type="submit"]:visible').click()

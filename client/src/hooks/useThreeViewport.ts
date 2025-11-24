@@ -4,6 +4,11 @@ import { Object3D, Mesh } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
+interface TestWindow extends Window {
+  testCamera?: THREE.PerspectiveCamera;
+  testScene?: THREE.Scene | null;
+}
+
 /**
  * Creates an orthographic projection matrix manually.
  */
@@ -650,6 +655,10 @@ const useThreeViewport = (
 
     camera.position.set(translationSetting[0], translationSetting[1], translationSetting[2]);
   }, [translationSetting]);
+
+  useEffect(() => {
+    (window as TestWindow).testScene = sceneRef.current;
+  }, []);
 
   /**
    * Resets the camera to its initial position and rotation based on current view mode.
