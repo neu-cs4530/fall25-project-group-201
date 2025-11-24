@@ -35,7 +35,7 @@ const useGalleryPostPage = () => {
   const [postUser, setPostUser] = useState<SafeDatabaseUser | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const {getAccessTokenSilently} = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
 
   /**
    * Fetch the gallery post by ID from the server.
@@ -120,12 +120,8 @@ const useGalleryPostPage = () => {
     const token = await getAccessTokenSilently({
       authorizationParams: {
         audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      }
+      },
     });
-
-    console.log('Token exists?', !!token);
-    console.log('Token:', token);
-    console.log('Audience', import.meta.env.VITE_AUTH0_AUDIENCE);
 
     // Delete media only if it is a media path not a media url (embed)
     if (post.media.startsWith('/userData/')) {
@@ -149,7 +145,6 @@ const useGalleryPostPage = () => {
       navigate(`/communities/${post.community}`);
     } catch {
       setError('Failed to delete post.');
-      console.log(error);
     }
   };
 

@@ -16,7 +16,7 @@ import {
   fetchAndIncrementGalleryPostViewsById,
   downloadGalleryPostMedia,
 } from '../services/gallerypost.service';
-import {auth} from 'express-oauth2-jwt-bearer';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 /**
  * Creates verification middleware
@@ -24,7 +24,7 @@ import {auth} from 'express-oauth2-jwt-bearer';
 const jwtCheck = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
-  tokenSigningAlg: 'RS256'
+  tokenSigningAlg: 'RS256',
 });
 
 /**
@@ -136,10 +136,6 @@ const galleryPostController = (socket: FakeSOSocket) => {
     try {
       const { galleryPostId } = _req.params;
       const { username } = _req.query;
-
-      const userAuthId = (_req as any).auth?.sub;
-
-      console.log('user auth id,', userAuthId);
 
       const galleryPost = await deleteGalleryPost(galleryPostId, username);
 

@@ -66,13 +66,11 @@ const deleteGalleryPost = async (
   username: string,
   token: string,
 ): Promise<DatabaseGalleryPost> => {
-  const res = await api.delete(`${GALLERY_API_URL}/delete/${galleryPostId}?username=${username}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
+  const res = await api.delete(`${GALLERY_API_URL}/delete/${galleryPostId}?username=${username}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   if (res.status !== 200) {
     throw new Error('Error while deleting gallery post');
