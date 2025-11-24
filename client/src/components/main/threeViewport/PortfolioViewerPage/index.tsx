@@ -29,18 +29,14 @@ export default function PortfolioViewerPage() {
         return;
       }
 
-      try {
-        await incrementPortfolioViews(username, parseInt(index), user.username);
+      await incrementPortfolioViews(username, parseInt(index), user.username);
 
-        // Update local state to reflect new view
-        if (item) {
-          setItem({
-            ...item,
-            views: [...(item.views || []), user.username],
-          });
-        }
-      } catch (error) {
-        console.error('Failed to increment views:', error);
+      // Update local state to reflect new view
+      if (item) {
+        setItem({
+          ...item,
+          views: [...(item.views || []), user.username],
+        });
       }
     };
 
