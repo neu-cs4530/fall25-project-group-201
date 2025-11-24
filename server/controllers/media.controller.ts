@@ -21,7 +21,7 @@ import { Media, FakeSOSocket } from '../types/types';
 //   }
 // };
 
-const upload = multer({ 
+const upload = multer({
   storage: multer.memoryStorage(),
   // fileFilter,
   // limits: {

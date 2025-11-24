@@ -41,7 +41,6 @@ const NewQuestion = () => {
     handleFileChange,
     downloadPermission,
     setDownloadPermission,
-    fileName: filename,
     setFileName,
   } = useNewQuestion();
 
@@ -115,19 +114,16 @@ const NewQuestion = () => {
 
     // sanitizing file name
     setFileName(file.name);
-    console.log('file name before sanitize:', filename);
-    const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-                                      .replace(/\.{2,}/g, '.')
-                                      .replace(/^\.+/, '')
-                                      .substring(0, 255);  
+    const sanitizedFilename = file.name
+      .replace(/[^a-zA-Z0-9._-]/g, '_')
+      .replace(/\.{2,}/g, '.')
+      .replace(/^\.+/, '')
+      .substring(0, 255);
     setFileName(sanitizedFilename);
-
-    console.log('filename after sanitize:', filename);
 
     // check allowed ext
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
     const ext = sanitizedFilename.slice(sanitizedFilename.lastIndexOf('.')).toLowerCase();
-    console.log('ext', ext)
     if (!allowedExtensions.includes(ext)) {
       setMediaErr('Unsupported file type');
       URL.revokeObjectURL(tempFileUrl);

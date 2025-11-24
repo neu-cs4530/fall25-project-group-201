@@ -73,7 +73,7 @@ const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => 
 };
 
 // const getUniqueFilepath = async (
-//   username: string, 
+//   username: string,
 //   requestedFilepath: string
 // ): Promise<string> => {
 //   // try {
@@ -81,10 +81,10 @@ const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => 
 //     // e.g., "/userData/john/photo.jpg" -> dir: "/userData/john/", filename: "photo.jpg"
 //     const pathParts = requestedFilepath.split('/');
 //     const filename = pathParts[pathParts.length - 1];
-    
+
 //     // Get the actual filesystem directory
 //     const userDir = path.join(__dirname, '../../../client/public/userData/', username);
-    
+
 //     console.log('userDir', userDir);
 
 //     // Ensure directory exists
@@ -108,14 +108,14 @@ const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => 
 
 //     // Return the unique filepath in the same format as requested
 //     return `/userData/${username}/${uniqueFilename}`;
-//   // } 
+//   // }
 //   // catch (error) {
 //   //   { error: (error as Error).message };
 //   // }
 // };
 
 export default {
-  addMedia, 
+  addMedia,
   deleteMedia,
   // getUniqueFilepath
- };
+};

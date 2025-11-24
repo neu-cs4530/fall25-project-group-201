@@ -96,7 +96,7 @@ const useNewQuestion = () => {
     // sanitize URL if provided
     if (mediaUrl) {
       const trimmedUrl = validator.trim(mediaUrl);
-      if (!validator.isURL(trimmedUrl, { protocols: ['http', 'https']})) {
+      if (!validator.isURL(trimmedUrl, { protocols: ['http', 'https'] })) {
         setMediaErr('Invalid url');
       }
       setMediaUrl(trimmedUrl);
@@ -164,7 +164,6 @@ const useNewQuestion = () => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
   };
 
   /**
