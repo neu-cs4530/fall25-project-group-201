@@ -1,11 +1,11 @@
 /// <reference types="cypress" />
-import { auth0LoginUserProfile, setupTest, teardownTest } from '../support/helpers';
+import { auth0LoginUserProfile, setupTest, teardownTest} from '../support/helpers';
 import '../support/auth0';
 
 describe('Profile Settings — editing', () => {
     // Setup database ONCE for all tests, not before each
     before(() => {
-        // setupTest();
+        setupTest();
     });
 
     beforeEach(() => {
@@ -21,7 +21,7 @@ describe('Profile Settings — editing', () => {
         // Click the profile icon dropdown trigger
         cy.get('.profile-trigger', { timeout: 10000 }).should('be.visible').click();
 
-        // Wait for dropdown menu to appear and click "Profile" option
+        // Wait for dropdown menu to appear and click profile
         cy.get('.profile-menu', { timeout: 5000 }).should('be.visible');
         cy.get('.profile-menu-item').contains('Profile').click();
 
@@ -33,7 +33,6 @@ describe('Profile Settings — editing', () => {
     it('allows editing the biography', () => {
         const newBio = 'This is a Cypress test bio';
 
-        // Wait for biography section to be visible
         cy.contains('Biography', { timeout: 10000 }).should('be.visible');
 
         // Click the Edit button in the bio section
@@ -47,7 +46,6 @@ describe('Profile Settings — editing', () => {
             cy.contains('button', 'Save').click();
         });
 
-        // Wait a moment for the save to complete
         cy.wait(1000);
 
         // Verify the new bio is displayed
@@ -441,6 +439,6 @@ describe('Profile Settings — editing', () => {
 
     // Cleanup database ONCE after all tests
     after(() => {
-        // teardownTest();
+        teardownTest();
     });
 });
