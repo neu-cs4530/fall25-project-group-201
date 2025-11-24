@@ -299,11 +299,11 @@ const useThreeViewport = (
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('mousemove', handleMouseMove);
+    containerRef.current.addEventListener('keydown', handleKeyDown);
+    containerRef.current.addEventListener('keyup', handleKeyUp);
+    containerRef.current.addEventListener('mousedown', handleMouseDown);
+    containerRef.current.addEventListener('mouseup', handleMouseUp);
+    containerRef.current.addEventListener('mousemove', handleMouseMove);
     // wheel listener attached to container element (passive: false so preventDefault works)
     const handleWheelContainer = containerRef.current; // capture the ref value
     if (!handleWheelContainer) return;
@@ -530,6 +530,9 @@ const useThreeViewport = (
    */
   useEffect(() => {
     if (!modelPath) return;
+
+    containerRef.current?.focus();
+
     const scene = sceneRef.current;
     const camera = cameraRef.current;
     const renderer = rendererRef.current;

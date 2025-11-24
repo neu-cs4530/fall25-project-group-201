@@ -52,10 +52,12 @@ const CommentSection = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [permitDownload, setPermitDownload] = useState<boolean>(true);
-  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
-  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
   let tempMediaPath: string | undefined;
   let mediaSize: string | undefined;
+  const [rotationSettings, setRotationSettings] = useState<Record<string, number[] | null>>({});
+  const [translationSettings, setTranslationSettings] = useState<Record<string, number[] | null>>(
+    {},
+  );
 
   /**
    * Validates whether a provided string is a valid media URL.
@@ -303,12 +305,30 @@ const CommentSection = ({
                           return (
                             <div className='comment-model-wrapper'>
                               <ThreeViewport
-                                key={comment.mediaPath}
+                                key={comment._id.toString()}
                                 modelPath={comment.mediaPath}
-                                rotationSetting={rotationSetting}
-                                setRotationSetting={setRotationSetting}
-                                translationSetting={translationSetting}
-                                setTranslationSetting={setTranslationSetting}
+                                rotationSetting={rotationSettings[comment._id.toString()] || null}
+                                setRotationSetting={rot =>
+                                  setRotationSettings(prev => ({
+                                    ...prev,
+                                    [comment._id.toString()]:
+                                      typeof rot === 'function'
+                                        ? rot(prev[comment._id.toString()] || null)
+                                        : rot,
+                                  }))
+                                }
+                                translationSetting={
+                                  translationSettings[comment._id.toString()] || null
+                                }
+                                setTranslationSetting={tr =>
+                                  setTranslationSettings(prev => ({
+                                    ...prev,
+                                    [comment._id.toString()]:
+                                      typeof tr === 'function'
+                                        ? tr(prev[comment._id.toString()] || null)
+                                        : tr,
+                                  }))
+                                }
                               />
                             </div>
                           );
