@@ -235,6 +235,14 @@ describe('Gallery Post Controller', () => {
       expect(res.body.title).toBe(mockGalleryPost.title);
     });
 
+    test('should return 400 when missing id', async () => {
+      const response = await supertest(app).get(
+        '/api/gallery/getGalleryPost/',
+      );
+
+      expect(response.status).toBe(404);
+    });
+
     test('returns 500 when service errors', async () => {
       getByIdSpy.mockResolvedValueOnce({ error: 'Not found' });
 
