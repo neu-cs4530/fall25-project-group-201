@@ -41,7 +41,7 @@ export default function PortfolioViewerPage() {
     };
 
     recordView();
-  }, []);
+  }, [username, index, user.username, item]);
 
   const handleToggleLike = async () => {
     if (!username || !index || !user.username || !item) {
