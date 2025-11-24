@@ -48,6 +48,11 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
 
     const mediaDoc = new MediaModel(mediaToSave);
     const savedMedia = await mediaDoc.save();
+
+    if (!savedMedia) {
+      throw new Error('Failed to add media');
+    }
+
     return savedMedia;
   } catch (error) {
     return { error: (error as Error).message };

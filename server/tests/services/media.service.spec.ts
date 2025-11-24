@@ -31,6 +31,15 @@ describe('Add media', () => {
       expect(saveMock).toHaveBeenCalled();
     });
 
+    test('should return error when save returns null', async () => {
+      jest.spyOn(MediaModel.prototype, 'save').mockResolvedValueOnce(null);
+
+      const result = await mediaService.addMedia(mockMediaInput);
+
+      expect(result).toEqual({ error: 'Failed to add media' });
+    });
+
+
     test('addMedia should return an object with error if create throws an error', async () => {
       jest.spyOn(MediaModel.prototype, 'save').mockRejectedValue(new Error('Error from db query'));
       const result = await mediaService.addMedia(mockMediaInput);
