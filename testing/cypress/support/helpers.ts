@@ -32,19 +32,6 @@ export const cleanDatabase = () => {
   cy.exec('npx ts-node ../server/seedData/deleteDB.ts ' + Cypress.env('MONGODB_URI'));
 };
 
-export const auth0Login = () => {
-  cy.visit('/')
-  cy.contains('Welcome ')
-  cy.contains('button', 'Log In or Sign Up').click()
-
-  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
-      // Fill in the login form
-      cy.get('input[name="username"], input[name="email"]').type('user234')
-      cy.get('input[name="password"]').type('strongP@ss234', { log: false }) // hide in logs
-      cy.get('button[type="submit"]:visible').click()
-  })
-}
-
 export const createNewGalleryPost = (
   title?: string,
   description?: string,
