@@ -7,7 +7,7 @@ import { DatabaseMedia } from '../../types/types';
 // Mock media data
 const mockMedia: DatabaseMedia = {
   _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
-  filepathLocation: "dummy/filepath",
+  filepathLocation: 'dummy/filepath',
   user: 'test_user',
   fileSize: '13 KB',
 };
@@ -93,15 +93,16 @@ describe('DELETE /delete/:filepathLocation', () => {
   test('should delete a media successfully', async () => {
     deleteMediaSpy.mockResolvedValueOnce(mockMedia);
 
-    const response = await supertest(app)
-      .delete(`/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`)
+    const response = await supertest(app).delete(
+      `/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`,
+    );
 
     expect(response.status).toBe(200);
     expect(deleteMediaSpy).toHaveBeenCalledWith(`dummy/filepath`);
   });
 
   test('should return 400 when missing filepathLocation', async () => {
-    const response = await supertest(app).delete('/api/media/delete/')
+    const response = await supertest(app).delete('/api/media/delete/');
 
     expect(response.status).toBe(404);
   });
@@ -109,8 +110,9 @@ describe('DELETE /delete/:filepathLocation', () => {
   test('should return 500 when service throws error', async () => {
     deleteMediaSpy.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await supertest(app)
-      .delete(`/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`)
+    const response = await supertest(app).delete(
+      `/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`,
+    );
 
     expect(response.status).toBe(500);
     expect(response.text).toContain('Database error');
@@ -119,8 +121,9 @@ describe('DELETE /delete/:filepathLocation', () => {
   test('should return 500 when service returns error', async () => {
     deleteMediaSpy.mockResolvedValueOnce({ error: 'Media not found' });
 
-    const response = await supertest(app)
-      .delete(`/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`)
+    const response = await supertest(app).delete(
+      `/api/media/delete/${encodeURIComponent(mockMedia.filepathLocation)}`,
+    );
 
     expect(response.status).toBe(500);
     expect(response.text).toContain('Media not found');

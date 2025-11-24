@@ -17,7 +17,7 @@ describe('Media Service', () => {
 
   const mockMedia: DatabaseMedia = {
     _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
-    filepathLocation: "dummy/filepath",
+    filepathLocation: 'dummy/filepath',
     user: 'test_user',
     fileSize: '13 KB',
   };
@@ -48,7 +48,6 @@ describe('Media Service', () => {
       expect(result).toEqual({ error: 'Failed to add media' });
     });
 
-
     test('addMedia should return an object with error if create throws an error', async () => {
       jest.spyOn(MediaModel.prototype, 'save').mockRejectedValue(new Error('Error from db query'));
       const result = await mediaService.addMedia(mockMediaInput);
@@ -60,7 +59,9 @@ describe('Media Service', () => {
     test('should delete media when it exists', async () => {
       jest.spyOn(MediaModel, 'findOneAndDelete').mockResolvedValueOnce(mockMedia);
 
-      const result = await mediaService.deleteMedia(`${encodeURIComponent(mockMedia.filepathLocation)}`);
+      const result = await mediaService.deleteMedia(
+        `${encodeURIComponent(mockMedia.filepathLocation)}`,
+      );
 
       expect(result).toEqual(mockMedia);
       expect(MediaModel.findOneAndDelete).toHaveBeenCalledWith({
@@ -71,9 +72,7 @@ describe('Media Service', () => {
     test('should return error when media not found', async () => {
       jest.spyOn(MediaModel, 'findOneAndDelete').mockResolvedValueOnce(null);
 
-      const result = await mediaService.deleteMedia(
-        encodeURIComponent(mockMedia.filepathLocation)
-      );
+      const result = await mediaService.deleteMedia(encodeURIComponent(mockMedia.filepathLocation));
 
       expect(result).toEqual({ error: 'Media not found' });
     });
@@ -81,13 +80,9 @@ describe('Media Service', () => {
     test('should throw error when deletion fails', async () => {
       jest.spyOn(MediaModel, 'findOneAndDelete').mockRejectedValueOnce(new Error('Database error'));
 
-      const result = await mediaService.deleteMedia(
-        encodeURIComponent(mockMedia.filepathLocation)
-      );
+      const result = await mediaService.deleteMedia(encodeURIComponent(mockMedia.filepathLocation));
 
       expect(result).toEqual({ error: 'Database error' });
     });
-
   });
 });
-
