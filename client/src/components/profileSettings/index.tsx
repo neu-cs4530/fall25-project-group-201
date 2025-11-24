@@ -143,7 +143,7 @@ const ProfileSettings: React.FC = () => {
         <h2>Profile</h2>
         <Toaster position='top-center' />
 
-        {/* Banner & Profile Picture Section - INTERACTIVE */}
+        {/* Banner & Profile Picture Section */}
         <div className='profile-header-section'>
           <div
             className='profile-banner-placeholder'
@@ -253,8 +253,6 @@ const ProfileSettings: React.FC = () => {
               <strong>Date Joined:</strong>{' '}
               {userData.dateJoined ? new Date(userData.dateJoined).toLocaleDateString() : 'N/A'}
             </p>
-
-            {/* ---- NEW SECTIONS START HERE ---- */}
 
             {/* External Links Section */}
 
@@ -528,7 +526,7 @@ const ProfileSettings: React.FC = () => {
               </div>
             )}
 
-            {/* Portfolio Grid Section - INTERACTIVE */}
+            {/* Portfolio Grid Section */}
             <div
               style={{
                 display: 'flex',
@@ -549,10 +547,8 @@ const ProfileSettings: React.FC = () => {
             <div className='portfolio-grid-section'>
               {userData.portfolio && userData.portfolio.length > 0 ? (
                 userData.portfolio.map((item, index) => {
-                  // Changed from portfolioModels
-                  const mediaUrl = item.mediaUrl; // Get from item object
-                  const thumbnailUrl = item.thumbnailUrl; // Get from item object
-
+                  const mediaUrl = item.mediaUrl;
+                  const thumbnailUrl = item.thumbnailUrl;
                   // Determine media type
                   const isGlbModel =
                     mediaUrl.toLowerCase().endsWith('.glb') ||
@@ -627,7 +623,7 @@ const ProfileSettings: React.FC = () => {
                         </>
                       )}
 
-                      {/* Show thumbnail if available (prioritize thumbnails for ALL media) */}
+                      {/* Show thumbnail if available */}
                       {thumbnailUrl ? (
                         <img
                           src={thumbnailUrl}
@@ -639,7 +635,7 @@ const ProfileSettings: React.FC = () => {
                           }}
                         />
                       ) : isGlbModel ? (
-                        // 3D model without thumbnail (fallback to viewer)
+                        // 3D model without thumbnail (fallback)
                         <div style={{ width: '100%', height: '200px' }}>
                           <PortfolioModelViewer modelUrl={mediaUrl} />
                         </div>
@@ -708,7 +704,7 @@ const ProfileSettings: React.FC = () => {
               )}
             </div>
 
-            {/* Resume Section - INTERACTIVE */}
+            {/* Resume Section */}
             <h4>Resume / CV</h4>
             <div className='resume-section'>
               {userData.resumeFile ? (
@@ -759,7 +755,7 @@ const ProfileSettings: React.FC = () => {
               )}
             </div>
 
-            {/* Testimonials Section - ADD THIS ENTIRE BLOCK */}
+            {/* Testimonials Section */}
             <h4>Testimonials</h4>
             {!canEditProfile && currentUser.username && (
               <WriteTestimonialButton
@@ -778,7 +774,7 @@ const ProfileSettings: React.FC = () => {
               onApprove={handleApproveTestimonial}
             />
 
-            {/* Theme Customization - INTERACTIVE */}
+            {/* Theme Customization */}
 
             {canEditProfile && (
               <>
@@ -958,8 +954,7 @@ const ProfileSettings: React.FC = () => {
 
                         if (res.ok) {
                           const updatedUser = await res.json();
-                          // Update local state instead of reloading
-                          setUserData(updatedUser); // This will update userData
+                          setUserData(updatedUser);
                           toast.success('Font updated!');
                         } else {
                           toast.error('Failed to update font');
