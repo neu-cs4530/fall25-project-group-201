@@ -9,15 +9,19 @@ import {
   FakeSOSocket,
   PopulatedDatabaseQuestion,
   CommunityQuestionsRequest,
+  DownloadQuestionMediaRequest,
+  ToggleQuestionMediaPermissionRequest,
 } from '../types/types';
 import {
   addVoteToQuestion,
+  downloadQuestionMedia,
   fetchAndIncrementQuestionViewsById,
   filterQuestionsByAskedBy,
   filterQuestionsBySearch,
   getCommunityQuestions,
   getQuestionsByOrder,
   saveQuestion,
+  toggleQuestionMediaPermission,
 } from '../services/question.service';
 import { processTags } from '../services/tag.service';
 import { populateDocument } from '../utils/database.util';
@@ -238,6 +242,44 @@ const questionController = (socket: FakeSOSocket) => {
     }
   };
 
+  const downloadQuestionMediaRoute = async (req: DownloadQuestionMediaRequest, res: Response) => {
+    const { qid } = req.params;
+
+    if (!ObjectId.isValid(qid)) {
+      res.status(400).send('Invalid ID format');
+      return;
+    }
+
+    try {
+      const mediaLink = await downloadQuestionMedia(qid);
+      res.json(mediaLink);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error while download media from question: ${err.message}`);
+      } else {
+        res.status(500).send(`Error while download media from question`);
+      }
+    }
+  };
+
+  const toggleQuestionMediaPermissionRoute = async (
+    req: ToggleQuestionMediaPermissionRequest,
+    res: Response,
+  ) => {
+    const { qid, username } = req.body;
+
+    try {
+      const updatedPermission = await toggleQuestionMediaPermission(qid, username);
+      res.json(updatedPermission);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error while toggling media permission from question: ${err.message}`);
+      } else {
+        res.status(500).send(`Error while toggling media permission from question`);
+      }
+    }
+  };
+
   // add appropriate HTTP verbs and their endpoints to the router
   router.get('/getQuestion', getQuestionsByFilter);
   router.get('/getQuestionById/:qid', getQuestionById);
@@ -245,6 +287,8 @@ const questionController = (socket: FakeSOSocket) => {
   router.post('/upvoteQuestion', upvoteQuestion);
   router.post('/downvoteQuestion', downvoteQuestion);
   router.get('/getCommunityQuestions/:communityId', getCommunityQuestionsRoute);
+  router.get('/downloadQuestionMedia/:qid', downloadQuestionMediaRoute);
+  router.post('/toggleMediaPermission', toggleQuestionMediaPermissionRoute);
 
   return router;
 };

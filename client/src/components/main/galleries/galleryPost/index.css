@@ -1,9 +1,11 @@
+.defaultProfileIcon {
+  margin-right: 5px;
+  flex-shrink: 0;
+  color: #666;
+}
+
 .galleryPostPage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
-  background: #fff;
 }
 
 .mediaWrapper {
@@ -28,7 +30,7 @@
 
 .postInfo h1 {
   font-size: 1.5rem;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .postMeta {
@@ -37,11 +39,32 @@
   margin-bottom: 10px;
 }
 
+.postMetaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
 .postStats {
   display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 10px;
   align-items: center;
+  font-size: 0.85rem;
+  width: 100%;
+  justify-content: flex-start;
+}
+.postAuthor {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.postAuthor .postedAt {
+  color: #666;
+  font-size: 0.8rem;
 }
 
 .statItem {
@@ -50,6 +73,7 @@
   gap: 5px;
   font-size: 0.85rem;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .statItem.delete {
@@ -59,4 +83,126 @@
 .postDescription {
   font-size: 0.9rem;
   line-height: 1.4;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.postTags {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tagChip {
+  background: #f1f1f1;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #444;
+  border: 1px solid #ddd;
+}
+
+.usernameLink {
+  display: inline-flex;
+  align-items: center;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.usernameLink:hover {
+  text-decoration: underline;
+}
+
+.profileIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin-right: 5px;
+}
+
+.usernameLink {
+  display: inline-flex;
+  align-items: center;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.usernameLink:hover {
+  text-decoration: underline;
+}
+
+.download-label {
+  color:#007BFF;
+  display: flex;
+  align-items: center;
+}
+
+.download-disabled {
+  color: gray;
+  white-space: nowrap;
+}
+
+.viewProjectBtnWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  margin-top: 20px;
+}
+
+.viewProjectBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+
+.viewProjectBtn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.viewProjectBtn svg {
+  stroke: #fff;
+}
+
+.galleryPostContentWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.postContentWrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 25px;
+}
+
+.mainPostWrapper {
+  flex: 1;
+  border-right: #ccc 1px solid;
+  padding-right: 25px;
+}
+
+.relatedPostsSidebar {
+  width: 250px;
+  flex-shrink: 0;
 }

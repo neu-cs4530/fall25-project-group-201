@@ -2,11 +2,13 @@ import { useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getMetaData } from '../../../tool';
-import { Comment, DatabaseComment } from '../../../types/types';
+import { Comment, DatabaseComment, DatabaseMedia } from '../../../types/types';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
 import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
+import PermissionCheckbox from '../baseComponents/permissionCheckbox';
+import CommentPermissionButton from './commentPermissionButton';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -19,7 +21,7 @@ import ThreeViewport from '../threeViewport';
 interface CommentSectionProps {
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
-  handleAddMedia: (file: File) => Promise<string | undefined>;
+  handleAddMedia: (file: File) => Promise<DatabaseMedia | undefined>;
   handleAddMediaError: string | null;
 }
 
@@ -30,7 +32,7 @@ interface CommentSectionProps {
  * @component
  * @param {DatabaseComment[]} comments - Array of existing comments to display.
  * @param {(comment: Comment) => void} handleAddComment - Function called to post a new comment.
- * @param {(file: File) => Promise<string | undefined>} handleAddMedia - Function that uploads media files.
+ * @param {(file: File) => Promise<DatabaseMedia | undefined>} handleAddMedia - Function that uploads media files.
  * @param {string | null} handleAddMediaError - Error message for media upload issues.
  * @returns A rendered comment section with media upload and markdown support.
  */
@@ -49,6 +51,11 @@ const CommentSection = ({
   const [mediaError, setMediaError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [permitDownload, setPermitDownload] = useState<boolean>(true);
+  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
+  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
+  let tempMediaPath: string | undefined;
+  let mediaSize: string | undefined;
 
   /**
    * Validates whether a provided string is a valid media URL.
@@ -92,14 +99,26 @@ const CommentSection = ({
     setTextErr('');
     setMediaError(null);
 
-    let tempMediaPath: string | undefined;
-
     if (file) {
-      tempMediaPath = await handleAddMedia(file);
-      if (!tempMediaPath) {
+      const resMedia = await handleAddMedia(file);
+      if (!resMedia) {
         setMediaError('Failed to upload media');
         return;
       }
+
+      if (!resMedia.filepathLocation) {
+        setMediaError('Filepath location of media is undefined.');
+        return;
+      }
+
+      tempMediaPath = resMedia.filepathLocation;
+
+      if (!resMedia.fileSize) {
+        setMediaError('Media size is undefined');
+        return;
+      }
+
+      mediaSize = resMedia.fileSize;
     }
 
     if (mediaUrl) {
@@ -115,6 +134,8 @@ const CommentSection = ({
       commentDateTime: new Date(),
       ...(file ? { mediaPath: tempMediaPath } : {}),
       ...(mediaUrl ? { mediaUrl: mediaUrl } : {}),
+      ...(mediaSize ? { mediaSize: mediaSize } : {}),
+      ...(file && tempMediaPath?.endsWith('.glb') ? { permitDownload } : {}),
     };
 
     await handleAddComment(newComment);
@@ -258,6 +279,10 @@ const CommentSection = ({
                 </div>
               )}
             </div>
+            {file && file.name.endsWith('.glb') && (
+              <PermissionCheckbox permission={permitDownload} setPermission={setPermitDownload} />
+            )}
+
             {handleAddMediaError && <small className='error'>{handleAddMediaError}</small>}
             {mediaError && <small className='error'>{mediaError}</small>}
             {textErr && <small className='error'>{textErr}</small>}
@@ -280,6 +305,10 @@ const CommentSection = ({
                               <ThreeViewport
                                 key={comment.mediaPath}
                                 modelPath={comment.mediaPath}
+                                rotationSetting={rotationSetting}
+                                setRotationSetting={setRotationSetting}
+                                translationSetting={translationSetting}
+                                setTranslationSetting={setTranslationSetting}
                               />
                             </div>
                           );
@@ -296,6 +325,9 @@ const CommentSection = ({
                   </div>
                   <small className='comment-meta'>
                     {comment.commentBy}, {getMetaData(new Date(comment.commentDateTime))}
+                    <div className='download-label'>
+                      <CommentPermissionButton comment={comment} />
+                    </div>
                   </small>
                 </li>
               ))

@@ -4,6 +4,7 @@ import {
   GalleryPostRequest,
   FakeSOSocket,
   GalleryPost,
+  DownloadGalleryPostMediaRequest,
 } from '../types/types';
 import {
   createGalleryPost,
@@ -13,6 +14,7 @@ import {
   fetchAndIncrementGalleryPostDownloadsById,
   toggleGalleryPostLikeById,
   fetchAndIncrementGalleryPostViewsById,
+  downloadGalleryPostMedia,
 } from '../services/gallerypost.service';
 
 /**
@@ -56,10 +58,26 @@ const galleryPostController = (socket: FakeSOSocket) => {
     req: CreateGalleryPostRequest,
     res: Response,
   ): Promise<void> => {
+    const { tags, link, media } = req.body;
+
+    if (!tags || !Array.isArray(tags)) {
+      res.status(400).send('Tags must be provided as an array.');
+      return;
+    }
+
+    if (!media && !link) {
+      res.status(400).send('You must provide either a media file or a media link.');
+      return;
+    }
+
     const galleryPost: GalleryPost = {
       ...req.body,
+      media,
       views: 0,
       downloads: 0,
+      likes: [],
+      tags,
+      link: link ?? '',
     };
 
     try {
@@ -181,9 +199,28 @@ const galleryPostController = (socket: FakeSOSocket) => {
     }
   };
 
+  const downloadGalleryPostMediaRoute = async (
+    req: DownloadGalleryPostMediaRequest,
+    res: Response,
+  ) => {
+    const { galleryPostID } = req.params;
+
+    try {
+      const mediaLink = await downloadGalleryPostMedia(galleryPostID);
+      res.json(mediaLink);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error while download media from question: ${err.message}`);
+      } else {
+        res.status(500).send(`Error while download media from question`);
+      }
+    }
+  };
+
   // Register routes
   router.get('/getAllGalleryPosts', getAllGalleryPostsRoute);
   router.get('/getGalleryPost/:galleryPostID', getGalleryPostRoute);
+  router.get('/downloadGalleryPostMedia/:galleryPostID', downloadGalleryPostMediaRoute);
   router.post('/create', createGalleryPostRoute);
   router.delete('/delete/:galleryPostId', deleteGalleryPostRoute);
   router.post('/incrementViews/:galleryPostID/:username', incrementGalleryPostViewsRoute);

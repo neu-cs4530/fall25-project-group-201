@@ -20,9 +20,12 @@ interface AnswerHeaderProps {
  * @param title The title of the question or discussion thread.
  */
 const AnswerHeader = ({ ansCount, title }: AnswerHeaderProps) => (
-  <div id='answersHeader' className='space_between right_padding'>
-    <div className='bold_title'>{ansCount} answers</div>
-    <div className='bold_title answer_question_title'>{title}</div>
+  <div className='answer-header'>
+    <div className='answer-text-block'>
+      <h1 className='answer-title'>{title}</h1>
+      <p className='answer-count'>{ansCount} answers</p>
+    </div>
+
     <AskQuestionButton />
   </div>
 );

@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 import { setupTest } from '../support/helpers';
 
 import '../support/auth0'

@@ -281,3 +281,60 @@ export const getCommunityQuestions = async (communityId: string): Promise<Databa
     return [];
   }
 };
+
+export const downloadQuestionMedia = async (qid: string): Promise<string | { error: string }> => {
+  try {
+    const q = await QuestionModel.findById(qid);
+
+    if (!q) {
+      throw new Error('Question not found');
+    }
+
+    if (q.mediaPath === undefined) {
+      throw new Error('No media to download');
+    }
+
+    if (q.permitDownload === undefined || !q.permitDownload) {
+      throw new Error('Downloads are not permitted');
+    }
+
+    return q.mediaPath;
+  } catch (error) {
+    return { error: 'Error when downloading question media' };
+  }
+};
+
+export const toggleQuestionMediaPermission = async (
+  qid: string,
+  username: string,
+): Promise<boolean | { error: string }> => {
+  try {
+    const result: DatabaseQuestion | null = await QuestionModel.findById(qid);
+
+    if (!result) {
+      return { error: 'Question not found!' };
+    }
+
+    if (result.askedBy !== username) {
+      throw new Error('Only the question asker can change download permissions.');
+    }
+
+    if (result.mediaPath === undefined || result.permitDownload === undefined) {
+      throw new Error('No media found to change permissions for.');
+    }
+
+    const updatedQuestion: DatabaseQuestion | null = await QuestionModel.findByIdAndUpdate(
+      { _id: qid },
+      { permitDownload: !result.permitDownload },
+      { new: true },
+    );
+
+    if (!updatedQuestion || updatedQuestion.permitDownload === undefined) {
+      throw new Error('Failed to update question permissions');
+    }
+
+    return updatedQuestion.permitDownload;
+  } catch {
+    return { error: 'Error when toggling question media download permissions:' };
+  }
+};
