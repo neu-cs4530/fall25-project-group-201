@@ -199,7 +199,7 @@
   gap: 0.5rem;
   position: relative;
   padding: 0.5rem;
-  border: 2px dashed transparent;
+  border: 2px dashed #aaa;
   border-radius: 6px;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }

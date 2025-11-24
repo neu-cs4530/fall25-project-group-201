@@ -146,31 +146,6 @@ const useNewQuestion = () => {
   };
 
   /**
-   * Handles a file being dropped into the drag-and-drop area.
-   * Converts the dropped file into a fake input change event and
-   * triggers the existing file handling logic.
-   *
-   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dropped.
-   */
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    setUploadedMediaPath(undefined);
-    setMediaSize(undefined);
-    setMediaErr(null);
-
-    const fakeEvent = {
-      target: {
-        files: [file],
-      },
-    } as unknown as ChangeEvent<HTMLInputElement>;
-
-    handleFileChange(fakeEvent);
-  };
-
-  /**
    * Handles the drag-over event to allow dropping a file.
    * Prevents the default behavior to enable dropping.
    *
@@ -217,7 +192,6 @@ const useNewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
-    handleDrop,
     handleDragOver,
     downloadPermission,
     setDownloadPermission,

@@ -39,7 +39,6 @@ const NewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
-    handleDrop,
     handleDragOver,
     downloadPermission,
     setDownloadPermission,
@@ -71,6 +70,9 @@ const NewQuestion = () => {
     }
   };
 
+  /**
+   * Handles adding the camera reference to the question.
+   */
   const handleAddCameraRef = () => {
     let translationSettingToSend = translationSetting;
     let rotatationSettingToSend = rotationSetting;
@@ -138,6 +140,35 @@ const NewQuestion = () => {
     } catch (err) {
       setMediaErr('Error uploading file');
     }
+  };
+
+  /**
+   * Handles a file being dropped into the drag-and-drop area.
+   * Converts the dropped file into a fake input change event and
+   * triggers the existing file handling logic.
+   *
+   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dropped.
+   */
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    setUploadedMediaPath(undefined);
+    setMediaSize(undefined);
+    setMediaErr(null);
+
+    // Create preview URL for the dropped file
+    const tempFileUrl = URL.createObjectURL(file);
+    setPreviewFilePath(tempFileUrl);
+
+    const fakeEvent = {
+      target: {
+        files: [file],
+      },
+    } as unknown as ChangeEvent<HTMLInputElement>;
+
+    handleFileChange(fakeEvent);
   };
 
   return (
