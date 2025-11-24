@@ -148,6 +148,7 @@ const useNewGalleryPost = () => {
       if (res?._id) {
         navigate(`/communities/${communityID}`);
       }
+      form.mediaUrl = '';
     } catch {
       setErrors(prev => ({ ...prev, media: 'Failed to post gallery post' }));
     }
