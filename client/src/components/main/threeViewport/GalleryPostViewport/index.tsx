@@ -11,6 +11,9 @@ const HDRI_PRESETS = [
   { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
+/**
+ * Component wraps the 3D viewport component for galleryPost page, if it contains a .glb media
+ */
 const GalleryPostViewport = () => {
   const { galleryPost, err, fetchGalleryPost } = useGalleryPostViewport();
 
