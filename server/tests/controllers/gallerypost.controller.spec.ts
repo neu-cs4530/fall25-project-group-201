@@ -52,7 +52,7 @@ jest.mock('express-oauth2-jwt-bearer', () => ({
       payload: {
         sub: 'auth0|test-user1',
         aud: 'https://api.testapp.com',
-      }
+      },
     };
     next();
   }),
