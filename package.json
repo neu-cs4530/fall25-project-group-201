@@ -10,6 +10,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.8.0",
     "bootstrap": "^5.3.8",
+    "express-oauth2-jwt-bearer": "^1.7.1",
     "express-openid-connect": "^2.19.2",
     "lucide-react": "^0.553.0",
     "multer": "^2.0.2",
