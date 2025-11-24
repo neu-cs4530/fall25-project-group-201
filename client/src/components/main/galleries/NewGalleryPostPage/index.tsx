@@ -18,7 +18,6 @@ import PermissionCheckbox from '../../baseComponents/permissionCheckbox';
  *
  * Shows error messages for:
  * - Empty required fields
- * - Invalid URLs
  * - Missing thumbnail for .glb files
  *
  * Provides a button to post the project to the gallery.
@@ -147,7 +146,7 @@ const NewGalleryPostPage = () => {
       <div className='form-section'>
         <label htmlFor='text'>Project Description</label>
         <textarea
-          id='text'
+          id='text-project-description'
           value={form.description}
           onChange={handleInputChange('description')}
           placeholder='Share more details about your project'
@@ -189,6 +188,7 @@ const NewGalleryPostPage = () => {
         <div className='media-inputs'>
           <input
             type='text'
+            id='embed-text'
             placeholder='Paste media URL (YouTube, image, etc.)'
             value={form.mediaUrl}
             onChange={handleInputChange('mediaUrl')}
@@ -198,7 +198,7 @@ const NewGalleryPostPage = () => {
           </button>
         </div>
 
-        <div className='file-upload'>
+        <div className='file-upload' data-cy='media-file'>
           <input type='file' accept='image/*,video/*,.glb' onChange={handleFileUpload} />
         </div>
         {errors.media && <p className='error'>{errors.media}</p>}
@@ -234,8 +234,8 @@ const NewGalleryPostPage = () => {
 
           {form.mediaPath?.endsWith('.glb') && (
             <>
-              <h2>Add Thumbnail</h2>
-              <div className='file-upload'>
+              <h3>Add Thumbnail</h3>
+              <div className='file-upload' data-cy='thumbnail-file'>
                 <input type='file' accept='image/*' onChange={handleThumbnailFileUpload} />
               </div>
               {errors.thumbnailMedia && <p className='error'>{errors.thumbnailMedia}</p>}

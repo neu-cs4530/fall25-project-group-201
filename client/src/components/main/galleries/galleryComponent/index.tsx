@@ -210,6 +210,7 @@ const GalleryComponent: React.FC<GalleryComponentProps> = ({ communityID }) => {
               <div
                 key={post._id.toString()}
                 className='galleryCard'
+                data-cy={`gallery-card-${post.title.replace(/\s+/g, '-').toLowerCase()}`}
                 onClick={async () => {
                   try {
                     await handleIncrementViews(post);

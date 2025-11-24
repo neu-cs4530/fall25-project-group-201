@@ -38,6 +38,137 @@ export const cleanDatabase = () => {
   cy.exec('npx ts-node ../server/seedData/deleteDB.ts ' + Cypress.env('MONGODB_URI'));
 };
 
+export const createNewGalleryPost = (
+  title?: string,
+  description?: string,
+  tags?: string[],
+  media?: string,
+  link?: string,
+  thumbailMediaFile?: string,
+  embeddedMedia?: string
+) => {
+  if (title) {
+    cy.get("#title").type(title);
+  }
+  
+  if (description) {
+    cy.get("#text-project-description").type(description);
+  }
+  
+
+  if (tags) {
+    tags.forEach(tag => {
+      cy.contains('label.tag-checkbox', tag).click();
+    });
+  }
+  
+  if (link) {
+    cy.get('#projectLink').type(link);
+  }
+
+  if (media) {
+    const fileExts = ['.png', '.jpg', '.jpeg', '.mp4', '.mov', '.glb'];
+    if (fileExts.some(ext => media.endsWith(ext))) {
+      cy.get('.file-upload').click()
+      cy.get('input[type="file"]').should('exist')
+          .selectFile(`cypress/fixtures/${media}`, { force: true });
+    }
+
+    if (media.endsWith('.glb')) {
+      cy.get('.model-preview').contains("3D Model Preview")
+      cy.get('.viewport-card').should('exist');
+      cy.get('.viewport-canvas').should('exist'); 
+    }
+
+    if (thumbailMediaFile) {
+      cy.get('[data-cy="thumbnail-file"]').click()
+      cy.get('[data-cy="thumbnail-file"] input[type="file"]')
+        .should('exist')
+        .selectFile(`cypress/fixtures/${thumbailMediaFile}`, { force: true });
+    }
+
+    const isEmbed = /^https?:\/\//i.test(media);
+    if (isEmbed) {
+      cy.get("#embed-text").type(`${media}`)
+
+      cy.get('.embed-preview').contains('Preview')
+
+      if (/youtube\.com|youtu\.be|vimeo\.com/i.test(media)) {
+        cy.get('iframe')
+          .should('have.attr', 'src', `${embeddedMedia}`);
+      } 
+      // Check for image embeds
+      else if (/\.(jpg|jpeg|png)$/i.test(media)) {
+        cy.get('.postMedia').should('have.attr', 'src', `${embeddedMedia}`);
+      } 
+
+    }
+  }
+
+  cy.get('.submit-btn').click()
+};
+
+export const verifyNewGalleryPost = (
+  title: string,
+  user: string,
+  description: string,
+  tags: string[],
+  media: string,
+  link?: string,
+  thumbailMediaFile?: string
+) => {
+  const dataCy = `gallery-card-${title.replace(/\s+/g, '-').toLowerCase()}`;
+  
+  cy.get(`[data-cy="${dataCy}"]`, { timeout: 10000 })
+    .should('exist')
+    .click();
+  cy.get('.postInfo').should('exist')
+      .contains(title)
+  cy.get('.usernameLink').contains(user)
+    cy.get('.postDescription').contains(description)
+    cy.get('.mediaWrapper').should('exist')
+  tags.forEach(tag => {
+    cy.contains('.tagChip', '3d Art').should('exist');
+  });
+
+  const isEmbed = /^https?:\/\//i.test(media);
+  if (isEmbed) {
+    if (/youtube\.com|youtu\.be|vimeo\.com/i.test(media)) {
+      cy.get('iframe')
+        .should('have.attr', 'src', `${media}`);
+    } 
+    // Check for image embeds
+    else if (/\.(jpg|jpeg|png)$/i.test(media)) {
+      cy.get('.postMedia').should('have.attr', 'src', `${media}`);
+    } 
+  }
+  else {
+    const imgExts = ['.png', '.jpg', '.jpeg'];
+    if (imgExts.some(ext => media.endsWith(ext))) {
+      cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
+    }
+
+    const vidExts = ['.mov', '.mp4'];
+    if (vidExts.some(ext => media.endsWith(ext))) {
+      cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
+    }
+
+    if (media.endsWith('.glb')) {
+      cy.get('.viewport-card').should('exist');
+      cy.get('.viewport-canvas').should('exist'); 
+    }
+
+    if (link) {
+      cy.window().then(win => {
+          cy.spy(win, 'open').as('winOpen');
+      });
+
+      cy.get('.viewProjectBtn').click();
+      cy.get('@winOpen').should('have.been.calledOnce');
+    }
+  }
+};
+
 /**
  * Sets up the database before each test
  */
@@ -52,6 +183,50 @@ export const setupTest = () => {
 export const teardownTest = () => {
   cleanDatabase();
 };
+
+export const auth0Login = () => {
+  cy.visit('/')
+  cy.contains('Welcome ')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
+}
+
+/**
+ * Auth0 login specifically for profile settings tests
+ * Has longer waits and better error handling for profile page navigation
+ */
+export const auth0LoginUserProfile = () => {
+  cy.visit('/', { timeout: 30000 })
+  cy.contains('Welcome ', { timeout: 10000 })
+  cy.contains('button', 'Log In or Sign Up', { timeout: 10000 }).click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+    // Wait for the login page to fully load
+    cy.get('input[name="username"], input[name="email"]', { timeout: 15000 }).should('be.visible')
+    
+    // Fill in the login form
+    cy.get('input[name="username"], input[name="email"]').clear().type('user123')
+    cy.get('input[name="password"]').clear().type('securePass123!', { log: false })
+    
+    // Click submit and wait for redirect
+    cy.get('button[type="submit"]:visible').click()
+    
+    // Give Auth0 time to process - avoid rate limiting
+    cy.wait(5000)
+  })
+  
+  // Wait for redirect back to our app with longer timeout
+  cy.url({ timeout: 30000 }).should('include', 'localhost:4530')
+  
+  // Give the app time to process the Auth0 callback
+  cy.wait(2000)
+}
 
 /**
  * Navigates to the Ask Question page

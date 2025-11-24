@@ -6,6 +6,7 @@ export default defineConfig({
   // the e2e or component configuration
   e2e: {
     baseUrl: 'http://localhost:4530',
+    fixturesFolder: 'cypress/fixtures',
     setupNodeEvents(on, config) {
       require("@cypress/code-coverage/task")(on, config);
       config.env = {

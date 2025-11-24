@@ -16,6 +16,7 @@
 import "@cypress/code-coverage/support";
 // Import commands.js using ES2015 syntax:
 import "./commands";
+import './auth0';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

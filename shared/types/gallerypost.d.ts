@@ -16,6 +16,8 @@ import { Request } from 'express';
  * - 'media size': the file size of the uploaded media
  * - 'tags': the category tags of the project
  * - 'link': the external project link
+ * - 'tags': tags related to the gallery post
+ * - 'permitDownload': whether the user has allowed downloading of their media by other users
  */
 export interface GalleryPost {
   title: string;
