@@ -222,6 +222,181 @@ describe('Profile Settings — editing', () => {
         cy.log('User metrics and information verified');
     });
 
+    it('upload media working correctly with project page & displays and tracks portfolio item metrics', () => {
+        cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
+        cy.get('.portfolio-upload-box').click();
+
+        cy.url({ timeout: 10000 }).should('include', '/upload-portfolio');
+
+        // Fill out required fields
+        cy.get('input[placeholder*="Give your piece a name"]').type('Test Metrics Video');
+        cy.get('textarea[placeholder*="Describe your project"]').type('Testing views and likes');
+        cy.get('input[placeholder*="Paste media URL"]').type('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+
+        // Upload thumbnail image - select the LAST file input (thumbnail)
+        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/testImage.jpg', { force: true });
+
+        // Wait for thumbnail to process
+        cy.wait(1000);
+
+        // Now button should be enabled
+        cy.contains('button', 'Add to Portfolio').should('not.be.disabled').click();
+
+        cy.wait(2000);
+        cy.url({ timeout: 10000 }).should('include', '/user/user123');
+
+        // Test metrics on uploaded item
+        cy.contains('Portfolio').scrollIntoView();
+        cy.get('.portfolio-model-item').should('have.length.at.least', 1);
+        cy.get('.portfolio-model-item').first().click();
+
+        cy.url({ timeout: 10000 }).should('match', /\/portfolio\/\d+/);
+        cy.get('.postStats', { timeout: 10000 }).should('be.visible');
+
+        // Store initial view count
+        cy.get('.statItem').last().invoke('text').then((viewText) => {
+            const initialViews = parseInt(viewText.trim()) || 0;
+            cy.log(`Initial views: ${initialViews}`);
+
+            // Navigate back and click again to increment views
+            cy.contains('Back to Profile').click();
+            cy.url().should('include', '/user/user123');
+
+            // Click the same item again
+            cy.get('.portfolio-model-item').first().click();
+            cy.url({ timeout: 10000 }).should('match', /\/portfolio\/\d+/);
+
+            // Verify view count increased (cumulative)
+            cy.get('.statItem').last().invoke('text').then((newViewText) => {
+                const newViews = parseInt(newViewText.trim()) || 0;
+                cy.log(`New views: ${newViews}`);
+                expect(newViews).to.equal(initialViews + 1);
+            });
+        });
+
+        // Test like button
+        cy.get('.statItem').first().invoke('text').then((initialText) => {
+            const initialLikes = parseInt(initialText.trim()) || 0;
+
+            cy.get('.statItem').first().click();
+            cy.wait(500);
+
+            cy.get('.statItem').first().invoke('text').then((newText) => {
+                const newLikes = parseInt(newText.trim()) || 0;
+                expect(newLikes).to.equal(initialLikes + 1);
+            });
+        });
+
+        cy.log('Portfolio metrics verified with uploaded YouTube video');
+    });
+
+    it.only('allows writing and displaying testimonials', () => {
+        // First, navigate to ANOTHER user's profile to write testimonial
+        cy.visit('/user/user234'); // Different user
+        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
+
+        // Scroll to testimonials section
+        cy.contains('Testimonials', { timeout: 10000 }).scrollIntoView().should('be.visible');
+
+        // Click "Write a Testimonial" button
+        cy.contains('button', 'Write a Testimonial').should('be.visible').click();
+
+        // Modal should appear
+        cy.get('.testimonial-modal', { timeout: 5000 }).should('be.visible');
+
+        // Fill out testimonial
+        cy.get('.testimonial-textarea').type('This user is an excellent developer! Highly recommend working with them.');
+
+        // Submit
+        cy.contains('button', 'Submit').click();
+
+        // Wait for success
+        cy.wait(1000);
+
+        // Modal should close
+        cy.get('.testimonial-modal').should('not.exist');
+
+        cy.log('Testimonial submitted successfully');
+
+        // Now test viewing testimonials on own profile
+        cy.visit('/user/user123');
+        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
+
+        cy.contains('Testimonials').scrollIntoView().should('be.visible');
+
+        // Check if testimonials section exists
+        cy.get('.testimonials-section').should('be.visible');
+
+        // If user123 has approved testimonials (from seed data), they should display
+        cy.get('body').then($body => {
+            if ($body.find('.testimonial-card').length > 0) {
+                cy.get('.testimonial-card').should('have.length.at.least', 1);
+                cy.log('Testimonials displayed successfully');
+            } else {
+                cy.contains('No testimonials yet').should('be.visible');
+            }
+        });
+    });
+
+    it.only('allows writing testimonials for other users', () => {
+        // Navigate away from own profile to another user (don't use beforeEach navigation)
+        cy.visit('/user/user234', { timeout: 10000 });
+
+        // Need to wait for page, might redirect to login - handle that
+        cy.url({ timeout: 10000 }).then((url) => {
+            if (url.includes('auth0')) {
+                // Need to login again for this user
+                cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+                    cy.get('input[name="username"], input[name="email"]').clear().type('user123');
+                    cy.get('input[name="password"]').clear().type('securePass123!', { log: false });
+                    cy.get('button[type="submit"]:visible').click();
+                });
+                cy.wait(5000);
+                cy.visit('/user/user234');
+            }
+        });
+
+        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
+        cy.contains('Testimonials').scrollIntoView();
+        cy.contains('button', 'Write a Testimonial').click();
+
+        cy.get('.testimonial-modal', { timeout: 5000 }).should('be.visible');
+        cy.get('.testimonial-textarea').type('Excellent developer to work with!');
+        cy.contains('button', 'Submit').click();
+
+        cy.wait(1000);
+        cy.log('Testimonial written for user234');
+    });
+
+    it('shows error when uploading .txt file as resume', () => {
+        cy.contains('Resume / CV', { timeout: 10000 }).scrollIntoView().should('be.visible');
+
+        cy.get('.resume-section').within(() => {
+            cy.get('input[type="file"][accept=".pdf"]').selectFile('cypress/fixtures/badFile.txt', { force: true });
+        });
+
+        cy.wait(1000);
+        cy.contains('Resume must be PDF format', { timeout: 5000 }).should('be.visible');
+    });
+
+    it('shows error when uploading .txt file as profile picture', () => {
+        cy.get('.profile-picture-placeholder').within(() => {
+            cy.get('input[type="file"]').selectFile('cypress/fixtures/badFile.txt', { force: true });
+        });
+
+        cy.wait(1000);
+        cy.contains('Profile picture must be JPG or PNG format', { timeout: 5000 }).should('be.visible');
+    });
+
+    it('shows error when uploading .txt file as banner', () => {
+        cy.get('.profile-banner-placeholder').within(() => {
+            cy.get('input[type="file"]').selectFile('cypress/fixtures/badFile.txt', { force: true });
+        });
+
+        cy.wait(1000);
+        cy.contains('Banner image must be JPG or PNG format', { timeout: 5000 }).should('be.visible');
+    });
+
     // Cleanup database ONCE after all tests
     after(() => {
         // teardownTest();
