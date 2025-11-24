@@ -191,6 +191,50 @@ export const teardownTest = () => {
   cleanDatabase();
 };
 
+export const auth0Login = () => {
+  cy.visit('/')
+  cy.contains('Welcome ')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
+}
+
+/**
+ * Auth0 login specifically for profile settings tests
+ * Has longer waits and better error handling for profile page navigation
+ */
+export const auth0LoginUserProfile = () => {
+  cy.visit('/', { timeout: 30000 })
+  cy.contains('Welcome ', { timeout: 10000 })
+  cy.contains('button', 'Log In or Sign Up', { timeout: 10000 }).click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+    // Wait for the login page to fully load
+    cy.get('input[name="username"], input[name="email"]', { timeout: 15000 }).should('be.visible')
+    
+    // Fill in the login form
+    cy.get('input[name="username"], input[name="email"]').clear().type('user123')
+    cy.get('input[name="password"]').clear().type('securePass123!', { log: false })
+    
+    // Click submit and wait for redirect
+    cy.get('button[type="submit"]:visible').click()
+    
+    // Give Auth0 time to process - avoid rate limiting
+    cy.wait(5000)
+  })
+  
+  // Wait for redirect back to our app with longer timeout
+  cy.url({ timeout: 30000 }).should('include', 'localhost:4530')
+  
+  // Give the app time to process the Auth0 callback
+  cy.wait(2000)
+}
+
 /**
  * Navigates to the Ask Question page
  */
