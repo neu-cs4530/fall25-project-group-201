@@ -8,6 +8,9 @@ const upload = multer({ storage: multer.memoryStorage() }); // memory storage
 const mediaController = (socket: FakeSOSocket) => {
   const router = express.Router();
 
+  /**
+   * Creates a media document
+   */
   router.post('/create', upload.single('file'), async (req: Request, res: Response) => {
     try {
       const file = req.file;
@@ -39,6 +42,9 @@ const mediaController = (socket: FakeSOSocket) => {
     }
   });
 
+  /**
+   * Deletes a media document, given filepath of the media
+   */
   router.delete('/delete/:filepathLocation', async (req: Request, res: Response) => {
     try {
       const { filepathLocation } = req.params;

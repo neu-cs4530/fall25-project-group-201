@@ -28,6 +28,11 @@ export const addMedia = async (user: string, formData: FormData): Promise<Databa
   return res.data;
 };
 
+/**
+ * Deletes a media document.
+ * @param filepathLocation of the media document
+ * @returns the media document deleted
+ */
 export const deleteMedia = async (filepathLocation: string): Promise<DatabaseMedia> => {
   // Encode entire path so Express reads it as one param
   const encoded = encodeURIComponent(filepathLocation);
