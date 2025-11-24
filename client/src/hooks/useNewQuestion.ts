@@ -27,6 +27,8 @@ const useNewQuestion = () => {
   const [mediaErr, setMediaErr] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
+  const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
+  const [downloadPermission, setDownloadPermission] = useState<boolean>(true);
 
   const [communityList, setCommunityList] = useState<DatabaseCommunity[]>([]);
 
@@ -108,6 +110,8 @@ const useNewQuestion = () => {
       community: community ? community._id : null,
       ...(mediaUrl ? { mediaUrl } : {}),
       ...(mediaPath ? { mediaPath } : {}),
+      ...(mediaSize ? { mediaSize } : {}),
+      ...(mediaPath ? { permitDownload: downloadPermission } : {}),
     };
 
     try {
@@ -171,11 +175,15 @@ const useNewQuestion = () => {
     mediaUrl,
     setMediaUrl,
     mediaPath,
+    mediaSize,
+    setMediaSize,
     setUploadedMediaPath,
     postQuestion,
     communityList,
     handleDropdownChange,
     handleFileChange,
+    downloadPermission,
+    setDownloadPermission,
   };
 };
 

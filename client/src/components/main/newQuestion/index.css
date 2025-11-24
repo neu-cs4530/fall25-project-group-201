@@ -176,3 +176,7 @@ textarea {
 .file-label:hover {
   background-color: #2563eb;
 }
+
+.form-check {
+  padding-top: 10px;
+}

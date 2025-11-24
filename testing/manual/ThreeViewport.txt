@@ -1,0 +1,157 @@
+Manual tests done for 3D Viewport: 
+
+Orbit Controls (rotating, zooming, panning, tilting)
+- /new/question
+    - Test: When user clicks and drags, the 3D Model previewed rotates as expected
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport 
+            => [ACTUAL] 3D model loaded into viewport 
+        - Clicked and dragged mouse around
+            => [EXPECTED] 3D scene rotates as expected
+            => [ACTUAL] 3D scene rotates as expected
+    - Test: When user uses the scroll wheel the camera zooms in and out of the image
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport 
+            => [ACTUAL] 3D model loaded into viewport 
+        - Scrolled wheel forward
+            => [EXPECTED] Camera zooms into model
+            => [ACTUAL] Camera zooms into model
+        - Scrolled wheel backward
+            => [EXPECTED] Camera zooms out from model
+            => [ACTUAL] Camera zooms out from model
+    - Test: When user drags on the mouse pad, the camera zooms in and out of the image
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport 
+            => [ACTUAL] 3D model loaded into viewport 
+        - Dragged on mouse pad from bottom to top
+            => [EXPECTED] Camera zooms into model
+            => [ACTUAL] Camera zooms into model
+        - Dragged on mouse pad from top to bottom
+            => [EXPECTED] Camera zooms out from model
+            => [ACTUAL] Camera zooms out from model
+    - Test: When arrow keys clicked, camera pans in scene
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport 
+            => [ACTUAL] 3D model loaded into viewport 
+        - Right arrow key pressed
+            => [EXPECTED] Camera moves to the right, making it seem like the objects move to the left
+            => [ACTUAL] 3D Camera moves to the right, making it seem like the objects move to the left
+        - Left arrow key pressed
+            => [EXPECTED] Camera moves to the left, making it seem like the objects move to the right
+            => [ACTUAL] 3D Camera moves to the left, making it seem like the objects move to the right
+        - Up arrow key pressed
+            => [EXPECTED] Camera moves up, making it seem like the objects move down
+            => [ACTUAL] 3D Camera moves up, making it seem like the objects move down
+        - Down arrow key pressed
+            => [EXPECTED] Camera moves down, making it seem like the objects move up
+            => [ACTUAL] 3D Camera moves down, making it seem like the objects move up
+    - Test: When WASD keys clicked, the 3D model tilts 
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport 
+            => [ACTUAL] 3D model loaded into viewport 
+        - W key pressed
+            => [EXPECTED] 3D model tilts up
+            => [ACTUAL] 3D model tilts up
+        - S key pressed
+            => [EXPECTED] 3D model tilts down
+            => [ACTUAL] 3D model tilts down
+        - A key pressed
+            => [EXPECTED] 3D model tilts to the left (the user's left)
+            => [ACTUAL] 3D model tilts to the left (the user's left)
+        - D key pressed
+            => [EXPECTED] 3D model tilts to the right (the user's right)
+            => [ACTUAL] 3D model tilts to the rigth (the user's right)
+    - Test: When the user clicks and drags, drags on the mouse pad, clicks arrow keys or clicks WASD keys, 
+    the 3D viewport behaves as expected (rotation, zooming, panning, tilting)
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport 
+            => [ACTUAL] 3D model loaded into viewport 
+        - Right arrow key pressed
+            => [EXPECTED] Camera moves to the right, making it seem like the objects move to the left
+            => [ACTUAL] 3D Camera moves to the right, making it seem like the objects move to the left
+        - Dragged on mouse pad from top to bottom
+            => [EXPECTED] Camera zooms out from model
+            => [ACTUAL] Camera zooms out from model
+        - A key pressed
+            => [EXPECTED] 3D model tilts to the left (the user's left)
+            => [ACTUAL] 3D model tilts to the left (the user's left)
+        - Clicked and dragged mouse around
+            => [EXPECTED] 3D scene rotates as expected
+            => [ACTUAL] 3D scene rotates as expected
+        - D key pressed
+            => [EXPECTED] 3D model tilts to the right (the user's right)
+            => [ACTUAL] 3D model tilts to the rigth (the user's right)
+        - Left arrow key pressed
+            => [EXPECTED] Camera moves to the left, making it seem like the objects move to the right
+            => [ACTUAL] 3D Camera moves to the left, making it seem like the objects move to the right
+        - Clicked and dragged mouse around
+            => [EXPECTED] 3D scene rotates as expected
+            => [ACTUAL] 3D scene rotates as expected
+        - Dragged on mouse pad from top to bottom
+            => [EXPECTED] Camera zooms out from model
+            => [ACTUAL] Camera zooms out from model
+        - Up arrow key pressed
+            => [EXPECTED] Camera moves up, making it seem like the objects move down
+            => [ACTUAL] 3D Camera moves up, making it seem like the objects move down
+        - Down arrow key pressed
+            => [EXPECTED] Camera moves down, making it seem like the objects move up
+            => [ACTUAL] 3D Camera moves down, making it seem like the objects move up
+        - Clicked and dragged mouse around
+            => [EXPECTED] 3D scene rotates as expected
+            => [ACTUAL] 3D scene rotates as expected
+        - W key pressed
+            => [EXPECTED] 3D model tilts up
+            => [ACTUAL] 3D model tilts up
+        - Dragged on mouse pad from bottom to top
+            => [EXPECTED] Camera zooms into model
+            => [ACTUAL] Camera zooms into model
+        - S key pressed
+            => [EXPECTED] 3D model tilts down
+            => [ACTUAL] 3D model tilts down
+        - Test: When the user clicks and drags, uses the scroll wheel, clicks arrow keys or clicks WASD keys, 
+        the 3D viewport behaves as expected (rotation, zooming, panning, tilting)
+            - Clicked 'Choose a file' button and selected a .glb file 
+                => [EXPECTED] 3D model loaded into viewport 
+                => [ACTUAL] 3D model loaded into viewport 
+            - W key pressed
+                => [EXPECTED] 3D model tilts up
+                => [ACTUAL] 3D model tilts up
+            - Dragged wheel backward
+                => [EXPECTED] Camera zooms out from model
+                => [ACTUAL] Camera zooms out from model
+            - Down arrow key pressed
+                => [EXPECTED] Camera moves down, making it seem like the objects move up
+                => [ACTUAL] 3D Camera moves down, making it seem like the objects move up
+            - Left arrow key pressed
+                => [EXPECTED] Camera moves to the left, making it seem like the objects move to the right
+                => [ACTUAL] 3D Camera moves to the left, making it seem like the objects move to the right
+            - Right arrow key pressed
+                => [EXPECTED] Camera moves to the right, making it seem like the objects move to the left
+                => [ACTUAL] 3D Camera moves to the right, making it seem like the objects move to the left
+            - Clicked and dragged mouse around
+                => [EXPECTED] 3D scene rotates as expected
+                => [ACTUAL] 3D scene rotates as expected
+            - Dragged wheel forward
+                => [EXPECTED] Camera zooms into model
+                => [ACTUAL] Camera zooms into model
+            - S key pressed
+                => [EXPECTED] 3D model tilts down
+                => [ACTUAL] 3D model tilts down
+            - D key pressed
+                => [EXPECTED] 3D model tilts to the right (the user's right)
+                => [ACTUAL] 3D model tilts to the rigth (the user's right)
+            - A key pressed
+                => [EXPECTED] 3D model tilts to the left (the user's left)
+                => [ACTUAL] 3D model tilts to the left (the user's left)
+            - Clicked and dragged mouse around
+                => [EXPECTED] 3D scene rotates as expected
+                => [ACTUAL] 3D scene rotates as expected
+            - Up arrow key pressed
+                => [EXPECTED] Camera moves up, making it seem like the objects move down
+                => [ACTUAL] 3D Camera moves up, making it seem like the objects move down
+            
+        
+        
+        
+        
+

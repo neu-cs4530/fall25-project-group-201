@@ -1,8 +1,33 @@
+/* OrderButton styling */
 .btn {
-  background: #ffffff;
-  border: #000000 1px solid;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  color: #000000;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
+/* Hover effect */
 .btn:hover {
-  background-color: #007bff;
+  background-color: #007bff; /* blue background */
+  color: #ffffff; /* white text */
+  border-color: #007bff;
+  transform: translateY(-1px); /* subtle lift */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Active / clicked effect */
+.btn:active {
+  transform: translateY(0px);
+  box-shadow: none;
+}
+
+/* Optional: add focus outline for accessibility */
+.btn:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
 }

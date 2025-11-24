@@ -44,6 +44,14 @@ const questionSchema: Schema = new Schema(
     },
     mediaUrl: { type: String },
     mediaPath: { type: String },
+    mediaSize: {
+      type: String,
+      required: false,
+    },
+    permitDownload: {
+      type: Boolean,
+      default: true,
+    },
   },
   { collection: 'Question' },
 );

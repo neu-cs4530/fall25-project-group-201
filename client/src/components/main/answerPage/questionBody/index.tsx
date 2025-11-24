@@ -2,6 +2,11 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ThreeViewport from '../../threeViewport';
 import './index.css';
+import preprocessCameraRefs from '../../cameraRef/CameraRefUtils';
+import { Download } from 'lucide-react';
+import { getQuestionMedia } from '../../../../services/questionService';
+import useUserContext from '../../../../hooks/useUserContext';
+import useAnswerPage from '../../../../hooks/useAnswerPage';
 
 /**
  * Interface representing the props for the QuestionBody component.
@@ -14,12 +19,42 @@ import './index.css';
  * - mediaPath: The file path of the uploaded media file.
  */
 interface QuestionBodyProps {
+  qid: string;
   views: number;
   text: string;
   askby: string;
   meta: string;
   mediaPath?: string;
   mediaUrl?: string;
+  rotationSetting?: number[] | null;
+  setRotationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  translationSetting?: number[] | null;
+  setTranslationSetting: React.Dispatch<React.SetStateAction<number[] | null>>;
+  mediaSize?: string;
+}
+
+const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
+  const confirmed = window.confirm(
+    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+  );
+  if (!confirmed) return;
+
+  try {
+    const mediaPath = await getQuestionMedia(qid);
+
+    const link = document.createElement('a');
+    link.href = mediaPath;
+    link.download = `file.${extension}`;
+    link.click();
+  } catch (error) {
+    window.alert('Something went wrong with downloading the file');
+  }
+};
+
+function getExtension(path: string): string {
+  const lastDot = path.lastIndexOf('.');
+  if (lastDot === -1) return '';
+  return path.slice(lastDot + 1).toLowerCase();
 }
 
 /**
@@ -34,7 +69,21 @@ interface QuestionBodyProps {
  * @param mediaPath File path to the uploaded media
  * @param mediaUrl Url to the attached media
  */
-const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: QuestionBodyProps) => {
+const QuestionBody = ({
+  qid,
+  views,
+  text,
+  askby,
+  meta,
+  mediaPath,
+  mediaUrl,
+  rotationSetting,
+  setRotationSetting,
+  translationSetting,
+  setTranslationSetting,
+  mediaSize,
+}: QuestionBodyProps) => {
+  const { user } = useUserContext();
   const isGLB = mediaPath?.toLowerCase().endsWith('.glb');
 
   const isVideoPath = mediaPath?.match(/\.(mp4|webm|ogg)$/i);
@@ -43,17 +92,91 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
   const isVideoUrl = mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
   const isImageUrl = mediaUrl?.match(/\.(png|jpg|jpeg|gif)$/i);
 
+  const isAuthor = askby === user.username;
+
+  const handleCameraRefClick = (cameraRef: string) => {
+    // Remove leading "#camera-" prefix
+    const ref = cameraRef.replace(/^#camera-/, '');
+
+    // Regex supporting decimals, negatives, and optional rotation
+    // Matches t(x,y,z) and optional -r(x,y,z)
+    const regex = /t\(\s*([^)]+?)\s*\)(?:-r\(\s*([^)]+?)\s*\))?/;
+    const match = ref.match(regex);
+
+    if (!match) {
+      return;
+    }
+
+    // Translation is required → split and parse safely
+    const translation = match[1].split(',').map(v => Number(v.trim())); // handles decimals / negatives
+
+    // Rotation is optional
+    const rotation = match[2] ? match[2].split(',').map(v => Number(v.trim())) : null;
+
+    if (rotation) {
+      setRotationSetting(rotation);
+    }
+
+    if (translation) {
+      setTranslationSetting(translation);
+    }
+  };
+  let ext: string | undefined = undefined;
+
+  const { downloadQuestionPermission, handleToggleQuestionPermission } = useAnswerPage();
+
+  if (mediaPath) {
+    ext = getExtension(mediaPath);
+  }
+
   return (
     <div id='questionBody' className='questionBody right_padding'>
-      <div className='bold_title answer_question_view'>{views} views</div>
+      <div className='answer_question_view'>{views} views</div>
 
       <div className='answer_question_text'>
-        <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>
+        {!isGLB && <Markdown remarkPlugins={[remarkGfm]}>{text}</Markdown>}
+        {isGLB && (
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ href, children }) => {
+                // Detect camera links
+                if (href && href.startsWith('#camera-')) {
+                  // We want: "camera-t(1,2,3)-r(0,90,0)"
+                  const cleanRef = href.replace(/^#/, '');
+
+                  return (
+                    <span
+                      style={{
+                        color: 'blue',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                      }}
+                      onClick={() => handleCameraRefClick(cleanRef)}>
+                      {children}
+                    </span>
+                  );
+                }
+
+                // Normal links
+                return <a href={href}>{children}</a>;
+              },
+            }}>
+            {preprocessCameraRefs(text)}
+          </Markdown>
+        )}
 
         {/* ----- GLB MODEL (mediaPath only) ----- */}
         {mediaPath && isGLB && (
           <div className='three-wrapper'>
-            <ThreeViewport key={mediaPath} modelPath={mediaPath} />
+            <ThreeViewport
+              key={mediaPath}
+              modelPath={mediaPath}
+              rotationSetting={rotationSetting}
+              setRotationSetting={setRotationSetting}
+              translationSetting={translationSetting}
+              setTranslationSetting={setTranslationSetting}
+            />
           </div>
         )}
 
@@ -101,6 +224,32 @@ const QuestionBody = ({ views, text, askby, meta, mediaPath, mediaUrl }: Questio
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
+        {downloadQuestionPermission && mediaPath && mediaSize && ext && (
+          <div className='download-label'>
+            <Download
+              size={20}
+              onClick={() => handleDownload(mediaSize, ext, qid)}
+              color='#007BFF'
+              style={{ cursor: 'pointer' }}
+            />
+            <div>Download 3D model</div>
+          </div>
+        )}
+        {!downloadQuestionPermission && mediaPath && mediaSize && ext && (
+          <div className='download-disabled'>
+            <div>Download disabled</div>
+          </div>
+        )}
+        {isAuthor && mediaPath && (
+          <button
+            type='button'
+            className={`download-permission-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
+            onClick={() => {
+              handleToggleQuestionPermission();
+            }}>
+            {downloadQuestionPermission ? '✓ Downloads Allowed' : '✕ Downloads Off'}
+          </button>
+        )}
       </div>
     </div>
   );

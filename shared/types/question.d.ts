@@ -44,6 +44,8 @@ export interface Question {
   community: ObjectId | null;
   mediaUrl?: string;
   mediaPath?: string;
+  mediaSize?: string;
+  permitDownload?: boolean;
 }
 
 /**
@@ -159,5 +161,18 @@ export interface VoteRequest extends Request {
 export interface CommunityQuestionsRequest extends Request {
   params: {
     communityId: string;
+  };
+}
+
+export interface DownloadQuestionMediaRequest extends Request {
+  params: {
+    qid: string;
+  };
+}
+
+export interface ToggleQuestionMediaPermissionRequest extends Request {
+  body: {
+    qid: string;
+    username: string;
   };
 }

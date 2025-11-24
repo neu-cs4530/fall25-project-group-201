@@ -7,10 +7,16 @@ import './index.css';
 import orthoIcon from '../../../../public/icons/orthoIcon.png';
 import perspIcon from '../../../../public/icons/perspIcon.png';
 import cameraIcon from '../../../../public/icons/cameraIcon.png';
+import InfoPopover from './InfoPopover';
+import useInfoPopover from '../../../hooks/useInfoPopover';
 
 interface ThreeViewportProps {
   modelPath?: string | null;
   allowUpload?: boolean;
+  rotationSetting?: number[] | null;
+  setRotationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>;
+  translationSetting?: number[] | null;
+  setTranslationSetting?: React.Dispatch<React.SetStateAction<number[] | null>>;
 }
 
 const HDRI_PRESETS = [
@@ -20,12 +26,37 @@ const HDRI_PRESETS = [
   { value: 'indoor', label: 'Indoor', icon: '🏠' },
 ];
 
-const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportProps) => {
+/**
+ * Represents a 3D viewport that can be interacted with. This includes orbit controls, changing
+ * HDRI settings, camera resetting, orthogonal/perspective view toggling and camera reference snapping
+ */
+const ThreeViewport = ({
+  modelPath = null,
+  allowUpload = false,
+  translationSetting = [0, 0.77, 3.02],
+  setTranslationSetting,
+  rotationSetting = [0, 0, 0],
+  setRotationSetting,
+}: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
 
-  const { containerRef, sceneRef, rendererRef, handleResetCamera, handleTogglePerspective } =
-    useThreeViewport(activeModel);
+  const {
+    containerRef,
+    sceneRef,
+    rendererRef,
+    handleResetCamera,
+    handleTogglePerspective,
+    modelVerts,
+    modelEdges,
+    modelFaces,
+  } = useThreeViewport(
+    activeModel,
+    rotationSetting,
+    setRotationSetting,
+    translationSetting,
+    setTranslationSetting,
+  );
 
   // HDRI Hook Integration
   const { currentPreset, switchPreset, isLoading } = useHDRI({
@@ -43,12 +74,20 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
   const [visibleTooltip, setVisibleTooltip] = useState<string | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  /**
+   * Handles perspective/orthogonal view toggling of viewport.
+   */
   const handleCameraModeToggle = () => {
     const updatedCameraMode = !isOrthoCameraMode;
     setIsOrthoCameraMode(updatedCameraMode);
     handleTogglePerspective();
   };
 
+  /**
+   * Positions a tooltip element relative to its parent container.
+   *
+   * @param e - mouse event that it is triggered by
+   */
   const positionTooltip = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const tooltip = e.currentTarget.querySelector('.tooltip-text') as HTMLElement;
     if (tooltip) {
@@ -74,6 +113,8 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
     setVisibleTooltip(null);
   };
 
+  const { isVisible, toggleVisibility } = useInfoPopover();
+
   return (
     <div className='viewport-card'>
       <div ref={containerRef} className='viewport-canvas' />
@@ -92,6 +133,14 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
         }}>
         ⤢
       </div>
+
+      <div className='info-icon' onClick={toggleVisibility}>
+        ⓘ
+      </div>
+
+      {isVisible && <InfoPopover />}
+
+      {/* <InfoPopover/> */}
 
       <div className='upload-section'>
         {allowUpload && (
@@ -154,6 +203,15 @@ const ThreeViewport = ({ modelPath = null, allowUpload = false }: ThreeViewportP
             isLoading={isLoading || !sceneRef.current}
             presets={HDRI_PRESETS}
           />
+        )}
+
+        {/* 3D Model Information */}
+        {activeModel && (
+          <>
+            <div className='modelInfo'>Vertices: {modelVerts}</div>
+            <div className='modelInfo'>Edges: {modelEdges}</div>
+            <div className='modelInfo'>Faces: {modelFaces}</div>
+          </>
         )}
       </div>
     </div>

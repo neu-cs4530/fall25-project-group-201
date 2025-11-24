@@ -1,36 +1,98 @@
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  height: 10%;
+  justify-content: space-between;
+  height: 30px;
   width: 100%;
-  background: #dddddd;
+  background: #f7f7f7;
+  padding: 45px 50px;
+  border-bottom: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-.title {
-  font-size: 32px;
-  font-weight: 800;
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0 20px;
 }
 
-.logout-button {
-  padding: 12px;
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   font-size: 16px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  transition: background-color 0.3s;
+}
+
+.header-logo {
+  height: 40px;
+  object-fit: contain;
+  padding: 4px 0;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 18px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logout {
+  padding: 8px 12px;
+  background: #ffffff;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.logout:hover {
+  background: #ddd;
 }
 
 .view-profile-button {
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
+  padding: 8px 13px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-left: 10px; /* Add spacing from Logout button */
+  transition: background-color 0.25s ease;
 }
 
 .view-profile-button:hover {
@@ -39,4 +101,82 @@
 
 .view-profile-button:active {
   background-color: #003f7f;
+}
+
+.navbar-profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.profile-dropdown-container {
+  position: relative;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 160px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 6px 0;
+  z-index: 20;
+}
+
+.profile-menu-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 15px;
+}
+
+.profile-menu-item:hover {
+  background: #f0f0f0;
+}
+
+.logout-item .logout {
+  width: 100%;
+  border-radius: 0;
+  border: none;
+  text-align: right;
+  padding: 10px 16px;
+  background: white;
+}
+
+.logout-item .logout:hover {
+  background: #f0f0f0;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  transition: transform 0.2s ease;
+  opacity: 0.7;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+.navbar-default-icon {
+  color: #666;
+  cursor: pointer;
+  margin-right: 5px;
+  flex-shrink: 0;
 }

@@ -15,6 +15,8 @@ export interface Comment {
   commentDateTime: Date;
   mediaUrl?: string;
   mediaPath?: string;
+  mediaSize?: string;
+  permitDownload?: boolean;
 }
 
 /**
@@ -41,6 +43,19 @@ export interface AddCommentRequest extends Request {
     id: string;
     type: 'question' | 'answer';
     comment: Comment;
+  };
+}
+
+export interface DownloadCommentMediaRequest extends Request {
+  params: {
+    id: string;
+  };
+}
+
+export interface ToggleCommentMediaPermissionRequest extends Request {
+  body: {
+    id: string;
+    username: string;
   };
 }
 
