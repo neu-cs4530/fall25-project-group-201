@@ -259,6 +259,24 @@ describe('Gallery Post Controller', () => {
       expect(deleteSpy).toHaveBeenCalledWith(mockGalleryPost._id.toString(), mockGalleryPost.user);
     });
 
+    test('should return 400 when missing username', async () => {
+      const response = await supertest(app).delete(
+        `/api/gallery/delete/${mockGalleryPost._id}`,
+      );
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/query/username');
+    });
+
+    test('should return 400 when missing gallery post ID', async () => {
+      const response = await supertest(app).delete('/api/gallery/delete/').query({
+        username: mockGalleryPost.user,
+      });
+
+      expect(response.status).toBe(404);
+    });
+
     test('returns 500 when service throws', async () => {
       deleteSpy.mockRejectedValueOnce(new Error('DB error'));
 
