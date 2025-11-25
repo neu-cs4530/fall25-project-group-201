@@ -9,7 +9,7 @@ const MEDIA_API_URL = '/api/media';
  * @param user - The author of the media who is uploading it.
  * @param formData - form data related to the media, including file location and file buffer
  */
-export const addMedia = async (user: string, formData: FormData): Promise<DatabaseMedia> => {
+export const addMedia = async (formData: FormData): Promise<DatabaseMedia> => {
   // const file = formData.get('file') as File;
   // formData.append('user', user);
   // formData.append('file', file);
