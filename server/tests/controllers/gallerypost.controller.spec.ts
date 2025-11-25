@@ -45,6 +45,19 @@ const incrementDownloadsSpy = jest.spyOn(
 );
 const toggleLikesSpy = jest.spyOn(gallerypostService, 'toggleGalleryPostLikeById');
 
+jest.mock('express-oauth2-jwt-bearer', () => ({
+  auth: jest.fn(() => (req: any, res: any, next: any) => {
+    // Mock the auth object
+    req.auth = {
+      payload: {
+        sub: 'auth0|test-user1',
+        aud: 'https://api.testapp.com',
+      },
+    };
+    next();
+  }),
+}));
+
 describe('Gallery Post Controller', () => {
   beforeEach(() => jest.clearAllMocks());
 

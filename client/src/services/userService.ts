@@ -91,11 +91,17 @@ const deleteUser = async (username: string): Promise<SafeDatabaseUser> => {
  * @returns A promise that resolves to the updated user data
  * @throws {Error} If the request to the server is unsuccessful
  */
-const resetPassword = async (username: string, newPassword: string): Promise<SafeDatabaseUser> => {
+const resetPassword = async (username: string, newPassword: string, token: string): Promise<SafeDatabaseUser> => {
   const res = await api.patch(`${USER_API_URL}/resetPassword`, {
-    username,
-    password: newPassword,
-  });
+      username,
+      password: newPassword,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
   if (res.status !== 200) {
     throw new Error('Error when resetting password');
   }
@@ -112,11 +118,18 @@ const resetPassword = async (username: string, newPassword: string): Promise<Saf
 const updateBiography = async (
   username: string,
   newBiography: string,
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const res = await api.patch(`${USER_API_URL}/updateBiography`, {
-    username,
-    biography: newBiography,
-  });
+      username,
+      biography: newBiography,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
   if (res.status !== 200) {
     throw new Error('Error when updating biography');
   }
@@ -130,11 +143,17 @@ const updateBiography = async (
  * @returns A promise resolving to the updated user
  * @throws Error if the request fails
  */
-const updateSkills = async (username: string, skills: string[]): Promise<SafeDatabaseUser> => {
+const updateSkills = async (username: string, skills: string[], token: string): Promise<SafeDatabaseUser> => {
   const res = await api.patch(`${USER_API_URL}/updateSkills`, {
-    username,
-    skills,
-  });
+      username,
+      skills,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
   if (res.status !== 200) {
     throw new Error('Error when updating skills');
   }
@@ -144,11 +163,18 @@ const updateSkills = async (username: string, skills: string[]): Promise<SafeDat
 const updateExternalLinks = async (
   username: string,
   externalLinks: { github?: string; artstation?: string; linkedin?: string; website?: string },
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const res = await api.patch(`${USER_API_URL}/updateExternalLinks`, {
-    username,
-    externalLinks,
-  });
+      username,
+      externalLinks,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
   if (res.status !== 200) {
     throw new Error('Error when updating external links');
   }
@@ -161,11 +187,18 @@ const updateExternalLinks = async (
 const updateCustomColors = async (
   username: string,
   customColors: { primary?: string; accent?: string; background?: string },
+  token: string
 ): Promise<SafeDatabaseUser> => {
   const res = await api.patch(`${USER_API_URL}/updateCustomColors`, {
-    username,
-    customColors,
-  });
+      username,
+      customColors,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
   if (res.status !== 200) {
     throw new Error('Error when updating custom colors');
   }
@@ -175,13 +208,15 @@ const updateCustomColors = async (
 /**
  * Uploads a profile picture for a user.
  */
-const uploadProfilePicture = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+const uploadProfilePicture = async (username: string, file: File, token: string): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
 
   const res = await api.post(`${USER_API_URL}/uploadProfilePicture`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (res.status !== 200) {
@@ -193,13 +228,16 @@ const uploadProfilePicture = async (username: string, file: File): Promise<SafeD
 /**
  * Uploads a banner image for a user.
  */
-const uploadBannerImage = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+const uploadBannerImage = async (username: string, file: File, token: string): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
 
   const res = await api.post(`${USER_API_URL}/uploadBannerImage`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (res.status !== 200) {
@@ -211,13 +249,16 @@ const uploadBannerImage = async (username: string, file: File): Promise<SafeData
 /**
  * Uploads a resume file for a user.
  */
-const uploadResume = async (username: string, file: File): Promise<SafeDatabaseUser> => {
+const uploadResume = async (username: string, file: File, token: string): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
 
   const res = await api.post(`${USER_API_URL}/uploadResume`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+     },
   });
 
   if (res.status !== 200) {
@@ -233,6 +274,7 @@ const uploadPortfolioModel = async (
   username: string,
   fileOrUrl: File | string, // Changed from just File
   thumbnail: string,
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
 
@@ -248,7 +290,10 @@ const uploadPortfolioModel = async (
   formData.append('thumbnail', thumbnail);
 
   const res = await api.post(`${USER_API_URL}/uploadPortfolioModel`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 
+      'Content-Type': 'multipart/form-data', 
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (res.status !== 200) {
@@ -264,10 +309,14 @@ export const createOrUpdateTestimonial = async (
   profileUsername: string,
   fromUsername: string,
   content: string,
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch('/api/user/testimonial', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json', 
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ profileUsername, fromUsername, content }),
   });
 
@@ -285,10 +334,14 @@ export const createOrUpdateTestimonial = async (
 export const deleteTestimonial = async (
   profileUsername: string,
   fromUsername: string,
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch(`/api/user/testimonial/${profileUsername}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ fromUsername }),
   });
 
@@ -307,10 +360,14 @@ export const updateTestimonialApproval = async (
   username: string,
   testimonialId: string,
   approved: boolean,
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch('/api/user/testimonial/approve', {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ username, testimonialId, approved }),
   });
 
@@ -331,10 +388,14 @@ export const updateTestimonialApproval = async (
 export const updateCustomFont = async (
   username: string,
   customFont: string,
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const res = await fetch('/api/user/updateCustomFont', {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ username, customFont }),
   });
 
@@ -352,9 +413,15 @@ export const incrementPortfolioViews = async (
   username: string,
   index: number,
   viewerUsername: string,
+  token: string,
 ): Promise<void> => {
   const res = await api.post(
     `${USER_API_URL}/portfolio/incrementViews/${username}/${index}/${viewerUsername}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
   );
 
   if (res.status !== 200) {
@@ -369,9 +436,15 @@ export const togglePortfolioLike = async (
   username: string,
   index: number,
   likeUsername: string,
+  token: string,
 ): Promise<void> => {
   const res = await api.post(
     `${USER_API_URL}/portfolio/toggleLike/${username}/${index}/${likeUsername}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
   );
   if (res.status !== 200) {
     throw new Error('Error toggling portfolio like');

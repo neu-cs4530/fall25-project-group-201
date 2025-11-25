@@ -25,6 +25,16 @@ import {
 } from '../services/question.service';
 import { processTags } from '../services/tag.service';
 import { populateDocument } from '../utils/database.util';
+import { auth } from 'express-oauth2-jwt-bearer';
+
+/**
+ * Creates verification middleware
+ */
+const jwtCheck = auth({
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
+  tokenSigningAlg: 'RS256',
+});
 
 const questionController = (socket: FakeSOSocket) => {
   const router = express.Router();
@@ -288,7 +298,7 @@ const questionController = (socket: FakeSOSocket) => {
   router.post('/downvoteQuestion', downvoteQuestion);
   router.get('/getCommunityQuestions/:communityId', getCommunityQuestionsRoute);
   router.get('/downloadQuestionMedia/:qid', downloadQuestionMediaRoute);
-  router.post('/toggleMediaPermission', toggleQuestionMediaPermissionRoute);
+  router.post('/toggleMediaPermission', jwtCheck, toggleQuestionMediaPermissionRoute);
 
   return router;
 };
