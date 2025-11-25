@@ -230,8 +230,15 @@ const useProfileSettings = () => {
 
   const handleUpdateCustomFont = async (newFont: string) => {
     if (!username) return;
+
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
-      const updatedUser = await updateCustomFont(username, newFont);
+      const updatedUser = await updateCustomFont(username, newFont, token);
 
       await new Promise(resolve => {
         setUserData(updatedUser);

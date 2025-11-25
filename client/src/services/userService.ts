@@ -388,10 +388,14 @@ export const updateTestimonialApproval = async (
 export const updateCustomFont = async (
   username: string,
   customFont: string,
+  token: string,
 ): Promise<SafeDatabaseUser> => {
   const res = await fetch('/api/user/updateCustomFont', {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ username, customFont }),
   });
 
