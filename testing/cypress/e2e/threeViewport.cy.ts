@@ -4,16 +4,16 @@ import '../support/auth0'
 
 describe('Cypress tests for Three Viewport controls', function () {
     beforeEach(() => {
-        //setupTest();
+        setupTest();
         auth0Login();
     });
 
     afterEach(() => {
-        //teardownTest();
+        teardownTest();
     });
 
     // Variables for test
-    const testUser = 'user345'
+    const testUser = 'user123'
 
     // Orbit controls: rotation, panning, tilting, zooming
     // Projection toggling: perspective/orthogonal toggling
