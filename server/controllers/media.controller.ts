@@ -5,7 +5,7 @@ import { Media, FakeSOSocket } from '../types/types';
 import path from 'path';
 import fs from 'fs';
 
-const STORAGE_PATH = '../client/public/userData';
+const STORAGE_PATH = 'public/userData';
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -59,16 +59,15 @@ const mediaController = (socket: FakeSOSocket) => {
 
       const replacedPath = req.file.path.replaceAll('\\', '/');
       // console.log('req.file.path replaced:', replacedPath);
-      const extension = path.extname(file.path);
 
       const media: Media = {
         filepathLocation: replacedPath,
-        filepathLocationClient: `/userData/${user}/${file.filename}.${extension}`,
+        filepathLocationClient: `${process.env.SERVER_URL}/userData/${user}/${file.filename}`,
         // fileBuffer: file.buffer,
         user,
       };
 
-      // console.log('saved for client filepath:', media.filepathLocation);
+      // console.log('saved for client filepath:', media.filepathLocationClient);
 
       const newMedia = await mediaService.addMedia(media);
 

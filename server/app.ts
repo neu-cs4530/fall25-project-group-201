@@ -75,6 +75,7 @@ process.on('SIGINT', async () => {
 });
 
 app.use(express.json());
+app.use(express.static('public'));
 
 app.use(
   cors({

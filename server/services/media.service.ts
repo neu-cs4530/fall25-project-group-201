@@ -1,7 +1,6 @@
 import MediaModel from '../models/media.model';
 import { Media, MediaResponse } from '../types/types';
 import fs from 'fs';
-import path from 'path';
 
 /**
  * Converts bytes to a human-readable string
@@ -30,7 +29,7 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
     // }
 
     // Extract the filename
-    const filename = path.basename(media.filepathLocation);
+    // const filename = path.basename(media.filepathLocation);
 
     // Save the file inside that directory
     // const destPath = path.join(userDir, filename);
@@ -45,7 +44,7 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
 
     // Only store metadata + path in MongoDB
     const mediaToSave = {
-      filepathLocationClient: `/userData/${media.user}/${filename}`,
+      filepathLocationClient: media.filepathLocationClient,
       filepathLocation: media.filepathLocation,
       user: media.user,
       fileSize,
