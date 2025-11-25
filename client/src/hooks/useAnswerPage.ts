@@ -129,7 +129,6 @@ const useAnswerPage = () => {
       const updatedQuestion = await getQuestionById(questionID, user.username);
       setQuestion(updatedQuestion);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error adding comment:', error);
     }
   };
@@ -164,7 +163,6 @@ const useAnswerPage = () => {
         setQuestion(res || null);
         setDownloadQuestionPermission(res.permitDownload);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Error fetching question:', error);
       }
     };

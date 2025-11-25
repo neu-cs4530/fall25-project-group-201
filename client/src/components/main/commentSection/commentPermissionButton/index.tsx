@@ -40,7 +40,6 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
       try {
         setDownloadQuestionPermission(comment.permitDownload);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Error fetching question:', error);
       }
     };
