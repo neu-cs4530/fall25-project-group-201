@@ -203,7 +203,6 @@ describe('Profile Settings — editing', () => {
             });
 
             cy.get('.statItem').first().invoke('text').then((afterFirstText) => {
-                const likesAfterFirst = parseInt(afterFirstText.trim()) || 0;
                 cy.get('.statItem').first().click();
 
                 cy.get('.statItem').first().should(($el) => {

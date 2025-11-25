@@ -1,7 +1,6 @@
-import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, test3DViewportOrbitControls, createQuestion, test3DViewportOrthoPerspToggle, goToAskQuestion} from '../support/helpers';
+import { auth0Login, setupTest, teardownTest, test3DViewportOrbitControls, createQuestion, test3DViewportOrthoPerspToggle, goToAskQuestion, goToCommunities, viewCommunityCard, verifyNewGalleryPost, createNewGalleryPost} from '../support/helpers';
 
 import '../support/auth0'
-import { unescape } from 'cypress/types/lodash';
 
 describe('Cypress tests for Three Viewport controls', function () {
     beforeEach(() => {
@@ -16,7 +15,7 @@ describe('Cypress tests for Three Viewport controls', function () {
     // Variables for test
     const testUser = 'user123'
 
-    /*it('Three Viewport in Gallery Page supports rotation, panning, tilting, and zooming', function () {
+    it('Three Viewport in Gallery Page supports rotation, panning, tilting, and zooming', function () {
         goToCommunities();
         viewCommunityCard('React Enthusiasts');
         cy.get('.gallery-upload-button').click()
@@ -79,7 +78,7 @@ describe('Cypress tests for Three Viewport controls', function () {
             test3DViewportOrbitControls();
             test3DViewportOrthoPerspToggle()
         });
-    });*/
+    });
 
     it('Three Viewport in QuestionPage supports hyperlink clicking', function () {
         const title = "Test Question With Camera Ref"

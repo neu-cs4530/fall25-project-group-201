@@ -1,16 +1,15 @@
 import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, deleteGalleryPostAndVerify} from '../support/helpers';
 
 import '../support/auth0'
-import { unescape } from 'cypress/types/lodash';
 
 describe('Cypress tests for deleting a gallery Post', function () {
     beforeEach(() => {
-        //setupTest();
+        setupTest();
         auth0Login();
     });
 
     afterEach(() => {
-        //teardownTest();
+        teardownTest();
     });
 
     // Variables for test
