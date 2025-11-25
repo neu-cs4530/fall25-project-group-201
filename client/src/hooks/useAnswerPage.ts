@@ -84,6 +84,7 @@ const useAnswerPage = () => {
 
     try {
       const formData = new FormData();
+      formData.append('user', user.username);
       formData.append('file', file);
       // formData.append('filepathLocation', file.name);
 
