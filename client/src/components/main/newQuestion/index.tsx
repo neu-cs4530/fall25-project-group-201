@@ -69,6 +69,9 @@ const NewQuestion = () => {
     }
   };
 
+  /**
+   * Converts translationSettings and rotationSettings to a cameraRef format
+   */
   const handleAddCameraRef = () => {
     let translationSettingToSend = translationSetting;
     let rotatationSettingToSend = rotationSetting;
