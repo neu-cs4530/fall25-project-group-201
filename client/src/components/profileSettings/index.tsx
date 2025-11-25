@@ -81,7 +81,7 @@ const ProfileSettings: React.FC = () => {
     if (newIndex < 0 || newIndex >= userData.portfolio.length) return;
 
     try {
-      const res = await fetch('/api/user/reorderPortfolioItems', {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user/reorderPortfolioItems`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -107,14 +107,17 @@ const ProfileSettings: React.FC = () => {
     if (!userData?.portfolio) return;
 
     try {
-      const res = await fetch('/api/user/deleteSinglePortfolioItem', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: userData.username,
-          index,
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/user/deleteSinglePortfolioItem`,
+        {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: userData.username,
+            index,
+          }),
+        },
+      );
 
       if (res.ok) {
         const updatedUser = await res.json();
@@ -947,14 +950,17 @@ const ProfileSettings: React.FC = () => {
                     onChange={async e => {
                       const newFont = e.target.value;
                       try {
-                        const res = await fetch('/api/user/updateCustomFont', {
-                          method: 'PATCH',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            username: userData.username,
-                            customFont: newFont,
-                          }),
-                        });
+                        const res = await fetch(
+                          `${import.meta.env.VITE_SERVER_URL}/api/user/updateCustomFont`,
+                          {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              username: userData.username,
+                              customFont: newFont,
+                            }),
+                          },
+                        );
 
                         if (res.ok) {
                           const updatedUser = await res.json();

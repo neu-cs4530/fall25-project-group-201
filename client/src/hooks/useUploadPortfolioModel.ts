@@ -85,10 +85,13 @@ const useUploadPortfolioModel = () => {
         formData.append('description', description);
         formData.append('thumbnail', thumbnailPath || '');
 
-        const res = await fetch('/api/user/uploadPortfolioModel', {
-          method: 'POST',
-          body: formData,
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/user/uploadPortfolioModel`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
 
         if (res.ok) {
           toast.success('Portfolio media uploaded successfully!');
@@ -129,10 +132,13 @@ const useUploadPortfolioModel = () => {
         formData.append('description', description);
         formData.append('thumbnail', thumbnailPath || '');
 
-        const res = await fetch('/api/user/uploadPortfolioModel', {
-          method: 'POST',
-          body: formData,
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/user/uploadPortfolioModel`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
 
         if (res.ok) {
           toast.success('Portfolio media uploaded successfully!');
@@ -184,7 +190,7 @@ const useUploadPortfolioModel = () => {
       formData.append('user', user.username);
       formData.append('filepathLocation', file.name);
 
-      const res = await fetch('/api/media/create', {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
         body: formData,
       });
@@ -233,7 +239,7 @@ const useUploadPortfolioModel = () => {
       formData.append('user', user.username);
       formData.append('filepathLocation', file.name);
 
-      const res = await fetch('/api/media/create', {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
         body: formData,
       });

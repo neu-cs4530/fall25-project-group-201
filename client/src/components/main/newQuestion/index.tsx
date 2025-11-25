@@ -250,7 +250,7 @@ const NewQuestion = () => {
                   setMediaSize(undefined);
                 } else if (isUploadedImgOrVid) {
                   try {
-                    await fetch('/api/media/delete', {
+                    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/delete`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ filepathLocation: mediaPath }),

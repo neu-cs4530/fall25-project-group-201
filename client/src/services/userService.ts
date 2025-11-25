@@ -265,7 +265,7 @@ export const createOrUpdateTestimonial = async (
   fromUsername: string,
   content: string,
 ): Promise<SafeDatabaseUser> => {
-  const response = await fetch('/api/user/testimonial', {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user/testimonial`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ profileUsername, fromUsername, content }),
@@ -286,11 +286,14 @@ export const deleteTestimonial = async (
   profileUsername: string,
   fromUsername: string,
 ): Promise<SafeDatabaseUser> => {
-  const response = await fetch(`/api/user/testimonial/${profileUsername}`, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fromUsername }),
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_SERVER_URL}/api/user/testimonial/${profileUsername}`,
+    {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fromUsername }),
+    },
+  );
 
   if (!response.ok) {
     const error = await response.text();
@@ -308,7 +311,7 @@ export const updateTestimonialApproval = async (
   testimonialId: string,
   approved: boolean,
 ): Promise<SafeDatabaseUser> => {
-  const response = await fetch('/api/user/testimonial/approve', {
+  const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user/testimonial/approve`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, testimonialId, approved }),

@@ -83,9 +83,12 @@ const deleteGalleryPost = async (
  * @throws Will throw an error if the request fails
  */
 const incrementGalleryPostViews = async (galleryPostID: string, username: string) => {
-  const res = await fetch(`${GALLERY_API_URL}/incrementViews/${galleryPostID}/${username}`, {
-    method: 'POST',
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_SERVER_URL}${GALLERY_API_URL}/incrementViews/${galleryPostID}/${username}`,
+    {
+      method: 'POST',
+    },
+  );
 
   if (!res.ok) throw new Error('Failed to increment views');
   return res.json();
@@ -99,9 +102,12 @@ const incrementGalleryPostViews = async (galleryPostID: string, username: string
  * @throws Will throw an error if the request fails
  */
 const incrementGalleryPostDownloads = async (galleryPostID: string, username: string) => {
-  const res = await fetch(`${GALLERY_API_URL}/incrementDownloads/${galleryPostID}/${username}`, {
-    method: 'POST',
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_SERVER_URL}${GALLERY_API_URL}/incrementDownloads/${galleryPostID}/${username}`,
+    {
+      method: 'POST',
+    },
+  );
 
   if (!res.ok) throw new Error('Failed to increment downloads');
   return res.json();
@@ -116,9 +122,12 @@ const incrementGalleryPostDownloads = async (galleryPostID: string, username: st
  * @throws Will throw an error if the request fails
  */
 const toggleGalleryPostLikes = async (galleryPostID: string, username: string) => {
-  const res = await fetch(`${GALLERY_API_URL}/toggleLikes/${galleryPostID}/${username}`, {
-    method: 'POST',
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_SERVER_URL}${GALLERY_API_URL}/toggleLikes/${galleryPostID}/${username}`,
+    {
+      method: 'POST',
+    },
+  );
 
   if (!res.ok) throw new Error('Failed to toggle likes');
   return res.json();
