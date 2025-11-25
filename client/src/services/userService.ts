@@ -247,9 +247,13 @@ const uploadPortfolioModel = async (
   formData.append('username', username);
   formData.append('thumbnail', thumbnail);
 
-  const res = await api.post(`${USER_API_URL}/uploadPortfolioModel`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  const res = await api.post(
+    `${import.meta.env.VITE_SERVER_URL}${USER_API_URL}/uploadPortfolioModel`,
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    },
+  );
 
   if (res.status !== 200) {
     throw new Error('Error uploading portfolio model');
