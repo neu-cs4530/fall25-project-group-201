@@ -1,3 +1,5 @@
+import "../support/auth0"
+
 /**
  * Test utility functions for Cypress tests
  * Provides shared helper functions for common test patterns like authentication, navigation, and data setup
@@ -10,12 +12,16 @@
  */
 export const loginUser = (username: string, password: string = 'securePass123!') => {
   cy.visit('http://localhost:4530');
-  cy.contains('Welcome to FakeStackOverflow!');
-  cy.get('#username-input').type(username);
-  cy.get('#password-input').type(password);
-  cy.contains('Submit').click();
-  // Wait for redirect to home page
-  cy.url().should('include', '/home');
+  cy.visit('/')
+  cy.contains('Welcome ')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
 };
 
 /**
@@ -664,4 +670,177 @@ export const verifyCollectionPageDetails = (name: string, username?: string) => 
   if (username) {
     cy.get('.collection-meta').should('contain', username);
   }
+};
+
+/**
+ * Opens a question by title on the home page and verifies the AnswerPage loads.
+ * @param title - The question title to open
+ */
+export const openCreatedQuestion = (title: string) => {
+  cy.contains('.postTitle', title)
+    .should('exist')
+    .click();
+
+  // Wait for AnswerPage to render
+  cy.get('.answer_question_text', { timeout: 8000 }).should('be.visible');
+};
+
+
+/**
+ * Generic verification that the AnswerPage displays correct content.
+ * 
+ * @param params - Fields you want to verify:
+ *  - text: question body text
+ *  - author: expected username
+ *  - title: expected title
+ */
+export const verifyAnswerPageContent = (params: {
+  title?: string;
+  text?: string;
+  author?: string;
+}) => {
+  if (params.title) {
+    cy.get('.answer_question_title').should('contain.text', params.title);
+  }
+
+  if (params.text) {
+    cy.get('.answer_question_text').should('contain.text', params.text);
+  }
+
+  if (params.author) {
+    cy.get('.question_author').should('contain.text', params.author);
+  }
+};
+
+
+/**
+ * Uploads media on the Ask Question page.
+ * Handles embed URLs, image/video uploads, and 3D model uploads.
+ *
+ * @param mediaType - "image" | "video" | "3d" | "youtube" | "vimeo"
+ * @param value - File name or embed URL
+ */
+export const uploadMedia = (
+  mediaType: "image" | "video" | "3d" | "youtube" | "vimeo",
+  value: string
+) => {
+  if (mediaType === "youtube" || mediaType === "vimeo") {
+    cy.get('.media-inputs input[type="text"]').type(value);
+    cy.get('.media-inputs button').contains('Add Embed').click();
+
+    // Preview should contain iframe
+    cy.get('.embed-preview iframe').should('be.visible');
+  }
+
+  if (mediaType === "image" || mediaType === "video" || mediaType === "3d") {
+    cy.get('input[type="file"]').attachFile(value);
+
+    if (mediaType === "image") {
+      cy.get('.uploaded-preview img').should('be.visible');
+    }
+
+    if (mediaType === "video") {
+      cy.get('.uploaded-preview video').should('be.visible');
+    }
+
+    if (mediaType === "3d") {
+      cy.get('.model-preview').should('be.visible');
+    }
+  }
+};
+
+/**
+ * Verifies that media is rendered correctly on the AnswerPage.
+ *
+ * @param mediaType - "image" | "video" | "3d" | "youtube" | "vimeo"
+ */
+export const verifyMediaRendered = (
+  mediaType: "image" | "video" | "3d" | "youtube" | "vimeo"
+) => {
+  if (mediaType === "youtube") {
+    cy.get('.iframe-wrapper iframe')
+      .should('have.attr', 'src')
+      .and('include', 'youtube.com/embed');
+  }
+
+  if (mediaType === "vimeo") {
+    cy.get('.iframe-wrapper iframe')
+      .should('have.attr', 'src')
+      .and('include', 'player.vimeo.com');
+  }
+
+  if (mediaType === "image") {
+    cy.get('.question-media img').should('be.visible');
+  }
+
+  if (mediaType === "video") {
+    cy.get('video source')
+      .should('exist')
+      .should('have.attr', 'src')
+      .and('include', '.mp4');
+  }
+
+  if (mediaType === "3d") {
+    cy.get('.three-wrapper canvas').should('exist');
+  }
+};
+
+/**
+ * Verifies the content and metadata of a comment block in the UI.
+ *
+ * @param {Object} params - Parameters for verifying the comment block.
+ * @param {number} params.index - Index of the comment in the list of comment items.
+ * @param {Object} params.expected - Expected values for the comment.
+ * @param {string} params.expected.text - Expected text content of the comment.
+ * @param {string} params.expected.username - Expected username of the comment author.
+ * @param {"image"|"video"|"model"} [params.expected.mediaType] - Optional type of media attached to the comment.
+ * @param {string} [params.expected.mediaUrl] - Optional expected URL for the media.
+ * @param {boolean} [params.expected.canDelete] - Optional flag indicating if the delete button should be visible.
+ */
+export const verifyCommentBlock = ({
+  index,
+  expected,
+}: {
+  index: number;
+  expected: {
+    text: string;
+    username: string;
+    mediaType?: "image" | "video" | "model";
+    mediaUrl?: string;
+    canDelete?: boolean;
+  };
+}) => {
+  cy.get(".comment-item").eq(index).should("exist").within(() => {
+    cy.get(".comment-text")
+      .should("be.visible")
+      .and("contain", expected.text);
+
+    if (expected.mediaType) {
+      if (expected.mediaType === "video") {
+        cy.get("iframe, video.comment-media")
+          .should("exist")
+          .and(($el) => {
+            const src = $el.prop("src") || $el.attr("src");
+            if (expected.mediaUrl) expect(src).to.include(expected.mediaUrl);
+          });
+      } else if (expected.mediaType === "image") {
+        cy.get("img.comment-media")
+          .should("be.visible")
+          .and(($el) => {
+            const src = $el.attr("src") || $el.attr("data-src");
+            if (expected.mediaUrl) expect(src).to.include(expected.mediaUrl);
+          });
+      } else if (expected.mediaType === "model") {
+        cy.get(".comment-model-wrapper").should("be.visible");
+      }
+    } else {
+      cy.get(".comment-media").should("not.exist");
+    }
+
+    if (expected.canDelete) {
+      cy.get(".delete-comment-btn").should("exist").and("be.visible");
+    } else {
+      cy.get(".delete-comment-btn").should("not.exist");
+    }
+  });
 };

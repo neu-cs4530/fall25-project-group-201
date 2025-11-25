@@ -39,6 +39,7 @@ const NewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
+    handleDragOver,
     downloadPermission,
     setDownloadPermission,
     setFileName,
@@ -70,6 +71,8 @@ const NewQuestion = () => {
     }
   };
 
+  /**
+   * Handles adding the camera reference to the question.
   // const getFilenameWithoutExt = (filename: string): string => {
   //   const lastDotIndex = filename.lastIndexOf('.');
   //   if (lastDotIndex === -1) return filename; // No extension
@@ -174,6 +177,35 @@ const NewQuestion = () => {
     }
   };
 
+  /**
+   * Handles a file being dropped into the drag-and-drop area.
+   * Converts the dropped file into a fake input change event and
+   * triggers the existing file handling logic.
+   *
+   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dropped.
+   */
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    setUploadedMediaPath(undefined);
+    setMediaSize(undefined);
+    setMediaErr(null);
+
+    // Create preview URL for the dropped file
+    const tempFileUrl = URL.createObjectURL(file);
+    setPreviewFilePath(tempFileUrl);
+
+    const fakeEvent = {
+      target: {
+        files: [file],
+      },
+    } as unknown as ChangeEvent<HTMLInputElement>;
+
+    handleFileChange(fakeEvent);
+  };
+
   return (
     <div className='new-question-container'>
       <h2>Ask a New Question</h2>
@@ -252,9 +284,9 @@ const NewQuestion = () => {
           />
         </div>
 
-        <div className='file-upload'>
+        <div className='file-upload drag-drop-area' onDrop={handleDrop} onDragOver={handleDragOver}>
           <label className='file-label'>
-            {fileInputRef.current?.files?.[0]?.name || 'Choose a file'}
+            {fileInputRef.current?.files?.[0]?.name || 'Drag & drop a file or click to choose'}
             <input
               ref={fileInputRef}
               type='file'
