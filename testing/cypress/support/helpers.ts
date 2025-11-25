@@ -32,6 +32,19 @@ export const cleanDatabase = () => {
   cy.exec('npx ts-node ../server/seedData/deleteDB.ts ' + Cypress.env('MONGODB_URI'));
 };
 
+export const auth0Login = () => {
+  cy.visit('/')
+  cy.contains('Welcome ')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
+}
+
 export const createNewGalleryPost = (
   title?: string,
   description?: string,
@@ -184,19 +197,6 @@ export const teardownTest = () => {
   cleanDatabase();
 };
 
-export const auth0Login = () => {
-  cy.visit('/')
-  cy.contains('Welcome ')
-  cy.contains('button', 'Log In or Sign Up').click()
-
-  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
-      // Fill in the login form
-      cy.get('input[name="username"], input[name="email"]').type('user123')
-      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
-      cy.get('button[type="submit"]:visible').click()
-  })
-}
-
 /**
  * Auth0 login specifically for profile settings tests
  * Has longer waits and better error handling for profile page navigation
@@ -211,8 +211,8 @@ export const auth0LoginUserProfile = () => {
     cy.get('input[name="username"], input[name="email"]', { timeout: 15000 }).should('be.visible')
     
     // Fill in the login form
-    cy.get('input[name="username"], input[name="email"]').clear().type('user123')
-    cy.get('input[name="password"]').clear().type('securePass123!', { log: false })
+    cy.get('input[name="username"], input[name="email"]').clear().type('user234')
+    cy.get('input[name="password"]').clear().type('P@ssw0rd345', { log: false })
     
     // Click submit and wait for redirect
     cy.get('button[type="submit"]:visible').click()
@@ -242,12 +242,96 @@ export const goToAskQuestion = () => {
  * @param text - Question content
  * @param tags - Space-separated tags
  */
-export const createQuestion = (title: string, text: string, tags: string) => {
+export const createQuestion = (title: string, text: string, tags: string, media: string) => {
   goToAskQuestion();
-  cy.get('#formTitleInput').type(title);
-  cy.get('#formTextInput').type(text);
-  cy.get('#formTagInput').type(tags);
-  cy.contains('Post Question').click();
+  cy.get('#title').type(title);
+  cy.get('#text').type(text);
+  cy.get('#tags').type(tags);
+
+  cy.get('.file-upload').click()
+      cy.get('input[type="file"]').should('exist')
+          .selectFile(`cypress/fixtures/${media}`, { force: true });
+
+  cy.wait(3000);
+
+  cy.get('.submit-btn').click();
+};
+
+export const test3DViewportOrbitControls = () => {
+  cy.get('.viewport-canvas canvas')
+      .should('exist');
+
+  // Rotation
+  cy.get('.viewport-canvas canvas')
+      .trigger('mousedown', { clientX: 100, clientY: 100, button: 0 })
+      .trigger('mousemove', { clientX: 200, clientY: 150, button: 0 })
+      .trigger('mousemove', { clientX: 250, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 300, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 400, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 300, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 50, clientY: 300, button: 0 })
+      .trigger('mousemove', { clientX: 5, clientY: 400, button: 0 })
+      .trigger('mousemove', { clientX: 100, clientY: 200, button: 0 })
+      .trigger('mouseup', { force: true });
+
+  // Panning 
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowUp' });
+  cy.wait(150);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowUp' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowDown' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowDown' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowLeft' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowLeft' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowRight' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowRight' });
+
+  // Tilting 
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'w' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'w' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'a' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'a' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 's' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 's' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'd' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'd' });
+
+  // Zooming
+  cy.get('canvas').trigger('wheel', { deltaY: -1000 });
+  cy.wait(300);
+  cy.get('canvas').trigger('wheel', { deltaY: 1000 });
+  cy.wait(300);
+  cy.get('canvas').trigger('wheel', { deltaY: -1000 });
+  cy.wait(300);
+};
+
+export const test3DViewportOrthoPerspToggle = () => {
+  cy.get('.viewport-canvas').should('exist')
+  cy.get('img[alt="Toggle View"]').as('toggleButton')
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
 };
 
 /**
