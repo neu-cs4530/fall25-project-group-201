@@ -94,10 +94,6 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
       // Generate thumbnails for candidates if missing
       const candidatesWithThumb = await Promise.all(
         candidates.map(async p => {
-          if (!p.thumbnailMedia && p.thumbnailMedia) {
-            p.thumbnailMedia = p.thumbnailMedia;
-          }
-
           const ext = p.media.split('.').pop()?.toLowerCase();
 
           if (!p.thumbnailMedia) {
