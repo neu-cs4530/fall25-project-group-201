@@ -1438,6 +1438,7 @@ components:
         - user
         - media
         - community
+        - mediaSize
       properties:
         title:
           type: string
@@ -1455,6 +1456,9 @@ components:
           type: string
           minLength: 1
         thumbnailMedia:
+          type: string
+          minLength: 1
+        mediaSize:
           type: string
           minLength: 1
 

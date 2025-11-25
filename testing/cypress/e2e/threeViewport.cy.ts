@@ -15,7 +15,9 @@ describe('Cypress tests for Three Viewport controls', function () {
     // Variables for test
     const testUser = 'user123'
 
-    it('Three Viewport in Gallery Page supports rotation, panning, tilting, and zooming', function () {
+    // Orbit controls: rotation, panning, tilting, zooming
+    // Projection toggling: perspective/orthogonal toggling
+    it('Three Viewport in Gallery Page supports orbit controls and projection toggling', function () {
         goToCommunities();
         viewCommunityCard('React Enthusiasts');
         cy.get('.gallery-upload-button').click()
@@ -39,7 +41,9 @@ describe('Cypress tests for Three Viewport controls', function () {
         test3DViewportOrthoPerspToggle()
     });
 
-    it('Three Viewport in Question Page supports rotation, panning, tilting, and zooming', function () {
+    // Orbit controls: rotation, panning, tilting, zooming
+    // Projection toggling: perspective/orthogonal toggling
+    it('Three Viewport in Question Page supports orbit controls and projection toggling', function () {
         const title = "Test Question 1"
         const description = "Test Question Description 1"
         const tags = "react";
@@ -131,6 +135,49 @@ describe('Cypress tests for Three Viewport controls', function () {
         cy.wait(3000);
         cy.get('#question-camref-link').should('exist').click();
         
+    });
+
+    it('Three Viewport in Gallery Page correctly displays model information', function () {
+        goToCommunities();
+        viewCommunityCard('React Enthusiasts');
+        cy.get('.gallery-upload-button').click()
+
+        // Fill form to create a new gallery post
+        const title = "Test gallery post with cube"
+        const description = "This is a test gallery post with cube"
+        const tags = ['3d art']
+        const mediaFile = 'cube.glb'
+        const thumbailMediaFile = 'testThumbnail.jpg'
+
+        createNewGalleryPost(title, description, tags, mediaFile, undefined, thumbailMediaFile)
+
+        // Verify the new gallery post exists
+        verifyNewGalleryPost(title, testUser, description, tags, mediaFile, undefined, thumbailMediaFile)
+        cy.get('.mediaWrapper').should('exist');
+        cy.get('.viewport-card').should('exist');
+        cy.get('.viewport-canvas').should('exist'); 
+
+        cy.contains('Vertices: 8')
+        cy.contains('Edges: 18')
+        cy.contains('Faces: 12')
+    });
+
+    it('Three Viewport in Question Page correctly displays model information', function () {
+        const title = "Test Question 1"
+        const description = "Test Question Description 1"
+        const tags = "react";
+        const media = 'cube.glb'
+
+        createQuestion(title, description, tags, media)
+
+        cy.contains(title).click()
+        
+        cy.get('.viewport-card').should('exist');
+        cy.get('.viewport-canvas').should('exist'); 
+
+        cy.contains('Vertices: 8')
+        cy.contains('Edges: 18')
+        cy.contains('Faces: 12')
     });
 
 })
