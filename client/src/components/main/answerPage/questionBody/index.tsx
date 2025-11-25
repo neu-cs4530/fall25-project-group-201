@@ -38,7 +38,7 @@ interface QuestionBodyProps {
  * @param mediaSize of the media
  * @param extension of the media file
  * @param qid - question ID
- * @returns 
+ * @returns
  */
 const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
   const confirmed = window.confirm(

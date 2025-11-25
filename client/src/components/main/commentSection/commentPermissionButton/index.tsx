@@ -50,10 +50,10 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
 
   /**
    * Handles logic when download button is clicked, requesting confirmation
-   * @param mediaSize of the media 
+   * @param mediaSize of the media
    * @param extension of the media file
    * @param cid - comment ID
-   * @returns 
+   * @returns
    */
   const handleDownload = async (mediaSize: string, extension: string, cid: string) => {
     const confirmed = window.confirm(
@@ -76,7 +76,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
   /**
    * Gets extension of the file
    * @param path of the media file
-   * @returns 
+   * @returns
    */
   function getExtension(path: string): string {
     const lastDot = path.lastIndexOf('.');

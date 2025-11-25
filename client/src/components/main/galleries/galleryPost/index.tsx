@@ -39,7 +39,7 @@ const GalleryPostPage = () => {
    * @param mediaSize of the media
    * @param extension of the media file
    * @param id of the gallery post
-   * @returns 
+   * @returns
    */
   const handleDownload = async (mediaSize: string, extension: string, id: string) => {
     const confirmed = window.confirm(
