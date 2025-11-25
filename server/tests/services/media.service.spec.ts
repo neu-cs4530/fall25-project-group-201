@@ -1,16 +1,25 @@
 import MediaModel from '../../models/media.model';
 import mediaService from '../../services/media.service';
-import { Media } from '../../types/types';
+import { Media, DatabaseMedia } from '../../types/types';
+import mongoose from 'mongoose';
 
-describe('Add media', () => {
+describe('Media Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  // Mock media data
   const mockMediaInput: Media = {
     filepathLocation: '/test/hogwarts-example.png',
     user: 'media1_uploader',
     fileBuffer: 'dummy_file_buffer',
+  };
+
+  const mockMedia: DatabaseMedia = {
+    _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
+    filepathLocation: 'dummy/filepath',
+    user: 'test_user',
+    fileSize: '13 KB',
   };
 
   describe('addMedia', () => {
@@ -31,10 +40,49 @@ describe('Add media', () => {
       expect(saveMock).toHaveBeenCalled();
     });
 
+    test('should return error when save returns null', async () => {
+      jest.spyOn(MediaModel.prototype, 'save').mockResolvedValueOnce(null);
+
+      const result = await mediaService.addMedia(mockMediaInput);
+
+      expect(result).toEqual({ error: 'Failed to add media' });
+    });
+
     test('addMedia should return an object with error if create throws an error', async () => {
       jest.spyOn(MediaModel.prototype, 'save').mockRejectedValue(new Error('Error from db query'));
       const result = await mediaService.addMedia(mockMediaInput);
       expect(result).toEqual({ error: 'Error from db query' });
+    });
+  });
+
+  describe('deleteMedia', () => {
+    test('should delete media when it exists', async () => {
+      jest.spyOn(MediaModel, 'findOneAndDelete').mockResolvedValueOnce(mockMedia);
+
+      const result = await mediaService.deleteMedia(
+        `${encodeURIComponent(mockMedia.filepathLocation)}`,
+      );
+
+      expect(result).toEqual(mockMedia);
+      expect(MediaModel.findOneAndDelete).toHaveBeenCalledWith({
+        filepathLocation: 'dummy/filepath',
+      });
+    });
+
+    test('should return error when media not found', async () => {
+      jest.spyOn(MediaModel, 'findOneAndDelete').mockResolvedValueOnce(null);
+
+      const result = await mediaService.deleteMedia(encodeURIComponent(mockMedia.filepathLocation));
+
+      expect(result).toEqual({ error: 'Media not found' });
+    });
+
+    test('should throw error when deletion fails', async () => {
+      jest.spyOn(MediaModel, 'findOneAndDelete').mockRejectedValueOnce(new Error('Database error'));
+
+      const result = await mediaService.deleteMedia(encodeURIComponent(mockMedia.filepathLocation));
+
+      expect(result).toEqual({ error: 'Database error' });
     });
   });
 });

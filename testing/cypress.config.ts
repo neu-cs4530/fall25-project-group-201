@@ -1,21 +1,21 @@
-const { defineConfig } = require("cypress");
-require('dotenv').config();
+import { defineConfig } from 'cypress';
+import dotenv from 'dotenv';
+import codeCoverageTask from '@cypress/code-coverage/task';
+
+dotenv.config();
 
 export default defineConfig({
   // setupNodeEvents can be defined in either
   // the e2e or component configuration
   e2e: {
     baseUrl: 'http://localhost:4530',
+    fixturesFolder: 'cypress/fixtures',
     setupNodeEvents(on, config) {
-      require("@cypress/code-coverage/task")(on, config);
+      codeCoverageTask(on, config);
       config.env = {
         ...process.env,
         ...config.env,
       };
-      // include any other plugin code...
-
-      // It's IMPORTANT to return the config object
-      // with any changed environment variables
       return config;
     },
   },

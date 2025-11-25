@@ -7,6 +7,7 @@ import { Media } from './media';
  * - `filepathLocation`: Location of the file (either on the user's device or in the application, once copied over
  * - `fileBuffer`: fileBuffer of the original file (essential for copying the media file)
  * - `user`: username of whoever uploaded the media.
+ * - `fileSize`: file size of the media
  */
 export interface Media {
   filepathLocation: string;

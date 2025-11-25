@@ -2,8 +2,9 @@ interface CameraRefProps {
   cameraRef: string;
 }
 
-// Removed the helper export to fix Fast Refresh warning
-
+/**
+ * Renders a clickable mention of a camera reference.
+ */
 export default function CameraRef({ cameraRef }: CameraRefProps) {
   return (
     <span

@@ -13,6 +13,11 @@ import preprocessCameraRefs from '../../cameraRef/CameraRefUtils';
  * - meta Additional metadata related to the answer.
  * - comments An array of comments associated with the answer.
  * - handleAddComment Callback function to handle adding a new comment.
+ * - handleAddMedia Callback function to handle adding media.
+ * - handleAddMediaError to set media errors encountered
+ * - setRotationSetting to set rotation settings for 3D viewport, if applicable
+ * - setTranslationSetting to set translation settings for 3D viewport if applicable
+ * - glbMedia if the question being answered contains 3D media
  */
 interface AnswerProps {
   text: string;
@@ -49,6 +54,10 @@ const AnswerView = ({
   setTranslationSetting,
   glbMedia,
 }: AnswerProps) => {
+  /**
+   * Logic to convert cameraRef to set rotationSettings and translationSettings of the 3D viewport
+   * @param cameraRef that is being clicked
+   */
   const handleCameraRefClick = (cameraRef: string) => {
     // Remove leading "#camera-" prefix
     const ref = cameraRef.replace(/^#camera-/, '');
@@ -98,6 +107,7 @@ const AnswerView = ({
                         cursor: 'pointer',
                         textDecoration: 'underline',
                       }}
+                      id='answer-camref-link'
                       onClick={() => handleCameraRefClick(cleanRef)}>
                       {children}
                     </span>

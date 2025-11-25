@@ -34,6 +34,13 @@ const GalleryPostPage = () => {
   const vimeoId = getVimeoVideoId(url);
   const formatTag = (tag: string) => tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
+  /**
+   * Handles logic when download button is clicked, requesting confirmation
+   * @param mediaSize of the media
+   * @param extension of the media file
+   * @param id of the gallery post
+   * @returns
+   */
   const handleDownload = async (mediaSize: string, extension: string, id: string) => {
     const confirmed = window.confirm(
       `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,

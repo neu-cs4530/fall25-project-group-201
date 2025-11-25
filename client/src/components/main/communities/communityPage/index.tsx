@@ -8,7 +8,7 @@ import './index.css';
 /**
  * Component for displaying a single community page.
  *
- * Shows the community's details, list of members, gallery, and questions.
+ * Shows the community's details, list of members, gallery, questions, and gallery posts
  */
 const CommunityPage = () => {
   const { community, communityQuestions, username, handleDeleteCommunity } = useCommunityPage();

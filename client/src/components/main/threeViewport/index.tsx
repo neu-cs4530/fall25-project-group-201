@@ -117,7 +117,7 @@ const ThreeViewport = ({
 
   return (
     <div className='viewport-card'>
-      <div ref={containerRef} className='viewport-canvas' />
+      <div ref={containerRef} tabIndex={0} className='viewport-canvas' />
 
       <div
         className='expand-icon'
@@ -185,6 +185,7 @@ const ThreeViewport = ({
                   src={isOrthoCameraMode ? perspIcon : orthoIcon}
                   alt='Toggle View'
                   className='icon-button'
+                  id='#ortho-persp-button'
                   onClick={handleCameraModeToggle}
                 />
                 <span className={`tooltip-text ${visibleTooltip === 'toggle' ? 'visible' : ''}`}>

@@ -32,6 +32,156 @@ export const cleanDatabase = () => {
   cy.exec('npx ts-node ../server/seedData/deleteDB.ts ' + Cypress.env('MONGODB_URI'));
 };
 
+export const auth0Login = () => {
+  cy.visit('/')
+  cy.contains('Welcome ')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
+}
+
+export const createNewGalleryPost = (
+  title?: string,
+  description?: string,
+  tags?: string[],
+  media?: string,
+  link?: string,
+  thumbailMediaFile?: string,
+  embeddedMedia?: string
+) => {
+  if (title) {
+    cy.get("#title").type(title);
+  }
+  
+  if (description) {
+    cy.get("#text-project-description").type(description);
+  }
+  
+
+  if (tags) {
+    tags.forEach(tag => {
+      cy.contains('label.tag-checkbox', tag).click();
+    });
+  }
+  
+  if (link) {
+    cy.get('#projectLink').type(link);
+  }
+
+  if (media) {
+    const fileExts = ['.png', '.jpg', '.jpeg', '.mp4', '.mov', '.glb'];
+    if (fileExts.some(ext => media.endsWith(ext))) {
+      cy.get('.file-upload').click()
+      cy.get('input[type="file"]').should('exist')
+          .selectFile(`cypress/fixtures/${media}`, { force: true });
+    }
+
+    if (media.endsWith('.glb')) {
+      cy.get('.model-preview').contains("3D Model Preview")
+      cy.get('.viewport-card').should('exist');
+      cy.get('.viewport-canvas').should('exist'); 
+    }
+
+    if (thumbailMediaFile) {
+      cy.get('[data-cy="thumbnail-file"]').click()
+      cy.get('[data-cy="thumbnail-file"] input[type="file"]')
+        .should('exist')
+        .selectFile(`cypress/fixtures/${thumbailMediaFile}`, { force: true });
+    }
+
+    const isEmbed = /^https?:\/\//i.test(media);
+    if (isEmbed) {
+      cy.get("#embed-text").type(`${media}`)
+
+      cy.get('.embed-preview').contains('Preview')
+
+      if (/youtube\.com|youtu\.be|vimeo\.com/i.test(media)) {
+        cy.get('iframe')
+          .should('have.attr', 'src', `${embeddedMedia}`);
+      } 
+      // Check for image embeds
+      else if (/\.(jpg|jpeg|png)$/i.test(media)) {
+        cy.get('.postMedia').should('have.attr', 'src', `${embeddedMedia}`);
+      } 
+
+    }
+  }
+
+  cy.get('.submit-btn').click()
+};
+
+export const verifyNewGalleryPost = (
+  title: string,
+  user: string,
+  description: string,
+  tags: string[],
+  media: string,
+  link?: string,
+  thumbailMediaFile?: string
+) => {
+  const dataCy = `gallery-card-${title.replace(/\s+/g, '-').toLowerCase()}`;
+  
+  cy.get(`[data-cy="${dataCy}"]`, { timeout: 10000 })
+    .should('exist')
+    .click();
+  cy.get('.postInfo').should('exist')
+      .contains(title)
+  cy.get('.usernameLink').contains(user)
+    cy.get('.postDescription').contains(description)
+    cy.get('.mediaWrapper').should('exist')
+  tags.forEach(tag => {
+    cy.contains('.tagChip', '3d Art').should('exist');
+  });
+
+  const isEmbed = /^https?:\/\//i.test(media);
+  if (isEmbed) {
+    if (/youtube\.com|youtu\.be|vimeo\.com/i.test(media)) {
+      cy.get('iframe')
+        .should('have.attr', 'src', `${media}`);
+    } 
+    // Check for image embeds
+    else if (/\.(jpg|jpeg|png)$/i.test(media)) {
+      cy.get('.postMedia').should('have.attr', 'src', `${media}`);
+    } 
+  }
+  else {
+    const imgExts = ['.png', '.jpg', '.jpeg'];
+    if (imgExts.some(ext => media.endsWith(ext))) {
+      cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
+    }
+
+    const vidExts = ['.mov', '.mp4'];
+    if (vidExts.some(ext => media.endsWith(ext))) {
+      cy.get('.postMedia').should('have.attr', 'src', `/userData/${user}/${media}`);
+    }
+
+    if (media.endsWith('.glb')) {
+      cy.get('.viewport-card').should('exist');
+      cy.get('.viewport-canvas').should('exist'); 
+    }
+
+    if (link) {
+      cy.window().then(win => {
+          cy.spy(win, 'open').as('winOpen');
+      });
+
+      cy.get('.viewProjectBtn').click();
+      cy.get('@winOpen').should('have.been.calledOnce');
+    }
+  }
+};
+
+export const deleteGalleryPostAndVerify = (
+) => {
+  cy.get('.statItem.delete').should('exist').click()
+  cy.contains('No gallery posts yet!')
+};
+
 /**
  * Sets up the database before each test
  */
@@ -48,6 +198,37 @@ export const teardownTest = () => {
 };
 
 /**
+ * Auth0 login specifically for profile settings tests
+ * Has longer waits and better error handling for profile page navigation
+ */
+export const auth0LoginUserProfile = () => {
+  cy.visit('/', { timeout: 30000 })
+  cy.contains('Welcome ', { timeout: 10000 })
+  cy.contains('button', 'Log In or Sign Up', { timeout: 10000 }).click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+    // Wait for the login page to fully load
+    cy.get('input[name="username"], input[name="email"]', { timeout: 15000 }).should('be.visible')
+    
+    // Fill in the login form
+    cy.get('input[name="username"], input[name="email"]').clear().type('user234')
+    cy.get('input[name="password"]').clear().type('P@ssw0rd345', { log: false })
+    
+    // Click submit and wait for redirect
+    cy.get('button[type="submit"]:visible').click()
+    
+    // Give Auth0 time to process - avoid rate limiting
+    cy.wait(5000)
+  })
+  
+  // Wait for redirect back to our app with longer timeout
+  cy.url({ timeout: 30000 }).should('include', 'localhost:4530')
+  
+  // Give the app time to process the Auth0 callback
+  cy.wait(2000)
+}
+
+/**
  * Navigates to the Ask Question page
  */
 export const goToAskQuestion = () => {
@@ -61,12 +242,96 @@ export const goToAskQuestion = () => {
  * @param text - Question content
  * @param tags - Space-separated tags
  */
-export const createQuestion = (title: string, text: string, tags: string) => {
+export const createQuestion = (title: string, text: string, tags: string, media: string) => {
   goToAskQuestion();
-  cy.get('#formTitleInput').type(title);
-  cy.get('#formTextInput').type(text);
-  cy.get('#formTagInput').type(tags);
-  cy.contains('Post Question').click();
+  cy.get('#title').type(title);
+  cy.get('#text').type(text);
+  cy.get('#tags').type(tags);
+
+  cy.get('.file-upload').click()
+      cy.get('input[type="file"]').should('exist')
+          .selectFile(`cypress/fixtures/${media}`, { force: true });
+
+  cy.wait(3000);
+
+  cy.get('.submit-btn').click();
+};
+
+export const test3DViewportOrbitControls = () => {
+  cy.get('.viewport-canvas canvas')
+      .should('exist');
+
+  // Rotation
+  cy.get('.viewport-canvas canvas')
+      .trigger('mousedown', { clientX: 100, clientY: 100, button: 0 })
+      .trigger('mousemove', { clientX: 200, clientY: 150, button: 0 })
+      .trigger('mousemove', { clientX: 250, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 300, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 400, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 300, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 50, clientY: 300, button: 0 })
+      .trigger('mousemove', { clientX: 5, clientY: 400, button: 0 })
+      .trigger('mousemove', { clientX: 100, clientY: 200, button: 0 })
+      .trigger('mouseup', { force: true });
+
+  // Panning 
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowUp' });
+  cy.wait(150);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowUp' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowDown' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowDown' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowLeft' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowLeft' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowRight' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowRight' });
+
+  // Tilting 
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'w' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'w' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'a' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'a' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 's' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 's' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'd' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'd' });
+
+  // Zooming
+  cy.get('canvas').trigger('wheel', { deltaY: -1000 });
+  cy.wait(300);
+  cy.get('canvas').trigger('wheel', { deltaY: 1000 });
+  cy.wait(300);
+  cy.get('canvas').trigger('wheel', { deltaY: -1000 });
+  cy.wait(300);
+};
+
+export const test3DViewportOrthoPerspToggle = () => {
+  cy.get('.viewport-canvas').should('exist')
+  cy.get('img[alt="Toggle View"]').as('toggleButton')
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
 };
 
 /**
@@ -77,6 +342,14 @@ export const goToAnswerQuestion = (questionTitle: string) => {
   cy.contains(questionTitle).click();
   cy.contains('Answer Question').click();
   cy.url().should('include', '/new/answer');
+};
+
+export const goToQuestion = (questionTitle: string) => {
+  cy.contains(questionTitle).click();
+};
+
+export const goToComments = () => {
+  cy.contains("Show Comments").click();
 };
 
 /**

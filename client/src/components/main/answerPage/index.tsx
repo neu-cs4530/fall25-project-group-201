@@ -28,11 +28,6 @@ const AnswerPage = () => {
 
   if (!question) return null;
 
-  const handleDummyButtonClick = () => {
-    setTranslationSetting([0, 1.29, 6.28]);
-    setRotationSetting([0.75, -3.16, 0]);
-  };
-
   return (
     <>
       <VoteComponent question={question} />
@@ -74,7 +69,6 @@ const AnswerPage = () => {
             setTranslationSetting={setTranslationSetting}
             glbMedia={question.mediaPath?.toLowerCase().endsWith('.glb') === true}
           />
-          <button onClick={handleDummyButtonClick}></button>
         </>
       ))}
       <button

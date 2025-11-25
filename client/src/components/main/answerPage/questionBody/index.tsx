@@ -33,6 +33,13 @@ interface QuestionBodyProps {
   mediaSize?: string;
 }
 
+/**
+ * Handles logic when download button is clicked, requesting confirmation
+ * @param mediaSize of the media
+ * @param extension of the media file
+ * @param qid - question ID
+ * @returns
+ */
 const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
   const confirmed = window.confirm(
     `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
@@ -94,6 +101,10 @@ const QuestionBody = ({
 
   const isAuthor = askby === user.username;
 
+  /**
+   * Logic to convert cameraRef to set rotationSettings and translationSettings of the 3D viewport
+   * @param cameraRef that is being clicked
+   */
   const handleCameraRefClick = (cameraRef: string) => {
     // Remove leading "#camera-" prefix
     const ref = cameraRef.replace(/^#camera-/, '');
@@ -152,6 +163,7 @@ const QuestionBody = ({
                         cursor: 'pointer',
                         textDecoration: 'underline',
                       }}
+                      id='question-camref-link'
                       onClick={() => handleCameraRefClick(cleanRef)}>
                       {children}
                     </span>

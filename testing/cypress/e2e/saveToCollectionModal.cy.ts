@@ -1,4 +1,4 @@
-import { goToQuestions, loginUser, setupTest, teardownTest, goToCollections, verifyQuestionSaved, verifyQuestionUnsaved, openSaveToCollectionModal, toggleSaveQuestionToCollection, waitForQuestionsToLoad } from '../support/helpers';
+import { goToQuestions, loginUser, setupTest, teardownTest, verifyQuestionSaved, verifyQuestionUnsaved, openSaveToCollectionModal, toggleSaveQuestionToCollection, waitForQuestionsToLoad } from '../support/helpers';
 
 const COL5_TITLE = "Full-stack Developer Resources";
 const COL10_TITLE = "React Favorites";

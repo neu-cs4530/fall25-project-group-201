@@ -19,6 +19,8 @@ import { Schema } from 'mongoose';
  * - likes
  * - media size
  * - link
+ * - tags
+ * - permitDownload
  */
 const galleryPostSchema: Schema = new Schema(
   {

@@ -1,4 +1,4 @@
-import { Q1_DESC, A1_TXT, A2_TXT } from '../../../server/testData/post_strings';
+import { Q1_DESC, A1_TXT } from '../../../server/testData/post_strings';
 import { createAnswer, goToAnswerQuestion, loginUser, setupTest, teardownTest } from '../support/helpers';
 
 describe("Cypress Tests to verify adding new answers", () => {

@@ -1,4 +1,4 @@
-import { createCommunity, verifyCommunityDetailsDisplayed, verifyCommunityDetailsNotDisplayed, goToCommunities, viewCommunityCard, loginUser, setupTest, teardownTest } from '../support/helpers';
+import { verifyCommunityDetailsDisplayed, verifyCommunityDetailsNotDisplayed, goToCommunities, viewCommunityCard, loginUser, setupTest, teardownTest } from '../support/helpers';
 
 const C1_NAME = "React Enthusiasts";
 const C1_DESC = "A community dedicated to all things React, from beginner questions to advanced patterns and performance optimizations. Share your projects, ask for help, and collaborate on solving React challenges.";
