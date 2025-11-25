@@ -1,0 +1,456 @@
+Manual tests done for Portfolio Features:
+
+Profile Picture & Banner Upload
+- /user/user123
+    - Test: User can upload profile picture
+        - Hovered over profile picture placeholder
+            => [EXPECTED] Upload button overlay appears
+            => [ACTUAL] Upload button overlay appears
+        - Clicked upload button and selected JPG image
+            => [EXPECTED] Profile picture uploads and displays
+            => [ACTUAL] Profile picture uploads and displays
+        - Attempted to upload .txt file
+            => [EXPECTED] Error message "Profile picture must be JPG or PNG format"
+            => [ACTUAL] Error message "Profile picture must be JPG or PNG format"
+    
+    - Test: User can upload banner image
+        - Hovered over banner placeholder
+            => [EXPECTED] Upload button overlay appears
+            => [ACTUAL] Upload button overlay appears
+        - Clicked upload button and selected PNG image
+            => [EXPECTED] Banner uploads and displays full-width
+            => [ACTUAL] Banner uploads and displays full-width
+        - Attempted to upload .txt file
+            => [EXPECTED] Error message "Banner image must be JPG or PNG format"
+            => [ACTUAL] Error message "Banner image must be JPG or PNG format"
+
+Biography Editing
+- /user/user123
+    - Test: User can edit biography
+        - Clicked "Edit" button in biography section
+            => [EXPECTED] Text input field appears with current bio
+            => [ACTUAL] Text input field appears with current bio
+        - Entered new biography text with Markdown formatting (*italic*, **bold**)
+            => [EXPECTED] Biography updates with Markdown rendered
+            => [ACTUAL] Biography updates with Markdown rendered
+        - Clicked "Cancel" button
+            => [EXPECTED] Changes discarded, edit mode closes
+            => [ACTUAL] Changes discarded, edit mode closes
+
+Skills/Software Expertise
+- /user/user123
+    - Test: User can select skills
+        - Clicked "Edit Skills" button
+            => [EXPECTED] Checkbox grid appears with categories
+            => [ACTUAL] Checkbox grid appears with categories
+        - Checked "Blender" and "Unity"
+            => [EXPECTED] Checkboxes toggle on
+            => [ACTUAL] Checkboxes toggle on
+        - Clicked "Save Skills"
+            => [EXPECTED] Skills display as badges on profile
+            => [ACTUAL] Skills display as badges on profile
+        - Clicked "Edit Skills" again
+            => [EXPECTED] Previously selected skills remain checked
+            => [ACTUAL] Previously selected skills remain checked
+
+External Links
+- /user/user123
+    - Test: User can add external links
+        - Clicked "Edit Links" button
+            => [EXPECTED] Four URL input fields appear (GitHub, ArtStation, LinkedIn, Website)
+            => [ACTUAL] Four URL input fields appear
+        - Entered "https://github.com/testuser" in GitHub field
+            => [EXPECTED] Link accepts full URL
+            => [ACTUAL] Link accepts full URL
+        - Clicked "Save Links"
+            => [EXPECTED] GitHub link displays as its own button
+            => [ACTUAL] GitHub link displays as its own button
+        - Clicked GitHub link
+            => [EXPECTED] Opens in new tab
+            => [ACTUAL] Opens in new tab
+
+Resume/CV Upload
+- /user/user123
+    - Test: User can upload PDF resume
+        - Clicked "Upload Resume" button
+            => [EXPECTED] File picker opens accepting PDF only
+            => [ACTUAL] File picker opens accepting PDF only
+        - Selected valid PDF file
+            => [EXPECTED] "Download Resume" button appears
+            => [ACTUAL] "Download Resume" button appears
+        - Clicked "Download Resume"
+            => [EXPECTED] PDF downloads as "resume.pdf"
+            => [ACTUAL] PDF downloads as "resume.pdf"
+        - Attempted to upload incorrect file type (non-PDF)
+            => [EXPECTED] Error message "Resume must be PDF format"
+            => [ACTUAL] Error message "Resume must be PDF format"
+    
+    - Test: User can replace existing resume
+        - Clicked "Replace Resume" button (when resume exists)
+            => [EXPECTED] File picker opens
+            => [ACTUAL] File picker opens
+        - Selected new PDF
+            => [EXPECTED] Resume updates, download button remains
+            => [ACTUAL] Resume updates, download button remains
+
+Portfolio Upload - 3D Models
+- /user/user123/upload-portfolio
+    - Test: User can upload .glb model with thumbnail
+        - Clicked "Upload Media" button in portfolio section
+            => [EXPECTED] Navigate to /user/user123/upload-portfolio
+            => [ACTUAL] Navigate to /user/user123/upload-portfolio
+        - Entered "Dragon Model" as title
+            => [EXPECTED] Title field accepts text
+            => [ACTUAL] Title field accepts text
+        - Entered "High-poly fantasy dragon" as description
+            => [EXPECTED] Description field accepts text
+            => [ACTUAL] Description field accepts text
+        - Selected .glb file (45MB, under 50MB limit)
+            => [EXPECTED] 3D viewport loads model preview
+            => [ACTUAL] 3D viewport loads model preview
+        - Toast notification appears: "Now upload a thumbnail for your 3D model"
+            => [EXPECTED] Thumbnail upload prompt displays
+            => [ACTUAL] Thumbnail upload prompt displays
+        - Selected thumbnail image
+            => [EXPECTED] Thumbnail uploads, "Add to Portfolio" button enables
+            => [ACTUAL] Thumbnail uploads, "Add to Portfolio" button enables
+        - Clicked "Add to Portfolio"
+            => [EXPECTED] Navigate back to profile, model appears in portfolio grid
+            => [ACTUAL] Navigate back to profile, model appears in portfolio grid
+    
+    - Test: File size validation for .glb
+        - Attempted to upload 55MB .glb file (over 50MB limit)
+            => [EXPECTED] Error: "File too large. GLB files must be under 50MB"
+            => [ACTUAL] Error: "File too large. GLB files must be under 50MB"
+
+Portfolio Upload - Images
+- /user/user123/upload-portfolio
+    - Test: User can upload image without thumbnail
+        - Entered "Character Concept" as title
+            => [EXPECTED] Title field accepts text
+            => [ACTUAL] Title field accepts text
+        - Selected .jpg file (3MB, under 5MB limit)
+            => [EXPECTED] Image preview displays
+            => [ACTUAL] Image preview displays
+        - Clicked "Add to Portfolio" without thumbnail
+            => [EXPECTED] Portfolio item added successfully
+            => [ACTUAL] Portfolio item added successfully
+        - Verified portfolio grid shows image directly (no thumbnail needed)
+            => [EXPECTED] Image displays in grid
+            => [ACTUAL] Image displays in grid
+    
+    - Test: File size validation for images
+        - Attempted to upload 7MB .jpg file (over 5MB limit)
+            => [EXPECTED] Error: "File too large. JPG files must be under 5MB"
+            => [ACTUAL] Error: "File too large. JPG files must be under 5MB"
+
+Portfolio Upload - Videos
+- /user/user123/upload-portfolio
+    - Test: User can upload video with thumbnail
+        - Entered "Animation Reel" as title
+            => [EXPECTED] Title field accepts text
+            => [ACTUAL] Title field accepts text
+        - Selected .mp4 file (18MB, under 20MB limit)
+            => [EXPECTED] Video preview loads
+            => [ACTUAL] Video preview loads
+        - Selected thumbnail image
+            => [EXPECTED] Thumbnail required, uploads successfully
+            => [ACTUAL] Thumbnail required, uploads successfully
+        - Clicked "Add to Portfolio"
+            => [EXPECTED] Video added to portfolio
+            => [ACTUAL] Video added to portfolio
+    
+    - Test: File size validation for videos
+        - Attempted to upload 25MB .mp4 file (over 20MB limit)
+            => [EXPECTED] Error: "File too large. MP4 files must be under 20MB"
+            => [ACTUAL] Error: "File too large. MP4 files must be under 20MB"
+
+Portfolio Upload - External URLs (YouTube/Vimeo)
+- /user/user123/upload-portfolio
+    - Test: User can add YouTube video with thumbnail
+        - Entered "Demo Reel 2024" as title
+            => [EXPECTED] Title field accepts text
+            => [ACTUAL] Title field accepts text
+        - Pasted "https://www.youtube.com/watch?v=dQw4w9WgXcQ" in URL field
+            => [EXPECTED] URL field accepts YouTube link
+            => [ACTUAL] URL field accepts YouTube link
+        - Selected thumbnail image
+            => [EXPECTED] Thumbnail required and uploads
+            => [ACTUAL] Thumbnail required and uploads
+        - Clicked "Add to Portfolio"
+            => [EXPECTED] YouTube video added to portfolio
+            => [ACTUAL] YouTube video added to portfolio
+        - Clicked portfolio item from grid
+            => [EXPECTED] Opens viewer with embedded YouTube player
+            => [ACTUAL] Opens viewer with embedded YouTube player
+    
+    - Test: User can add Vimeo video
+        - Pasted Vimeo URL in media URL field
+            => [EXPECTED] URL field accepts Vimeo link
+            => [ACTUAL] URL field accepts Vimeo link
+        - Added thumbnail and clicked "Add to Portfolio"
+            => [EXPECTED] Vimeo video displays in embedded player
+            => [ACTUAL] Vimeo video displays in embedded player
+
+Portfolio Viewer - 3D Models
+- /user/user123/portfolio/0
+    - Test: 3D model displays in interactive viewport
+        - Clicked on 3D model portfolio item
+            => [EXPECTED] Navigate to /user/user123/portfolio/0
+            => [ACTUAL] Navigate to /user/user123/portfolio/0
+        - 3D model loads in Three.js viewport
+            => [EXPECTED] Interactive 3D viewport displays
+            => [ACTUAL] Interactive 3D viewport displays
+        - Clicked and dragged mouse
+            => [EXPECTED] Model rotates
+            => [ACTUAL] Model rotates
+        - Scrolled mouse wheel
+            => [EXPECTED] Camera zooms in/out
+            => [ACTUAL] Camera zooms in/out
+    
+    - Test: Info button displays controls guide
+        - Clicked info icon in top right
+            => [EXPECTED] Popover appears with controls guide
+            => [ACTUAL] Popover appears with "Welcome to the 3D viewport!"
+        - Popover shows: "Click and drag to turn, and scroll to zoom in and out"
+            => [EXPECTED] Instructions visible
+            => [ACTUAL] Instructions visible
+        - Clicked info icon again
+            => [EXPECTED] Popover closes
+            => [ACTUAL] Popover closes
+        - Clicked info icon third time
+            => [EXPECTED] Popover reopens (toggles)
+            => [ACTUAL] Popover reopens
+
+Portfolio Viewer - Views and Likes
+- /user/user123/portfolio/0
+    - Test: Views increment on each visit
+        - Navigated to portfolio item as user123
+            => [EXPECTED] Initial view count displays (ex: 5)
+            => [ACTUAL] Initial view count displays: 5
+        - Clicked "Back to Profile"
+            => [EXPECTED] Return to profile page
+            => [ACTUAL] Return to profile page
+        - Clicked same portfolio item again
+            => [EXPECTED] View count increments by 1 (cumulative)
+            => [ACTUAL] View count shows: 6 (incremented)
+    
+    - Test: Likes toggle on/off
+        - Initial like count: 0
+            => [EXPECTED] Heart icon gray, count shows 0
+            => [ACTUAL] Heart icon gray, count shows 0
+        - Clicked heart icon
+            => [EXPECTED] Heart turns red, count shows 1
+            => [ACTUAL] Heart turns red, count shows 1
+        - Clicked heart icon again
+            => [EXPECTED] Heart turns gray, count returns to 0
+            => [ACTUAL] Heart turns gray, count returns to 0
+    
+    - Test: Back to Profile button works
+        - Clicked "← Back to Profile" button
+            => [EXPECTED] Navigate back to /user/user123
+            => [ACTUAL] Navigate back to /user/user123
+
+Portfolio Management - Edit Mode
+- /user/user123
+    - Test: User can enter edit mode
+        - Clicked "Edit Posts" button (when portfolio has items)
+            => [EXPECTED] Reorder arrows and delete buttons appear on items
+            => [ACTUAL] Reorder arrows and delete buttons appear
+        - Button text changes to "Done Editing"
+            => [EXPECTED] Button label updates
+            => [ACTUAL] Button label updates
+        - Clicked portfolio item in edit mode
+            => [EXPECTED] Click does nothing (edit mode active)
+            => [ACTUAL] Click does nothing
+    
+    - Test: User can reorder portfolio items
+        - Portfolio has 3 items: [A, B, C]
+            => [EXPECTED] Items display in order
+            => [ACTUAL] Items display in order
+        - Clicked right arrow (→) on item A
+            => [EXPECTED] Order changes to [B, A, C]
+            => [ACTUAL] Order changes to [B, A, C]
+        - Toast notification: "Order updated!"
+            => [EXPECTED] Success message displays
+            => [ACTUAL] Success message displays
+        - Clicked left arrow (←) on item A
+            => [EXPECTED] Order returns to [A, B, C]
+            => [ACTUAL] Order returns to [A, B, C]
+    
+    - Test: User can delete portfolio item
+        - Clicked delete button (✕) on portfolio item
+            => [EXPECTED] Confirmation dialog appears
+            => [ACTUAL] Browser confirm() dialog: "Delete this item?"
+        - Clicked "OK" to confirm
+            => [EXPECTED] Item deleted, toast: "Item deleted!"
+            => [ACTUAL] Item deleted, success message displays
+        - Clicked delete button then "Cancel"
+            => [EXPECTED] Item remains, no deletion
+            => [ACTUAL] Item remains in portfolio
+    
+    - Test: User can exit edit mode
+        - Clicked "Done Editing" button
+            => [EXPECTED] Edit controls disappear, button reverts to "Edit Posts"
+            => [ACTUAL] Edit controls disappear, normal view restored
+
+Theme Customization - Colors
+- /user/user123
+    - Test: User can customize theme colors
+        - Clicked "Edit Colors" button
+            => [EXPECTED] Color picker interface appears
+            => [ACTUAL] Three color pickers appear for Primary, Accent, Background
+        - Changed Primary Color to #ff5733 (red)
+            => [EXPECTED] Color picker updates
+            => [ACTUAL] Color picker shows red
+        - Changed Accent Color to #33ff57 (green)
+            => [EXPECTED] Color picker updates
+            => [ACTUAL] Color picker shows green
+        - Changed Background to #3357ff (blue)
+            => [EXPECTED] Color picker updates
+            => [ACTUAL] Color picker shows blue
+        - Clicked "Save Colors"
+            => [EXPECTED] Profile updates with new colors
+            => [ACTUAL] Profile updates, buttons show new primary color
+    
+    - Test: Color preview updates live
+        - Opened color editor
+            => [EXPECTED] Three preview boxes show current colors
+            => [ACTUAL] Preview boxes display: Primary, Accent, Background colors
+
+Theme Customization - Font
+- /user/user123
+    - Test: User can change custom font
+        - Font dropdown currently shows "Inter (Default)"
+            => [EXPECTED] Dropdown displays current font
+            => [ACTUAL] Dropdown displays: Inter
+        - Selected "Roboto" from dropdown
+            => [EXPECTED] Entire profile updates to Roboto font immediately
+            => [ACTUAL] All text updates to Roboto
+        - Toast notification: "Font updated!"
+            => [EXPECTED] Success message displays
+            => [ACTUAL] Success message displays
+        - Selected "Courier New (Monospace)"
+            => [EXPECTED] Profile switches to monospace font
+            => [ACTUAL] All text switches to Courier New
+
+Testimonials - Writing
+- /user/user234
+    - Test: User can write testimonial for another user
+        - Navigated to user234's profile
+            => [EXPECTED] Profile loads
+            => [ACTUAL] Profile loads
+        - Scrolled to Testimonials section
+            => [EXPECTED] "Write a Testimonial" button visible
+            => [ACTUAL] Button displays: "Write a Testimonial"
+        - Clicked "Write a Testimonial"
+            => [EXPECTED] Modal opens
+            => [ACTUAL] Modal opens with title "Write Testimonial for user234"
+        - Entered: "Excellent developer! Great communication and problem-solving skills."
+            => [EXPECTED] Textarea accepts text, character count updates
+            => [ACTUAL] Textarea shows: "86 / 1000 characters"
+        - Clicked "Submit"
+            => [EXPECTED] Modal closes, testimonial sent for approval
+            => [ACTUAL] Modal closes, success (testimonial pending approval)
+    
+    - Test: Cannot write testimonial for self
+        - On own profile (/user/user123)
+            => [EXPECTED] "Write a Testimonial" button does not appear
+            => [ACTUAL] Button not visible (correctly prevented)
+
+Testimonials - Editing & Deleting
+- /user/user234
+    - Test: User can edit their own testimonial
+        - User has existing testimonial for user234
+            => [EXPECTED] Button shows "Edit Your Testimonial"
+            => [ACTUAL] Button shows edit option instead of write
+        - Clicked "Edit Your Testimonial"
+            => [EXPECTED] Modal opens with existing content
+            => [ACTUAL] Modal opens, textarea pre-filled with previous testimonial
+        - Modified text and clicked "Submit"
+            => [EXPECTED] Testimonial updates
+            => [ACTUAL] Testimonial content updates (pending re-approval)
+    
+    - Test: User can delete their testimonial
+        - Clicked "Edit Your Testimonial"
+            => [EXPECTED] Modal opens
+            => [ACTUAL] Modal opens with "Delete" button in footer
+        - Clicked "Delete" button
+            => [EXPECTED] Confirmation dialog appears
+            => [ACTUAL] Browser confirm(): "Are you sure you want to delete your testimonial?"
+        - Clicked "OK"
+            => [EXPECTED] Testimonial deleted, modal closes
+            => [ACTUAL] Testimonial removed, button reverts to "Write a Testimonial"
+
+Testimonials - Approval (Profile Owner)
+- /user/user123 (own profile)
+    - Test: User can see pending testimonials
+        - user234 wrote a testimonial
+            => [EXPECTED] "Pending Testimonials (1)" section appears (only visible to owner)
+            => [ACTUAL] Pending section visible with count
+        - Testimonial card shows:
+            => [EXPECTED] Author name, profile picture, content, date, approval buttons
+            => [ACTUAL] All fields display correctly
+    
+    - Test: User can approve testimonial
+        - Clicked "✓ Approve" button
+            => [EXPECTED] Testimonial moves to approved section (public)
+            => [ACTUAL] Testimonial appears in main testimonials area
+        - Pending count decreases
+            => [EXPECTED] "Pending Testimonials (0)" or section hides
+            => [ACTUAL] Pending section disappears
+    
+    - Test: User can reject testimonial
+        - Another pending testimonial present
+            => [EXPECTED] Pending section shows testimonial
+            => [ACTUAL] Testimonial visible with reject option
+        - Clicked "✗ Reject" button
+            => [EXPECTED] Testimonial permanently deleted
+            => [ACTUAL] Testimonial removed, does not appear anywhere
+    
+    - Test: Approved testimonials display publicly
+        - Logged out and viewed /user/user123 profile
+            => [EXPECTED] Only approved testimonials visible
+            => [ACTUAL] Approved testimonials display, no pending section shown
+        - Clicked testimonial author name
+            => [EXPECTED] Navigate to author's profile
+            => [ACTUAL] Navigate to /user/user234
+
+Profile Viewing - Public vs Own
+- /user/user123 vs /user/user234
+    - Test: Own profile shows edit buttons
+        - Viewing own profile: /user/user123
+            => [EXPECTED] Edit buttons appear on bio, skills, links, colors, etc.
+            => [ACTUAL] All edit buttons visible
+        - Viewing other profile: /user/user234
+            => [EXPECTED] No edit buttons visible
+            => [ACTUAL] No edit options, view-only mode
+    
+    - Test: Pending testimonials only visible to owner
+        - On own profile with pending testimonials
+            => [EXPECTED] "Pending Testimonials" section visible
+            => [ACTUAL] Pending section displays
+        - Logged out and viewed same profile
+            => [EXPECTED] No pending section, only approved testimonials
+            => [ACTUAL] Pending section not visible to public
+
+Multiple Feature Integration
+- /user/user123
+    - Test: Custom theme applies throughout profile
+        - Set custom colors: Primary=#ff0000, Accent=#00ff00, Background=#0000ff
+            => [EXPECTED] All buttons use primary color
+            => [ACTUAL] Buttons show red color
+        - Portfolio items, edit buttons, save buttons
+            => [EXPECTED] Consistent theming throughout
+            => [ACTUAL] Theme applied consistently
+    
+    - Test: Portfolio items maintain engagement across sessions
+        - Viewed portfolio item, liked it (heart turns red)
+            => [EXPECTED] Like count: 1
+            => [ACTUAL] Like count: 1
+        - Refreshed page and revisited same item
+            => [EXPECTED] Heart still red, like persists
+            => [ACTUAL] Like state maintained, still red
+        - View count cumulative (each visit increments)
+            => [EXPECTED] Views continue to increment
+            => [ACTUAL] View count increases with each visit
