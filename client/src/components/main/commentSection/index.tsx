@@ -99,6 +99,7 @@ const CommentSection = ({
     }
 
     setTextErr('');
+    setMediaUrl('');
     setMediaError(null);
 
     if (file) {
@@ -176,6 +177,7 @@ const CommentSection = ({
     if (ytMatch) {
       return (
         <iframe
+          id='comment-iframe'
           width='560'
           height='315'
           src={`https://www.youtube.com/embed/${ytMatch[1]}`}
@@ -201,7 +203,11 @@ const CommentSection = ({
       );
     }
 
-    return <div className='comment-media'>Error embedding URL: {text}</div>;
+    return (
+      <div className='comment-media' id='comment-media'>
+        Error embedding URL: {text}
+      </div>
+    );
   };
 
   /**
@@ -229,13 +235,13 @@ const CommentSection = ({
   };
 
   return (
-    <div className='comment-section'>
+    <div className='comment-section' id='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
         {showComments ? 'Hide Comments' : 'Show Comments'}
       </button>
 
       {showComments && (
-        <div className='comments-container'>
+        <div className='comments-container' id='comments-container'>
           <div className='add-comment'>
             <div className='input-row'>
               <textarea
@@ -243,8 +249,12 @@ const CommentSection = ({
                 value={text}
                 onChange={e => setText(e.target.value)}
                 className='comment-textarea'
+                id='comment-textarea'
               />
-              <button className='add-comment-button' onClick={handleAddCommentClick}>
+              <button
+                className='add-comment-button'
+                id='add-comment-button'
+                onClick={handleAddCommentClick}>
                 Post
               </button>
             </div>
@@ -253,6 +263,7 @@ const CommentSection = ({
               <button
                 type='button'
                 className='media-button'
+                id='media-button'
                 onClick={() => setShowMediaInput(!showMediaInput)}>
                 <FaLink />
               </button>
@@ -261,6 +272,7 @@ const CommentSection = ({
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className='file-input'
+                id='file-input'
               />
 
               {(file || mediaUrl) && (
@@ -277,6 +289,7 @@ const CommentSection = ({
                     value={mediaUrl}
                     onChange={e => setMediaUrl(e.target.value)}
                     className='comment-media-input'
+                    id='comment-media-input'
                   />
                 </div>
               )}
@@ -290,11 +303,11 @@ const CommentSection = ({
             {textErr && <small className='error'>{textErr}</small>}
           </div>
 
-          <ul className='comments-list'>
+          <ul className='comments-list' id='comments-list'>
             {comments.length > 0 ? (
               comments.map(comment => (
                 <li key={String(comment._id)} className='comment-item'>
-                  <div className='comment-text'>
+                  <div className='comment-text' id='comment-text'>
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
 
