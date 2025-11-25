@@ -193,9 +193,6 @@ const NewGalleryPostPage = () => {
             value={form.mediaUrl}
             onChange={handleInputChange('mediaUrl')}
           />
-          <button type='button' onClick={handleAddMedia}>
-            Add Embed
-          </button>
         </div>
 
         <div className='file-upload' data-cy='media-file'>
