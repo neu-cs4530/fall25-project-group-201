@@ -9,6 +9,7 @@ import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
 import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 import CommentPermissionButton from './commentPermissionButton';
+import xss from 'xss';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -93,8 +94,9 @@ const CommentSection = ({
    * Validates input, uploads media if attached, and resets input state on success.
    */
   const handleAddCommentClick = async () => {
-    if (text.trim() === '' || user.username.trim() === '') {
-      setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
+    const sanitizedText = xss(text.trim());
+    if (sanitizedText.trim() === '' || user.username.trim() === '') {
+      setTextErr(sanitizedText.trim() === '' ? 'Comment text cannot be empty' : '');
       return;
     }
 

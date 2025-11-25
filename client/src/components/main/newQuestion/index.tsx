@@ -41,6 +41,7 @@ const NewQuestion = () => {
     handleFileChange,
     downloadPermission,
     setDownloadPermission,
+    setFileName,
   } = useNewQuestion();
 
   const { user: currentUser } = useUserContext();
@@ -68,6 +69,12 @@ const NewQuestion = () => {
       setMediaSize(undefined);
     }
   };
+
+  // const getFilenameWithoutExt = (filename: string): string => {
+  //   const lastDotIndex = filename.lastIndexOf('.');
+  //   if (lastDotIndex === -1) return filename; // No extension
+  //   return filename.substring(0, lastDotIndex);
+  // };
 
   /**
    * Converts translationSettings and rotationSettings to a cameraRef format
@@ -108,10 +115,29 @@ const NewQuestion = () => {
 
     handleFileChange(e);
 
+    // sanitizing file name
+    setFileName(file.name);
+    const sanitizedFilename = file.name
+      .replace(/[^a-zA-Z0-9._-]/g, '_')
+      .replace(/\.{2,}/g, '.')
+      .replace(/^\.+/, '')
+      .substring(0, 255);
+    setFileName(sanitizedFilename);
+
+    // check allowed ext
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
-    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+    const ext = sanitizedFilename.slice(sanitizedFilename.lastIndexOf('.')).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
       setMediaErr('Unsupported file type');
+      URL.revokeObjectURL(tempFileUrl);
+      return;
+    }
+
+    // check file size is not over max
+    const maxFileSize = 50 * 1024 * 1024; // 50 MB
+    if (file.size > maxFileSize) {
+      setMediaErr('File too large (50MB max)');
+      URL.revokeObjectURL(tempFileUrl);
       return;
     }
 
@@ -119,12 +145,18 @@ const NewQuestion = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('user', currentUser.username);
-      formData.append('filepathLocation', file.name);
+      formData.append('filepathLocation', sanitizedFilename);
 
       const res = await fetch('/api/media/create', {
         method: 'POST',
         body: formData,
       });
+
+      // if (!res.ok) {
+      //   const error = await res.json();
+      //   throw new Error(error.error || 'Upload failed');
+      // }
+
       const data = await res.json();
 
       if (data?.filepathLocation) {
@@ -138,6 +170,7 @@ const NewQuestion = () => {
       }
     } catch (err) {
       setMediaErr('Error uploading file');
+      URL.revokeObjectURL(tempFileUrl);
     }
   };
 
