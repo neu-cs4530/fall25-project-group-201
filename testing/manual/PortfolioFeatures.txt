@@ -1,5 +1,7 @@
 Manual tests done for Portfolio Features:
 
+You can watch a video of manual testing here: https://drive.google.com/file/d/1cICuJXwTNTFHoODD-pJEZ6wtqU_u9S_8/view?usp=sharing
+
 Profile Picture & Banner Upload
 - /user/user123
     - Test: User can upload profile picture
