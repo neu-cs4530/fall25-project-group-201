@@ -40,7 +40,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
       try {
         setDownloadQuestionPermission(comment.permitDownload);
       } catch (error) {
-        console.error('Error fetching question:', error);
+        return;
       }
     };
 

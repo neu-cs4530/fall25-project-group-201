@@ -258,7 +258,7 @@ const NewQuestion = () => {
                       body: JSON.stringify({ filepathLocation: mediaPath }),
                     });
                   } catch (err) {
-                    console.warn('Optional: could not delete file on server', err);
+                    return;
                   }
                   setUploadedMediaPath(undefined);
                   setMediaSize(undefined);

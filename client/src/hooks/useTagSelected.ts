@@ -22,7 +22,7 @@ const useTagSelected = (t: TagData) => {
         const res = await getTagByName(t.name);
         setTag(res || { name: 'Error', description: 'Error' });
       } catch (e) {
-        console.log(e);
+        return;
       }
     };
     fetchData();

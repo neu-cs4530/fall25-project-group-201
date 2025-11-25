@@ -48,7 +48,7 @@ const useQuestionPage = () => {
         const res = await getQuestionsByFilter(questionOrder, search);
         setQlist(res || []);
       } catch (error) {
-        console.log(error);
+        return;
       }
     };
 

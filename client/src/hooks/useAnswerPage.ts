@@ -129,7 +129,7 @@ const useAnswerPage = () => {
       const updatedQuestion = await getQuestionById(questionID, user.username);
       setQuestion(updatedQuestion);
     } catch (error) {
-      console.error('Error adding comment:', error);
+      return;
     }
   };
 
@@ -163,7 +163,7 @@ const useAnswerPage = () => {
         setQuestion(res || null);
         setDownloadQuestionPermission(res.permitDownload);
       } catch (error) {
-        console.error('Error fetching question:', error);
+        return;
       }
     };
 

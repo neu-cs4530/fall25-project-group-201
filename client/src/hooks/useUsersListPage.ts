@@ -25,7 +25,7 @@ const useUsersListPage = () => {
         const res = await getUsers();
         setUserList(res || []);
       } catch (error) {
-        console.log(error);
+        return;
       }
     };
 

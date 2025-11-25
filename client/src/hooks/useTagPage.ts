@@ -31,7 +31,7 @@ const useTagPage = () => {
         const res = await getTagsWithQuestionNumber();
         setTlist(res || []);
       } catch (e) {
-        console.log(e);
+        return;
       }
     };
 
