@@ -163,6 +163,12 @@ export const verifyNewGalleryPost = (
   }
 };
 
+export const deleteGalleryPostAndVerify = (
+) => {
+  cy.get('.statItem.delete').should('exist').click()
+  cy.contains('No gallery posts yet!')
+};
+
 /**
  * Sets up the database before each test
  */
