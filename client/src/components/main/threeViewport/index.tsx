@@ -40,6 +40,7 @@ const ThreeViewport = ({
 }: ThreeViewportProps) => {
   const { modelUrl, fileInputRef, handleFileChange, triggerFileUpload } = useModelUpload();
   const activeModel = modelPath || modelUrl;
+  console.log('retrieving media from:', activeModel);
 
   const {
     containerRef,

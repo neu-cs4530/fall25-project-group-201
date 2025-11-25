@@ -125,6 +125,8 @@ const NewQuestion = () => {
       const data = await res.json();
 
       if (data?.filepathLocation) {
+        console.log('uploaded filepath:', data.filepathLocation);
+
         setUploadedMediaPath(data.filepathLocation);
         if (data.fileSize) {
           setMediaSize(data.fileSize);
