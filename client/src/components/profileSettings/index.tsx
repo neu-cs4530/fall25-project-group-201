@@ -20,6 +20,8 @@ const ProfileSettings: React.FC = () => {
     setUserData,
     editBioMode,
     newBio,
+    customFont,
+    handleUpdateCustomFont,
     newPassword,
     confirmNewPassword,
     showConfirmation,
@@ -150,10 +152,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.bannerImage
                 ? {
-                    backgroundImage: `url(${userData.bannerImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.bannerImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {!userData?.bannerImage && <span>Banner Image</span>}
@@ -178,10 +180,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.profilePicture
                 ? {
-                    backgroundImage: `url(${userData.profilePicture})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
+                  backgroundImage: `url(${userData.profilePicture})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
                 : {}
             }>
             {canEditProfile && (
@@ -939,30 +941,8 @@ const ProfileSettings: React.FC = () => {
                   </label>
                   <select
                     className='input-text'
-                    value={userData.customFont || 'Inter'}
-                    onChange={async e => {
-                      const newFont = e.target.value;
-                      try {
-                        const res = await fetch('/api/user/updateCustomFont', {
-                          method: 'PATCH',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            username: userData.username,
-                            customFont: newFont,
-                          }),
-                        });
-
-                        if (res.ok) {
-                          const updatedUser = await res.json();
-                          setUserData(updatedUser);
-                          toast.success('Font updated!');
-                        } else {
-                          toast.error('Failed to update font');
-                        }
-                      } catch (err) {
-                        toast.error('Failed to update font');
-                      }
-                    }}
+                    value={customFont}
+                    onChange={e => handleUpdateCustomFont(e.target.value)}
                     style={{ width: '100%', marginTop: '0.5rem' }}>
                     <option value='Inter'>Inter (Default)</option>
                     <option value='Roboto'>Roboto</option>
