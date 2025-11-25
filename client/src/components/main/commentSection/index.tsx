@@ -59,6 +59,7 @@ const CommentSection = ({
   const [translationSettings, setTranslationSettings] = useState<Record<string, number[] | null>>(
     {},
   );
+  const [isDragging, setIsDragging] = useState(false)
 
   /**
    * Validates whether a provided string is a valid media URL.
