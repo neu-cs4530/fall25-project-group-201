@@ -17,6 +17,7 @@ const App = () => {
         io(SERVER_URL, {
           path: '/socket.io',
           withCredentials: true,
+          transports: ['websocket','polling','flashsocket'],
         }),
       );
     }
