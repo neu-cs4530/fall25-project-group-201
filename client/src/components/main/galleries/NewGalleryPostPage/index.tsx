@@ -73,7 +73,7 @@ const NewGalleryPostPage = () => {
       });
       const data = await res.json();
 
-      console.log('data filepathlocationclient', data.filepathLocation);
+      // console.log('data filepathlocationclient', data.filepathLocation);
 
       if (data?.filepathLocationClient) {
         handleInputChange('mediaPath')({
@@ -118,7 +118,7 @@ const NewGalleryPostPage = () => {
       });
       const data = await res.json();
 
-      console.log('data filepathlocationclient', data.filepathLocation);
+      // console.log('data filepathlocationclient', data.filepathLocation);
 
       if (data?.filepathLocationClient) {
         handleInputChange('thumbnailMediaPath')({
