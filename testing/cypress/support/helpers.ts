@@ -39,8 +39,8 @@ export const auth0Login = () => {
 
   cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
       // Fill in the login form
-      cy.get('input[name="username"], input[name="email"]').type('user345')
-      cy.get('input[name="password"]').type('P@ssw0rd345', { log: false }) // hide in logs
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
       cy.get('button[type="submit"]:visible').click()
   })
 }

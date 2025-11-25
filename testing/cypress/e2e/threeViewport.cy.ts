@@ -14,7 +14,7 @@ describe('Cypress tests for Three Viewport controls', function () {
     });
 
     // Variables for test
-    const testUser = 'user345'
+    const testUser = 'user123'
 
     /*it('Three Viewport in Gallery Page supports rotation, panning, tilting, and zooming', function () {
         goToCommunities();
