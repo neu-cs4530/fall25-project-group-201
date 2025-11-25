@@ -45,6 +45,15 @@ const socket: FakeSOSocket = new Server(server, {
   },
 });
 
+app.use(
+  cors({
+    origin: `${process.env.CLIENT_URL || `http://localhost:4530`}`,
+    // origin: '*',
+    credentials: true,
+    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
+  }),
+);
+
 function connectDatabase() {
   return mongoose.connect(MONGO_URL).catch(err => console.log('MongoDB connection error: ', err));
 }
@@ -76,15 +85,6 @@ process.on('SIGINT', async () => {
 
 app.use(express.json());
 app.use(express.static('public'));
-
-app.use(
-  cors({
-    origin: `${process.env.CLIENT_URL || `http://localhost:4530`}`,
-    // origin: '*',
-    credentials: true,
-    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
-  }),
-);
 
 try {
   app.use(
