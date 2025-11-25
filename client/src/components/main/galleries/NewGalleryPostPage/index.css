@@ -10,7 +10,7 @@
 h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
   color: #111827;
 }
 
@@ -101,7 +101,7 @@ textarea {
 
 .file-upload input[type="file"] {
   display: block;
-  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .submit-btn {

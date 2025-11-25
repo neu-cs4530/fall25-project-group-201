@@ -234,7 +234,7 @@ const NewGalleryPostPage = () => {
 
           {form.mediaPath?.endsWith('.glb') && (
             <>
-              <h3>Add Thumbnail</h3>
+              <h2>Add Thumbnail</h2>
               <div className='file-upload' data-cy='thumbnail-file'>
                 <input type='file' accept='image/*' onChange={handleThumbnailFileUpload} />
               </div>
