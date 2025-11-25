@@ -261,7 +261,6 @@ const useProfileSettings = () => {
       },
     });
 
-
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
       toast.error('Profile picture must be JPG or PNG format.');
@@ -402,7 +401,12 @@ const useProfileSettings = () => {
       });
 
       // Then upload model with thumbnail reference
-      const updatedUser = await uploadPortfolioModel(username, portfolioModelFile, thumbnailBase64, token);
+      const updatedUser = await uploadPortfolioModel(
+        username,
+        portfolioModelFile,
+        thumbnailBase64,
+        token,
+      );
       setUserData(updatedUser);
 
       // Reset state
@@ -440,11 +444,11 @@ const useProfileSettings = () => {
   const handleUpdateSkills = async () => {
     if (!username) return;
 
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        },
-      });
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
 
     try {
       const updatedUser = await updateSkills(username, selectedSkills, token);
@@ -477,7 +481,12 @@ const useProfileSettings = () => {
     });
 
     try {
-      const updatedUser = await createOrUpdateTestimonial(username, currentUser.username, content, token);
+      const updatedUser = await createOrUpdateTestimonial(
+        username,
+        currentUser.username,
+        content,
+        token,
+      );
       setUserData(updatedUser);
       toast.success('Testimonial submitted for review!');
     } catch (error) {

@@ -91,16 +91,22 @@ const deleteUser = async (username: string): Promise<SafeDatabaseUser> => {
  * @returns A promise that resolves to the updated user data
  * @throws {Error} If the request to the server is unsuccessful
  */
-const resetPassword = async (username: string, newPassword: string, token: string): Promise<SafeDatabaseUser> => {
-  const res = await api.patch(`${USER_API_URL}/resetPassword`, {
+const resetPassword = async (
+  username: string,
+  newPassword: string,
+  token: string,
+): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(
+    `${USER_API_URL}/resetPassword`,
+    {
       username,
       password: newPassword,
     },
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
+      },
+    },
   );
   if (res.status !== 200) {
     throw new Error('Error when resetting password');
@@ -120,15 +126,17 @@ const updateBiography = async (
   newBiography: string,
   token: string,
 ): Promise<SafeDatabaseUser> => {
-  const res = await api.patch(`${USER_API_URL}/updateBiography`, {
+  const res = await api.patch(
+    `${USER_API_URL}/updateBiography`,
+    {
       username,
       biography: newBiography,
     },
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
+      },
+    },
   );
   if (res.status !== 200) {
     throw new Error('Error when updating biography');
@@ -143,16 +151,22 @@ const updateBiography = async (
  * @returns A promise resolving to the updated user
  * @throws Error if the request fails
  */
-const updateSkills = async (username: string, skills: string[], token: string): Promise<SafeDatabaseUser> => {
-  const res = await api.patch(`${USER_API_URL}/updateSkills`, {
+const updateSkills = async (
+  username: string,
+  skills: string[],
+  token: string,
+): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(
+    `${USER_API_URL}/updateSkills`,
+    {
       username,
       skills,
     },
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
+      },
+    },
   );
   if (res.status !== 200) {
     throw new Error('Error when updating skills');
@@ -165,15 +179,17 @@ const updateExternalLinks = async (
   externalLinks: { github?: string; artstation?: string; linkedin?: string; website?: string },
   token: string,
 ): Promise<SafeDatabaseUser> => {
-  const res = await api.patch(`${USER_API_URL}/updateExternalLinks`, {
+  const res = await api.patch(
+    `${USER_API_URL}/updateExternalLinks`,
+    {
       username,
       externalLinks,
     },
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
+      },
+    },
   );
   if (res.status !== 200) {
     throw new Error('Error when updating external links');
@@ -187,17 +203,19 @@ const updateExternalLinks = async (
 const updateCustomColors = async (
   username: string,
   customColors: { primary?: string; accent?: string; background?: string },
-  token: string
+  token: string,
 ): Promise<SafeDatabaseUser> => {
-  const res = await api.patch(`${USER_API_URL}/updateCustomColors`, {
+  const res = await api.patch(
+    `${USER_API_URL}/updateCustomColors`,
+    {
       username,
       customColors,
     },
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
+      },
+    },
   );
   if (res.status !== 200) {
     throw new Error('Error when updating custom colors');
@@ -208,15 +226,17 @@ const updateCustomColors = async (
 /**
  * Uploads a profile picture for a user.
  */
-const uploadProfilePicture = async (username: string, file: File, token: string): Promise<SafeDatabaseUser> => {
+const uploadProfilePicture = async (
+  username: string,
+  file: File,
+  token: string,
+): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
 
   const res = await api.post(`${USER_API_URL}/uploadProfilePicture`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
   });
 
   if (res.status !== 200) {
@@ -228,15 +248,19 @@ const uploadProfilePicture = async (username: string, file: File, token: string)
 /**
  * Uploads a banner image for a user.
  */
-const uploadBannerImage = async (username: string, file: File, token: string): Promise<SafeDatabaseUser> => {
+const uploadBannerImage = async (
+  username: string,
+  file: File,
+  token: string,
+): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
 
   const res = await api.post(`${USER_API_URL}/uploadBannerImage`, formData, {
-    headers: { 
+    headers: {
       'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
     },
   });
 
@@ -249,16 +273,20 @@ const uploadBannerImage = async (username: string, file: File, token: string): P
 /**
  * Uploads a resume file for a user.
  */
-const uploadResume = async (username: string, file: File, token: string): Promise<SafeDatabaseUser> => {
+const uploadResume = async (
+  username: string,
+  file: File,
+  token: string,
+): Promise<SafeDatabaseUser> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('username', username);
 
   const res = await api.post(`${USER_API_URL}/uploadResume`, formData, {
-    headers: { 
+    headers: {
       'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-     },
+      'Authorization': `Bearer ${token}`,
+    },
   });
 
   if (res.status !== 200) {
@@ -290,9 +318,9 @@ const uploadPortfolioModel = async (
   formData.append('thumbnail', thumbnail);
 
   const res = await api.post(`${USER_API_URL}/uploadPortfolioModel`, formData, {
-    headers: { 
-      'Content-Type': 'multipart/form-data', 
-      Authorization: `Bearer ${token}`,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': `Bearer ${token}`,
     },
   });
 
@@ -313,9 +341,9 @@ export const createOrUpdateTestimonial = async (
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch('/api/user/testimonial', {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json', 
-      Authorization: `Bearer ${token}`,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({ profileUsername, fromUsername, content }),
   });
@@ -338,9 +366,9 @@ export const deleteTestimonial = async (
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch(`/api/user/testimonial/${profileUsername}`, {
     method: 'DELETE',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({ fromUsername }),
   });
@@ -364,9 +392,9 @@ export const updateTestimonialApproval = async (
 ): Promise<SafeDatabaseUser> => {
   const response = await fetch('/api/user/testimonial/approve', {
     method: 'PATCH',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({ username, testimonialId, approved }),
   });
@@ -394,7 +422,7 @@ export const updateCustomFont = async (
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify({ username, customFont }),
   });
@@ -420,8 +448,8 @@ export const incrementPortfolioViews = async (
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
+      },
+    },
   );
 
   if (res.status !== 200) {
@@ -443,8 +471,8 @@ export const togglePortfolioLike = async (
     {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
+      },
+    },
   );
   if (res.status !== 200) {
     throw new Error('Error toggling portfolio like');

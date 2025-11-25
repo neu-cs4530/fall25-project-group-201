@@ -39,7 +39,7 @@ const useAnswerPage = () => {
     boolean | undefined
   >();
 
-  const {getAccessTokenSilently} = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
 
   /**
    * Navigates the user to the "New Answer" page for the current question.
