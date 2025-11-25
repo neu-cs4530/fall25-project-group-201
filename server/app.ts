@@ -34,6 +34,16 @@ const PORT = parseInt(process.env.PORT || '8000');
 
 const app = express();
 const server = http.createServer(app);
+
+app.use(
+  cors({
+    origin: `${process.env.CLIENT_URL || `http://localhost:4530`}`,
+    // origin: '*',
+    credentials: true,
+    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
+  }),
+);
+
 // allow requests from the local dev client or the production client only
 const socket: FakeSOSocket = new Server(server, {
   path: '/socket.io',
@@ -44,15 +54,6 @@ const socket: FakeSOSocket = new Server(server, {
     methods: ['GET', 'PATCH', 'POST', 'DELETE'],
   },
 });
-
-app.use(
-  cors({
-    origin: `${process.env.CLIENT_URL || `http://localhost:4530`}`,
-    // origin: '*',
-    credentials: true,
-    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
-  }),
-);
 
 function connectDatabase() {
   return mongoose.connect(MONGO_URL).catch(err => console.log('MongoDB connection error: ', err));
