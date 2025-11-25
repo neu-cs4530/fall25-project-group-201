@@ -59,6 +59,11 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
   }
 };
 
+/**
+ * Deletes a media document
+ * @param filepathLocation of the media
+ * @returns the deleted media document
+ */
 const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => {
   try {
     // Decode URL-encoded characters (like %2F → /)

@@ -10,6 +10,8 @@ import { Schema } from 'mongoose';
  * - `commentDateTime`: The date and time when the comment was posted.
  * - `mediaUrl`: URL to embed, if applicable
  * - `mediaPath`: location of media, if applicable
+ * - `mediaSize`: size of the media file, if applicable
+ *
  */
 const commentSchema: Schema = new Schema(
   {

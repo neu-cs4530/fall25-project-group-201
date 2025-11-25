@@ -8,6 +8,7 @@ import { ObjectId } from 'mongodb';
  * - `commentDateTime`: The timestamp when the comment was made.
  * - `mediaUrl`: URL to embed, if applicable
  * - `mediaPath`: location of media, if applicable
+ * - `mediaSize`: media size of the media file, if applicable
  */
 export interface Comment {
   text: string;
