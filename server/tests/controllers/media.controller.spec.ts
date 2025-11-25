@@ -8,6 +8,7 @@ import { DatabaseMedia } from '../../types/types';
 const mockMedia: DatabaseMedia = {
   _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
   filepathLocation: 'dummy/filepath',
+  filepathLocationClient: '../dummy/filepath',
   user: 'test_user',
   fileSize: '13 KB',
 };
@@ -20,6 +21,7 @@ describe('POST /create', () => {
   test('should create a new media successfully', async () => {
     const mockReqBody = {
       filepathLocation: 'New Media',
+      filepathLocationClient: '../New Media',
       user: 'media1_uploader',
       fileBuffer: Buffer.from('dummy file content'),
     };

@@ -11,13 +11,15 @@ describe('Media Service', () => {
   // Mock media data
   const mockMediaInput: Media = {
     filepathLocation: '/test/hogwarts-example.png',
+    filepathLocationClient: '../test/hogwarts-example.png',
     user: 'media1_uploader',
-    fileBuffer: 'dummy_file_buffer',
+    // fileBuffer: 'dummy_file_buffer',
   };
 
   const mockMedia: DatabaseMedia = {
     _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
     filepathLocation: 'dummy/filepath',
+    filepathLocationClient: 'dummy/filepath',
     user: 'test_user',
     fileSize: '13 KB',
   };

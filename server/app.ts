@@ -40,7 +40,7 @@ const socket: FakeSOSocket = new Server(server, {
     // origin: `${process.env.CLIENT_URL || `http://localhost:4530`}`,
     origin: '*',
     credentials: true,
-    methods: ['GET','PATCH','POST','DELETE'],
+    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
   },
 });
 
