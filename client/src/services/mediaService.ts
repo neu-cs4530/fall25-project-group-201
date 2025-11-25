@@ -10,7 +10,7 @@ const MEDIA_API_URL = '/api/media';
  * @param formData - form data related to the media, including file location and file buffer
  */
 export const addMedia = async (user: string, formData: FormData): Promise<DatabaseMedia> => {
-  const file = formData.get('file') as File;
+  // const file = formData.get('file') as File;
   formData.append('user', user);
 
   // if (file && !formData.has('filepathLocation')) {

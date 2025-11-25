@@ -40,8 +40,8 @@ const addMedia = async (media: Media): Promise<MediaResponse> => {
     // Get file size in human-readable format
     const fileSize = formatFileSize(fileStats.size);
 
-    console.log('service fileStats:', fileStats);
-    console.log('service fileSize:', fileSize);
+    // console.log('service fileStats:', fileStats);
+    // console.log('service fileSize:', fileSize);
 
     // Only store metadata + path in MongoDB
     const mediaToSave = {

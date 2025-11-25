@@ -122,12 +122,12 @@ const NewQuestion = () => {
         method: 'POST',
         body: formData,
       });
-      
+
       const data = await res.json();
 
       if (data?.filepathLocation) {
         setUploadedMediaPath(data.filepathLocationClient);
-        console.log('saved filepath is:', data.filepathLocationClient);
+        // console.log('saved filepath is:', data.filepathLocationClient);
         if (data.fileSize) {
           setMediaSize(data.fileSize);
         }
