@@ -33,6 +33,13 @@ interface QuestionBodyProps {
   mediaSize?: string;
 }
 
+/**
+ * Handles logic when download button is clicked, requesting confirmation
+ * @param mediaSize of the media
+ * @param extension of the media file
+ * @param qid - question ID
+ * @returns 
+ */
 const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
   const confirmed = window.confirm(
     `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
