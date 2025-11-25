@@ -72,6 +72,7 @@ const NewQuestion = () => {
 
   /**
    * Handles adding the camera reference to the question.
+   * Converts translationSettings and rotationSettings to a cameraRef format
    */
   const handleAddCameraRef = () => {
     let translationSettingToSend = translationSetting;
@@ -201,6 +202,7 @@ const NewQuestion = () => {
         {mediaPath?.endsWith('.glb') && (
           <button
             type='button'
+            id='cameraRefButton'
             onClick={() => {
               handleAddCameraRef();
             }}>

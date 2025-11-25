@@ -323,6 +323,29 @@ export const updateTestimonialApproval = async (
 };
 
 /**
+ * Updates a user's custom font selection.
+ * @param username - Username of the user
+ * @param customFont - Font name to set
+ * @returns Updated user object
+ */
+export const updateCustomFont = async (
+  username: string,
+  customFont: string,
+): Promise<SafeDatabaseUser> => {
+  const res = await fetch('/api/user/updateCustomFont', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, customFont }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to update custom font');
+  }
+
+  return await res.json();
+};
+
+/**
  * Increments views for a portfolio item
  */
 export const incrementPortfolioViews = async (
