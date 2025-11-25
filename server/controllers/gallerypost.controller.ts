@@ -16,16 +16,6 @@ import {
   fetchAndIncrementGalleryPostViewsById,
   downloadGalleryPostMedia,
 } from '../services/gallerypost.service';
-import { auth } from 'express-oauth2-jwt-bearer';
-
-/**
- * Creates verification middleware
- */
-const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
-  tokenSigningAlg: 'RS256',
-});
 
 /**
  * Controller for handling all gallery post related routes.
@@ -232,7 +222,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
   router.get('/getGalleryPost/:galleryPostID', getGalleryPostRoute);
   router.get('/downloadGalleryPostMedia/:galleryPostID', downloadGalleryPostMediaRoute);
   router.post('/create', createGalleryPostRoute);
-  router.delete('/delete/:galleryPostId', jwtCheck, deleteGalleryPostRoute);
+  router.delete('/delete/:galleryPostId', deleteGalleryPostRoute);
   router.post('/incrementViews/:galleryPostID/:username', incrementGalleryPostViewsRoute);
   router.post('/incrementDownloads/:galleryPostID/:username', incrementGalleryPostDownloadsRoute);
   router.post('/toggleLikes/:galleryPostID/:username', toggleGalleryPostLikesRoute);

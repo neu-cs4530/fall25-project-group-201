@@ -39,6 +39,13 @@ const NewGalleryPostPage = () => {
   const { user: currentUser } = useUserContext();
   const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
 
+  const handleAddMedia = () => {
+    if (form.mediaUrl) {
+      handleInputChange('mediaPath')({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
+      handleInputChange('mediaSize')({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
+    }
+  };
+
   /**
    * Resets mediaPath and mediaSize when an embed URL is added.
    */
@@ -186,6 +193,9 @@ const NewGalleryPostPage = () => {
             value={form.mediaUrl}
             onChange={handleInputChange('mediaUrl')}
           />
+          <button type='button' onClick={handleAddMedia}>
+            Add Embed
+          </button>
         </div>
 
         <div className='file-upload' data-cy='media-file'>
@@ -224,7 +234,7 @@ const NewGalleryPostPage = () => {
 
           {form.mediaPath?.endsWith('.glb') && (
             <>
-              <h2>Add Thumbnail</h2>
+              <h3>Add Thumbnail</h3>
               <div className='file-upload' data-cy='thumbnail-file'>
                 <input type='file' accept='image/*' onChange={handleThumbnailFileUpload} />
               </div>

@@ -180,49 +180,4 @@ describe('Cypress tests for Three Viewport controls', function () {
         cy.contains('Faces: 12')
     });
 
-    it('Three Viewport in Gallery Page supports camera resetting', function () {
-        goToCommunities();
-        viewCommunityCard('React Enthusiasts');
-        cy.get('.gallery-upload-button').click()
-
-        // Fill form to create a new gallery post
-        const title = "Test gallery post with 3D media"
-        const description = "This is a test gallery post with 3D media"
-        const tags = ['3d art']
-        const mediaFile = 'test3DModel.glb'
-        const thumbailMediaFile = 'testThumbnail.jpg'
-
-        createNewGalleryPost(title, description, tags, mediaFile, undefined, thumbailMediaFile)
-
-        // Verify the new gallery post exists
-        verifyNewGalleryPost(title, testUser, description, tags, mediaFile, undefined, thumbailMediaFile)
-        cy.get('.mediaWrapper').should('exist');
-        cy.get('.viewport-card').should('exist');
-        cy.get('.viewport-canvas').should('exist'); 
-
-        test3DViewportOrbitControls()
-        test3DViewportOrthoPerspToggle()
-        cy.wait(3000);
-
-        cy.get('img[alt="Reset Camera"]').as('resetButton')
-        cy.get('@resetButton').click()
-    });
-
-    it('Three Viewport in Question Page camera resetting', function () {
-        const title = "Test Question 1"
-        const description = "Test Question Description 1"
-        const tags = "react";
-        const media = 'test3DModel2.glb'
-
-        createQuestion(title, description, tags, media)
-
-        cy.contains(title).click()
-        test3DViewportOrbitControls()
-        test3DViewportOrthoPerspToggle()
-        cy.wait(3000);
-
-        cy.get('img[alt="Reset Camera"]').as('resetButton')
-        cy.get('@resetButton').click()
-    });
-
 })

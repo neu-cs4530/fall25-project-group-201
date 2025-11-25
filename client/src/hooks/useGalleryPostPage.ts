@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   getGalleryPosts,
+  incrementGalleryPostViews,
   incrementGalleryPostDownloads,
   toggleGalleryPostLikes,
   deleteGalleryPost,
@@ -10,7 +11,6 @@ import { deleteMedia } from '../services/mediaService';
 import { getUserByUsername } from '../services/userService';
 import useUserContext from './useUserContext';
 import { DatabaseGalleryPost, SafeDatabaseUser } from '../types/types';
-import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * Custom hook for managing a single gallery post page.
@@ -33,8 +33,6 @@ const useGalleryPostPage = () => {
   const [post, setPost] = useState<DatabaseGalleryPost | null>(null);
   const [postUser, setPostUser] = useState<SafeDatabaseUser | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const { getAccessTokenSilently } = useAuth0();
 
   /**
    * Fetch the gallery post by ID from the server.
@@ -62,13 +60,27 @@ const useGalleryPostPage = () => {
   }, [postId]);
 
   /**
-   * Effect to fetch the post.
+   * Effect to increment post views once per session and fetch the post.
    */
   useEffect(() => {
-    if (!postId) return;
+    if (!postId || !user.username) return;
 
-    fetchPost();
-  }, [fetchPost, postId]);
+    const sessionKey = `viewed_${postId}_${user.username}`;
+    const incrementAndFetch = async () => {
+      try {
+        if (!sessionStorage.getItem(sessionKey)) {
+          await incrementGalleryPostViews(postId, user.username);
+          sessionStorage.setItem(sessionKey, 'true');
+        }
+      } catch {
+        setError('Failed to increment views.');
+      } finally {
+        await fetchPost();
+      }
+    };
+
+    incrementAndFetch();
+  }, [fetchPost, postId, user.username]);
 
   /**
    * Increment download count for the post and open the media in a new tab.
@@ -102,12 +114,6 @@ const useGalleryPostPage = () => {
   const removePost = async () => {
     if (!post) return;
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     // Delete media only if it is a media path not a media url (embed)
     if (post.media.startsWith('/userData/')) {
       try {
@@ -126,7 +132,7 @@ const useGalleryPostPage = () => {
     }
 
     try {
-      await deleteGalleryPost(post._id.toString(), user.username, token);
+      await deleteGalleryPost(post._id.toString(), user.username);
       navigate(`/communities/${post.community}`);
     } catch {
       setError('Failed to delete post.');

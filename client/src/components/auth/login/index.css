@@ -19,7 +19,7 @@
 .container h3 {
   font-size: 1.5rem;
   color: #555;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .container h4 {
@@ -101,9 +101,4 @@ form {
   font-size: 14px;
   margin-top: 20px;
   text-align: center;
-}
-
-.login-logo {
-  width: 350px;
-  margin-bottom: 3rem;
 }

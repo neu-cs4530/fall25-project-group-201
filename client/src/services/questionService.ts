@@ -116,17 +116,9 @@ const getQuestionMedia = async (questionId: string): Promise<string> => {
   return res.data;
 };
 
-const toggleMediaPermission = async (
-  qid: string,
-  username: string,
-  token: string,
-): Promise<boolean> => {
+const toggleMediaPermission = async (qid: string, username: string): Promise<boolean> => {
   const data = { qid, username };
-  const res = await api.post(`${QUESTION_API_URL}/toggleMediaPermission`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const res = await api.post(`${QUESTION_API_URL}/toggleMediaPermission`, data);
   if (res.status !== 200) {
     throw new Error('Error while upvoting the question');
   }

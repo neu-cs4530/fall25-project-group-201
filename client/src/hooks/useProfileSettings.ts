@@ -20,7 +20,6 @@ import {
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
 import toast from 'react-hot-toast';
-import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * A custom hook to encapsulate all logic/state for the ProfileSettings component.
@@ -29,7 +28,6 @@ const useProfileSettings = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useUserContext();
-  const { getAccessTokenSilently } = useAuth0();
 
   // Local state
   const [userData, setUserData] = useState<SafeDatabaseUser | null>(null);
@@ -109,18 +107,11 @@ const useProfileSettings = () => {
 
   const handleResetPassword = async () => {
     if (!username) return;
-
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     if (!validatePasswords()) {
       return;
     }
     try {
-      await resetPassword(username, newPassword, token);
+      await resetPassword(username, newPassword);
       toast.success('Password reset successful!');
       setNewPassword('');
       setConfirmNewPassword('');
@@ -131,15 +122,8 @@ const useProfileSettings = () => {
 
   const handleUpdateBiography = async () => {
     if (!username) return;
-
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await updateBiography(username, newBio, token);
+      const updatedUser = await updateBiography(username, newBio);
 
       await new Promise(resolve => {
         setUserData(updatedUser);
@@ -155,12 +139,6 @@ const useProfileSettings = () => {
 
   const handleUpdateExternalLinks = async () => {
     if (!username) return;
-
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
     try {
       // Helper function to ensure https://
       const ensureHttps = (url: string): string => {
@@ -184,7 +162,7 @@ const useProfileSettings = () => {
         website: ensureHttps(websiteLink),
       };
 
-      const updatedUser = await updateExternalLinks(username, externalLinks, token);
+      const updatedUser = await updateExternalLinks(username, externalLinks);
 
       await new Promise(resolve => {
         setUserData(updatedUser);
@@ -200,13 +178,6 @@ const useProfileSettings = () => {
 
   const handleUpdateCustomColors = async () => {
     if (!username) return;
-
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
       const customColors = {
         primary: primaryColor,
@@ -214,7 +185,7 @@ const useProfileSettings = () => {
         background: backgroundColor,
       };
 
-      const updatedUser = await updateCustomColors(username, customColors, token);
+      const updatedUser = await updateCustomColors(username, customColors);
 
       await new Promise(resolve => {
         setUserData({ ...updatedUser });
@@ -230,15 +201,8 @@ const useProfileSettings = () => {
 
   const handleUpdateCustomFont = async (newFont: string) => {
     if (!username) return;
-
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await updateCustomFont(username, newFont, token);
+      const updatedUser = await updateCustomFont(username, newFont);
 
       await new Promise(resolve => {
         setUserData(updatedUser);
@@ -255,12 +219,6 @@ const useProfileSettings = () => {
   const handleUploadProfilePicture = async (file: File) => {
     if (!username) return;
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
       toast.error('Profile picture must be JPG or PNG format.');
@@ -273,7 +231,7 @@ const useProfileSettings = () => {
     }
 
     try {
-      const updatedUser = await uploadProfilePicture(username, file, token);
+      const updatedUser = await uploadProfilePicture(username, file);
       setUserData(updatedUser);
       toast.success('Profile picture updated!');
     } catch (error) {
@@ -295,14 +253,8 @@ const useProfileSettings = () => {
       return;
     }
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await uploadBannerImage(username, file, token);
+      const updatedUser = await uploadBannerImage(username, file);
       setUserData(updatedUser);
       toast.success('Banner image updated!');
     } catch (error) {
@@ -323,14 +275,8 @@ const useProfileSettings = () => {
       return;
     }
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await uploadResume(username, file, token);
+      const updatedUser = await uploadResume(username, file);
       setUserData(updatedUser);
       toast.success('Resume uploaded!');
     } catch (error) {
@@ -394,19 +340,8 @@ const useProfileSettings = () => {
         reader.readAsDataURL(portfolioThumbnailFile);
       });
 
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        },
-      });
-
       // Then upload model with thumbnail reference
-      const updatedUser = await uploadPortfolioModel(
-        username,
-        portfolioModelFile,
-        thumbnailBase64,
-        token,
-      );
+      const updatedUser = await uploadPortfolioModel(username, portfolioModelFile, thumbnailBase64);
       setUserData(updatedUser);
 
       // Reset state
@@ -443,15 +378,8 @@ const useProfileSettings = () => {
 
   const handleUpdateSkills = async () => {
     if (!username) return;
-
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await updateSkills(username, selectedSkills, token);
+      const updatedUser = await updateSkills(username, selectedSkills);
 
       await new Promise(resolve => {
         setUserData(updatedUser);
@@ -474,19 +402,8 @@ const useProfileSettings = () => {
   const handleSubmitTestimonial = async (content: string) => {
     if (!username || !currentUser.username) return;
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await createOrUpdateTestimonial(
-        username,
-        currentUser.username,
-        content,
-        token,
-      );
+      const updatedUser = await createOrUpdateTestimonial(username, currentUser.username, content);
       setUserData(updatedUser);
       toast.success('Testimonial submitted for review!');
     } catch (error) {
@@ -497,14 +414,8 @@ const useProfileSettings = () => {
   const handleDeleteTestimonial = async () => {
     if (!username || !currentUser.username) return;
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await deleteTestimonial(username, currentUser.username, token);
+      const updatedUser = await deleteTestimonial(username, currentUser.username);
       setUserData(updatedUser);
       toast.success('Testimonial deleted.');
     } catch (error) {
@@ -515,14 +426,8 @@ const useProfileSettings = () => {
   const handleApproveTestimonial = async (testimonialId: string, approved: boolean) => {
     if (!username) return;
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedUser = await updateTestimonialApproval(username, testimonialId, approved, token);
+      const updatedUser = await updateTestimonialApproval(username, testimonialId, approved);
       setUserData(updatedUser);
       toast.success(approved ? 'Testimonial approved!' : 'Testimonial rejected.');
     } catch (error) {

@@ -12,7 +12,6 @@ import useUserContext from './useUserContext';
 import { addComment } from '../services/commentService';
 import { getQuestionById, toggleMediaPermission } from '../services/questionService';
 import mediaService from '../services/mediaService';
-import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * Custom React hook for managing the Answer Page functionality.
@@ -38,8 +37,6 @@ const useAnswerPage = () => {
   const [downloadQuestionPermission, setDownloadQuestionPermission] = useState<
     boolean | undefined
   >();
-
-  const { getAccessTokenSilently } = useAuth0();
 
   /**
    * Navigates the user to the "New Answer" page for the current question.
@@ -142,14 +139,8 @@ const useAnswerPage = () => {
       return;
     }
 
-    const token = await getAccessTokenSilently({
-      authorizationParams: {
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      },
-    });
-
     try {
-      const updatedPermission = await toggleMediaPermission(qid, user.username, token);
+      const updatedPermission = await toggleMediaPermission(qid, user.username);
       setDownloadQuestionPermission(updatedPermission);
     } catch (error) {
       window.alert('Something went wrong with changing the download permission');

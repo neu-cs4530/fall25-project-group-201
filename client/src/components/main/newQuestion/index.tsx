@@ -39,10 +39,8 @@ const NewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
-    handleDragOver,
     downloadPermission,
     setDownloadPermission,
-    setFileName,
   } = useNewQuestion();
 
   const { user: currentUser } = useUserContext();
@@ -61,12 +59,15 @@ const NewQuestion = () => {
   };
 
   /**
-   * Handles adding the camera reference to the question.
-  // const getFilenameWithoutExt = (filename: string): string => {
-  //   const lastDotIndex = filename.lastIndexOf('.');
-  //   if (lastDotIndex === -1) return filename; // No extension
-  //   return filename.substring(0, lastDotIndex);
-  // };
+   * Handles adding the media URL to the question.
+   * Clears any previously uploaded media if an embed URL is added.
+   */
+  const handleAddMedia = () => {
+    if (mediaUrl) {
+      setUploadedMediaPath(undefined);
+      setMediaSize(undefined);
+    }
+  };
 
   /**
    * Converts translationSettings and rotationSettings to a cameraRef format
@@ -107,29 +108,10 @@ const NewQuestion = () => {
 
     handleFileChange(e);
 
-    // sanitizing file name
-    setFileName(file.name);
-    const sanitizedFilename = file.name
-      .replace(/[^a-zA-Z0-9._-]/g, '_')
-      .replace(/\.{2,}/g, '.')
-      .replace(/^\.+/, '')
-      .substring(0, 255);
-    setFileName(sanitizedFilename);
-
-    // check allowed ext
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp4', '.glb'];
-    const ext = sanitizedFilename.slice(sanitizedFilename.lastIndexOf('.')).toLowerCase();
+    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
       setMediaErr('Unsupported file type');
-      URL.revokeObjectURL(tempFileUrl);
-      return;
-    }
-
-    // check file size is not over max
-    const maxFileSize = 50 * 1024 * 1024; // 50 MB
-    if (file.size > maxFileSize) {
-      setMediaErr('File too large (50MB max)');
-      URL.revokeObjectURL(tempFileUrl);
       return;
     }
 
@@ -137,18 +119,12 @@ const NewQuestion = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('user', currentUser.username);
-      formData.append('filepathLocation', sanitizedFilename);
+      formData.append('filepathLocation', file.name);
 
       const res = await fetch('/api/media/create', {
         method: 'POST',
         body: formData,
       });
-
-      // if (!res.ok) {
-      //   const error = await res.json();
-      //   throw new Error(error.error || 'Upload failed');
-      // }
-
       const data = await res.json();
 
       if (data?.filepathLocation) {
@@ -162,37 +138,7 @@ const NewQuestion = () => {
       }
     } catch (err) {
       setMediaErr('Error uploading file');
-      URL.revokeObjectURL(tempFileUrl);
     }
-  };
-
-  /**
-   * Handles a file being dropped into the drag-and-drop area.
-   * Converts the dropped file into a fake input change event and
-   * triggers the existing file handling logic.
-   *
-   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dropped.
-   */
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    setUploadedMediaPath(undefined);
-    setMediaSize(undefined);
-    setMediaErr(null);
-
-    // Create preview URL for the dropped file
-    const tempFileUrl = URL.createObjectURL(file);
-    setPreviewFilePath(tempFileUrl);
-
-    const fakeEvent = {
-      target: {
-        files: [file],
-      },
-    } as unknown as ChangeEvent<HTMLInputElement>;
-
-    handleFileChange(fakeEvent);
   };
 
   return (
@@ -271,11 +217,14 @@ const NewQuestion = () => {
             value={mediaUrl}
             onChange={handleMediaUrlChange}
           />
+          <button type='button' onClick={handleAddMedia}>
+            Add Embed
+          </button>
         </div>
 
-        <div className='file-upload drag-drop-area' onDrop={handleDrop} onDragOver={handleDragOver}>
+        <div className='file-upload'>
           <label className='file-label'>
-            {fileInputRef.current?.files?.[0]?.name || 'Drag & drop a file or click to choose'}
+            {fileInputRef.current?.files?.[0]?.name || 'Choose a file'}
             <input
               ref={fileInputRef}
               type='file'

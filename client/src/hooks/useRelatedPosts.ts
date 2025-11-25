@@ -43,6 +43,7 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
           video.crossOrigin = 'anonymous';
           video.muted = true;
           video.currentTime = 0.1;
+
           video.onloadeddata = () => {
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
@@ -51,6 +52,7 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
             if (ctx) ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL('image/png'));
           };
+
           video.onerror = () => resolve('');
         });
 
@@ -84,6 +86,7 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
 
             canvas.width = width;
             canvas.height = height;
+
             const ctx = canvas.getContext('2d');
             if (ctx) ctx.drawImage(img, 0, 0, width, height);
             resolve(canvas.toDataURL('image/png'));
@@ -94,30 +97,25 @@ const useRelatedPosts = (post: DatabaseGalleryPost | null) => {
       // Generate thumbnails for candidates if missing
       const candidatesWithThumb = await Promise.all(
         candidates.map(async p => {
-          const ext = p.media.split('.').pop()?.toLowerCase();
-
           if (!p.thumbnailMedia) {
-            const youTubeId = p.media.match(/(?:v=|youtu\.be\/)([\w-]+)/)?.[1];
+            const youTubeId = p.media.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1];
             const vimeoId = p.media.match(/vimeo\.com\/(\d+)/)?.[1];
+            const ext = p.media.split('.').pop()?.toLowerCase();
 
-            if (youTubeId) {
+            if (youTubeId)
               p.thumbnailMedia = `https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`;
-            } else if (vimeoId) {
-              p.thumbnailMedia = `https://vumbnail.com/${vimeoId}.jpg`;
-            } else if (['mp4', 'webm', 'mov'].includes(ext || '')) {
+            else if (vimeoId) p.thumbnailMedia = `https://vumbnail.com/${vimeoId}.jpg`;
+            else if (['mp4', 'webm', 'mov'].includes(ext || '')) {
               p.thumbnailMedia = await generateVideoThumbnail(p.media);
             } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext || '')) {
               p.thumbnailMedia = await generateImageThumbnail(p.media);
-            } else if (ext === 'glb') {
-              p.thumbnailMedia = '/images/glb-placeholder.png';
             }
           }
-
           return p;
         }),
       );
 
-      // Sort candidates by relevance
+      // Sort candidates by relevance (tags, keywords, author)
       candidatesWithThumb.sort((a, b) => {
         let scoreA = 0;
         let scoreB = 0;
