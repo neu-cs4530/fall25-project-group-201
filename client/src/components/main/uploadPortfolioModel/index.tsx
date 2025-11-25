@@ -63,16 +63,6 @@ const UploadPortfolioModel = () => {
             value={mediaUrl}
             onChange={e => setMediaUrl(e.target.value)}
           />
-          <button
-            type='button'
-            onClick={() => {
-              if (mediaUrl) {
-                setModelPath(undefined);
-                setShowThumbnailUpload(false);
-              }
-            }}>
-            Add Embed
-          </button>
         </div>
 
         <div className='file-upload'>
