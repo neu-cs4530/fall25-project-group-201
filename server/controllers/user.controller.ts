@@ -17,8 +17,6 @@ import {
   saveUser,
   updateUser,
 } from '../services/user.service';
-import fs from 'fs';
-import path from 'path';
 
 const userController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
@@ -488,8 +486,8 @@ const userController = (socket: FakeSOSocket) => {
    */
   const UploadPortfolioModel = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { username, thumbnail, mediaUrl, title, description } = req.body;
-      const file = req.file;
+      const { username, thumbnail, file, mediaUrl, title, description } = req.body;
+      // const file = req.file;
 
       if (!file && !mediaUrl) {
         res.status(400).json({ error: 'Either a file or media URL is required' });
@@ -511,18 +509,18 @@ const userController = (socket: FakeSOSocket) => {
         mediaToStore = mediaUrl;
       } else if (file) {
         // Save file to filesystem instead of base64
-        const userDir = path.resolve(__dirname, '../../client/public/userData', username);
+        // const userDir = path.resolve(__dirname, '../../client/public/userData', username);
 
-        if (!fs.existsSync(userDir)) {
-          fs.mkdirSync(userDir, { recursive: true });
-        }
+        // if (!fs.existsSync(userDir)) {
+        //   fs.mkdirSync(userDir, { recursive: true });
+        // }
 
-        const filename = file.originalname;
-        const destPath = path.join(userDir, filename);
-        fs.writeFileSync(destPath, file.buffer);
+        // const filename = file.originalname;
+        // const destPath = path.join(userDir, filename);
+        // fs.writeFileSync(destPath, file.buffer);
 
         // Store only the path
-        mediaToStore = `/userData/${username}/${filename}`;
+        mediaToStore = file;
       } else {
         res.status(400).json({ error: 'No media provided' });
         return;
