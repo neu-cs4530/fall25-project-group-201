@@ -1,5 +1,13 @@
 Manual tests done for 3D Viewport: 
 
+Complete manual testing for the 3D viewport is not possible as it is difficult to test how an object
+in 3D space has been manupilated. For this visual confirmation, these manual tests have been done, 
+accompanied by manual testing videos - https://drive.google.com/drive/folders/14h7fymK3txjeT_5irAnuMGz31dY5k1vg?usp=sharing 
+
+Despite this, cypress has been used to test key presses, mouse dragging, button clicking, and 
+camera reference hyperlinks. The effects of these actions can be clearly seen in the cypress testing 
+viewport and can be similarly visually confirmed. 
+
 Orbit Controls (rotating, zooming, panning, tilting) - /new/question, /question/:qid, commentSection, 
 gallery:postId, new/galleryPost/:communityID, /user/:username/portfolio/:index, 
 /user/:username/upload-portfolio

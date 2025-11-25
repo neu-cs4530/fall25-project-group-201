@@ -1,5 +1,7 @@
 Manual tests done for Portfolio Features:
 
+These are tests complimenting the jest and cypress testing that has already been done.
+
 You can watch a video of manual testing here: https://drive.google.com/file/d/1cICuJXwTNTFHoODD-pJEZ6wtqU_u9S_8/view?usp=sharing
 
 Profile Picture & Banner Upload
