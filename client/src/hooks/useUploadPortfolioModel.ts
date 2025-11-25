@@ -188,7 +188,7 @@ const useUploadPortfolioModel = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('user', user.username);
-      formData.append('filepathLocation', file.name);
+      // formData.append('filepathLocation', file.name);
 
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
@@ -196,8 +196,8 @@ const useUploadPortfolioModel = () => {
       });
       const data = await res.json();
 
-      if (data?.filepathLocation) {
-        setModelPath(data.filepathLocation);
+      if (data?.filepathLocationClient) {
+        setModelPath(data.filepathLocationClient);
         const tempFileUrl = URL.createObjectURL(file);
         setPreviewFilePath(tempFileUrl);
         setModelErr(null);
@@ -237,7 +237,7 @@ const useUploadPortfolioModel = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('user', user.username);
-      formData.append('filepathLocation', file.name);
+      // formData.append('filepathLocation', file.name);
 
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
@@ -245,8 +245,8 @@ const useUploadPortfolioModel = () => {
       });
       const data = await res.json();
 
-      if (data?.filepathLocation) {
-        setThumbnailPath(data.filepathLocation);
+      if (data?.filepathLocationClient) {
+        setThumbnailPath(data.filepathLocationClient);
         setThumbnailErr(null);
         toast.success('Thumbnail uploaded!');
       } else {

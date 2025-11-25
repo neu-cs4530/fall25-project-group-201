@@ -108,12 +108,13 @@ const CommentSection = ({
         return;
       }
 
-      if (!resMedia.filepathLocation) {
+      if (!resMedia.filepathLocationClient) {
         setMediaError('Filepath location of media is undefined.');
         return;
       }
 
-      tempMediaPath = resMedia.filepathLocation;
+      tempMediaPath = resMedia.filepathLocationClient;
+      console.log('media path for comment:', tempMediaPath);
 
       if (!resMedia.fileSize) {
         setMediaError('Media size is undefined');

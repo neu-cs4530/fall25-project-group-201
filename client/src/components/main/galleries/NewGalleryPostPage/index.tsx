@@ -73,9 +73,9 @@ const NewGalleryPostPage = () => {
       });
       const data = await res.json();
 
-      if (data?.filepathLocation) {
+      if (data?.filepathLocationClient) {
         handleInputChange('mediaPath')({
-          target: { value: data.filepathLocation },
+          target: { value: data.filepathLocationClient },
         } as ChangeEvent<HTMLInputElement>);
         if (data.fileSize)
           handleInputChange('mediaSize')({
@@ -116,9 +116,9 @@ const NewGalleryPostPage = () => {
       });
       const data = await res.json();
 
-      if (data?.filepathLocation) {
+      if (data?.filepathLocationClient) {
         handleInputChange('thumbnailMediaPath')({
-          target: { value: data.filepathLocation },
+          target: { value: data.filepathLocationClient },
         } as ChangeEvent<HTMLInputElement>);
       }
     } catch {
