@@ -1,7 +1,6 @@
 import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost} from '../support/helpers';
 
 import '../support/auth0'
-import { unescape } from 'cypress/types/lodash';
 
 describe('Cypress tests for Creating a New Gallery Post', function () {
     beforeEach(() => {

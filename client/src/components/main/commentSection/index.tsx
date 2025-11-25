@@ -9,6 +9,7 @@ import { FaLink } from 'react-icons/fa';
 import ThreeViewport from '../threeViewport';
 import PermissionCheckbox from '../baseComponents/permissionCheckbox';
 import CommentPermissionButton from './commentPermissionButton';
+import xss from 'xss';
 
 /**
  * Interface representing the props for the Comment Section component.
@@ -52,11 +53,12 @@ const CommentSection = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [permitDownload, setPermitDownload] = useState<boolean>(true);
-  const [rotationSetting, setRotationSetting] = useState<number[] | null>(null);
-  const [translationSetting, setTranslationSetting] = useState<number[] | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   let tempMediaPath: string | undefined;
   let mediaSize: string | undefined;
+  const [rotationSettings, setRotationSettings] = useState<Record<string, number[] | null>>({});
+  const [translationSettings, setTranslationSettings] = useState<Record<string, number[] | null>>(
+    {},
+  );
 
   /**
    * Validates whether a provided string is a valid media URL.
@@ -92,12 +94,14 @@ const CommentSection = ({
    * Validates input, uploads media if attached, and resets input state on success.
    */
   const handleAddCommentClick = async () => {
-    if (text.trim() === '' || user.username.trim() === '') {
-      setTextErr(text.trim() === '' ? 'Comment text cannot be empty' : '');
+    const sanitizedText = xss(text.trim());
+    if (sanitizedText.trim() === '' || user.username.trim() === '') {
+      setTextErr(sanitizedText.trim() === '' ? 'Comment text cannot be empty' : '');
       return;
     }
 
     setTextErr('');
+    setMediaUrl('');
     setMediaError(null);
 
     if (file) {
@@ -175,6 +179,7 @@ const CommentSection = ({
     if (ytMatch) {
       return (
         <iframe
+          id='comment-iframe'
           width='560'
           height='315'
           src={`https://www.youtube.com/embed/${ytMatch[1]}`}
@@ -200,7 +205,11 @@ const CommentSection = ({
       );
     }
 
-    return <div className='comment-media'>Error embedding URL: {text}</div>;
+    return (
+      <div className='comment-media' id='comment-media'>
+        Error embedding URL: {text}
+      </div>
+    );
   };
 
   /**
@@ -277,13 +286,13 @@ const CommentSection = ({
   };
 
   return (
-    <div className='comment-section'>
+    <div className='comment-section' id='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
         {showComments ? 'Hide Comments' : 'Show Comments'}
       </button>
 
       {showComments && (
-        <div className='comments-container'>
+        <div className='comments-container' id='comments-container'>
           <div className='add-comment'>
             <div className='input-row'>
               <textarea
@@ -291,8 +300,12 @@ const CommentSection = ({
                 value={text}
                 onChange={e => setText(e.target.value)}
                 className='comment-textarea'
+                id='comment-textarea'
               />
-              <button className='add-comment-button' onClick={handleAddCommentClick}>
+              <button
+                className='add-comment-button'
+                id='add-comment-button'
+                onClick={handleAddCommentClick}>
                 Post
               </button>
             </div>
@@ -304,6 +317,7 @@ const CommentSection = ({
               <button
                 type='button'
                 className='media-button'
+                id='media-button'
                 onClick={() => setShowMediaInput(!showMediaInput)}>
                 <FaLink />
               </button>
@@ -313,6 +327,7 @@ const CommentSection = ({
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className='file-input'
+                id='file-input'
               />
 
               {(file || mediaUrl) && (
@@ -329,6 +344,7 @@ const CommentSection = ({
                     value={mediaUrl}
                     onChange={e => setMediaUrl(e.target.value)}
                     className='comment-media-input'
+                    id='comment-media-input'
                   />
                 </div>
               )}
@@ -342,11 +358,11 @@ const CommentSection = ({
             {textErr && <small className='error'>{textErr}</small>}
           </div>
 
-          <ul className='comments-list'>
+          <ul className='comments-list' id='comments-list'>
             {comments.length > 0 ? (
               comments.map(comment => (
                 <li key={String(comment._id)} className='comment-item'>
-                  <div className='comment-text'>
+                  <div className='comment-text' id='comment-text'>
                     <Markdown remarkPlugins={[remarkGfm]}>{comment.text}</Markdown>
                     {comment.mediaUrl && renderEmbeddedMedia(comment.mediaUrl)}
 
@@ -357,12 +373,30 @@ const CommentSection = ({
                           return (
                             <div className='comment-model-wrapper'>
                               <ThreeViewport
-                                key={comment.mediaPath}
+                                key={comment._id.toString()}
                                 modelPath={comment.mediaPath}
-                                rotationSetting={rotationSetting}
-                                setRotationSetting={setRotationSetting}
-                                translationSetting={translationSetting}
-                                setTranslationSetting={setTranslationSetting}
+                                rotationSetting={rotationSettings[comment._id.toString()] || null}
+                                setRotationSetting={rot =>
+                                  setRotationSettings(prev => ({
+                                    ...prev,
+                                    [comment._id.toString()]:
+                                      typeof rot === 'function'
+                                        ? rot(prev[comment._id.toString()] || null)
+                                        : rot,
+                                  }))
+                                }
+                                translationSetting={
+                                  translationSettings[comment._id.toString()] || null
+                                }
+                                setTranslationSetting={tr =>
+                                  setTranslationSettings(prev => ({
+                                    ...prev,
+                                    [comment._id.toString()]:
+                                      typeof tr === 'function'
+                                        ? tr(prev[comment._id.toString()] || null)
+                                        : tr,
+                                  }))
+                                }
                               />
                             </div>
                           );

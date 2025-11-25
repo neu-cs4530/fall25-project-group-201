@@ -8,6 +8,7 @@ import {
   updateSkills,
   updateExternalLinks,
   updateCustomColors,
+  updateCustomFont,
   uploadProfilePicture,
   uploadBannerImage,
   uploadResume,
@@ -19,6 +20,7 @@ import {
 import { SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
 import toast from 'react-hot-toast';
+import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * A custom hook to encapsulate all logic/state for the ProfileSettings component.
@@ -27,6 +29,7 @@ const useProfileSettings = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useUserContext();
+  const { getAccessTokenSilently } = useAuth0();
 
   // Local state
   const [userData, setUserData] = useState<SafeDatabaseUser | null>(null);
@@ -46,6 +49,7 @@ const useProfileSettings = () => {
   const [primaryColor, setPrimaryColor] = useState('#2563eb');
   const [accentColor, setAccentColor] = useState('#16a34a');
   const [backgroundColor, setBackgroundColor] = useState('#f2f4f7');
+  const [customFont, setCustomFont] = useState('Inter');
   const [portfolioModelFile, setPortfolioModelFile] = useState<File | null>(null);
   const [portfolioThumbnailFile, setPortfolioThumbnailFile] = useState<File | null>(null);
   const [showThumbnailUpload, setShowThumbnailUpload] = useState(false);
@@ -68,6 +72,7 @@ const useProfileSettings = () => {
         const data = await getUserByUsername(username);
         setUserData(data);
         setSelectedSkills(data.skills || []);
+        setCustomFont(data.customFont || 'Inter');
         setGithubLink(data.externalLinks?.github || '');
         setArtstationLink(data.externalLinks?.artstation || '');
         setLinkedinLink(data.externalLinks?.linkedin || '');
@@ -104,11 +109,18 @@ const useProfileSettings = () => {
 
   const handleResetPassword = async () => {
     if (!username) return;
+
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     if (!validatePasswords()) {
       return;
     }
     try {
-      await resetPassword(username, newPassword);
+      await resetPassword(username, newPassword, token);
       toast.success('Password reset successful!');
       setNewPassword('');
       setConfirmNewPassword('');
@@ -119,8 +131,15 @@ const useProfileSettings = () => {
 
   const handleUpdateBiography = async () => {
     if (!username) return;
+
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
-      const updatedUser = await updateBiography(username, newBio);
+      const updatedUser = await updateBiography(username, newBio, token);
 
       await new Promise(resolve => {
         setUserData(updatedUser);
@@ -136,15 +155,36 @@ const useProfileSettings = () => {
 
   const handleUpdateExternalLinks = async () => {
     if (!username) return;
+
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
     try {
-      const externalLinks = {
-        github: githubLink,
-        artstation: artstationLink,
-        linkedin: linkedinLink,
-        website: websiteLink,
+      // Helper function to ensure https://
+      const ensureHttps = (url: string): string => {
+        if (!url) return '';
+        const trimmed = url.trim();
+        if (!trimmed) return '';
+
+        // Check if it already has a protocol
+        if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+          return trimmed;
+        }
+
+        // Add https:// if missing
+        return `https://${trimmed}`;
       };
 
-      const updatedUser = await updateExternalLinks(username, externalLinks);
+      const externalLinks = {
+        github: ensureHttps(githubLink),
+        artstation: ensureHttps(artstationLink),
+        linkedin: ensureHttps(linkedinLink),
+        website: ensureHttps(websiteLink),
+      };
+
+      const updatedUser = await updateExternalLinks(username, externalLinks, token);
 
       await new Promise(resolve => {
         setUserData(updatedUser);
@@ -160,6 +200,13 @@ const useProfileSettings = () => {
 
   const handleUpdateCustomColors = async () => {
     if (!username) return;
+
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
       const customColors = {
         primary: primaryColor,
@@ -167,7 +214,7 @@ const useProfileSettings = () => {
         background: backgroundColor,
       };
 
-      const updatedUser = await updateCustomColors(username, customColors);
+      const updatedUser = await updateCustomColors(username, customColors, token);
 
       await new Promise(resolve => {
         setUserData({ ...updatedUser });
@@ -181,8 +228,39 @@ const useProfileSettings = () => {
     }
   };
 
+  const handleUpdateCustomFont = async (newFont: string) => {
+    if (!username) return;
+
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
+    try {
+      const updatedUser = await updateCustomFont(username, newFont, token);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setCustomFont(newFont);
+        resolve(null);
+      });
+
+      toast.success('Font updated!');
+    } catch (error) {
+      toast.error('Failed to update font.');
+    }
+  };
+
   const handleUploadProfilePicture = async (file: File) => {
     if (!username) return;
+
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
@@ -196,7 +274,7 @@ const useProfileSettings = () => {
     }
 
     try {
-      const updatedUser = await uploadProfilePicture(username, file);
+      const updatedUser = await uploadProfilePicture(username, file, token);
       setUserData(updatedUser);
       toast.success('Profile picture updated!');
     } catch (error) {
@@ -218,8 +296,14 @@ const useProfileSettings = () => {
       return;
     }
 
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
-      const updatedUser = await uploadBannerImage(username, file);
+      const updatedUser = await uploadBannerImage(username, file, token);
       setUserData(updatedUser);
       toast.success('Banner image updated!');
     } catch (error) {
@@ -240,8 +324,14 @@ const useProfileSettings = () => {
       return;
     }
 
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
-      const updatedUser = await uploadResume(username, file);
+      const updatedUser = await uploadResume(username, file, token);
       setUserData(updatedUser);
       toast.success('Resume uploaded!');
     } catch (error) {
@@ -305,8 +395,14 @@ const useProfileSettings = () => {
         reader.readAsDataURL(portfolioThumbnailFile);
       });
 
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        },
+      });
+
       // Then upload model with thumbnail reference
-      const updatedUser = await uploadPortfolioModel(username, portfolioModelFile, thumbnailBase64);
+      const updatedUser = await uploadPortfolioModel(username, portfolioModelFile, thumbnailBase64, token);
       setUserData(updatedUser);
 
       // Reset state
@@ -343,8 +439,15 @@ const useProfileSettings = () => {
 
   const handleUpdateSkills = async () => {
     if (!username) return;
+
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        },
+      });
+
     try {
-      const updatedUser = await updateSkills(username, selectedSkills);
+      const updatedUser = await updateSkills(username, selectedSkills, token);
 
       await new Promise(resolve => {
         setUserData(updatedUser);
@@ -367,8 +470,14 @@ const useProfileSettings = () => {
   const handleSubmitTestimonial = async (content: string) => {
     if (!username || !currentUser.username) return;
 
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
-      const updatedUser = await createOrUpdateTestimonial(username, currentUser.username, content);
+      const updatedUser = await createOrUpdateTestimonial(username, currentUser.username, content, token);
       setUserData(updatedUser);
       toast.success('Testimonial submitted for review!');
     } catch (error) {
@@ -379,8 +488,14 @@ const useProfileSettings = () => {
   const handleDeleteTestimonial = async () => {
     if (!username || !currentUser.username) return;
 
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
-      const updatedUser = await deleteTestimonial(username, currentUser.username);
+      const updatedUser = await deleteTestimonial(username, currentUser.username, token);
       setUserData(updatedUser);
       toast.success('Testimonial deleted.');
     } catch (error) {
@@ -391,8 +506,14 @@ const useProfileSettings = () => {
   const handleApproveTestimonial = async (testimonialId: string, approved: boolean) => {
     if (!username) return;
 
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      },
+    });
+
     try {
-      const updatedUser = await updateTestimonialApproval(username, testimonialId, approved);
+      const updatedUser = await updateTestimonialApproval(username, testimonialId, approved, token);
       setUserData(updatedUser);
       toast.success(approved ? 'Testimonial approved!' : 'Testimonial rejected.');
     } catch (error) {
@@ -429,6 +550,10 @@ const useProfileSettings = () => {
     setLinkedinLink,
     websiteLink,
     setWebsiteLink,
+    // custom fonts
+    customFont,
+    setCustomFont,
+    handleUpdateCustomFont,
     handleUpdateExternalLinks,
     // color customization
     editColorsMode,

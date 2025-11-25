@@ -1,4 +1,4 @@
-import { Q1_DESC, A1_TXT } from '../../../server/testData/post_strings';
+import { Q1_DESC } from '../../../server/testData/post_strings';
 import { 
   loginUser, 
   setupTest, 

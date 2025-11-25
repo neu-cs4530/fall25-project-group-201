@@ -19,6 +19,16 @@ import {
 } from '../services/user.service';
 import fs from 'fs';
 import path from 'path';
+import { auth } from 'express-oauth2-jwt-bearer';
+
+/**
+ * Creates verification middleware
+ */
+const jwtCheck = auth({
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
+  tokenSigningAlg: 'RS256',
+});
 
 const userController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
@@ -944,32 +954,33 @@ const userController = (socket: FakeSOSocket) => {
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
-  router.patch('/resetPassword', resetPassword);
+  router.patch('/resetPassword', jwtCheck, resetPassword);
   router.get('/getUser/:username', getUser);
   router.get('/getUsers', getUsers);
   router.delete('/deleteUser/:username', deleteUser);
-  router.patch('/updateBiography', updateBiography);
-  router.patch('/updateSkills', updateSkills);
-  router.patch('/updateExternalLinks', updateExternalLinks);
-  router.patch('/updateCustomColors', updateCustomColors);
-  router.patch('/updateCustomFont', updateCustomFont);
-  router.patch('/updatePortfolioMedia', updatePortfolioMedia);
-  router.post('/migratePortfolio', migratePortfolioData);
-  router.patch('/reorderPortfolioItems', reorderPortfolioItems);
-  router.delete('/deleteSinglePortfolioItem', deleteSinglePortfolioItem);
-  router.delete('/deletePortfolioItems', deletePortfolioItems);
-  router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
-  router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
-  router.post('/uploadResume', upload.single('file'), uploadResume);
-  router.post('/uploadPortfolioModel', upload.single('file'), UploadPortfolioModel);
-  router.post('/testimonial', createOrUpdateTestimonial);
-  router.delete('/testimonial/:profileUsername', deleteTestimonial);
+  router.patch('/updateBiography', jwtCheck, updateBiography);
+  router.patch('/updateSkills', jwtCheck, updateSkills);
+  router.patch('/updateExternalLinks', jwtCheck, updateExternalLinks);
+  router.patch('/updateCustomColors', jwtCheck, updateCustomColors);
+  router.patch('/updateCustomFont', jwtCheck, updateCustomFont);
+  router.patch('/updatePortfolioMedia', jwtCheck, updatePortfolioMedia);
+  router.post('/migratePortfolio', jwtCheck, migratePortfolioData);
+  router.patch('/reorderPortfolioItems', jwtCheck, reorderPortfolioItems);
+  router.delete('/deleteSinglePortfolioItem', jwtCheck, deleteSinglePortfolioItem);
+  router.delete('/deletePortfolioItems', jwtCheck, deletePortfolioItems);
+  router.post('/uploadProfilePicture', upload.single('file'), jwtCheck, uploadProfilePicture);
+  router.post('/uploadBannerImage', upload.single('file'), jwtCheck, uploadBannerImage);
+  router.post('/uploadResume', upload.single('file'), jwtCheck, uploadResume);
+  router.post('/uploadPortfolioModel', upload.single('file'), jwtCheck, UploadPortfolioModel);
+  router.post('/testimonial', jwtCheck, createOrUpdateTestimonial);
+  router.delete('/testimonial/:profileUsername', jwtCheck, deleteTestimonial);
   router.post(
     '/portfolio/incrementViews/:username/:index/:viewerUsername',
+    jwtCheck,
     incrementPortfolioViews,
   );
-  router.post('/portfolio/toggleLike/:username/:index/:likeUsername', togglePortfolioLike);
-  router.patch('/testimonial/approve', updateTestimonialApproval);
+  router.post('/portfolio/toggleLike/:username/:index/:likeUsername', jwtCheck, togglePortfolioLike);
+  router.patch('/testimonial/approve', jwtCheck, updateTestimonialApproval);
   return router;
 };
 
