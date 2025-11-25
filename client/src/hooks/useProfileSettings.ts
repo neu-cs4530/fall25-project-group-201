@@ -8,6 +8,7 @@ import {
   updateSkills,
   updateExternalLinks,
   updateCustomColors,
+  updateCustomFont,
   uploadProfilePicture,
   uploadBannerImage,
   uploadResume,
@@ -48,6 +49,7 @@ const useProfileSettings = () => {
   const [primaryColor, setPrimaryColor] = useState('#2563eb');
   const [accentColor, setAccentColor] = useState('#16a34a');
   const [backgroundColor, setBackgroundColor] = useState('#f2f4f7');
+  const [customFont, setCustomFont] = useState('Inter');
   const [portfolioModelFile, setPortfolioModelFile] = useState<File | null>(null);
   const [portfolioThumbnailFile, setPortfolioThumbnailFile] = useState<File | null>(null);
   const [showThumbnailUpload, setShowThumbnailUpload] = useState(false);
@@ -70,6 +72,7 @@ const useProfileSettings = () => {
         const data = await getUserByUsername(username);
         setUserData(data);
         setSelectedSkills(data.skills || []);
+        setCustomFont(data.customFont || 'Inter');
         setGithubLink(data.externalLinks?.github || '');
         setArtstationLink(data.externalLinks?.artstation || '');
         setLinkedinLink(data.externalLinks?.linkedin || '');
@@ -159,11 +162,26 @@ const useProfileSettings = () => {
       },
     });
     try {
+      // Helper function to ensure https://
+      const ensureHttps = (url: string): string => {
+        if (!url) return '';
+        const trimmed = url.trim();
+        if (!trimmed) return '';
+
+        // Check if it already has a protocol
+        if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+          return trimmed;
+        }
+
+        // Add https:// if missing
+        return `https://${trimmed}`;
+      };
+
       const externalLinks = {
-        github: githubLink,
-        artstation: artstationLink,
-        linkedin: linkedinLink,
-        website: websiteLink,
+        github: ensureHttps(githubLink),
+        artstation: ensureHttps(artstationLink),
+        linkedin: ensureHttps(linkedinLink),
+        website: ensureHttps(websiteLink),
       };
 
       const updatedUser = await updateExternalLinks(username, externalLinks, token);
@@ -209,6 +227,24 @@ const useProfileSettings = () => {
       toast.error('Failed to update colors.');
     }
   };
+
+  const handleUpdateCustomFont = async (newFont: string) => {
+    if (!username) return;
+    try {
+      const updatedUser = await updateCustomFont(username, newFont);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setCustomFont(newFont);
+        resolve(null);
+      });
+
+      toast.success('Font updated!');
+    } catch (error) {
+      toast.error('Failed to update font.');
+    }
+  };
+
 
   const handleUploadProfilePicture = async (file: File) => {
     if (!username) return;
@@ -508,6 +544,10 @@ const useProfileSettings = () => {
     setLinkedinLink,
     websiteLink,
     setWebsiteLink,
+    // custom fonts
+    customFont,
+    setCustomFont,
+    handleUpdateCustomFont,
     handleUpdateExternalLinks,
     // color customization
     editColorsMode,

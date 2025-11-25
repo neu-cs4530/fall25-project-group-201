@@ -10,12 +10,16 @@ import { Schema } from 'mongoose';
  * - `dateJoined`: The date the user joined the platform.
  * - `biography`: The user's bio/about me section.
  * - `profilePicture`: URL to the user's profile picture.
+ * - `skills`: Array of software/tool expertise (e.g., Blender, Unity, Maya).
  * - `bannerImage`: URL to the user's banner image.
  * - `resumeFile`: URL to the user's downloadable resume/CV.
- * - `portfolioModels`: Array of URLs to user's 3D model files.
- * - `externalLinks`: Links to external profiles (GitHub, ArtStation, LinkedIn, etc.).
- * - `customColors`: User's custom theme colors.
+ * - `portfolio`: Array of portfolio items with rich metadata including title, description, media URL, thumbnail, views, and likes.
+ * - `portfolioModels`: (Deprecated) Array of URLs to user's 3D model files. Use `portfolio` instead.
+ * - `portfolioThumbnails`: (Deprecated) Array of thumbnail URLs. Use `portfolio` instead.
+ * - `externalLinks`: Links to external profiles (GitHub, ArtStation, LinkedIn, website).
+ * - `customColors`: User's custom theme colors (primary, accent, background).
  * - `customFont`: User's custom font selection.
+ * - `testimonials`: Array of peer recommendations with approval workflow, including author info, content, timestamp, and approval status.
  */
 const userSchema: Schema = new Schema(
   {

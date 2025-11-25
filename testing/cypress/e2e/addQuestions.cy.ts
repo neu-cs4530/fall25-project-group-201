@@ -1,5 +1,4 @@
-import { Q1_DESC, Q2_DESC, Q3_DESC, Q4_DESC } from '../../../server/testData/post_strings';
-import { createQuestion, goToAskQuestion, loginUser, setupTest, teardownTest } from '../support/helpers';
+import { createQuestion, loginUser, setupTest, teardownTest } from '../support/helpers';
 
 describe("Cypress Tests to verify asking new questions", () => {
   beforeEach(() => {
