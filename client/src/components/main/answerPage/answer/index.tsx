@@ -98,6 +98,7 @@ const AnswerView = ({
                         cursor: 'pointer',
                         textDecoration: 'underline',
                       }}
+                      id="answer-camref-link"
                       onClick={() => handleCameraRefClick(cleanRef)}>
                       {children}
                     </span>

@@ -168,6 +168,7 @@ const NewQuestion = () => {
         {mediaPath?.endsWith('.glb') && (
           <button
             type='button'
+            id="cameraRefButton"
             onClick={() => {
               handleAddCameraRef();
             }}>

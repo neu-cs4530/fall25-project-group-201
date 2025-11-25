@@ -74,7 +74,6 @@ const AnswerPage = () => {
             setTranslationSetting={setTranslationSetting}
             glbMedia={question.mediaPath?.toLowerCase().endsWith('.glb') === true}
           />
-          <button onClick={handleDummyButtonClick}></button>
         </>
       ))}
       <button

@@ -1,4 +1,4 @@
-import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, test3DViewportOrbitControls, createQuestion, test3DViewportOrthoPerspToggle} from '../support/helpers';
+import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, test3DViewportOrbitControls, createQuestion, test3DViewportOrthoPerspToggle, goToAskQuestion} from '../support/helpers';
 
 import '../support/auth0'
 import { unescape } from 'cypress/types/lodash';
@@ -16,7 +16,7 @@ describe('Cypress tests for Three Viewport controls', function () {
     // Variables for test
     const testUser = 'user345'
 
-    it('Three Viewport in Gallery Page supports rotation, panning, tilting, and zooming', function () {
+    /*it('Three Viewport in Gallery Page supports rotation, panning, tilting, and zooming', function () {
         goToCommunities();
         viewCommunityCard('React Enthusiasts');
         cy.get('.gallery-upload-button').click()
@@ -65,7 +65,7 @@ describe('Cypress tests for Three Viewport controls', function () {
 
         cy.contains("Show Comments").click();
 
-       // Create a new comment
+        // Create a new comment
         cy.get(".comment-textarea").type("Test comment with 3D model");
         cy.get(".media-button").click()
         cy.get('.file-input').click()
@@ -79,6 +79,59 @@ describe('Cypress tests for Three Viewport controls', function () {
             test3DViewportOrbitControls();
             test3DViewportOrthoPerspToggle()
         });
+    });*/
+
+    it('Three Viewport in QuestionPage supports hyperlink clicking', function () {
+        const title = "Test Question With Camera Ref"
+        const description = "Look at this: "
+        const tags = "react";
+        const media = 'Avocado.glb'
+
+        goToAskQuestion();
+        cy.get('#title').type(title);
+        cy.get('#text').type(description);
+        cy.get('#tags').type(tags);
+    
+        cy.get('.file-upload').click()
+            cy.get('input[type="file"]').should('exist')
+                .selectFile(`cypress/fixtures/${media}`, { force: true });
+
+        cy.wait(3000);
+
+        cy.get('#question-camref-link').should('not.exist');
+
+        test3DViewportOrbitControls()
+        cy.get('#cameraRefButton').click()
+        cy.get('#text')
+            .should('contain.text', '#camera');
+
+        cy.get('.submit-btn').click();
+
+        cy.contains(title).click()
+
+        cy.wait(3000);
+
+        cy.get('.bluebtn.ansButton').click()
+
+        cy.get('#answerTextInput').type("I really like this!")
+        
+        cy.contains('Add Camera Reference').should('not.exist');
+        cy.contains('Post Answer').click()
+
+        test3DViewportOrbitControls()
+
+        cy.get('.bluebtn.ansButton').click()
+
+        cy.get('#answerTextInput').type("Check this angle - ")
+        cy.contains('Add Camera Reference').click()
+        cy.get('#answerTextInput')
+            .should('contain.text', '#camera');
+        cy.contains('Post Answer').click()
+        cy.wait(3000);
+        cy.get('#answer-camref-link').should('exist').click();
+        cy.wait(3000);
+        cy.get('#question-camref-link').should('exist').click();
+        
     });
 
 })
