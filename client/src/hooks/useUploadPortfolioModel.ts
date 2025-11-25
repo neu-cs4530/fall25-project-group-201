@@ -186,8 +186,8 @@ const useUploadPortfolioModel = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', user.username);
+      formData.append('file', file);
       // formData.append('filepathLocation', file.name);
 
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
@@ -235,8 +235,8 @@ const useUploadPortfolioModel = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', user.username);
+      formData.append('file', file);
       // formData.append('filepathLocation', file.name);
 
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {

@@ -63,8 +63,8 @@ const NewGalleryPostPage = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', currentUser.username);
+      formData.append('file', file);
       // formData.append('filepathLocation', file.name);
 
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
@@ -72,6 +72,8 @@ const NewGalleryPostPage = () => {
         body: formData,
       });
       const data = await res.json();
+
+      console.log('data filepathlocationclient', data.filepathLocation);
 
       if (data?.filepathLocationClient) {
         handleInputChange('mediaPath')({
@@ -106,8 +108,8 @@ const NewGalleryPostPage = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', currentUser.username);
+      formData.append('file', file);
       // formData.append('filepathLocation', file.name);
 
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
@@ -115,6 +117,8 @@ const NewGalleryPostPage = () => {
         body: formData,
       });
       const data = await res.json();
+
+      console.log('data filepathlocationclient', data.filepathLocation);
 
       if (data?.filepathLocationClient) {
         handleInputChange('thumbnailMediaPath')({
