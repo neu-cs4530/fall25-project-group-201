@@ -13,9 +13,9 @@ export const addMedia = async (user: string, formData: FormData): Promise<Databa
   const file = formData.get('file') as File;
   formData.append('user', user);
 
-  if (file && !formData.has('filepathLocation')) {
-    formData.append('filepathLocation', file.name);
-  }
+  // if (file && !formData.has('filepathLocation')) {
+  //   formData.append('filepathLocation', file.name);
+  // }
 
   const res = await axios.post(`${MEDIA_API_URL}/create`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },

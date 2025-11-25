@@ -379,6 +379,8 @@ const useThreeViewport = (
         near: camera.near,
         far: camera.far,
       };
+    }, () => {} , e => {
+      console.log(e);
     });
 
     /**

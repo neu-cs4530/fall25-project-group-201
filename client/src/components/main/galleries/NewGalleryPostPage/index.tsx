@@ -65,7 +65,7 @@ const NewGalleryPostPage = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('user', currentUser.username);
-      formData.append('filepathLocation', file.name);
+      // formData.append('filepathLocation', file.name);
 
       const res = await fetch('/api/media/create', {
         method: 'POST',

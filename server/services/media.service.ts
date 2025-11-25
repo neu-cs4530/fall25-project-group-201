@@ -22,26 +22,31 @@ const formatFileSize = (bytes: number): string => {
  **/
 const addMedia = async (media: Media): Promise<MediaResponse> => {
   try {
-    const userDir = path.resolve(__dirname, '../../client/public/userData', media.user);
+    // const userDir = path.resolve(__dirname, '../../client/public/userData', media.user);
 
-    // Make sure the directory exists
-    if (!fs.existsSync(userDir)) {
-      fs.mkdirSync(userDir, { recursive: true });
-    }
+    // // Make sure the directory exists
+    // if (!fs.existsSync(userDir)) {
+    //   fs.mkdirSync(userDir, { recursive: true });
+    // }
 
     // Extract the filename
-    const filename = media.filepathLocation;
+    const filename = path.basename(media.filepathLocation);
 
     // Save the file inside that directory
-    const destPath = path.join(userDir, filename);
-    fs.writeFileSync(destPath, media.fileBuffer);
+    // const destPath = path.join(userDir, filename);
+    // fs.writeFileSync(destPath, media.fileBuffer);
 
+    const fileStats = fs.statSync(media.filepathLocation);
     // Get file size in human-readable format
-    const fileSize = formatFileSize(media.fileBuffer.length);
+    const fileSize = formatFileSize(fileStats.size);
+
+    console.log('service fileStats:', fileStats);
+    console.log('service fileSize:', fileSize);
 
     // Only store metadata + path in MongoDB
     const mediaToSave = {
-      filepathLocation: `/userData/${media.user}/${filename}`,
+      filepathLocationClient: `/userData/${media.user}/${filename}`,
+      filepathLocation: media.filepathLocation,
       user: media.user,
       fileSize,
     };

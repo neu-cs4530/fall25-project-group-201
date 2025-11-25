@@ -15,6 +15,10 @@ const mediaSchema = new Schema(
       type: String,
       required: true,
     },
+    filepathLocationClient: {
+      type: String,
+      required: true,
+    },
     fileBuffer: {
       type: String,
       required: false,

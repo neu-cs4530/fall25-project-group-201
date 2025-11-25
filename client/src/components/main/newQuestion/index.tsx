@@ -114,18 +114,20 @@ const NewQuestion = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', currentUser.username);
-      formData.append('filepathLocation', file.name);
+      formData.append('file', file);
+      // formData.append('filepathLocation', file.name);
 
       const res = await fetch('/api/media/create', {
         method: 'POST',
         body: formData,
       });
+      
       const data = await res.json();
 
       if (data?.filepathLocation) {
-        setUploadedMediaPath(data.filepathLocation);
+        setUploadedMediaPath(data.filepathLocationClient);
+        console.log('saved filepath is:', data.filepathLocationClient);
         if (data.fileSize) {
           setMediaSize(data.fileSize);
         }
