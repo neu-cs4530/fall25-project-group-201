@@ -216,7 +216,6 @@ const useProfileSettings = () => {
     }
   };
 
-
   const handleUploadProfilePicture = async (file: File) => {
     if (!username) return;
 

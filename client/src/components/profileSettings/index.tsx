@@ -152,10 +152,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.bannerImage
                 ? {
-                  backgroundImage: `url(${userData.bannerImage})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+                    backgroundImage: `url(${userData.bannerImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
                 : {}
             }>
             {!userData?.bannerImage && <span>Banner Image</span>}
@@ -180,10 +180,10 @@ const ProfileSettings: React.FC = () => {
             style={
               userData?.profilePicture
                 ? {
-                  backgroundImage: `url(${userData.profilePicture})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+                    backgroundImage: `url(${userData.profilePicture})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
                 : {}
             }>
             {canEditProfile && (
