@@ -114,7 +114,7 @@ const CommentSection = ({
       }
 
       tempMediaPath = resMedia.filepathLocationClient;
-      console.log('media path for comment:', tempMediaPath);
+      // console.log('media path for comment:', tempMediaPath);
 
       if (!resMedia.fileSize) {
         setMediaError('Media size is undefined');
