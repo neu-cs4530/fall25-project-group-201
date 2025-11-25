@@ -13,10 +13,15 @@ const InfoPopover = () => {
       aria-modal='true'>
       Welcome to the 3D viewport!
       <br />
-      <p>Click and drag to turn, and scroll to zoom in and out.</p>
-      <p>Buttons in the top left are the reset camera button, </p>
-      <p>perspective/orthographic mode button, and </p>
-      <p>some toggles between HDRI lighting setups.</p>
+      &bull; Click and drag to turn <br />
+      &bull; Scroll to zoom <br />
+      &bull; Arrow keys to pan <br />
+      &bull; WASD to tilt <br />
+      &bull; Buttons (left to right): reset camera,
+      <br />
+      perspective/orthographic mode,
+      <br />
+      and HDRI lighting setups toggles <br />
     </div>
   );
 };
