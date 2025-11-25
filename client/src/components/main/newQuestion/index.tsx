@@ -118,7 +118,7 @@ const NewQuestion = () => {
       formData.append('file', file);
       // formData.append('filepathLocation', file.name);
 
-      const res = await fetch('/api/media/create', {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
         body: formData,
       });
