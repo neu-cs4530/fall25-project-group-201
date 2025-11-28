@@ -221,14 +221,11 @@ export const auth0LoginUserProfile = () => {
     cy.get('button[type="submit"]:visible').click()
     
     // Give Auth0 time to process - avoid rate limiting
-    cy.wait(5000)
+    cy.wait(2000)
   })
   
   // Wait for redirect back to our app with longer timeout
   cy.url({ timeout: 30000 }).should('include', 'localhost:4530')
-  
-  // Give the app time to process the Auth0 callback
-  cy.wait(2000)
 }
 
 /**
