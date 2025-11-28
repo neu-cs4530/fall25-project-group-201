@@ -686,6 +686,14 @@ const useThreeViewport = (
       camera.rotation.copy(orthoInit.rotation);
       targetZRef.current = orthoInit.position.z;
     }
+
+    if (setRotationSettingRef.current) {
+      setRotationSettingRef.current([0,0,0]);
+    }
+
+    if (setTranslationSettingRef.current) {
+      setTranslationSettingRef.current([0, 0.77, 3.02]);
+    }
   };
 
   /**
