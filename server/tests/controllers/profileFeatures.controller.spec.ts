@@ -786,6 +786,69 @@ describe('Profile Features - Testimonials', () => {
       expect(response.body.testimonials[0].content).toBe('Updated content!');
     });
   });
+
+  describe('Testimonials with Many Items', () => {
+    test('user can have more than 3 testimonials', async () => {
+      const username = 'user_with_many_testimonials';
+
+      const mockUser = {
+        _id: new mongoose.Types.ObjectId(),
+        username,
+        password: 'test',
+        dateJoined: new Date(),
+        testimonials: [
+          {
+            _id: new mongoose.Types.ObjectId(),
+            fromUsername: 'user1',
+            fromProfilePicture: '',
+            content: 'Great!',
+            createdAt: new Date(),
+            approved: true
+          },
+          {
+            _id: new mongoose.Types.ObjectId(),
+            fromUsername: 'user2',
+            fromProfilePicture: '',
+            content: 'Awesome!',
+            createdAt: new Date(),
+            approved: true
+          },
+          {
+            _id: new mongoose.Types.ObjectId(),
+            fromUsername: 'user3',
+            fromProfilePicture: '',
+            content: 'Excellent!',
+            createdAt: new Date(),
+            approved: true
+          },
+          {
+            _id: new mongoose.Types.ObjectId(),
+            fromUsername: 'user4',
+            fromProfilePicture: '',
+            content: 'Amazing!',
+            createdAt: new Date(),
+            approved: true
+          },
+          {
+            _id: new mongoose.Types.ObjectId(),
+            fromUsername: 'user5',
+            fromProfilePicture: '',
+            content: 'Perfect!',
+            createdAt: new Date(),
+            approved: true
+          },
+        ]
+      };
+
+      getUserByUsernameSpy.mockResolvedValueOnce(mockUser);
+
+      const res = await supertest(app).get(`/api/user/getUser/${username}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.testimonials).toHaveLength(5);
+      expect(res.body.testimonials.filter((t: any) => t.approved)).toHaveLength(5);
+    });
+  });
 });
 
 describe('Profile Features - Portfolio Management', () => {

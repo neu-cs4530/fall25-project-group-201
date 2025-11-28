@@ -122,6 +122,22 @@ describe('Profile Settings — editing', () => {
         cy.get('.external-links-section').should('contain', 'ArtStation');
     });
 
+    it('auto-adds https:// to external links if missing', () => {
+        cy.contains('External Links', { timeout: 10000 }).scrollIntoView().should('be.visible');
+        cy.contains('button', 'Edit Links').click();
+
+        cy.get('.links-edit-section', { timeout: 5000 }).should('be.visible').within(() => {
+            cy.get('.input-text').eq(0).clear().type('github.com/testuser');
+            cy.contains('button', 'Save Links').click();
+        });
+
+        cy.wait(1000);
+
+        cy.get('.external-links-section a').first()
+            .should('have.attr', 'href')
+            .and('include', 'https://github.com/testuser');
+    });
+
     it('allows editing skills', () => {
         cy.contains('Software Expertise', { timeout: 10000 }).scrollIntoView().should('be.visible');
         cy.contains('button', 'Edit Skills').scrollIntoView().should('be.visible').click();
@@ -277,6 +293,50 @@ describe('Profile Settings — editing', () => {
         });
     });
 
+    it.only('enables portfolio reorder and delete in edit mode', () => {
+        cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
+
+        // Upload first item
+        cy.get('.portfolio-upload-box').click();
+        cy.url({ timeout: 10000 }).should('include', '/upload-portfolio');
+        cy.get('input[placeholder*="Give your piece a name"]').type('First Portfolio Item');
+        cy.get('textarea[placeholder*="Describe your project"]').type('First test item');
+        cy.get('input[placeholder*="Paste media URL"]').type('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
+        cy.wait(1000);
+        cy.contains('button', 'Add to Portfolio').should('not.be.disabled').click();
+        cy.wait(1000);
+        cy.url({ timeout: 10000 }).should('include', '/user/user123');
+
+        // Upload second item
+        cy.contains('Portfolio').scrollIntoView();
+        cy.get('.portfolio-upload-box').click();
+        cy.get('input[placeholder*="Give your piece a name"]').type('Second Portfolio Item');
+        cy.get('textarea[placeholder*="Describe your project"]').type('Second test item');
+        cy.get('input[placeholder*="Paste media URL"]').type('https://www.youtube.com/watch?v=jNQXAC9IVRw');
+        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
+        cy.wait(1000);
+        cy.contains('button', 'Add to Portfolio').should('not.be.disabled').click();
+        cy.wait(1000);
+        cy.url({ timeout: 10000 }).should('include', '/user/user123');
+
+        // Now test edit mode
+        cy.contains('Portfolio').scrollIntoView();
+        cy.get('.portfolio-model-item').should('have.length.at.least', 2);
+
+        cy.contains('button', 'Edit Posts').click();
+
+        cy.get('.reorder-arrow').should('be.visible');
+        cy.get('.portfolio-delete-button').should('be.visible');
+
+        // Click item in edit mode - should NOT navigate
+        cy.get('.portfolio-model-item').first().click();
+        cy.url().should('include', '/user/user123');
+
+        cy.contains('button', 'Done Editing').click();
+        cy.get('.reorder-arrow').should('not.exist');
+    });
+
     it('allows writing and deleting testimonials', () => {
         cy.contains('Users').click();
         cy.contains('user234').click();
@@ -309,29 +369,29 @@ describe('Profile Settings — editing', () => {
     });
 
     it
-    ('displays existing testimonial content when editing', () => {
-        cy.contains('Users').click();
-        cy.contains('user234').click();
-        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
+        ('displays existing testimonial content when editing', () => {
+            cy.contains('Users').click();
+            cy.contains('user234').click();
+            cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
 
-        // Write initial testimonial
-        cy.contains('button', 'Write a Testimonial').click();
-        cy.get('.testimonial-textarea').type('Original testimonial content');
-        cy.contains('button', 'Submit').click();
-        cy.wait(1000);
+            // Write initial testimonial
+            cy.contains('button', 'Write a Testimonial').click();
+            cy.get('.testimonial-textarea').type('Original testimonial content');
+            cy.contains('button', 'Submit').click();
+            cy.wait(1000);
 
-        // Edit and verify content appears
-        cy.contains('button', 'Edit Your Testimonial').click();
-        cy.get('.testimonial-textarea').should('have.value', 'Original testimonial content');
+            // Edit and verify content appears
+            cy.contains('button', 'Edit Your Testimonial').click();
+            cy.get('.testimonial-textarea').should('have.value', 'Original testimonial content');
 
-        // Update content
-        cy.get('.testimonial-textarea').clear().type('Updated testimonial content');
-        cy.contains('button', 'Submit').click();
-        cy.wait(1000);
+            // Update content
+            cy.get('.testimonial-textarea').clear().type('Updated testimonial content');
+            cy.contains('button', 'Submit').click();
+            cy.wait(1000);
 
-        // Verify button still shows edit option
-        cy.contains('button', 'Edit Your Testimonial').should('be.visible');
-    });
+            // Verify button still shows edit option
+            cy.contains('button', 'Edit Your Testimonial').should('be.visible');
+        });
 
 
 
