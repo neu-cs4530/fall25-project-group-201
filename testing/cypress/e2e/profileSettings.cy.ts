@@ -303,7 +303,7 @@ describe('Profile Settings — editing', () => {
         cy.get('.info-icon', { timeout: 5000 }).should('be.visible').click();
         cy.contains('Welcome to the 3D viewport', { timeout: 5000 }).should('be.visible');
         cy.contains('Click and drag to turn').should('be.visible');
-        cy.contains('scroll to zoom').should('be.visible');
+        cy.contains('Scroll to zoom').should('be.visible');
 
         cy.get('.info-icon').click();
         cy.wait(500);

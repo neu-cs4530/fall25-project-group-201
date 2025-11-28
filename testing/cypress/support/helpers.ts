@@ -13,7 +13,6 @@ import "../support/auth0"
 export const loginUser = (username: string, password: string = 'securePass123!') => {
   cy.visit('http://localhost:4530');
   cy.visit('/')
-  cy.contains('Welcome ')
   cy.contains('button', 'Log In or Sign Up').click()
 
   cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
@@ -40,7 +39,6 @@ export const cleanDatabase = () => {
 
 export const auth0Login = () => {
   cy.visit('/')
-  cy.contains('Welcome ')
   cy.contains('button', 'Log In or Sign Up').click()
 
   cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
@@ -209,7 +207,6 @@ export const teardownTest = () => {
  */
 export const auth0LoginUserProfile = () => {
   cy.visit('/', { timeout: 30000 })
-  cy.contains('Welcome ', { timeout: 10000 })
   cy.contains('button', 'Log In or Sign Up', { timeout: 10000 }).click()
 
   cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
@@ -217,8 +214,8 @@ export const auth0LoginUserProfile = () => {
     cy.get('input[name="username"], input[name="email"]', { timeout: 15000 }).should('be.visible')
     
     // Fill in the login form
-    cy.get('input[name="username"], input[name="email"]').clear().type('user234')
-    cy.get('input[name="password"]').clear().type('P@ssw0rd345', { log: false })
+    cy.get('input[name="username"], input[name="email"]').clear().type('user123')
+    cy.get('input[name="password"]').clear().type('securePass123!', { log: false })
     
     // Click submit and wait for redirect
     cy.get('button[type="submit"]:visible').click()
@@ -248,15 +245,17 @@ export const goToAskQuestion = () => {
  * @param text - Question content
  * @param tags - Space-separated tags
  */
-export const createQuestion = (title: string, text: string, tags: string, media: string) => {
+export const createQuestion = (title: string, text: string, tags: string, media?: string) => {
   goToAskQuestion();
   cy.get('#title').type(title);
   cy.get('#text').type(text);
   cy.get('#tags').type(tags);
 
-  cy.get('.file-upload').click()
-      cy.get('input[type="file"]').should('exist')
-          .selectFile(`cypress/fixtures/${media}`, { force: true });
+  if (media) {
+    cy.get('.file-upload').click()
+        cy.get('input[type="file"]').should('exist')
+            .selectFile(`cypress/fixtures/${media}`, { force: true });
+  }
 
   cy.wait(3000);
 
