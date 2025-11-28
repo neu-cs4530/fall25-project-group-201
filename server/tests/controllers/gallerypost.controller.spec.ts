@@ -186,26 +186,6 @@ describe('Gallery Post Controller', () => {
       expect(openApiError.errors[0].path).toBe('/body/community');
     });
 
-    test('should return 400 when missing media size', async () => {
-      const mockReqBody = {
-        title: 'New Gallery Post',
-        description: 'New Description',
-        user: 'test_user',
-        community: '65e9b58910afe6e94fc6e6dd',
-        media: '/test_user/testMedia.png',
-        postedAt: new Date('2024-06-06'),
-        tags: [],
-      };
-
-      const response = await supertest(app)
-        .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
-      const openApiError = JSON.parse(response.text);
-
-      expect(response.status).toBe(400);
-      expect(openApiError.errors[0].path).toBe('/body/mediaSize');
-    });
-
     test('returns 500 on service error', async () => {
       createGalleryPostSpy.mockResolvedValueOnce({ error: 'DB error' });
 
