@@ -1436,7 +1436,6 @@ components:
         - title
         - description
         - user
-        - media
         - community
       properties:
         title:

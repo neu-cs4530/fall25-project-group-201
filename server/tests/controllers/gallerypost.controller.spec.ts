@@ -146,26 +146,6 @@ describe('Gallery Post Controller', () => {
       expect(openApiError.errors[0].path).toBe('/body/user');
     });
 
-    test('should return 400 when missing media', async () => {
-      const mockReqBody = {
-        title: 'New Gallery Post',
-        description: 'New Description',
-        user: 'test_user',
-        community: '65e9b58910afe6e94fc6e6dd',
-        postedAt: new Date('2024-06-06'),
-        mediaSize: '13 GB',
-        tags: [],
-      };
-
-      const response = await supertest(app)
-        .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
-      const openApiError = JSON.parse(response.text);
-
-      expect(response.status).toBe(400);
-      expect(openApiError.errors[0].path).toBe('/body/media');
-    });
-
     test('should return 400 when missing community ID', async () => {
       const mockReqBody = {
         title: 'New Gallery Post',
@@ -202,6 +182,24 @@ describe('Gallery Post Controller', () => {
       expect(res.status).toBe(500);
       expect(res.text).toContain('Error creating a gallery post: DB error');
     });
+  });
+
+  test('returns 400 when no media or link', async () => {
+    const mockReqBody = {
+      title: 'New Gallery Post',
+      user: 'user123',
+      description: 'New Description',
+      community: '65e9b58910afe6e94fc6e6dd',
+      postedAt: new Date('2024-06-06'),
+      tags: [],
+    };
+
+    const response = await supertest(app)
+      .post('/api/gallery/create')
+      .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('You must provide either a media file or a media link.');
   });
 
   describe('GET /getAllGalleryPosts', () => {
