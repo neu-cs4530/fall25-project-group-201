@@ -18,15 +18,15 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const navigate = useNavigate();
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 3;
+  const itemsPerPage = 3;
 
   const approvedTestimonials = testimonials.filter(t => t.approved);
   const pendingTestimonials = testimonials.filter(t => !t.approved);
 
   // Pagination logic for approved testimonials
-  const totalPages = Math.ceil(approvedTestimonials.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(approvedTestimonials.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
   const currentTestimonials = approvedTestimonials.slice(startIndex, endIndex);
 
   const handleApprove = async (testimonialId: string, approved: boolean) => {
@@ -145,21 +145,23 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
 
             {/* Pagination controls */}
             {totalPages > 1 && (
-              <div className='pagination-controls' style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '1rem',
-                marginTop: '1rem',
-                padding: '1rem 0'
-              }}>
+              <div
+                className='pagination-controls'
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  marginTop: '1rem',
+                  padding: '1rem 0',
+                }}>
                 <button
                   onClick={goToPrevPage}
                   disabled={currentPage === 1}
                   className='button button-secondary'
                   style={{
                     opacity: currentPage === 1 ? 0.5 : 1,
-                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
                   }}>
                   <ChevronLeft size={20} /> Previous
                 </button>
@@ -174,7 +176,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   className='button button-secondary'
                   style={{
                     opacity: currentPage === totalPages ? 0.5 : 1,
-                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
                   }}>
                   Next <ChevronRight size={20} />
                 </button>

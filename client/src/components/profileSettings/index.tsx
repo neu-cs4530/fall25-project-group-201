@@ -134,22 +134,26 @@ const ProfileSettings: React.FC = () => {
   if (loading) {
     return (
       <div className='profile-settings'>
-        <div className='profile-card' style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '400px'
-        }}>
+        <div
+          className='profile-card'
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '400px',
+          }}>
           <div style={{ textAlign: 'center' }}>
-            <div className='spinner' style={{
-              border: '4px solid #f3f3f3',
-              borderTop: '4px solid #3b82f6',
-              borderRadius: '50%',
-              width: '50px',
-              height: '50px',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 1rem'
-            }}></div>
+            <div
+              className='spinner'
+              style={{
+                border: '4px solid #f3f3f3',
+                borderTop: '4px solid #3b82f6',
+                borderRadius: '50%',
+                width: '50px',
+                height: '50px',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 1rem',
+              }}></div>
             <p>Loading profile...</p>
           </div>
         </div>

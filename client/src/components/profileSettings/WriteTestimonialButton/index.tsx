@@ -26,7 +26,6 @@ const WriteTestimonialButton: React.FC<WriteTestimonialButtonProps> = ({
     return null;
   }
 
-
   const handleOpen = () => {
     setContent(existingTestimonial?.content || '');
     setShowModal(true);

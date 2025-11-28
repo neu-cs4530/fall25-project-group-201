@@ -803,7 +803,7 @@ describe('Profile Features - Testimonials', () => {
             fromProfilePicture: '',
             content: 'Great!',
             createdAt: new Date(),
-            approved: true
+            approved: true,
           },
           {
             _id: new mongoose.Types.ObjectId(),
@@ -811,7 +811,7 @@ describe('Profile Features - Testimonials', () => {
             fromProfilePicture: '',
             content: 'Awesome!',
             createdAt: new Date(),
-            approved: true
+            approved: true,
           },
           {
             _id: new mongoose.Types.ObjectId(),
@@ -819,7 +819,7 @@ describe('Profile Features - Testimonials', () => {
             fromProfilePicture: '',
             content: 'Excellent!',
             createdAt: new Date(),
-            approved: true
+            approved: true,
           },
           {
             _id: new mongoose.Types.ObjectId(),
@@ -827,7 +827,7 @@ describe('Profile Features - Testimonials', () => {
             fromProfilePicture: '',
             content: 'Amazing!',
             createdAt: new Date(),
-            approved: true
+            approved: true,
           },
           {
             _id: new mongoose.Types.ObjectId(),
@@ -835,9 +835,9 @@ describe('Profile Features - Testimonials', () => {
             fromProfilePicture: '',
             content: 'Perfect!',
             createdAt: new Date(),
-            approved: true
+            approved: true,
           },
-        ]
+        ],
       };
 
       getUserByUsernameSpy.mockResolvedValueOnce(mockUser);
