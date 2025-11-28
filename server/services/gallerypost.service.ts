@@ -243,7 +243,7 @@ export const toggleGalleryPostLikeById = async (
   }
 };
 
-export const downloadGalleryPostMedia = async (id: string): Promise<string | { error: string }> => {
+export const downloadGalleryPostMedia = async (id: string): Promise<string | undefined | { error: string }> => {
   try {
     const post = await GalleryPostModel.findById(id);
 

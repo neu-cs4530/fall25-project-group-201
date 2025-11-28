@@ -72,6 +72,26 @@ describe('Gallery Post Service', () => {
       expect(GalleryPostModel.create).toHaveBeenCalledWith(mockGalleryPostInput);
     });
 
+    test('returns error if there is no media and no link', async () => {
+      const mockInput: GalleryPost = {
+        title: 'New Gallery Post',
+        description: 'New Description',
+        user: 'test_user',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        views: 0,
+        downloads: 0,
+        likes: [],
+        tags: [],
+      };
+
+      const result = await createGalleryPost(mockInput);
+
+      expect(result).toEqual({
+        error: 'You must provide either a media file or a media link.',
+      });
+    });
+
     test('returns error if creation fails', async () => {
       jest.spyOn(GalleryPostModel, 'create').mockResolvedValueOnce(null as any);
 

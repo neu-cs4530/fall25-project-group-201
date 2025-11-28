@@ -23,7 +23,7 @@ export interface GalleryPost {
   title: string;
   description: string;
   user: string;
-  media: string;
+  media?: string;
   thumbnailMedia?: string;
   community: string;
   postedAt: Date;
