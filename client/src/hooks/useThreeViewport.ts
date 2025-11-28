@@ -441,7 +441,7 @@ const useThreeViewport = (
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
-      if (keysPressed.current.ArrowRight) { 
+      if (keysPressed.current.ArrowRight) {
         cam.position.addScaledVector(right, moveSpeed);
         if (setTranslationSettingRef.current) {
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
@@ -688,7 +688,7 @@ const useThreeViewport = (
     }
 
     if (setRotationSettingRef.current) {
-      setRotationSettingRef.current([0,0,0]);
+      setRotationSettingRef.current([0, 0, 0]);
     }
 
     if (setTranslationSettingRef.current) {
