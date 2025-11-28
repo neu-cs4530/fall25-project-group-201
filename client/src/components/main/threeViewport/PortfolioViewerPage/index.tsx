@@ -29,15 +29,12 @@ export default function PortfolioViewerPage() {
     hasRecordedView.current = false;
   }, [username, index]);
 
-  // In PortfolioViewerPage, add console logging:
   useEffect(() => {
     const recordView = async () => {
       if (!username || !index || !user.username || hasRecordedView.current) {
-        console.log('Skipping view increment:', { hasRecorded: hasRecordedView.current });
         return;
       }
 
-      console.log('Recording view for:', username, index);
       hasRecordedView.current = true;
 
       await incrementPortfolioViews(username, parseInt(index), user.username);
