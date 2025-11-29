@@ -58,6 +58,19 @@ const handleDownload = async (mediaSize: string, extension: string, qid: string)
   }
 };
 
+/**
+ * Converts bytes to a human-readable string
+ */
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(2)} KB`;
+  const mb = kb / 1024;
+  if (mb < 1024) return `${mb.toFixed(2)} MB`;
+  const gb = mb / 1024;
+  return `${gb.toFixed(2)} GB`;
+};
+
 function getExtension(path: string): string {
   const lastDot = path.lastIndexOf('.');
   if (lastDot === -1) return '';
@@ -237,15 +250,21 @@ const QuestionBody = ({
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
         {downloadQuestionPermission && mediaPath && mediaSize && ext && (
-          <div className='download-label'>
-            <Download
-              size={20}
-              onClick={() => handleDownload(mediaSize, ext, qid)}
-              color='#007BFF'
-              style={{ cursor: 'pointer' }}
-            />
-            <div>Download 3D model</div>
-          </div>
+          <>
+            <div className='download-label'>
+              <Download
+                size={20}
+                onClick={() => handleDownload(mediaSize, ext, qid)}
+                color='#007BFF'
+                style={{ cursor: 'pointer' }}
+              />
+              <div>Download File</div>
+            </div>
+            <div className='media-file-info'>
+              <span className='infoChip'>{ext}</span>
+              <span className='infoChip'>{formatFileSize(parseInt(mediaSize.split(" ")[0], 10))}</span>
+            </div>
+          </>
         )}
         {!downloadQuestionPermission && mediaPath && mediaSize && ext && (
           <div className='download-disabled'>
