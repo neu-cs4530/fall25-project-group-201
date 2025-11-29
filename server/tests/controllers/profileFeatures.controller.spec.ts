@@ -40,7 +40,7 @@ const mockUserWithPortfolio: SafeDatabaseUser = {
       uploadedAt: new Date(),
       views: [],
       likes: [],
-    }
+    },
   ],
 };
 
@@ -62,7 +62,7 @@ const mockUserWithTestimonial: SafeDatabaseUser = {
       content: 'Great developer!',
       createdAt: new Date(),
       approved: false,
-    }
+    },
   ],
 };
 
@@ -308,14 +308,12 @@ describe('Profile Features - File Uploads', () => {
     it('should return 500 if getUserByUsername fails during portfolio upload', async () => {
       getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
 
-      const response = await supertest(app)
-        .post('/api/user/uploadPortfolioModel')
-        .send({
-          username: 'testuser',
-          title: 'Test',
-          description: 'Test',
-          mediaUrl: 'https://youtube.com/watch?v=test',
-        });
+      const response = await supertest(app).post('/api/user/uploadPortfolioModel').send({
+        username: 'testuser',
+        title: 'Test',
+        description: 'Test',
+        mediaUrl: 'https://youtube.com/watch?v=test',
+      });
 
       expect(response.status).toBe(500);
     });
@@ -674,9 +672,7 @@ describe('Profile Features - Testimonials', () => {
         content: 'I am great!',
       };
 
-      getUserByUsernameSpy
-        .mockResolvedValueOnce(mockSafeUser)
-        .mockResolvedValueOnce(mockSafeUser);
+      getUserByUsernameSpy.mockResolvedValueOnce(mockSafeUser).mockResolvedValueOnce(mockSafeUser);
 
       const response = await supertest(app).post('/api/user/testimonial').send(mockReqBody);
 
@@ -703,13 +699,11 @@ describe('Profile Features - Testimonials', () => {
         .mockResolvedValueOnce(mockSafeUser)
         .mockResolvedValueOnce({ error: 'User not found' });
 
-      const response = await supertest(app)
-        .post('/api/user/testimonial')
-        .send({
-          profileUsername: 'testuser',
-          fromUsername: 'nonexistent',
-          content: 'Great work!',
-        });
+      const response = await supertest(app).post('/api/user/testimonial').send({
+        profileUsername: 'testuser',
+        fromUsername: 'nonexistent',
+        content: 'Great work!',
+      });
 
       expect(response.status).toBe(404);
       expect(response.body.error).toBe('Author user not found');
@@ -826,13 +820,11 @@ describe('Profile Features - Testimonials', () => {
       getUserByUsernameSpy.mockResolvedValueOnce(mockUserWithTestimonial);
       updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
 
-      const response = await supertest(app)
-        .patch('/api/user/testimonial/approve')
-        .send({
-          username: 'user123',
-          testimonialId: mockUserWithTestimonial.testimonials![0]._id!.toString(),
-          approved: true,
-        });
+      const response = await supertest(app).patch('/api/user/testimonial/approve').send({
+        username: 'user123',
+        testimonialId: mockUserWithTestimonial.testimonials![0]._id!.toString(),
+        approved: true,
+      });
 
       expect(response.status).toBe(500);
     });
@@ -1081,12 +1073,10 @@ describe('Profile Features - Portfolio Management', () => {
       getUserByUsernameSpy.mockResolvedValueOnce(mockUserWithPortfolio);
       updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
 
-      const response = await supertest(app)
-        .delete('/api/user/deleteSinglePortfolioItem')
-        .send({
-          username: 'user123',
-          index: 0,
-        });
+      const response = await supertest(app).delete('/api/user/deleteSinglePortfolioItem').send({
+        username: 'user123',
+        index: 0,
+      });
 
       expect(response.status).toBe(500);
     });
@@ -1336,27 +1326,27 @@ describe('Additional Coverage - Error Paths', () => {
     getUserByUsernameSpy.mockResolvedValueOnce(mockSafeUser);
     updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
 
-    const response = await supertest(app)
-      .post('/api/user/uploadPortfolioModel')
-      .send({
-        username: 'testuser',
-        title: 'Test',
-        description: 'Test',
-        mediaUrl: 'https://youtube.com/watch?v=test',
-      });
+    const response = await supertest(app).post('/api/user/uploadPortfolioModel').send({
+      username: 'testuser',
+      title: 'Test',
+      description: 'Test',
+      mediaUrl: 'https://youtube.com/watch?v=test',
+    });
 
     expect(response.status).toBe(500);
   });
 
   it('should return 500 if updateUser fails when incrementing views', async () => {
-    const portfolio = [{
-      title: 'Test',
-      mediaUrl: 'url',
-      description: '',
-      uploadedAt: new Date(),
-      views: [],
-      likes: [],
-    }];
+    const portfolio = [
+      {
+        title: 'Test',
+        mediaUrl: 'url',
+        description: '',
+        uploadedAt: new Date(),
+        views: [],
+        likes: [],
+      },
+    ];
 
     getUserByUsernameSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio });
     updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
@@ -1369,34 +1359,36 @@ describe('Additional Coverage - Error Paths', () => {
   });
 
   it('should return 500 if updateUser fails when toggling like', async () => {
-    const portfolio = [{
-      title: 'Test',
-      mediaUrl: 'url',
-      description: '',
-      uploadedAt: new Date(),
-      views: [],
-      likes: [],
-    }];
+    const portfolio = [
+      {
+        title: 'Test',
+        mediaUrl: 'url',
+        description: '',
+        uploadedAt: new Date(),
+        views: [],
+        likes: [],
+      },
+    ];
 
     getUserByUsernameSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio });
     updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
 
-    const response = await supertest(app).post(
-      '/api/user/portfolio/toggleLike/testuser/0/liker',
-    );
+    const response = await supertest(app).post('/api/user/portfolio/toggleLike/testuser/0/liker');
 
     expect(response.status).toBe(500);
   });
 
   it('should return 500 if updateUser returns portfolio as undefined after incrementing views', async () => {
-    const portfolio = [{
-      title: 'Test',
-      mediaUrl: 'url',
-      description: '',
-      uploadedAt: new Date(),
-      views: [],
-      likes: [],
-    }];
+    const portfolio = [
+      {
+        title: 'Test',
+        mediaUrl: 'url',
+        description: '',
+        uploadedAt: new Date(),
+        views: [],
+        likes: [],
+      },
+    ];
 
     getUserByUsernameSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio });
     updateUserSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio: undefined });
@@ -1421,35 +1413,29 @@ describe('Additional Coverage - Error Paths', () => {
   it('should return 404 if user not found when approving testimonial', async () => {
     getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
 
-    const response = await supertest(app)
-      .patch('/api/user/testimonial/approve')
-      .send({
-        username: 'nonexistent',
-        testimonialId: new mongoose.Types.ObjectId().toString(),
-        approved: true,
-      });
+    const response = await supertest(app).patch('/api/user/testimonial/approve').send({
+      username: 'nonexistent',
+      testimonialId: new mongoose.Types.ObjectId().toString(),
+      approved: true,
+    });
 
     expect(response.status).toBe(404);
   });
 
   it('should return 400 for missing fields in testimonial approval', async () => {
-    const response = await supertest(app)
-      .patch('/api/user/testimonial/approve')
-      .send({
-        username: 'testuser',
-        // missing testimonialId and approved
-      });
+    const response = await supertest(app).patch('/api/user/testimonial/approve').send({
+      username: 'testuser',
+      // missing testimonialId and approved
+    });
 
     expect(response.status).toBe(400);
   });
 
   it('should return 400 when uploadPortfolioModel has username missing', async () => {
-    const response = await supertest(app)
-      .post('/api/user/uploadPortfolioModel')
-      .send({
-        title: 'Test',
-        mediaUrl: 'http://test.com/video.mp4',
-      });
+    const response = await supertest(app).post('/api/user/uploadPortfolioModel').send({
+      title: 'Test',
+      mediaUrl: 'http://test.com/video.mp4',
+    });
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Username missing');
@@ -1484,12 +1470,14 @@ describe('Additional Coverage - Error Paths', () => {
   it('should return 500 if updateUser fails during testimonial deletion', async () => {
     const userWithTestimonial = {
       ...mockSafeUser,
-      testimonials: [{
-        fromUsername: 'other',
-        content: 'Test',
-        createdAt: new Date(),
-        approved: true,
-      }],
+      testimonials: [
+        {
+          fromUsername: 'other',
+          content: 'Test',
+          createdAt: new Date(),
+          approved: true,
+        },
+      ],
     };
 
     getUserByUsernameSpy.mockResolvedValueOnce(userWithTestimonial);
@@ -1501,6 +1489,4 @@ describe('Additional Coverage - Error Paths', () => {
 
     expect(response.status).toBe(500);
   });
-
 });
-
