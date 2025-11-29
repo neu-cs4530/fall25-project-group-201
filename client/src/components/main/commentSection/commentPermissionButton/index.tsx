@@ -56,10 +56,26 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
    * @returns
    */
   const handleDownload = async (mediaSize: string, extension: string, cid: string) => {
-    const confirmed = window.confirm(
-      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-    );
-    if (!confirmed) return;
+    // Extract number + unit (e.g., "20 MB" → 20 + "MB")
+    const [valueStr, unit] = mediaSize.split(" ");
+    const value = parseFloat(valueStr);
+
+    // Convert to bytes for consistent comparison
+    const sizeInBytes =
+      unit.toUpperCase() === "KB" ? value * 1024 :
+      unit.toUpperCase() === "MB" ? value * 1024 * 1024 :
+      unit.toUpperCase() === "GB" ? value * 1024 * 1024 * 1024 :
+      value; // assume already bytes if no unit
+
+    // Threshold (example: 10 MB)
+    const thresholdBytes = 10 * 1024 * 1024;
+
+    if (sizeInBytes > thresholdBytes) {
+      const confirmed = window.confirm(
+        `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+      );
+      if (!confirmed) return;
+    }
 
     try {
       const mediaPath = await getCommentMedia(cid);

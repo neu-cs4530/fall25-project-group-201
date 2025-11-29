@@ -41,10 +41,25 @@ interface QuestionBodyProps {
  * @returns
  */
 const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
-  const confirmed = window.confirm(
-    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-  );
-  if (!confirmed) return;
+  const [valueStr, unit] = mediaSize.split(" ");
+  const value = parseFloat(valueStr);
+
+  // Convert to bytes for consistent comparison
+  const sizeInBytes =
+    unit.toUpperCase() === "KB" ? value * 1024 :
+    unit.toUpperCase() === "MB" ? value * 1024 * 1024 :
+    unit.toUpperCase() === "GB" ? value * 1024 * 1024 * 1024 :
+    value; // assume already bytes if no unit
+
+  // Threshold (example: 10 MB)
+  const thresholdBytes = 10 * 1024 * 1024;
+
+  if (sizeInBytes > thresholdBytes) {
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
+    if (!confirmed) return;
+  }
 
   try {
     const mediaPath = await getQuestionMedia(qid);
@@ -56,19 +71,6 @@ const handleDownload = async (mediaSize: string, extension: string, qid: string)
   } catch (error) {
     window.alert('Something went wrong with downloading the file');
   }
-};
-
-/**
- * Converts bytes to a human-readable string
- */
-const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`;
-  const kb = bytes / 1024;
-  if (kb < 1024) return `${kb.toFixed(2)} KB`;
-  const mb = kb / 1024;
-  if (mb < 1024) return `${mb.toFixed(2)} MB`;
-  const gb = mb / 1024;
-  return `${gb.toFixed(2)} GB`;
 };
 
 function getExtension(path: string): string {
@@ -262,7 +264,7 @@ const QuestionBody = ({
             </div>
             <div className='media-file-info'>
               <span className='infoChip'>{ext}</span>
-              <span className='infoChip'>{formatFileSize(parseInt(mediaSize.split(" ")[0], 10))}</span>
+              <span className='infoChip'>{mediaSize}</span>
             </div>
           </>
         )}
