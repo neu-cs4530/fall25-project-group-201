@@ -9,6 +9,19 @@ import useRelatedPosts from '../../../../hooks/useRelatedPosts';
 import RelatedPosts from './relatedPosts';
 
 /**
+ * Converts bytes to a human-readable string
+ */
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(2)} KB`;
+  const mb = kb / 1024;
+  if (mb < 1024) return `${mb.toFixed(2)} MB`;
+  const gb = mb / 1024;
+  return `${gb.toFixed(2)} GB`;
+};
+
+/**
  * Component to display a single gallery post from a community gallery.
  */
 const GalleryPostPage = () => {
@@ -101,7 +114,7 @@ const GalleryPostPage = () => {
                       onClick={e => {
                         e.stopPropagation();
                         handleDownload(
-                          post.mediaSize || 'undefined size',
+                          formatFileSize(parseInt(post.mediaSize!.split(" ")[0], 10)) || 'undefined size',
                           ext!,
                           post._id.toString(),
                         );
@@ -134,6 +147,13 @@ const GalleryPostPage = () => {
 
             <p className='postDescription'>{post.description}</p>
           </div>
+
+          {post.mediaSize && post.permitDownload && 
+            <div className='media-file-info'>
+              <span className='infoChip'>{ext}</span>
+              <span className='infoChip'>{formatFileSize(parseInt(post.mediaSize.split(" ")[0], 10))}</span>
+            </div>
+          }
 
           <div className='mediaWrapper'>
             {is3D && <ThreeViewport modelPath={post.media} />}
