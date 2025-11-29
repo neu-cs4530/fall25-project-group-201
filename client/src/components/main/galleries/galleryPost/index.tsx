@@ -42,15 +42,18 @@ const GalleryPostPage = () => {
    * @returns
    */
   const handleDownload = async (mediaSize: string, extension: string, id: string) => {
-    const [valueStr, unit] = mediaSize.split(" ");
+    const [valueStr, unit] = mediaSize.split(' ');
     const value = parseFloat(valueStr);
 
     // Convert to bytes for consistent comparison
     const sizeInBytes =
-      unit.toUpperCase() === "KB" ? value * 1024 :
-      unit.toUpperCase() === "MB" ? value * 1024 * 1024 :
-      unit.toUpperCase() === "GB" ? value * 1024 * 1024 * 1024 :
-      value; // assume already bytes if no unit
+      unit.toUpperCase() === 'KB'
+        ? value * 1024
+        : unit.toUpperCase() === 'MB'
+          ? value * 1024 * 1024
+          : unit.toUpperCase() === 'GB'
+            ? value * 1024 * 1024 * 1024
+            : value; // assume already bytes if no unit
 
     // Threshold (example: 10 MB)
     const thresholdBytes = 10 * 1024 * 1024;
@@ -150,12 +153,12 @@ const GalleryPostPage = () => {
             <p className='postDescription'>{post.description}</p>
           </div>
 
-          {post.mediaSize && post.permitDownload && 
+          {post.mediaSize && post.permitDownload && (
             <div className='media-file-info'>
               <span className='infoChip'>{ext}</span>
               <span className='infoChip'>{post.mediaSize}</span>
             </div>
-          }
+          )}
 
           <div className='mediaWrapper'>
             {is3D && <ThreeViewport modelPath={post.media} />}

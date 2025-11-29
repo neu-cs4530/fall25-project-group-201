@@ -41,15 +41,18 @@ interface QuestionBodyProps {
  * @returns
  */
 const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
-  const [valueStr, unit] = mediaSize.split(" ");
+  const [valueStr, unit] = mediaSize.split(' ');
   const value = parseFloat(valueStr);
 
   // Convert to bytes for consistent comparison
   const sizeInBytes =
-    unit.toUpperCase() === "KB" ? value * 1024 :
-    unit.toUpperCase() === "MB" ? value * 1024 * 1024 :
-    unit.toUpperCase() === "GB" ? value * 1024 * 1024 * 1024 :
-    value; // assume already bytes if no unit
+    unit.toUpperCase() === 'KB'
+      ? value * 1024
+      : unit.toUpperCase() === 'MB'
+        ? value * 1024 * 1024
+        : unit.toUpperCase() === 'GB'
+          ? value * 1024 * 1024 * 1024
+          : value; // assume already bytes if no unit
 
   // Threshold (example: 10 MB)
   const thresholdBytes = 10 * 1024 * 1024;
