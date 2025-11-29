@@ -21,7 +21,7 @@
  * - Single test: Add .only to any it() block
  */
 
-import { auth0LoginUserProfile, setupTest, teardownTest} from '../support/helpers';
+import { auth0LoginUserProfile, setupTest, teardownTest } from '../support/helpers';
 import '../support/auth0';
 
 describe('Profile Settings — editing', () => {
@@ -33,7 +33,7 @@ describe('Profile Settings — editing', () => {
         auth0LoginUserProfile();
         cy.url({ timeout: 30000 }).should('include', '/home');
         cy.contains('All Questions', { timeout: 15000 }).should('be.visible');
-        cy.wait(2000);
+        cy.wait(1000);
 
         cy.get('.profile-trigger', { timeout: 10000 }).should('be.visible').click();
         cy.get('.profile-menu', { timeout: 5000 }).should('be.visible');
@@ -41,6 +41,53 @@ describe('Profile Settings — editing', () => {
 
         cy.url({ timeout: 10000 }).should('include', '/user/');
         cy.get('.profile-card', { timeout: 20000 }).should('be.visible');
+    });
+
+    it('displays loading spinner while fetching user data', () => {
+        cy.contains('Users').click();
+        cy.url({ timeout: 10000 }).should('include', '/users');
+        cy.contains('Users List', { timeout: 10000 }).should('be.visible');
+
+        cy.intercept('GET', '/api/user/getUser/user234', (req) => {
+            req.on('response', (res) => {
+                res.setDelay(2000);
+            });
+        }).as('getUserRequest');
+
+        cy.contains('user234').click();
+        cy.contains('Loading profile...', { timeout: 1000 }).should('be.visible');
+        cy.get('.spinner').should('be.visible');
+        cy.wait('@getUserRequest');
+
+        cy.contains('Loading profile...').should('not.exist');
+        cy.get('.profile-card').should('be.visible');
+        cy.contains('Username:').should('be.visible');
+    });
+
+    it('successfully uploads profile picture', () => {
+        cy.get('.profile-picture-placeholder input[type="file"]')
+            .selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
+
+        cy.wait(1000);
+        cy.contains('Profile picture updated!').should('be.visible');
+
+        // Verify image displays
+        cy.get('.profile-picture-placeholder')
+            .should('have.css', 'background-image')
+            .and('include', 'data:image');
+    });
+
+    it('successfully uploads banner image', () => {
+        cy.get('.profile-banner-placeholder input[type="file"]')
+            .selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
+
+        cy.wait(1000);
+        cy.contains('Banner image updated!').should('be.visible');
+
+        // Verify banner displays
+        cy.get('.profile-banner-placeholder')
+            .should('have.css', 'background-image')
+            .and('include', 'data:image');
     });
 
     it('allows editing the biography', () => {
@@ -73,6 +120,22 @@ describe('Profile Settings — editing', () => {
         cy.wait(1000);
         cy.get('.external-links-section').should('contain', 'GitHub');
         cy.get('.external-links-section').should('contain', 'ArtStation');
+    });
+
+    it('auto-adds https:// to external links if missing', () => {
+        cy.contains('External Links', { timeout: 10000 }).scrollIntoView().should('be.visible');
+        cy.contains('button', 'Edit Links').click();
+
+        cy.get('.links-edit-section', { timeout: 5000 }).should('be.visible').within(() => {
+            cy.get('.input-text').eq(0).clear().type('github.com/testuser');
+            cy.contains('button', 'Save Links').click();
+        });
+
+        cy.wait(1000);
+
+        cy.get('.external-links-section a').first()
+            .should('have.attr', 'href')
+            .and('include', 'https://github.com/testuser');
     });
 
     it('allows editing skills', () => {
@@ -181,14 +244,14 @@ describe('Profile Settings — editing', () => {
         cy.wait(1000);
 
         cy.contains('button', 'Add to Portfolio').should('not.be.disabled').click();
-        cy.wait(2000);
+        cy.wait(1000);
         cy.url({ timeout: 10000 }).should('include', '/user/user123');
 
         cy.contains('Portfolio').scrollIntoView();
         cy.get('.portfolio-model-item').should('have.length.at.least', 1);
         cy.get('.portfolio-model-item').first().click();
         cy.url({ timeout: 10000 }).should('match', /\/portfolio\/\d+/);
-        cy.wait(2000);
+        cy.wait(1000);
 
         cy.get('.postStats').scrollIntoView().should('be.visible');
 
@@ -230,6 +293,50 @@ describe('Profile Settings — editing', () => {
         });
     });
 
+    it.only('enables portfolio reorder and delete in edit mode', () => {
+        cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
+
+        // Upload first item
+        cy.get('.portfolio-upload-box').click();
+        cy.url({ timeout: 10000 }).should('include', '/upload-portfolio');
+        cy.get('input[placeholder*="Give your piece a name"]').type('First Portfolio Item');
+        cy.get('textarea[placeholder*="Describe your project"]').type('First test item');
+        cy.get('input[placeholder*="Paste media URL"]').type('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
+        cy.wait(1000);
+        cy.contains('button', 'Add to Portfolio').should('not.be.disabled').click();
+        cy.wait(1000);
+        cy.url({ timeout: 10000 }).should('include', '/user/user123');
+
+        // Upload second item
+        cy.contains('Portfolio').scrollIntoView();
+        cy.get('.portfolio-upload-box').click();
+        cy.get('input[placeholder*="Give your piece a name"]').type('Second Portfolio Item');
+        cy.get('textarea[placeholder*="Describe your project"]').type('Second test item');
+        cy.get('input[placeholder*="Paste media URL"]').type('https://www.youtube.com/watch?v=jNQXAC9IVRw');
+        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
+        cy.wait(1000);
+        cy.contains('button', 'Add to Portfolio').should('not.be.disabled').click();
+        cy.wait(1000);
+        cy.url({ timeout: 10000 }).should('include', '/user/user123');
+
+        // Now test edit mode
+        cy.contains('Portfolio').scrollIntoView();
+        cy.get('.portfolio-model-item').should('have.length.at.least', 2);
+
+        cy.contains('button', 'Edit Posts').click();
+
+        cy.get('.reorder-arrow').should('be.visible');
+        cy.get('.portfolio-delete-button').should('be.visible');
+
+        // Click item in edit mode - should NOT navigate
+        cy.get('.portfolio-model-item').first().click();
+        cy.url().should('include', '/user/user123');
+
+        cy.contains('button', 'Done Editing').click();
+        cy.get('.reorder-arrow').should('not.exist');
+    });
+
     it('allows writing and deleting testimonials', () => {
         cy.contains('Users').click();
         cy.contains('user234').click();
@@ -260,6 +367,33 @@ describe('Profile Settings — editing', () => {
             }
         });
     });
+
+    it
+        ('displays existing testimonial content when editing', () => {
+            cy.contains('Users').click();
+            cy.contains('user234').click();
+            cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
+
+            // Write initial testimonial
+            cy.contains('button', 'Write a Testimonial').click();
+            cy.get('.testimonial-textarea').type('Original testimonial content');
+            cy.contains('button', 'Submit').click();
+            cy.wait(1000);
+
+            // Edit and verify content appears
+            cy.contains('button', 'Edit Your Testimonial').click();
+            cy.get('.testimonial-textarea').should('have.value', 'Original testimonial content');
+
+            // Update content
+            cy.get('.testimonial-textarea').clear().type('Updated testimonial content');
+            cy.contains('button', 'Submit').click();
+            cy.wait(1000);
+
+            // Verify button still shows edit option
+            cy.contains('button', 'Edit Your Testimonial').should('be.visible');
+        });
+
+
 
     it('shows error when uploading .txt file as resume', () => {
         cy.contains('Resume / CV', { timeout: 10000 }).scrollIntoView().should('be.visible');
@@ -294,7 +428,7 @@ describe('Profile Settings — editing', () => {
         cy.get('input[placeholder*="Give your piece a name"]').type('Test 3D Model');
         cy.get('textarea[placeholder*="Describe your project"]').type('Testing 3D viewport info button');
         cy.get('input[type="file"]').first().selectFile('cypress/fixtures/test.glb', { force: true });
-        cy.wait(2000);
+        cy.wait(1000);
 
         cy.get('canvas', { timeout: 10000 }).should('be.visible');
         cy.get('canvas').scrollIntoView();
