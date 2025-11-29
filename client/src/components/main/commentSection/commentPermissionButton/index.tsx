@@ -86,7 +86,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
 
   return (
     <>
-      {isAuthor && (
+      {isAuthor && comment.mediaSize && (
         <button
           type='button'
           className={`download-permission-comment-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
@@ -97,8 +97,9 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
         </button>
       )}
       {downloadQuestionPermission && comment.mediaPath && comment.mediaSize && (
+        <>
         <div className='download-actions'>
-          Download model
+          Download file
           <Download
             className='comment-download-icon'
             size={20}
@@ -113,6 +114,11 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
             color='#007BFF'
           />
         </div>
+        <div className='media-file-info'>
+          <span className='infoChip'>{getExtension(comment.mediaPath!)}</span>
+          <span className='infoChip'>{comment.mediaSize}</span>
+        </div>
+        </>
       )}
       {!downloadQuestionPermission && comment.mediaPath && comment.mediaSize && (
         <div className='download-disabled'>Download disabled</div>
