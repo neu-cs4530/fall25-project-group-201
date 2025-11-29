@@ -3,7 +3,6 @@ import mediaService from '../../services/media.service';
 import { Media, DatabaseMedia } from '../../types/types';
 import mongoose from 'mongoose';
 import fs from 'fs';
-import path from 'path';
 jest.mock('fs');
 
 describe('Media Service', () => {
@@ -62,8 +61,11 @@ describe('Media Service', () => {
       (fs.existsSync as jest.Mock).mockReturnValue(false);
 
       // Mock DB save
-      jest.spyOn(MediaModel.prototype, 'save')
-        .mockResolvedValue({ ...mockMediaInput, _id: '123', filepathLocation: `/userData/test_user/test.png` });
+      jest.spyOn(MediaModel.prototype, 'save').mockResolvedValue({
+        ...mockMediaInput,
+        _id: '123',
+        filepathLocation: `/userData/test_user/test.png`,
+      });
 
       await mediaService.addMedia(mockMediaInput);
 
