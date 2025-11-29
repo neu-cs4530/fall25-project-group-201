@@ -293,7 +293,7 @@ describe('Profile Settings — editing', () => {
         });
     });
 
-    it.only('enables portfolio reorder and delete in edit mode', () => {
+    it('enables portfolio reorder and delete in edit mode', () => {
         cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
 
         // Upload first item
