@@ -92,15 +92,16 @@ describe("Question Component Page Sorting and Filtering", () => {
     cy.wait(500);
 
     cy.get(".question").then($questions => {
-      let lastViews = Infinity;
+        let lastViews = Infinity;
 
-      $questions.each((index, q) => {
-        const viewsText = q.querySelector(".views")?.textContent || "";
-        const views = viewsText ? Number(viewsText.replace("Views: ", "")) : 0;
+        $questions.each((index, q) => {
+        const viewsDiv = q.querySelector(".postAnswersViews > div:nth-child(2)");
+        const viewsText = viewsDiv?.textContent || "";
+        const views = viewsText ? Number(viewsText.replace(" views", "")) : 0;
 
         expect(views).to.be.at.most(lastViews);
         lastViews = views;
-      });
+        });
     });
   });
 });
