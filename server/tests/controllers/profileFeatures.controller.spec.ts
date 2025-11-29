@@ -303,6 +303,23 @@ describe('Profile Features - File Uploads', () => {
       expect(response.body.error).toBe('Either a file or media URL is required');
     });
   });
+
+  describe('Portfolio Upload Edge Cases', () => {
+    it('should return 500 if getUserByUsername fails during portfolio upload', async () => {
+      getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
+
+      const response = await supertest(app)
+        .post('/api/user/uploadPortfolioModel')
+        .send({
+          username: 'testuser',
+          title: 'Test',
+          description: 'Test',
+          mediaUrl: 'https://youtube.com/watch?v=test',
+        });
+
+      expect(response.status).toBe(500);
+    });
+  });
 });
 
 describe('Profile Features - Skills', () => {
@@ -1293,3 +1310,197 @@ describe('Profile Features - Portfolio Views and Likes', () => {
     });
   });
 });
+
+describe('Additional Coverage - Error Paths', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should return 500 if getUserByUsername fails when uploading portfolio with file', async () => {
+    const buffer = Buffer.from('fake-glb-data');
+
+    getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
+
+    const response = await supertest(app)
+      .post('/api/user/uploadPortfolioModel')
+      .field('username', 'testuser')
+      .field('title', 'Test Model')
+      .field('description', 'Test')
+      .attach('file', buffer, { filename: 'model.glb', contentType: 'model/gltf-binary' });
+
+    expect(response.status).toBe(500);
+    expect(response.text).toContain('User not found');
+  });
+
+  it('should return 500 if updateUser fails when uploading portfolio', async () => {
+    getUserByUsernameSpy.mockResolvedValueOnce(mockSafeUser);
+    updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
+
+    const response = await supertest(app)
+      .post('/api/user/uploadPortfolioModel')
+      .send({
+        username: 'testuser',
+        title: 'Test',
+        description: 'Test',
+        mediaUrl: 'https://youtube.com/watch?v=test',
+      });
+
+    expect(response.status).toBe(500);
+  });
+
+  it('should return 500 if updateUser fails when incrementing views', async () => {
+    const portfolio = [{
+      title: 'Test',
+      mediaUrl: 'url',
+      description: '',
+      uploadedAt: new Date(),
+      views: [],
+      likes: [],
+    }];
+
+    getUserByUsernameSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio });
+    updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
+
+    const response = await supertest(app).post(
+      '/api/user/portfolio/incrementViews/testuser/0/viewer',
+    );
+
+    expect(response.status).toBe(500);
+  });
+
+  it('should return 500 if updateUser fails when toggling like', async () => {
+    const portfolio = [{
+      title: 'Test',
+      mediaUrl: 'url',
+      description: '',
+      uploadedAt: new Date(),
+      views: [],
+      likes: [],
+    }];
+
+    getUserByUsernameSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio });
+    updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
+
+    const response = await supertest(app).post(
+      '/api/user/portfolio/toggleLike/testuser/0/liker',
+    );
+
+    expect(response.status).toBe(500);
+  });
+
+  it('should return 500 if updateUser returns portfolio as undefined after incrementing views', async () => {
+    const portfolio = [{
+      title: 'Test',
+      mediaUrl: 'url',
+      description: '',
+      uploadedAt: new Date(),
+      views: [],
+      likes: [],
+    }];
+
+    getUserByUsernameSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio });
+    updateUserSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio: undefined });
+
+    const response = await supertest(app).post(
+      '/api/user/portfolio/incrementViews/testuser/0/viewer',
+    );
+
+    expect(response.status).toBe(500);
+  });
+
+  it('should return 404 if profile user lookup fails when deleting testimonial', async () => {
+    getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
+
+    const response = await supertest(app)
+      .delete('/api/user/testimonial/nonexistent')
+      .send({ fromUsername: 'testuser' });
+
+    expect(response.status).toBe(404);
+  });
+
+  it('should return 404 if user not found when approving testimonial', async () => {
+    getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
+
+    const response = await supertest(app)
+      .patch('/api/user/testimonial/approve')
+      .send({
+        username: 'nonexistent',
+        testimonialId: new mongoose.Types.ObjectId().toString(),
+        approved: true,
+      });
+
+    expect(response.status).toBe(404);
+  });
+
+  it('should return 400 for missing fields in testimonial approval', async () => {
+    const response = await supertest(app)
+      .patch('/api/user/testimonial/approve')
+      .send({
+        username: 'testuser',
+        // missing testimonialId and approved
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should return 400 when uploadPortfolioModel has username missing', async () => {
+    const response = await supertest(app)
+      .post('/api/user/uploadPortfolioModel')
+      .send({
+        title: 'Test',
+        mediaUrl: 'http://test.com/video.mp4',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Username missing');
+  });
+
+  it('should return 500 if updateUser fails during reorderPortfolioItems', async () => {
+    const portfolio = [
+      { title: 'A', mediaUrl: 'url1', description: '', uploadedAt: new Date() },
+      { title: 'B', mediaUrl: 'url2', description: '', uploadedAt: new Date() },
+    ];
+
+    getUserByUsernameSpy.mockResolvedValueOnce({ ...mockSafeUser, portfolio });
+    updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
+
+    const response = await supertest(app)
+      .patch('/api/user/reorderPortfolioItems')
+      .send({ username: 'testuser', fromIndex: 0, toIndex: 1 });
+
+    expect(response.status).toBe(500);
+  });
+
+  it('should return 500 if getUserByUsername fails during deleteSinglePortfolioItem', async () => {
+    getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
+
+    const response = await supertest(app)
+      .delete('/api/user/deleteSinglePortfolioItem')
+      .send({ username: 'testuser', index: 0 });
+
+    expect(response.status).toBe(500);
+  });
+
+  it('should return 500 if updateUser fails during testimonial deletion', async () => {
+    const userWithTestimonial = {
+      ...mockSafeUser,
+      testimonials: [{
+        fromUsername: 'other',
+        content: 'Test',
+        createdAt: new Date(),
+        approved: true,
+      }],
+    };
+
+    getUserByUsernameSpy.mockResolvedValueOnce(userWithTestimonial);
+    updateUserSpy.mockResolvedValueOnce({ error: 'Database error' });
+
+    const response = await supertest(app)
+      .delete('/api/user/testimonial/testuser')
+      .send({ fromUsername: 'other' });
+
+    expect(response.status).toBe(500);
+  });
+
+});
+
