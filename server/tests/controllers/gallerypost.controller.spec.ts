@@ -184,7 +184,7 @@ describe('Gallery Post Controller', () => {
     });
   });
 
-  test('returns 400 when no media or link', async () => {
+  test('returns 400 when no media', async () => {
     const mockReqBody = {
       title: 'New Gallery Post',
       user: 'user123',
@@ -199,7 +199,6 @@ describe('Gallery Post Controller', () => {
       .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
 
     expect(response.status).toBe(400);
-    expect(response.text).toBe('You must provide either a media file or a media link.');
   });
 
   describe('GET /getAllGalleryPosts', () => {

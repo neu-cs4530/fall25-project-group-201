@@ -1437,6 +1437,7 @@ components:
         - description
         - user
         - community
+        - media
       properties:
         title:
           type: string

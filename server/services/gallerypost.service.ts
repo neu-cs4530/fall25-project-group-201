@@ -32,11 +32,6 @@ export const getAllGalleryPosts = async (): Promise<DatabaseGalleryPost[] | { er
  */
 export const createGalleryPost = async (galleryPost: GalleryPost): Promise<GalleryPostResponse> => {
   try {
-    // Require either media file or link
-    if (!galleryPost.media && !galleryPost.link) {
-      throw new Error('You must provide either a media file or a media link.');
-    }
-
     if (!Array.isArray(galleryPost.tags)) {
       throw new Error('Tags must be an array');
     }
@@ -243,7 +238,7 @@ export const toggleGalleryPostLikeById = async (
   }
 };
 
-export const downloadGalleryPostMedia = async (id: string): Promise<string | undefined | { error: string }> => {
+export const downloadGalleryPostMedia = async (id: string): Promise<string | { error: string }> => {
   try {
     const post = await GalleryPostModel.findById(id);
 
