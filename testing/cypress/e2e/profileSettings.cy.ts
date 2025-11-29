@@ -368,30 +368,29 @@ describe('Profile Settings — editing', () => {
         });
     });
 
-    it
-        ('displays existing testimonial content when editing', () => {
-            cy.contains('Users').click();
-            cy.contains('user234').click();
-            cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
+    it('displays existing testimonial content when editing', () => {
+        cy.contains('Users').click();
+        cy.contains('user234').click();
+        cy.get('.profile-card', { timeout: 10000 }).should('be.visible');
 
-            // Write initial testimonial
-            cy.contains('button', 'Write a Testimonial').click();
-            cy.get('.testimonial-textarea').type('Original testimonial content');
-            cy.contains('button', 'Submit').click();
-            cy.wait(1000);
+        // Write initial testimonial
+        cy.contains('button', 'Write a Testimonial').click();
+        cy.get('.testimonial-textarea').type('Original testimonial content');
+        cy.contains('button', 'Submit').click();
+        cy.wait(1000);
 
-            // Edit and verify content appears
-            cy.contains('button', 'Edit Your Testimonial').click();
-            cy.get('.testimonial-textarea').should('have.value', 'Original testimonial content');
+        // Edit and verify content appears
+        cy.contains('button', 'Edit Your Testimonial').click();
+        cy.get('.testimonial-textarea').should('have.value', 'Original testimonial content');
 
-            // Update content
-            cy.get('.testimonial-textarea').clear().type('Updated testimonial content');
-            cy.contains('button', 'Submit').click();
-            cy.wait(1000);
+        // Update content
+        cy.get('.testimonial-textarea').clear().type('Updated testimonial content');
+        cy.contains('button', 'Submit').click();
+        cy.wait(1000);
 
-            // Verify button still shows edit option
-            cy.contains('button', 'Edit Your Testimonial').should('be.visible');
-        });
+        // Verify button still shows edit option
+        cy.contains('button', 'Edit Your Testimonial').should('be.visible');
+    });
 
 
 
