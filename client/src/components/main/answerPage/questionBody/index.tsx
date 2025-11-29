@@ -41,10 +41,28 @@ interface QuestionBodyProps {
  * @returns
  */
 const handleDownload = async (mediaSize: string, extension: string, qid: string) => {
-  const confirmed = window.confirm(
-    `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-  );
-  if (!confirmed) return;
+  const [valueStr, unit] = mediaSize.split(' ');
+  const value = parseFloat(valueStr);
+
+  // Convert to bytes for consistent comparison
+  const sizeInBytes =
+    unit.toUpperCase() === 'KB'
+      ? value * 1024
+      : unit.toUpperCase() === 'MB'
+        ? value * 1024 * 1024
+        : unit.toUpperCase() === 'GB'
+          ? value * 1024 * 1024 * 1024
+          : value; // assume already bytes if no unit
+
+  // Threshold (example: 10 MB)
+  const thresholdBytes = 10 * 1024 * 1024;
+
+  if (sizeInBytes > thresholdBytes) {
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
+    if (!confirmed) return;
+  }
 
   try {
     const mediaPath = await getQuestionMedia(qid);
@@ -237,15 +255,21 @@ const QuestionBody = ({
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
         {downloadQuestionPermission && mediaPath && mediaSize && ext && (
-          <div className='download-label'>
-            <Download
-              size={20}
-              onClick={() => handleDownload(mediaSize, ext, qid)}
-              color='#007BFF'
-              style={{ cursor: 'pointer' }}
-            />
-            <div>Download 3D model</div>
-          </div>
+          <>
+            <div className='download-label'>
+              <Download
+                size={20}
+                onClick={() => handleDownload(mediaSize, ext, qid)}
+                color='#007BFF'
+                style={{ cursor: 'pointer' }}
+              />
+              <div>Download File</div>
+            </div>
+            <div className='media-file-info'>
+              <span className='infoChip'>{ext}</span>
+              <span className='infoChip'>{mediaSize}</span>
+            </div>
+          </>
         )}
         {!downloadQuestionPermission && mediaPath && mediaSize && ext && (
           <div className='download-disabled'>
