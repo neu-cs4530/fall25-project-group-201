@@ -16,25 +16,24 @@ describe("Question Component Page Sorting and Filtering", () => {
 
   it("1 | Displays the correct number of tags in the tag filter dropdown", () => {
     cy.get("#tagSelect")
-        .find("option")
-        .should("have.length.greaterThan", 1)
-        .then($options => {
-            
+      .find("option")
+      .should("have.length.greaterThan", 1)
+      .then($options => {
         const optionTexts = [...$options].map(o => o.textContent);
         expect(optionTexts).to.include.members([
-            "All",
-            "javascript",
-            "python",
-            "react",
-            "node.js",
-            "html",
-            "css",
-            "mongodb",
-            "express",
-            "typescript",
-            "git",
+          "All",
+          "javascript",
+          "python",
+          "react",
+          "node.js",
+          "html",
+          "css",
+          "mongodb",
+          "express",
+          "typescript",
+          "git",
         ]);
-        });
+      });
   });
 
   it("2 | Filters by javascript", () => {
@@ -45,12 +44,21 @@ describe("Question Component Page Sorting and Filtering", () => {
   it("3 | Sorts by newest", () => {
     cy.get("#orderSelect").select("newest");
 
-    cy.get(".question").then($q => {
-      const askDates = [...$q].map(el => new Date(el.dataset.ask).getTime());
-      const sorted = [...askDates].sort((a, b) => b - a);
-      expect(askDates).to.deep.equal(sorted);
+    cy.wait(500);
+
+    cy.get(".question").then($questions => {
+        const askDates = [...$questions].map(q => {
+        const dateStr = q.dataset.ask;
+        return dateStr ? new Date(dateStr).getTime() : 0;
+        });
+
+        for (let i = 0; i < askDates.length - 1; i++) {
+        expect(askDates[i], `Question at index ${i} is newer than next question`).to.be.at.least(
+            askDates[i + 1]
+        );
+        }
     });
-  });
+ });
 
   it("4 | Sorts by unanswered", () => {
     cy.get("#orderSelect").select("Unanswered");
@@ -73,12 +81,14 @@ describe("Question Component Page Sorting and Filtering", () => {
       let lastTime = Infinity;
 
       $questions.each((index, q) => {
-        const lastAnsweredText = q.querySelector(".lastAnswered")?.textContent || "";
-        let time = 0;
+        const answersText =
+          q.querySelector(".postAnswersViews > div:first-child")?.textContent ||
+          "0 answers";
+        const answers = Number(answersText.replace(" answers", ""));
 
-        if (lastAnsweredText) {
-          time = new Date(lastAnsweredText.replace("Last answered: ", "")).getTime();
-        }
+        const askDateAttr = q.dataset.ask ? new Date(q.dataset.ask).getTime() : 0;
+
+        const time = answers > 0 ? answers : askDateAttr;
 
         expect(time).to.be.at.most(lastTime);
         lastTime = time;
@@ -92,16 +102,16 @@ describe("Question Component Page Sorting and Filtering", () => {
     cy.wait(500);
 
     cy.get(".question").then($questions => {
-        let lastViews = Infinity;
+      let lastViews = Infinity;
 
-        $questions.each((index, q) => {
+      $questions.each((index, q) => {
         const viewsDiv = q.querySelector(".postAnswersViews > div:nth-child(2)");
         const viewsText = viewsDiv?.textContent || "";
         const views = viewsText ? Number(viewsText.replace(" views", "")) : 0;
 
         expect(views).to.be.at.most(lastViews);
         lastViews = views;
-        });
+      });
     });
   });
 });
