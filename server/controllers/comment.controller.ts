@@ -32,11 +32,6 @@ const commentController = (socket: FakeSOSocket) => {
   const addCommentRoute = async (req: AddCommentRequest, res: Response): Promise<void> => {
     const id = req.body.id as string;
 
-    if (!ObjectId.isValid(id)) {
-      res.status(400).send('Invalid ID format');
-      return;
-    }
-
     const { comment, type } = req.body;
 
     try {

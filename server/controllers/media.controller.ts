@@ -45,7 +45,7 @@ const mediaController = (socket: FakeSOSocket) => {
   /**
    * Deletes a media document, given filepath of the media
    */
-  router.delete('/delete/:filepathLocation', async (req: Request, res: Response) => {
+  router.delete('/delete/:filepathLocation?', async (req: Request, res: Response) => {
     try {
       const { filepathLocation } = req.params;
 
