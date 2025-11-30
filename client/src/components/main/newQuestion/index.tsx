@@ -59,17 +59,6 @@ const NewQuestion = () => {
     setMediaUrl(e.target.value);
   };
 
-  /**
-   * Handles adding the media URL to the question.
-   * Clears any previously uploaded media if an embed URL is added.
-   */
-  const handleAddMedia = () => {
-    if (mediaUrl) {
-      setUploadedMediaPath(undefined);
-      setMediaSize(undefined);
-    }
-  };
-
   // const getFilenameWithoutExt = (filename: string): string => {
   //   const lastDotIndex = filename.lastIndexOf('.');
   //   if (lastDotIndex === -1) return filename; // No extension
