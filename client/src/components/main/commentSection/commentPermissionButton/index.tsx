@@ -142,7 +142,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
       {!downloadQuestionPermission && comment.mediaPath && comment.mediaSize && (
         <div className='download-disabled'>Download disabled</div>
       )}
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className='error-message'>{error}</div>}
     </>
   );
 };

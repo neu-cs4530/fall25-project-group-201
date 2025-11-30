@@ -3,6 +3,7 @@ import { DatabaseGalleryPost } from '@fake-stack-overflow/shared';
 import useUserContext from '../../../../../hooks/useUserContext';
 import { incrementGalleryPostViews } from '../../../../../services/galleryService';
 import './index.css';
+import { useState } from 'react';
 
 /**
  * Props for the RelatedPosts component.
@@ -24,12 +25,13 @@ interface RelatedPostsProps {
 const RelatedPosts: React.FC<RelatedPostsProps> = ({ posts }) => {
   const { user } = useUserContext();
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
 
   if (!posts || posts.length === 0) return null;
 
   /**
    * Handles click on a related post card.
-   * 
+   *
    * @param post - related post that was clicked
    */
   const handleClick = async (post: DatabaseGalleryPost) => {
@@ -38,7 +40,7 @@ const RelatedPosts: React.FC<RelatedPostsProps> = ({ posts }) => {
         await incrementGalleryPostViews(post._id.toString(), user.username);
       }
     } catch (err) {
-      console.error('Failed to increment view count', err);
+      setError('Error incrementing gallery post views');
     }
     navigate(`/gallery/${post._id}`);
   };
@@ -52,8 +54,7 @@ const RelatedPosts: React.FC<RelatedPostsProps> = ({ posts }) => {
             key={post._id.toString()}
             className='relatedCard'
             onClick={() => handleClick(post)}
-            style={{ cursor: 'pointer' }}
-          >
+            style={{ cursor: 'pointer' }}>
             <div
               className='relatedThumb'
               style={{ backgroundImage: `url(${post.thumbnailMedia || post.media})` }}
@@ -65,6 +66,7 @@ const RelatedPosts: React.FC<RelatedPostsProps> = ({ posts }) => {
           </div>
         ))}
       </div>
+      {error && <div className='error'>{error}</div>}
     </div>
   );
 };

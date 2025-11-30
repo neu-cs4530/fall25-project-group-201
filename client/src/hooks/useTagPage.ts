@@ -39,7 +39,7 @@ const useTagPage = () => {
     fetchData();
   }, []);
 
-  return { tlist, clickTag, error, setError};
+  return { tlist, clickTag, error, setError };
 };
 
 export default useTagPage;
