@@ -15,6 +15,7 @@ const useTagSelected = (t: TagData) => {
     name: '',
     description: '',
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,8 +23,7 @@ const useTagSelected = (t: TagData) => {
         const res = await getTagByName(t.name);
         setTag(res || { name: 'Error', description: 'Error' });
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log(e);
+        setError('Error fetching tag data');
       }
     };
     fetchData();
@@ -32,6 +32,8 @@ const useTagSelected = (t: TagData) => {
   return {
     tag,
     setTag,
+    error,
+    setError,
   };
 };
 

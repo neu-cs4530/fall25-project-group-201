@@ -15,6 +15,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
     boolean | undefined
   >();
   const isAuthor = comment.commentBy === user.username;
+  const [error, setError] = useState<string | null>(null);
 
   const handleToggleCommentPermission = async (): Promise<void> => {
     try {
@@ -40,8 +41,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
       try {
         setDownloadQuestionPermission(comment.permitDownload);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching question:', error);
+        setError('Error fetching comment download permission');
       }
     };
 
@@ -142,6 +142,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
       {!downloadQuestionPermission && comment.mediaPath && comment.mediaSize && (
         <div className='download-disabled'>Download disabled</div>
       )}
+      {error && <div className="error-message">{error}</div>}
     </>
   );
 };

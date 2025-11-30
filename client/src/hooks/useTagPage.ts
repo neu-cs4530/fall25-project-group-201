@@ -12,6 +12,7 @@ import { TagData } from '../types/types';
 const useTagPage = () => {
   const navigate = useNavigate();
   const [tlist, setTlist] = useState<TagData[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   /**
    * Function to navigate to the home page with the specified tag as a search parameter.
@@ -31,15 +32,14 @@ const useTagPage = () => {
         const res = await getTagsWithQuestionNumber();
         setTlist(res || []);
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log(e);
+        setError('Error fetching tags data');
       }
     };
 
     fetchData();
   }, []);
 
-  return { tlist, clickTag };
+  return { tlist, clickTag, error, setError};
 };
 
 export default useTagPage;
