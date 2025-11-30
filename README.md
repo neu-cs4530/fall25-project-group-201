@@ -21,6 +21,28 @@ A class diagram for the schema definition is shown below:
 
 ![Class Diagram](class-diagram.png)
 
+### ENV Files
+
+Please ensure you have these exact .env file setups in each of the following directories:
+
+### `/server`
+AUTH0_ISSUER_BASE_URL="dev-yipqv2u1k7drpppn.us.auth0.com"
+AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk"
+AUTH0_SECRET="240203b3d17649ecd2365756b62c046cd3b8f7904849dfb50d3e5bc138cd778a"
+MONGODB_URI="mongodb+srv://azelbycatherine_db_user:7hWhzDeIpV31iv70@db-cs4530-fall25-201.dh81ren.mongodb.net"
+
+AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"
+AUTH0_DOMAIN="dev-yipqv2u1k7drpppn.us.auth0.com"
+SERVER_URL="http://localhost:8000/"
+
+### `/client`
+VITE_AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk"
+VITE_AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"
+VITE_SERVER_URL="http://localhost:8000/"
+
+### `/testing`
+MONGODB_URI="mongodb+srv://azelbycatherine_db_user:7hWhzDeIpV31iv70@db-cs4530-fall25-201.dh81ren.mongodb.net"
+
 ## API Routes
 
 ### `/answer`
@@ -138,7 +160,7 @@ Cypress tests are end-to-end tests that can help verify your implementation.
 
 3. Create a `.env` file in the `testing/` directory with the following content:
    ```
-   MONGODB_URI=mongodb://127.0.0.1:27017
+   MONGODB_URI="mongodb+srv://azelbycatherine_db_user:7hWhzDeIpV31iv70@db-cs4530-fall25-201.dh81ren.mongodb.net"
    ```
 
 4. Make sure that both the server and client are already running

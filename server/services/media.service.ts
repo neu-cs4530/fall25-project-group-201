@@ -82,6 +82,7 @@ const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => 
   }
 };
 
+<<<<<<< HEAD
 // const getUniqueFilepath = async (
 //   username: string,
 //   requestedFilepath: string
@@ -129,3 +130,6 @@ export default {
   deleteMedia,
   formatFileSize,
 };
+=======
+export default { addMedia, deleteMedia, formatFileSize };
+>>>>>>> origin/main-backup

@@ -53,6 +53,7 @@ const CommentSection = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [permitDownload, setPermitDownload] = useState<boolean>(true);
+  const [isDragging, setIsDragging] = useState(false);
   let tempMediaPath: string | undefined;
   let mediaSize: string | undefined;
   const [rotationSettings, setRotationSettings] = useState<Record<string, number[] | null>>({});
@@ -236,6 +237,55 @@ const CommentSection = ({
     }
   };
 
+  /**
+   * Handles when a dragged file leaves the drop area.
+   */
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  /**
+   * Handles a file drop onto the comment input area.
+   *
+   * @param e - Drag event triggered on file drop.
+   */
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const droppedFile = e.dataTransfer.files[0];
+    if (!droppedFile) return;
+
+    setFile(droppedFile);
+    setMediaError(null);
+
+    // Update the file input value so the label shows the file name
+    if (fileInputRef.current) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(droppedFile);
+      fileInputRef.current.files = dataTransfer.files;
+    }
+
+    // Trigger existing file handling logic
+    const fakeEvent = {
+      target: { files: [droppedFile] },
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+
+    handleFileChange(fakeEvent);
+  };
+
+  /**
+   * Handles drag-over event to allow dropping a file.
+   * Updates state to reflect that a file is being dragged over.
+   *
+   * @param e - The drag event triggered when a file is dragged over the drop zone.
+   */
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true); // <-- this enables the drag-over CSS
+  };
+
   return (
     <div className='comment-section' id='comment-section'>
       <button className='toggle-button' onClick={() => setShowComments(!showComments)}>
@@ -260,8 +310,11 @@ const CommentSection = ({
                 Post
               </button>
             </div>
-
-            <div className='media-actions'>
+            <div
+              className={`media-actions ${isDragging ? 'drag-over' : ''}`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}>
               <button
                 type='button'
                 className='media-button'
@@ -269,6 +322,7 @@ const CommentSection = ({
                 onClick={() => setShowMediaInput(!showMediaInput)}>
                 <FaLink />
               </button>
+
               <input
                 type='file'
                 ref={fileInputRef}

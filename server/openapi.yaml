@@ -1436,9 +1436,8 @@ components:
         - title
         - description
         - user
-        - media
         - community
-        - mediaSize
+        - media
       properties:
         title:
           type: string
@@ -1460,7 +1459,7 @@ components:
           minLength: 1
         mediaSize:
           type: string
-          minLength: 1
+          nullable: true
 
     DatabaseGalleryPost:
       type: object
