@@ -7,6 +7,7 @@ import * as databaseUtil from '../../utils/database.util';
 const saveCommentSpy = jest.spyOn(commentUtil, 'saveComment');
 const addCommentSpy = jest.spyOn(commentUtil, 'addComment');
 const downloadCommentMediaSpy = jest.spyOn(commentUtil, 'downloadCommentMedia');
+const toggleCommentMediaPermissionSpy = jest.spyOn(commentUtil, 'toggleCommentMediaPermission');
 const popDocSpy = jest.spyOn(databaseUtil, 'populateDocument');
 
 describe('POST /addComment', () => {
@@ -763,3 +764,73 @@ describe("GET /downloadCommentMedia/:id", () => {
     expect(response.text).toBe('Error while download media from comment');
   });
 });
+
+describe("POST /toggleMediaPermission", () => {
+  it('should return true when permission was originally false', async () => {
+    const mockReqBody = { 
+      id: '68f0589f28fdad025905af9b', 
+      username: 'testuser' 
+    }
+
+    toggleCommentMediaPermissionSpy.mockResolvedValueOnce(true);
+
+    const response = await supertest(app)
+      .post('/api/comment/toggleMediaPermission')
+      .send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBe(true);
+    expect(commentUtil.toggleCommentMediaPermission).toHaveBeenCalledWith(
+      '68f0589f28fdad025905af9b', 
+      'testuser'
+    );
+  });
+
+  it('should return false when permission was originally true', async () => {
+    const mockReqBody = { 
+      id: '68f0589f28fdad025905af9b', 
+      username: 'testuser' 
+    }
+
+    toggleCommentMediaPermissionSpy.mockResolvedValueOnce(false);
+
+    const response = await supertest(app)
+      .post('/api/comment/toggleMediaPermission')
+      .send(mockReqBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBe(false);
+    expect(commentUtil.toggleCommentMediaPermission).toHaveBeenCalledWith(
+      '68f0589f28fdad025905af9b', 
+      'testuser'
+    );
+  });
+
+  it('should return database error with 500 error if "toggleCommentMediaPermission" method throws an error', async () => {
+    toggleCommentMediaPermissionSpy.mockRejectedValueOnce(new Error('Failed to update commment permissions'));
+
+    const response = await supertest(app)
+      .post('/api/comment/toggleMediaPermission')
+      .send({ 
+        id: '68f0589f28fdad025905af9b', 
+        username: 'testuser' 
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.text).toBe('Error while toggling media permission from question: Failed to update commment permissions');
+  });
+
+  it('should return 500 with generic message when non-Error is thrown', async () => {
+    toggleCommentMediaPermissionSpy.mockRejectedValueOnce({ error: 'Something went wrong' });
+
+    const response = await supertest(app)
+      .post('/api/comment/toggleMediaPermission')
+      .send({ 
+        id: '68f0589f28fdad025905af9b', 
+        username: 'testuser' 
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.text).toBe('Error while toggling media permission from question');
+  });
+})
