@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import QuestionModel from '../../models/questions.model';
-import { saveComment, addComment } from '../../services/comment.service';
+import { saveComment, addComment, downloadCommentMedia } from '../../services/comment.service';
 import { DatabaseComment, DatabaseQuestion, DatabaseAnswer } from '../../types/types';
 import AnswerModel from '../../models/answers.model';
 import {
@@ -131,5 +131,98 @@ describe('Comment model', () => {
         error: `Error when adding comment: Invalid comment`,
       });
     });
+  });
+
+  describe('downloadCommentMedia', () => {
+    test('downloadCommentMedia should return the mediaPath when comment exists and download is permitted', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: true,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = (await downloadCommentMedia('68f0589f28fdad025905af9b')) as string;
+
+      expect(result).toBe('/uploads/media/test-file.jpg');
+      expect(CommentModel.findById).toHaveBeenCalledWith('68f0589f28fdad025905af9b');
+    });
+  })
+
+  test('downloadCommentMedia should return error object when id is not provided', async () => {
+    const result = await downloadCommentMedia('');
+
+    expect(result).toEqual({ error: 'Error when downloading comment media' });
+  });
+
+  test('downloadCommentMedia should return error object when comment is not found', async () => {
+    jest.spyOn(CommentModel, 'findById').mockResolvedValue(null);
+    
+    const result = await downloadCommentMedia('32234');
+
+    expect(result).toEqual({ error: 'Error when downloading comment media' });
+  });
+
+  test('downloadCommentMedia should return error object when comment has no mediaPath', async () => {
+    const mockComment = {
+      _id: '68f0589f28fdad025905af9b',
+      text: 'Test comment',
+      commentBy: 'testuser',
+      commentDateTime: new Date(),
+      mediaPath: undefined,
+      permitDownload: true,
+    };
+
+    jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+    expect(result).toEqual({ error: 'Error when downloading comment media' });
+  });
+
+  test('downloadCommentMedia should return error object when permitDownload is undefined', async () => {
+    const mockComment = {
+      _id: '68f0589f28fdad025905af9b',
+      text: 'Test comment',
+      commentBy: 'testuser',
+      commentDateTime: new Date(),
+      mediaPath: '/uploads/media/test-file.jpg',
+      permitDownload: undefined,
+    };
+
+    jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+    expect(result).toEqual({ error: 'Error when downloading comment media' });
+  });
+
+  test('downloadCommentMedia should return error object when permitDownload is false', async () => {
+    const mockComment = {
+      _id: '68f0589f28fdad025905af9b',
+      text: 'Test comment',
+      commentBy: 'testuser',
+      commentDateTime: new Date(),
+      mediaPath: '/uploads/media/test-file.jpg',
+      permitDownload: false,
+    };
+
+    jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+    expect(result).toEqual({ error: 'Error when downloading comment media' });
+  });
+
+  test('downloadCommentMedia should return error object when findById throws an error', async () => {
+    jest.spyOn(CommentModel, 'findById').mockRejectedValue(new Error('Database error'));
+
+    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+    expect(result).toEqual({ error: 'Error when downloading comment media' });
   });
 });
