@@ -178,7 +178,7 @@ describe('Profile Features - File Uploads', () => {
         .field('username', 'testuser')
         .field('title', 'My 3D Model')
         .field('description', 'A test model')
-        .attach('file', buffer, { filename: 'model.glb', contentType: 'model/gltf-binary' });
+        .field('file', '/userData/testuser/model.glb');
 
       expect(response.status).toBe(200);
       expect(response.body.portfolio).toHaveLength(1);
@@ -221,7 +221,7 @@ describe('Profile Features - File Uploads', () => {
       const response = await supertest(app)
         .post('/api/user/uploadPortfolioModel')
         .field('username', 'testuser')
-        .attach('file', buffer, { filename: 'model.glb' });
+        .field('file', '/userData/testuser/model.glb');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Title is required');
