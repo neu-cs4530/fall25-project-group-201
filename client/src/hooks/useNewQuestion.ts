@@ -148,6 +148,16 @@ const useNewQuestion = () => {
   };
 
   /**
+   * Handles the drag-over event to allow dropping a file.
+   * Prevents the default behavior to enable dropping.
+   *
+   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dragged over the drop zone.
+   */
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  /**
    * Handles changes to the community select dropdown
    *
    * @param {ChangeEvent<HTMLSelectElement>} event - The change event
@@ -164,16 +174,6 @@ const useNewQuestion = () => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  };
-
-  /**
-   * Handles the drag-over event to allow dropping a file.
-   * Prevents the default behavior to enable dropping.
-   *
-   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dragged over the drop zone.
-   */
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
   };
 
   /**
