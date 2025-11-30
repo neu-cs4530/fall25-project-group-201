@@ -248,9 +248,6 @@ const NewQuestion = () => {
             value={mediaUrl}
             onChange={handleMediaUrlChange}
           />
-          <button type='button' onClick={handleAddMedia}>
-            Add Embed
-          </button>
         </div>
 
         <div className='file-upload drag-drop-area' onDrop={handleDrop} onDragOver={handleDragOver}>
