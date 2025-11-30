@@ -153,8 +153,6 @@ describe('Profile Features - File Uploads', () => {
 
   describe('POST /uploadPortfolioModel', () => {
     it('should upload portfolio item with file', async () => {
-      const buffer = Buffer.from('fake-glb-data');
-
       getUserByUsernameSpy.mockResolvedValueOnce({
         ...mockSafeUser,
         portfolio: [],
@@ -216,8 +214,6 @@ describe('Profile Features - File Uploads', () => {
     });
 
     it('should return 400 if title is missing', async () => {
-      const buffer = Buffer.from('fake-data');
-
       const response = await supertest(app)
         .post('/api/user/uploadPortfolioModel')
         .field('username', 'testuser')

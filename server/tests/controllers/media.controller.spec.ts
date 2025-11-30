@@ -41,7 +41,7 @@ jest.mock('multer', () => {
 
   mockMulter.diskStorage = jest.fn();
   mockMulter.memoryStorage = jest.fn();
-  
+
   return mockMulter;
 });
 
@@ -59,10 +59,9 @@ const addMediaSpy = jest.spyOn(mediaService, 'addMedia');
 const deleteMediaSpy = jest.spyOn(mediaService, 'deleteMedia');
 
 describe('POST /create', () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock all fs operations
     (fs.existsSync as jest.Mock).mockReturnValue(true);
     (fs.mkdirSync as jest.Mock).mockReturnValue(undefined);
@@ -91,16 +90,16 @@ describe('POST /create', () => {
 
     expect(response.status).toBe(200);
     // expect(response.body).toEqual(createdMedia);
-    
+
     expect(addMediaSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         user: 'media1_uploader',
         filepathLocation: expect.stringContaining('.txt'),
         filepathLocationClient: expect.stringContaining('media1_uploader'),
-      })
+      }),
     );
   });
-  
+
   test('should return 500 when service returns error', async () => {
     addMediaSpy.mockResolvedValueOnce({ error: 'Database error' });
 
