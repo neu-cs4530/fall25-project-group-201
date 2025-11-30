@@ -413,5 +413,5 @@ describe('Gallery Post Service', () => {
 
       expect(result).toEqual({ error: 'Error when downloading gallery post media' });
     });
-  })
+  });
 });

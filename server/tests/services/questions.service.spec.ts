@@ -684,7 +684,7 @@ describe('Question model', () => {
 
       expect(result).toEqual({ error: 'Error when downloading question media' });
     });
-  })
+  });
 
   describe('toggleQuestionMediaPermission', () => {
     test('toggleQuestionMediaPermission should return true when toggling from false to true', async () => {
@@ -713,7 +713,7 @@ describe('Question model', () => {
       expect(QuestionModel.findByIdAndUpdate).toHaveBeenCalledWith(
         { _id: '68f0589f28fdad025905af9b' },
         { permitDownload: true },
-        { new: true }
+        { new: true },
       );
     });
 
@@ -742,7 +742,7 @@ describe('Question model', () => {
       expect(QuestionModel.findByIdAndUpdate).toHaveBeenCalledWith(
         { _id: '68f0589f28fdad025905af9b' },
         { permitDownload: false },
-        { new: true }
+        { new: true },
       );
     });
 
@@ -768,7 +768,10 @@ describe('Question model', () => {
 
       jest.spyOn(QuestionModel, 'findById').mockResolvedValue(mockQuestion);
 
-      const result = await toggleQuestionMediaPermission('68f0589f28fdad025905af9b', 'differentuser');
+      const result = await toggleQuestionMediaPermission(
+        '68f0589f28fdad025905af9b',
+        'differentuser',
+      );
 
       expect(result).toEqual({ error: 'Error when toggling question media download permissions:' });
     });
@@ -896,5 +899,5 @@ describe('Question model', () => {
 
       expect(result).toEqual({ error: 'Error when toggling question media download permissions:' });
     });
-  })
+  });
 });

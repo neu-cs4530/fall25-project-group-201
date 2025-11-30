@@ -975,9 +975,8 @@ describe('Test questionController', () => {
 
   describe('GET /downloadQuestionMedia/:qid', () => {
     it('should return 400 if ID format is invalid', async () => {
-      const response = await supertest(app)
-        .get('/api/question/downloadQuestionMedia/invalid-id');
-  
+      const response = await supertest(app).get('/api/question/downloadQuestionMedia/invalid-id');
+
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid ID format');
     });
@@ -986,104 +985,107 @@ describe('Test questionController', () => {
       const mockMediaLink = 'https://example.com/media.jpg';
       downloadQuestionMediaSpy.mockResolvedValueOnce(mockMediaLink);
 
-      const response = await supertest(app)
-        .get('/api/question/downloadQuestionMedia/68f0589f28fdad025905af9b');
+      const response = await supertest(app).get(
+        '/api/question/downloadQuestionMedia/68f0589f28fdad025905af9b',
+      );
 
       expect(response.status).toBe(200);
       expect(response.body).toBe(mockMediaLink);
       expect(questionUtil.downloadQuestionMedia).toHaveBeenCalledWith('68f0589f28fdad025905af9b');
     });
 
-    it('should return database error with 500 error if "downloadQuestionMedia" method throws an error', async () => { 
-      downloadQuestionMediaSpy.mockRejectedValueOnce(new Error('Error when downloading question media'));
-  
-      const response = await supertest(app)
-        .get('/api/question/downloadQuestionMedia/68f0589f28fdad025905af9b');
+    it('should return database error with 500 error if "downloadQuestionMedia" method throws an error', async () => {
+      downloadQuestionMediaSpy.mockRejectedValueOnce(
+        new Error('Error when downloading question media'),
+      );
+
+      const response = await supertest(app).get(
+        '/api/question/downloadQuestionMedia/68f0589f28fdad025905af9b',
+      );
       expect(response.status).toBe(500);
-      expect(response.text).toBe('Error while download media from question: Error when downloading question media');
+      expect(response.text).toBe(
+        'Error while download media from question: Error when downloading question media',
+      );
     });
 
     it('should return 500 with generic message when non-Error is thrown', async () => {
-      downloadQuestionMediaSpy.mockRejectedValueOnce({error: `Error while download media from question`});
-  
-      const response = await supertest(app)
-        .get('/api/question/downloadQuestionMedia/68f0589f28fdad025905af9b');
+      downloadQuestionMediaSpy.mockRejectedValueOnce({
+        error: `Error while download media from question`,
+      });
+
+      const response = await supertest(app).get(
+        '/api/question/downloadQuestionMedia/68f0589f28fdad025905af9b',
+      );
       expect(response.status).toBe(500);
       expect(response.text).toBe('Error while download media from question');
     });
-  })
+  });
 
   describe('POST /toggleMediaPermission', () => {
     it('should return true when permission was originally false', async () => {
-      const mockReqBody = { 
-        qid: '68f0589f28fdad025905af9b', 
-        username: 'testuser' 
-      }
-  
+      const mockReqBody = {
+        qid: '68f0589f28fdad025905af9b',
+        username: 'testuser',
+      };
+
       toggleQuestionMediaPermissionSpy.mockResolvedValueOnce(true);
-  
+
       const response = await supertest(app)
         .post('/api/question/toggleMediaPermission')
         .send(mockReqBody);
-  
+
       expect(response.status).toBe(200);
       expect(response.body).toBe(true);
       expect(questionUtil.toggleQuestionMediaPermission).toHaveBeenCalledWith(
-        '68f0589f28fdad025905af9b', 
-        'testuser'
+        '68f0589f28fdad025905af9b',
+        'testuser',
       );
     });
 
     it('should return false when permission was originally true', async () => {
-      const mockReqBody = { 
-        qid: '68f0589f28fdad025905af9b', 
-        username: 'testuser' 
-      }
-  
+      const mockReqBody = {
+        qid: '68f0589f28fdad025905af9b',
+        username: 'testuser',
+      };
+
       toggleQuestionMediaPermissionSpy.mockResolvedValueOnce(false);
-  
+
       const response = await supertest(app)
         .post('/api/question/toggleMediaPermission')
         .send(mockReqBody);
-  
+
       expect(response.status).toBe(200);
       expect(response.body).toBe(false);
       expect(questionUtil.toggleQuestionMediaPermission).toHaveBeenCalledWith(
-        '68f0589f28fdad025905af9b', 
-        'testuser'
+        '68f0589f28fdad025905af9b',
+        'testuser',
       );
     });
 
     it('should return 404 error if "toggleQuestionMediaPermission" method throws an error', async () => {
-      toggleQuestionMediaPermissionSpy.mockRejectedValueOnce(
-        new Error('Permission toggle failed')
-      );
+      toggleQuestionMediaPermissionSpy.mockRejectedValueOnce(new Error('Permission toggle failed'));
 
-      const response = await supertest(app)
-        .post('/api/question/toggleMediaPermission')
-        .send({ 
-          qid: '68f0589f28fdad025905af9b', 
-          username: 'testuser' 
-        });
+      const response = await supertest(app).post('/api/question/toggleMediaPermission').send({
+        qid: '68f0589f28fdad025905af9b',
+        username: 'testuser',
+      });
 
       expect(response.status).toBe(500);
-      expect(response.text).toContain(`Error while toggling media permission from question: Permission toggle failed`);
+      expect(response.text).toContain(
+        `Error while toggling media permission from question: Permission toggle failed`,
+      );
     });
 
     it('should return 500 with generic message when non-Error is thrown', async () => {
-      toggleQuestionMediaPermissionSpy.mockRejectedValueOnce(
-        {error: 'Permission toggle failed'}
-      );
+      toggleQuestionMediaPermissionSpy.mockRejectedValueOnce({ error: 'Permission toggle failed' });
 
-      const response = await supertest(app)
-        .post('/api/question/toggleMediaPermission')
-        .send({ 
-          qid: '68f0589f28fdad025905af9b', 
-          username: 'testuser' 
-        });
+      const response = await supertest(app).post('/api/question/toggleMediaPermission').send({
+        qid: '68f0589f28fdad025905af9b',
+        username: 'testuser',
+      });
 
       expect(response.status).toBe(500);
       expect(response.text).toContain(`Error while toggling media permission from question`);
     });
-  })
+  });
 });

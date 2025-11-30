@@ -1,10 +1,10 @@
-import React from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { render, screen } from '@testing-library/react';
-import QuestionBody from "../../src/components/main/answerPage/questionBody/index";
+import QuestionBody from '../../src/components/main/answerPage/questionBody/index';
 
 jest.mock('../../src/components/main/threeViewport', () => ({
   __esModule: true,
-  default: () => <div data-testid="three-viewport">3D Model</div>,
+  default: () => <div data-testid='three-viewport'>3D Model</div>,
 }));
 
 jest.mock('../../src/hooks/useUserContext', () => ({

@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import QuestionModel from '../../models/questions.model';
-import { saveComment, addComment, downloadCommentMedia, toggleCommentMediaPermission } from '../../services/comment.service';
+import {
+  saveComment,
+  addComment,
+  downloadCommentMedia,
+  toggleCommentMediaPermission,
+} from '../../services/comment.service';
 import { DatabaseComment, DatabaseQuestion, DatabaseAnswer } from '../../types/types';
 import AnswerModel from '../../models/answers.model';
 import {
@@ -160,7 +165,7 @@ describe('Comment model', () => {
 
     test('downloadCommentMedia should return error object when comment is not found', async () => {
       jest.spyOn(CommentModel, 'findById').mockResolvedValue(null);
-      
+
       const result = await downloadCommentMedia('32234');
 
       expect(result).toEqual({ error: 'Error when downloading comment media' });
@@ -224,7 +229,7 @@ describe('Comment model', () => {
 
       expect(result).toEqual({ error: 'Error when downloading comment media' });
     });
-  })
+  });
 
   describe('toggleCommentMediaPermission', () => {
     test('toggleCommentMediaPermission should return true when toggling from false to true', async () => {
@@ -252,7 +257,7 @@ describe('Comment model', () => {
       expect(CommentModel.findByIdAndUpdate).toHaveBeenCalledWith(
         { _id: '68f0589f28fdad025905af9b' },
         { permitDownload: true },
-        { new: true }
+        { new: true },
       );
     });
 
@@ -280,7 +285,7 @@ describe('Comment model', () => {
       expect(CommentModel.findByIdAndUpdate).toHaveBeenCalledWith(
         { _id: '68f0589f28fdad025905af9b' },
         { permitDownload: false },
-        { new: true }
+        { new: true },
       );
     });
 
@@ -322,7 +327,10 @@ describe('Comment model', () => {
 
       jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
 
-      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'differentuser');
+      const result = await toggleCommentMediaPermission(
+        '68f0589f28fdad025905af9b',
+        'differentuser',
+      );
 
       expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
     });
@@ -446,5 +454,5 @@ describe('Comment model', () => {
 
       expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
     });
-  })
+  });
 });

@@ -1,6 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import '@testing-library/jest-dom';
 
-module.exports = {
+export default {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
   testMatch: ['<rootDir>/tests/**/*.test.{ts,tsx}'],
