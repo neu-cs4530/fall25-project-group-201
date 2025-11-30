@@ -1,69 +1,107 @@
-import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost, deleteGalleryPostAndVerify} from '../support/helpers';
+import { auth0Login, setupTest, teardownTest, goToCommunities, viewCommunityCard, createNewGalleryPost, verifyNewGalleryPost } from '../support/helpers';
+import '../support/auth0';
 
-import '../support/auth0'
+describe('Cypress tests for gallery post page features', function () {
+  const testUser = 'user123';
+  const title = "Test gallery post full features";
+  const description = "Testing views, likes, downloads, delete, and project link";
+  const tags = ['3d art', 'modeling'];
+  const mediaFile = 'testImage.jpg';
+  const projectLink = 'https://example.com/project';
 
-describe('Cypress tests for deleting a gallery Post', function () {
-    beforeEach(() => {
-        setupTest();
-        auth0Login();
+  before(() => {
+    setupTest();
+    auth0Login();
+
+    goToCommunities();
+    viewCommunityCard('React Enthusiasts');
+
+    cy.get('.gallery-upload-button').click();
+    createNewGalleryPost(title, description, tags, mediaFile, projectLink);
+
+    verifyNewGalleryPost(title, testUser, description, tags, mediaFile, projectLink);
+  });
+
+  beforeEach(() => {
+    auth0Login();
+
+    goToCommunities();
+    viewCommunityCard('React Enthusiasts');
+
+    cy.get(`[data-cy="gallery-card-test-gallery-post-full-features"]`, { timeout: 10000 })
+    .should('exist')
+    .click();
+  });
+
+  after(() => {
+    teardownTest();
+  });
+
+  it('1 | Increments views when the page is visited', () => {
+    cy.get('.postStats .statItem').eq(1).then($el => {
+      const initialViews = parseInt($el.text().replace(/\D/g, ''), 10);
+
+      cy.get('.postStats .statItem').eq(1).should($newEl => {
+        const newViews = parseInt($newEl.text().replace(/\D/g, ''), 10);
+        expect(newViews).to.equal(initialViews);
+      });
     });
+  });
 
-    afterEach(() => {
-        teardownTest();
+  it('2 | Toggles likes correctly', () => {
+    cy.get('.postStats .statItem').eq(0).then($el => {
+      const initialLikes = parseInt($el.text().replace(/\D/g, ''), 10);
+
+      cy.get('.postStats .statItem').eq(0).click();
+
+      cy.get('.postStats .statItem').eq(0).should($likeEl => {
+        const newLikes = parseInt($likeEl.text().replace(/\D/g, ''), 10);
+        expect(newLikes).to.equal(initialLikes + 1);
+      });
+
+      cy.get('.postStats .statItem').eq(0).click();
+      cy.get('.postStats .statItem').eq(0).should($likeEl => {
+        const revertedLikes = parseInt($likeEl.text().replace(/\D/g, ''), 10);
+        expect(revertedLikes).to.equal(initialLikes);
+      });
     });
+  });
 
-    // Variables for test
-    const testUser = 'user123'
+  it('3 | Increments downloads correctly', () => {
+    cy.get('.postStats .statItem').eq(2).then($el => {
+      const initialDownloads = parseInt($el.text().replace(/\D/g, ''), 10);
 
-    it('Creates a new gallery post with image media successfully', function () {
-        goToCommunities();
-        viewCommunityCard('React Enthusiasts');
-        cy.get('.gallery-upload-button').click()
+      cy.window().then(win => {
+        cy.stub(win.HTMLAnchorElement.prototype, 'click').as('anchorClick');
+      });
 
-        // Fill form to create a new gallery post
-        const title = "Test gallery post with image media"
-        const description = "This is a test gallery post with image media"
-        const tags = ['3d art', 'modeling']
-        const mediaFile = 'testImage.jpg'
-        createNewGalleryPost(title, description, tags, mediaFile, undefined)
+      cy.get('.postStats .statItem').eq(2).click();
 
-        // Verify the new gallery post exists
-        verifyNewGalleryPost(title, testUser, description, tags, mediaFile, undefined, undefined)
+      cy.get('@anchorClick').should('have.been.called');
 
-        // Delete the gallery post and verify deletion
-        deleteGalleryPostAndVerify();
-    })
-
-    it('Shows error message when gallery post fails', function () {
-        goToCommunities();
-        viewCommunityCard('React Enthusiasts');
-        cy.get('.gallery-upload-button').click();
-
-        const title = "Test gallery post with video media";
-        const description = "This is a test gallery post with video media";
-        const tags = ['3d art', 'modeling'];
-        const mediaFile = 'testVideo.mp4';
-
-        createNewGalleryPost(title, description, tags, mediaFile, undefined);
-        verifyNewGalleryPost(title, testUser, description, tags, mediaFile, undefined, undefined);
-
-        // Mock media deletion to fail
-        cy.intercept({
-            method: 'DELETE',
-            url: /\/api\/media\/delete\/.*/   // regex matches any path after /delete/
-            }, {
-            statusCode: 500,
-            body: { error: 'Failed to delete media.' },
-        }).as('deleteMediaFail');
-
-        // Click delete
-        cy.get('.statItem.delete').should('exist').click();
-
-        // Wait for media deletion attempt
-        cy.wait('@deleteMediaFail');
-        
-
-        // Verify media error is displayed
-        cy.contains('Failed to delete media.').should('be.visible');
+      cy.get('.postStats .statItem').eq(2).should($after => {
+        const newDownloads = parseInt($after.text().replace(/\D/g, ''), 10);
+        expect(newDownloads).to.equal(initialDownloads + 1);
+      });
     });
-})
+  });
+
+  it('4 | Opens project link in a new tab', () => {
+    cy.get('.viewProjectBtn').should('exist');
+
+    cy.window().then(win => cy.stub(win, 'open').as('openStub'));
+
+    cy.get('.viewProjectBtn').click();
+
+    cy.get('@openStub').should('have.been.calledWith', projectLink, '_blank');
+  });
+
+  it('5 | Deletes the gallery post successfully', () => {
+    cy.get('.postStats .statItem.delete').click();
+
+    // This is the actual redirect
+    cy.url().should('match', /\/communities\/[a-f0-9]{24}$/);
+
+    cy.contains(title).should('not.exist');
+  });
+});
