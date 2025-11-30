@@ -18,6 +18,7 @@ import {
   fetchAndIncrementGalleryPostViewsById,
   toggleGalleryPostLikeById,
   fetchAndIncrementGalleryPostDownloadsById,
+  downloadGalleryPostMedia,
 } from '../../services/gallerypost.service';
 import { ObjectId } from 'mongodb';
 
@@ -339,4 +340,78 @@ describe('Gallery Post Service', () => {
       expect('error' in result).toBe(true);
     });
   });
+
+  describe('downloadGalleryPostMedia', () => {
+    test('downloadGalleryPostMedia should return the media when gallery post exists and download is permitted', async () => {
+      const mockGalleryPost = {
+        _id: '68f0589f28fdad025905af9b',
+        title: 'Test Gallery Post',
+        description: 'Test description',
+        postedBy: 'testuser',
+        postDateTime: new Date(),
+        media: '/uploads/media/test-file.jpg',
+        permitDownload: true,
+      };
+
+      jest.spyOn(GalleryPostModel, 'findById').mockResolvedValue(mockGalleryPost);
+
+      const result = await downloadGalleryPostMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toBe('/uploads/media/test-file.jpg');
+      expect(GalleryPostModel.findById).toHaveBeenCalledWith('68f0589f28fdad025905af9b');
+    });
+
+    test('downloadGalleryPostMedia should return error object when gallery post is not found', async () => {
+      jest.spyOn(GalleryPostModel, 'findById').mockResolvedValue(null);
+
+      const result = await downloadGalleryPostMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading gallery post media' });
+      expect(GalleryPostModel.findById).toHaveBeenCalledWith('68f0589f28fdad025905af9b');
+    });
+
+    test('downloadGalleryPostMedia should return error object when permitDownload is undefined', async () => {
+      const mockGalleryPost = {
+        _id: '68f0589f28fdad025905af9b',
+        title: 'Test Gallery Post',
+        description: 'Test description',
+        postedBy: 'testuser',
+        postDateTime: new Date(),
+        media: '/uploads/media/test-file.jpg',
+        permitDownload: undefined,
+      };
+
+      jest.spyOn(GalleryPostModel, 'findById').mockResolvedValue(mockGalleryPost);
+
+      const result = await downloadGalleryPostMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading gallery post media' });
+    });
+
+    test('downloadGalleryPostMedia should return error object when permitDownload is false', async () => {
+      const mockGalleryPost = {
+        _id: '68f0589f28fdad025905af9b',
+        title: 'Test Gallery Post',
+        description: 'Test description',
+        postedBy: 'testuser',
+        postDateTime: new Date(),
+        media: '/uploads/media/test-file.jpg',
+        permitDownload: false,
+      };
+
+      jest.spyOn(GalleryPostModel, 'findById').mockResolvedValue(mockGalleryPost);
+
+      const result = await downloadGalleryPostMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading gallery post media' });
+    });
+
+    test('downloadGalleryPostMedia should return error object when findById throws an error', async () => {
+      jest.spyOn(GalleryPostModel, 'findById').mockRejectedValue(new Error('Database error'));
+
+      const result = await downloadGalleryPostMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading gallery post media' });
+    });
+  })
 });
