@@ -255,8 +255,6 @@
 .mediaWrapper img,
 .mediaWrapper canvas {
   width: auto;
-  max-width: 100%;
-  height: auto;
   max-height: 600px;
   border-radius: 8px;
   object-fit: contain;
