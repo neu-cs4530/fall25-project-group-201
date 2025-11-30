@@ -1436,8 +1436,8 @@ components:
         - title
         - description
         - user
-        - media
         - community
+        - media
       properties:
         title:
           type: string
@@ -1457,6 +1457,9 @@ components:
         thumbnailMedia:
           type: string
           minLength: 1
+        mediaSize:
+          type: string
+          nullable: true
 
     DatabaseGalleryPost:
       type: object

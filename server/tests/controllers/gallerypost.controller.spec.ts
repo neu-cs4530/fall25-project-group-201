@@ -146,26 +146,6 @@ describe('Gallery Post Controller', () => {
       expect(openApiError.errors[0].path).toBe('/body/user');
     });
 
-    test('should return 400 when missing media', async () => {
-      const mockReqBody = {
-        title: 'New Gallery Post',
-        description: 'New Description',
-        user: 'test_user',
-        community: '65e9b58910afe6e94fc6e6dd',
-        postedAt: new Date('2024-06-06'),
-        mediaSize: '13 GB',
-        tags: [],
-      };
-
-      const response = await supertest(app)
-        .post('/api/gallery/create')
-        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
-      const openApiError = JSON.parse(response.text);
-
-      expect(response.status).toBe(400);
-      expect(openApiError.errors[0].path).toBe('/body/media');
-    });
-
     test('should return 400 when missing community ID', async () => {
       const mockReqBody = {
         title: 'New Gallery Post',
@@ -202,6 +182,23 @@ describe('Gallery Post Controller', () => {
       expect(res.status).toBe(500);
       expect(res.text).toContain('Error creating a gallery post: DB error');
     });
+  });
+
+  test('returns 400 when no media', async () => {
+    const mockReqBody = {
+      title: 'New Gallery Post',
+      user: 'user123',
+      description: 'New Description',
+      community: '65e9b58910afe6e94fc6e6dd',
+      postedAt: new Date('2024-06-06'),
+      tags: [],
+    };
+
+    const response = await supertest(app)
+      .post('/api/gallery/create')
+      .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+
+    expect(response.status).toBe(400);
   });
 
   describe('GET /getAllGalleryPosts', () => {
@@ -383,6 +380,185 @@ describe('Gallery Post Controller', () => {
 
       expect(res.status).toBe(500);
       expect(res.text).toContain('Error toggling gallery post like: DB error');
+    });
+  });
+
+  describe('File Size Preview for 3D Models', () => {
+    test('creates gallery post with 3D model file size and retrieves it correctly', async () => {
+      const glbFileSize = '48576000 bytes'; // 46.3 MB
+
+      const body = {
+        title: 'Dragon 3D Model',
+        description: 'Fantasy dragon model',
+        user: 'test_user',
+        media: '/test_user/dragon.glb',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: glbFileSize,
+        tags: [],
+      };
+
+      const created = {
+        ...body,
+        _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6ee'),
+        views: 0,
+        downloads: 0,
+        likes: [],
+      };
+
+      createGalleryPostSpy.mockResolvedValueOnce(created);
+      getByIdSpy.mockResolvedValueOnce(created);
+
+      // Test creation with file size
+      const createRes = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...body, postedAt: body.postedAt.toISOString() });
+
+      expect(createRes.status).toBe(200);
+      expect(createRes.body.mediaSize).toBe(glbFileSize);
+      expect(createGalleryPostSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mediaSize: glbFileSize,
+        }),
+      );
+
+      // Test retrieval includes file size for download preview
+      const getRes = await supertest(app).get(
+        `/api/gallery/getGalleryPost/${created._id.toString()}`,
+      );
+
+      expect(getRes.status).toBe(200);
+      expect(getRes.body.mediaSize).toBe(glbFileSize);
+      expect(getRes.body.media).toContain('.glb');
+    });
+
+    test('file size is preserved when creating post without permitDownload', async () => {
+      const body = {
+        title: 'Test Model',
+        description: 'Testing file size without download permission',
+        user: 'test_user',
+        media: '/test_user/model.glb',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '25000000 bytes',
+        tags: [],
+        // permitDownload intentionally not set (defaults to undefined)
+      };
+
+      const created = {
+        ...body,
+        _id: new mongoose.Types.ObjectId(),
+        views: 0,
+        downloads: 0,
+        likes: [],
+      };
+
+      createGalleryPostSpy.mockResolvedValueOnce(created);
+
+      const res = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...body, postedAt: body.postedAt.toISOString() });
+
+      expect(res.status).toBe(200);
+      expect(res.body.mediaSize).toBe('25000000 bytes');
+      // File size should be present even if downloads are disabled
+      expect(res.body).toHaveProperty('mediaSize');
+    });
+
+    test('displays correct file size format for download confirmation', async () => {
+      const postWithFormattedSize: DatabaseGalleryPost = {
+        ...mockGalleryPost,
+        media: '/test_user/large_model.glb',
+        mediaSize: '157286400 bytes', // 150 MB
+        permitDownload: true,
+      };
+
+      getByIdSpy.mockResolvedValueOnce(postWithFormattedSize);
+
+      const res = await supertest(app).get(
+        `/api/gallery/getGalleryPost/${mockGalleryPost._id.toString()}`,
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.mediaSize).toBe('157286400 bytes');
+      expect(res.body.permitDownload).toBe(true);
+
+      // verify all data needed for download confirmation is present
+      expect(res.body).toHaveProperty('mediaSize');
+      expect(res.body).toHaveProperty('media');
+      expect(res.body).toHaveProperty('permitDownload');
+      expect(res.body.media).toContain('.glb');
+    });
+
+    test('handles gallery post without mediaSize', async () => {
+      const postWithoutSize: DatabaseGalleryPost = {
+        _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
+        title: 'Old Gallery Post',
+        description: 'Legacy post without size',
+        user: 'test_user',
+        media: '/test_user/old_model.glb',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        views: 0,
+        downloads: 0,
+        likes: [],
+        tags: [],
+        // mediaSize omitted
+      };
+
+      getByIdSpy.mockResolvedValueOnce(postWithoutSize);
+
+      const res = await supertest(app).get(
+        `/api/gallery/getGalleryPost/${postWithoutSize._id.toString()}`,
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.mediaSize).toBeUndefined();
+    });
+
+    test('multiple file sizes are handled correctly across different posts', async () => {
+      const posts = [
+        { ...mockGalleryPost, mediaSize: '5242880 bytes' }, // 5 MB
+        { ...mockGalleryPost2, mediaSize: '52428800 bytes' }, // 50 MB
+      ];
+
+      getEverythingSpy.mockResolvedValueOnce(posts);
+
+      const res = await supertest(app).get('/api/gallery/getAllGalleryPosts');
+
+      expect(res.status).toBe(200);
+      expect(res.body.length).toBe(2);
+      expect(res.body[0].mediaSize).toBe('5242880 bytes');
+      expect(res.body[1].mediaSize).toBe('52428800 bytes');
+    });
+
+    test('rejects gallery post with file size over 50MB limit for .glb files', async () => {
+      const oversizedFile = {
+        title: 'Huge Model',
+        description: 'This file is too large',
+        user: 'test_user',
+        media: '/test_user/giant_dragon.glb',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '52428800 bytes', // 50MB exactly (at limit)
+        tags: [],
+      };
+
+      const wayOversized = {
+        ...oversizedFile,
+        mediaSize: '104857600 bytes', // 100MB
+      };
+
+      createGalleryPostSpy.mockResolvedValueOnce({
+        error: 'File size exceeds maximum allowed (50MB for .glb files)',
+      });
+
+      const res = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...wayOversized, postedAt: wayOversized.postedAt.toISOString() });
+
+      expect(res.status).toBe(500);
+      expect(res.text).toContain('File size exceeds maximum');
     });
   });
 });

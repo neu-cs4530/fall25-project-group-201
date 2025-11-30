@@ -18,8 +18,11 @@ const ProfileSettings: React.FC = () => {
   const {
     userData,
     setUserData,
+    loading,
     editBioMode,
     newBio,
+    customFont,
+    handleUpdateCustomFont,
     newPassword,
     confirmNewPassword,
     showConfirmation,
@@ -131,6 +134,46 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className='profile-settings'>
+        <div
+          className='profile-card'
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '400px',
+          }}>
+          <div style={{ textAlign: 'center' }}>
+            <div
+              className='spinner'
+              style={{
+                border: '4px solid #f3f3f3',
+                borderTop: '4px solid #3b82f6',
+                borderRadius: '50%',
+                width: '50px',
+                height: '50px',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 1rem',
+              }}></div>
+            <p>Loading profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className='profile-settings'>
+        <div className='profile-card'>
+          <p>No user data found. Make sure the username parameter is correct.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className='profile-settings'
@@ -146,7 +189,7 @@ const ProfileSettings: React.FC = () => {
         <h2>Profile</h2>
         <Toaster position='top-center' />
 
-        {/* Banner & Profile Picture Section - INTERACTIVE */}
+        {/* Banner & Profile Picture Section */}
         <div className='profile-header-section'>
           <div
             className='profile-banner-placeholder'
@@ -256,8 +299,6 @@ const ProfileSettings: React.FC = () => {
               <strong>Date Joined:</strong>{' '}
               {userData.dateJoined ? new Date(userData.dateJoined).toLocaleDateString() : 'N/A'}
             </p>
-
-            {/* ---- NEW SECTIONS START HERE ---- */}
 
             {/* External Links Section */}
 
@@ -531,7 +572,7 @@ const ProfileSettings: React.FC = () => {
               </div>
             )}
 
-            {/* Portfolio Grid Section - INTERACTIVE */}
+            {/* Portfolio Grid Section */}
             <div
               style={{
                 display: 'flex',
@@ -552,10 +593,8 @@ const ProfileSettings: React.FC = () => {
             <div className='portfolio-grid-section'>
               {userData.portfolio && userData.portfolio.length > 0 ? (
                 userData.portfolio.map((item, index) => {
-                  // Changed from portfolioModels
-                  const mediaUrl = item.mediaUrl; // Get from item object
-                  const thumbnailUrl = item.thumbnailUrl; // Get from item object
-
+                  const mediaUrl = item.mediaUrl;
+                  const thumbnailUrl = item.thumbnailUrl;
                   // Determine media type
                   const isGlbModel =
                     mediaUrl.toLowerCase().endsWith('.glb') ||
@@ -630,7 +669,7 @@ const ProfileSettings: React.FC = () => {
                         </>
                       )}
 
-                      {/* Show thumbnail if available (prioritize thumbnails for ALL media) */}
+                      {/* Show thumbnail if available */}
                       {thumbnailUrl ? (
                         <img
                           src={thumbnailUrl}
@@ -642,7 +681,7 @@ const ProfileSettings: React.FC = () => {
                           }}
                         />
                       ) : isGlbModel ? (
-                        // 3D model without thumbnail (fallback to viewer)
+                        // 3D model without thumbnail (fallback)
                         <div style={{ width: '100%', height: '200px' }}>
                           <PortfolioModelViewer modelUrl={mediaUrl} />
                         </div>
@@ -711,7 +750,7 @@ const ProfileSettings: React.FC = () => {
               )}
             </div>
 
-            {/* Resume Section - INTERACTIVE */}
+            {/* Resume Section */}
             <h4>Resume / CV</h4>
             <div className='resume-section'>
               {userData.resumeFile ? (
@@ -762,7 +801,7 @@ const ProfileSettings: React.FC = () => {
               )}
             </div>
 
-            {/* Testimonials Section - ADD THIS ENTIRE BLOCK */}
+            {/* Testimonials Section */}
             <h4>Testimonials</h4>
             {!canEditProfile && currentUser.username && (
               <WriteTestimonialButton
@@ -781,7 +820,7 @@ const ProfileSettings: React.FC = () => {
               onApprove={handleApproveTestimonial}
             />
 
-            {/* Theme Customization - INTERACTIVE */}
+            {/* Theme Customization */}
 
             {canEditProfile && (
               <>
@@ -946,34 +985,8 @@ const ProfileSettings: React.FC = () => {
                   </label>
                   <select
                     className='input-text'
-                    value={userData.customFont || 'Inter'}
-                    onChange={async e => {
-                      const newFont = e.target.value;
-                      try {
-                        const res = await fetch(
-                          `${import.meta.env.VITE_SERVER_URL}/api/user/updateCustomFont`,
-                          {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              username: userData.username,
-                              customFont: newFont,
-                            }),
-                          },
-                        );
-
-                        if (res.ok) {
-                          const updatedUser = await res.json();
-                          // Update local state instead of reloading
-                          setUserData(updatedUser); // This will update userData
-                          toast.success('Font updated!');
-                        } else {
-                          toast.error('Failed to update font');
-                        }
-                      } catch (err) {
-                        toast.error('Failed to update font');
-                      }
-                    }}
+                    value={customFont}
+                    onChange={e => handleUpdateCustomFont(e.target.value)}
                     style={{ width: '100%', marginTop: '0.5rem' }}>
                     <option value='Inter'>Inter (Default)</option>
                     <option value='Roboto'>Roboto</option>

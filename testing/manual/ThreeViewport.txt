@@ -1,4 +1,11 @@
-Manual tests done for 3D Viewport: 
+Manual tests done for 3D Viewport: Orbit controls, Orthogonal/Perspective toggling, Camera resetting
+
+Complete manual testing for the 3D viewport is not possible as it is difficult to test how an object
+in 3D space has been manupilated. For this visual confirmation, these manual tests have been done, 
+accompanied by manual testing in videos - https://drive.google.com/drive/folders/14h7fymK3txjeT_5irAnuMGz31dY5k1vg?usp=sharing.
+
+Despite this, cypress has been used to test key presses, mouse dragging, button clicking, and 
+camera reference hyperlinks. The effects of these actions can be seen in the cypress testing
 
 Orbit Controls (rotating, zooming, panning, tilting) - /new/question, /question/:qid, commentSection, 
 gallery:postId, new/galleryPost/:communityID, /user/:username/portfolio/:index, 
@@ -109,8 +116,8 @@ gallery:postId, new/galleryPost/:communityID, /user/:username/portfolio/:index,
         - S key pressed
             => [EXPECTED] 3D model tilts down
             => [ACTUAL] 3D model tilts down
-        - Test: When the user clicks and drags, uses the scroll wheel, clicks arrow keys or clicks WASD keys, 
-        the 3D viewport behaves as expected (rotation, zooming, panning, tilting)
+    - Test: When the user clicks and drags, uses the scroll wheel, clicks arrow keys or clicks WASD keys, 
+    the 3D viewport behaves as expected (rotation, zooming, panning, tilting)
             - Clicked 'Choose a file' button and selected a .glb file 
                 => [EXPECTED] 3D model loaded into viewport 
                 => [ACTUAL] 3D model loaded into viewport 
@@ -188,4 +195,44 @@ new/galleryPost/:communityID, /user/:username/portfolio/:index, /user/:username/
         - Clicked reset camera button
             => [EXPECTED] 3D model still has perspective projection and no perspective effect, and camera is reset
             => [ACTUAL] 3D model still has perspective projection and no perspective effect, and camera is reset
-   
+
+Camera Resetting - /new/question, /question/:qid, commentSection, gallery:postId, 
+new/galleryPost/:communityID, /user/:username/portfolio/:index, /user/:username/upload-portfolio
+    - Test: When the 3D viewport loads, the 3D model as orthogonal projection
+        - Clicked 'Choose a file' button and selected a .glb file 
+            => [EXPECTED] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+            => [ACTUAL] 3D model loaded into viewport, with orthogonal projection, and no perspective effect
+        - Dragged on mouse pad from top to bottom
+            => [EXPECTED] Camera zooms out from model
+            => [ACTUAL] Camera zooms out from model
+        - Clicked camera reset button
+            => [EXPECTED] Camera and scene resets to original position
+            => [ACTUAL] Camera and scene resets to original position
+        - A key pressed
+            => [EXPECTED] 3D model tilts to the left (the user's left)
+            => [ACTUAL] 3D model tilts to the left (the user's left)
+        - Left arrow key pressed
+            => [EXPECTED] Camera moves to the left, making it seem like the objects move to the right
+            => [ACTUAL] 3D Camera moves to the left, making it seem like the objects move to the right
+        - Clicked and dragged mouse around
+            => [EXPECTED] 3D scene rotates as expected
+            => [ACTUAL] 3D scene rotates as expected
+        - Clicked camera reset button
+            => [EXPECTED] Camera and scene resets to original position
+            => [ACTUAL] Camera and scene resets to original position
+        - Dragged on mouse pad from top to bottom
+            => [EXPECTED] Camera zooms out from model
+            => [ACTUAL] Camera zooms out from model
+        - W key pressed
+            => [EXPECTED] 3D model tilts up
+            => [ACTUAL] 3D model tilts up
+        - Dragged on mouse pad from bottom to top
+            => [EXPECTED] Camera zooms into model
+            => [ACTUAL] Camera zooms into model
+        - S key pressed
+            => [EXPECTED] 3D model tilts down
+            => [ACTUAL] 3D model tilts down
+        - Clicked camera reset button
+            => [EXPECTED] Camera and scene resets to original position
+            => [ACTUAL] Camera and scene resets to original position
+

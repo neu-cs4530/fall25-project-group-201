@@ -34,11 +34,36 @@ const GalleryPostPage = () => {
   const vimeoId = getVimeoVideoId(url);
   const formatTag = (tag: string) => tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
+  /**
+   * Handles logic when download button is clicked, requesting confirmation
+   * @param mediaSize of the media
+   * @param extension of the media file
+   * @param id of the gallery post
+   * @returns
+   */
   const handleDownload = async (mediaSize: string, extension: string, id: string) => {
-    const confirmed = window.confirm(
-      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-    );
-    if (!confirmed) return;
+    const [valueStr, unit] = mediaSize.split(' ');
+    const value = parseFloat(valueStr);
+
+    // Convert to bytes for consistent comparison
+    const sizeInBytes =
+      unit.toUpperCase() === 'KB'
+        ? value * 1024
+        : unit.toUpperCase() === 'MB'
+          ? value * 1024 * 1024
+          : unit.toUpperCase() === 'GB'
+            ? value * 1024 * 1024 * 1024
+            : value; // assume already bytes if no unit
+
+    // Threshold (example: 10 MB)
+    const thresholdBytes = 10 * 1024 * 1024;
+
+    if (sizeInBytes > thresholdBytes) {
+      const confirmed = window.confirm(
+        `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+      );
+      if (!confirmed) return;
+    }
 
     try {
       const mediaPath = await getGalleryPostMedia(id);
@@ -127,6 +152,13 @@ const GalleryPostPage = () => {
 
             <p className='postDescription'>{post.description}</p>
           </div>
+
+          {post.mediaSize && post.permitDownload && (
+            <div className='media-file-info'>
+              <span className='infoChip'>{ext}</span>
+              <span className='infoChip'>{post.mediaSize}</span>
+            </div>
+          )}
 
           <div className='mediaWrapper'>
             {is3D && <ThreeViewport modelPath={post.media} />}

@@ -186,6 +186,7 @@ const ThreeViewport = ({
                   src={isOrthoCameraMode ? perspIcon : orthoIcon}
                   alt='Toggle View'
                   className='icon-button'
+                  id='#ortho-persp-button'
                   onClick={handleCameraModeToggle}
                 />
                 <span className={`tooltip-text ${visibleTooltip === 'toggle' ? 'visible' : ''}`}>

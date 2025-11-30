@@ -1,3 +1,5 @@
+import "../support/auth0"
+
 /**
  * Test utility functions for Cypress tests
  * Provides shared helper functions for common test patterns like authentication, navigation, and data setup
@@ -10,12 +12,15 @@
  */
 export const loginUser = (username: string, password: string = 'securePass123!') => {
   cy.visit('http://localhost:4530');
-  cy.contains('Welcome to FakeStackOverflow!');
-  cy.get('#username-input').type(username);
-  cy.get('#password-input').type(password);
-  cy.contains('Submit').click();
-  // Wait for redirect to home page
-  cy.url().should('include', '/home');
+  cy.visit('/')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
 };
 
 /**
@@ -31,6 +36,18 @@ export const seedDatabase = () => {
 export const cleanDatabase = () => {
   cy.exec('npx ts-node ../server/seedData/deleteDB.ts ' + Cypress.env('MONGODB_URI'));
 };
+
+export const auth0Login = () => {
+  cy.visit('/')
+  cy.contains('button', 'Log In or Sign Up').click()
+
+  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
+      // Fill in the login form
+      cy.get('input[name="username"], input[name="email"]').type('user123')
+      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
+      cy.get('button[type="submit"]:visible').click()
+  })
+}
 
 export const createNewGalleryPost = (
   title?: string,
@@ -163,6 +180,12 @@ export const verifyNewGalleryPost = (
   }
 };
 
+export const deleteGalleryPostAndVerify = (
+) => {
+  cy.get('.statItem.delete').should('exist').click()
+  cy.contains('No gallery posts yet!')
+};
+
 /**
  * Sets up the database before each test
  */
@@ -178,26 +201,12 @@ export const teardownTest = () => {
   cleanDatabase();
 };
 
-export const auth0Login = () => {
-  cy.visit('/')
-  cy.contains('Welcome ')
-  cy.contains('button', 'Log In or Sign Up').click()
-
-  cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
-      // Fill in the login form
-      cy.get('input[name="username"], input[name="email"]').type('user123')
-      cy.get('input[name="password"]').type('securePass123!', { log: false }) // hide in logs
-      cy.get('button[type="submit"]:visible').click()
-  })
-}
-
 /**
  * Auth0 login specifically for profile settings tests
  * Has longer waits and better error handling for profile page navigation
  */
 export const auth0LoginUserProfile = () => {
   cy.visit('/', { timeout: 30000 })
-  cy.contains('Welcome ', { timeout: 10000 })
   cy.contains('button', 'Log In or Sign Up', { timeout: 10000 }).click()
 
   cy.origin('https://dev-yipqv2u1k7drpppn.us.auth0.com', () => {
@@ -212,14 +221,11 @@ export const auth0LoginUserProfile = () => {
     cy.get('button[type="submit"]:visible').click()
     
     // Give Auth0 time to process - avoid rate limiting
-    cy.wait(5000)
+    cy.wait(2000)
   })
   
   // Wait for redirect back to our app with longer timeout
   cy.url({ timeout: 30000 }).should('include', 'localhost:4530')
-  
-  // Give the app time to process the Auth0 callback
-  cy.wait(2000)
 }
 
 /**
@@ -236,12 +242,98 @@ export const goToAskQuestion = () => {
  * @param text - Question content
  * @param tags - Space-separated tags
  */
-export const createQuestion = (title: string, text: string, tags: string) => {
+export const createQuestion = (title: string, text: string, tags: string, media?: string) => {
   goToAskQuestion();
-  cy.get('#formTitleInput').type(title);
-  cy.get('#formTextInput').type(text);
-  cy.get('#formTagInput').type(tags);
-  cy.contains('Post Question').click();
+  cy.get('#title').type(title);
+  cy.get('#text').type(text);
+  cy.get('#tags').type(tags);
+
+  if (media) {
+    cy.get('.file-upload').click()
+        cy.get('input[type="file"]').should('exist')
+            .selectFile(`cypress/fixtures/${media}`, { force: true });
+  }
+
+  cy.wait(3000);
+
+  cy.get('.submit-btn').click();
+};
+
+export const test3DViewportOrbitControls = () => {
+  cy.get('.viewport-canvas canvas')
+      .should('exist');
+
+  // Rotation
+  cy.get('.viewport-canvas canvas')
+      .trigger('mousedown', { clientX: 100, clientY: 100, button: 0 })
+      .trigger('mousemove', { clientX: 200, clientY: 150, button: 0 })
+      .trigger('mousemove', { clientX: 250, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 300, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 400, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 300, clientY: 200, button: 0 })
+      .trigger('mousemove', { clientX: 50, clientY: 300, button: 0 })
+      .trigger('mousemove', { clientX: 5, clientY: 400, button: 0 })
+      .trigger('mousemove', { clientX: 100, clientY: 200, button: 0 })
+      .trigger('mouseup', { force: true });
+
+  // Panning 
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowUp' });
+  cy.wait(150);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowUp' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowDown' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowDown' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowLeft' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowLeft' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'ArrowRight' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'ArrowRight' });
+
+  // Tilting 
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'w' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'w' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'a' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'a' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 's' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 's' });
+  cy.get('.viewport-canvas').trigger('keydown', { key: 'd' });
+  cy.wait(200);
+  cy.get('.viewport-canvas').trigger('keyup', { key: 'd' });
+
+  // Zooming
+  cy.get('canvas').trigger('wheel', { deltaY: -1000 });
+  cy.wait(300);
+  cy.get('canvas').trigger('wheel', { deltaY: 1000 });
+  cy.wait(300);
+  cy.get('canvas').trigger('wheel', { deltaY: -1000 });
+  cy.wait(300);
+};
+
+export const test3DViewportOrthoPerspToggle = () => {
+  cy.get('.viewport-canvas').should('exist')
+  cy.get('img[alt="Toggle View"]').as('toggleButton')
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /perspIcon\.png$/);
+
+  // Toggle to perspective
+  cy.get('@toggleButton').click()
+  cy.wait(500);
+  cy.get('@toggleButton').should('have.attr', 'src').and('match', /orthoIcon\.png$/);
+
+  // Toggle to orthogonal
+  cy.get('@toggleButton').click()
 };
 
 /**
@@ -252,6 +344,14 @@ export const goToAnswerQuestion = (questionTitle: string) => {
   cy.contains(questionTitle).click();
   cy.contains('Answer Question').click();
   cy.url().should('include', '/new/answer');
+};
+
+export const goToQuestion = (questionTitle: string) => {
+  cy.contains(questionTitle).click();
+};
+
+export const goToComments = () => {
+  cy.contains("Show Comments").click();
 };
 
 /**
@@ -566,4 +666,177 @@ export const verifyCollectionPageDetails = (name: string, username?: string) => 
   if (username) {
     cy.get('.collection-meta').should('contain', username);
   }
+};
+
+/**
+ * Opens a question by title on the home page and verifies the AnswerPage loads.
+ * @param title - The question title to open
+ */
+export const openCreatedQuestion = (title: string) => {
+  cy.contains('.postTitle', title)
+    .should('exist')
+    .click();
+
+  // Wait for AnswerPage to render
+  cy.get('.answer_question_text', { timeout: 8000 }).should('be.visible');
+};
+
+
+/**
+ * Generic verification that the AnswerPage displays correct content.
+ * 
+ * @param params - Fields you want to verify:
+ *  - text: question body text
+ *  - author: expected username
+ *  - title: expected title
+ */
+export const verifyAnswerPageContent = (params: {
+  title?: string;
+  text?: string;
+  author?: string;
+}) => {
+  if (params.title) {
+    cy.get('.answer_question_title').should('contain.text', params.title);
+  }
+
+  if (params.text) {
+    cy.get('.answer_question_text').should('contain.text', params.text);
+  }
+
+  if (params.author) {
+    cy.get('.question_author').should('contain.text', params.author);
+  }
+};
+
+
+/**
+ * Uploads media on the Ask Question page.
+ * Handles embed URLs, image/video uploads, and 3D model uploads.
+ *
+ * @param mediaType - "image" | "video" | "3d" | "youtube" | "vimeo"
+ * @param value - File name or embed URL
+ */
+export const uploadMedia = (
+  mediaType: "image" | "video" | "3d" | "youtube" | "vimeo",
+  value: string
+) => {
+  if (mediaType === "youtube" || mediaType === "vimeo") {
+    cy.get('.media-inputs input[type="text"]').type(value);
+    cy.get('.media-inputs button').contains('Add Embed').click();
+
+    // Preview should contain iframe
+    cy.get('.embed-preview iframe').should('be.visible');
+  }
+
+  if (mediaType === "image" || mediaType === "video" || mediaType === "3d") {
+    cy.get('input[type="file"]').attachFile(value);
+
+    if (mediaType === "image") {
+      cy.get('.uploaded-preview img').should('be.visible');
+    }
+
+    if (mediaType === "video") {
+      cy.get('.uploaded-preview video').should('be.visible');
+    }
+
+    if (mediaType === "3d") {
+      cy.get('.model-preview').should('be.visible');
+    }
+  }
+};
+
+/**
+ * Verifies that media is rendered correctly on the AnswerPage.
+ *
+ * @param mediaType - "image" | "video" | "3d" | "youtube" | "vimeo"
+ */
+export const verifyMediaRendered = (
+  mediaType: "image" | "video" | "3d" | "youtube" | "vimeo"
+) => {
+  if (mediaType === "youtube") {
+    cy.get('.iframe-wrapper iframe')
+      .should('have.attr', 'src')
+      .and('include', 'youtube.com/embed');
+  }
+
+  if (mediaType === "vimeo") {
+    cy.get('.iframe-wrapper iframe')
+      .should('have.attr', 'src')
+      .and('include', 'player.vimeo.com');
+  }
+
+  if (mediaType === "image") {
+    cy.get('.question-media img').should('be.visible');
+  }
+
+  if (mediaType === "video") {
+    cy.get('video source')
+      .should('exist')
+      .should('have.attr', 'src')
+      .and('include', '.mp4');
+  }
+
+  if (mediaType === "3d") {
+    cy.get('.three-wrapper canvas').should('exist');
+  }
+};
+
+/**
+ * Verifies the content and metadata of a comment block in the UI.
+ *
+ * @param {Object} params - Parameters for verifying the comment block.
+ * @param {number} params.index - Index of the comment in the list of comment items.
+ * @param {Object} params.expected - Expected values for the comment.
+ * @param {string} params.expected.text - Expected text content of the comment.
+ * @param {string} params.expected.username - Expected username of the comment author.
+ * @param {"image"|"video"|"model"} [params.expected.mediaType] - Optional type of media attached to the comment.
+ * @param {string} [params.expected.mediaUrl] - Optional expected URL for the media.
+ * @param {boolean} [params.expected.canDelete] - Optional flag indicating if the delete button should be visible.
+ */
+export const verifyCommentBlock = ({
+  index,
+  expected,
+}: {
+  index: number;
+  expected: {
+    text: string;
+    username: string;
+    mediaType?: "image" | "video" | "model";
+    mediaUrl?: string;
+    canDelete?: boolean;
+  };
+}) => {
+  cy.get(".comment-item").eq(index).should("exist").within(() => {
+    cy.get(".comment-text")
+      .should("be.visible")
+      .and("contain", expected.text);
+
+    if (expected.mediaType) {
+      if (expected.mediaType === "video") {
+        cy.get("iframe, video.comment-media")
+          .should("exist")
+          .and(($el) => {
+            const src = $el.prop("src") || $el.attr("src");
+            if (expected.mediaUrl) expect(src).to.include(expected.mediaUrl);
+          });
+      } else if (expected.mediaType === "image") {
+        cy.get("img.comment-media")
+          .should("be.visible")
+          .and(($el) => {
+            const src = $el.attr("src") || $el.attr("data-src");
+            if (expected.mediaUrl) expect(src).to.include(expected.mediaUrl);
+          });
+      } else if (expected.mediaType === "model") {
+        cy.get(".comment-model-wrapper").should("be.visible");
+      }
+    } else {
+      cy.get(".comment-media").should("not.exist");
+    }
+
+    if (expected.canDelete) {
+      cy.get(".delete-comment-btn").should("exist").and("be.visible");
+    } else {
+      cy.get(".delete-comment-btn").should("not.exist");
+    }
+  });
 };

@@ -49,7 +49,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "MODE=production node ./dist/server.js",
-    "test": "jest -w=1 --coverage --detectOpenHandles --coverageReporters='json-summary'",
+    "test": "jest --coverage",
     "debug-test": "jest -w=1 --coverage --detectOpenHandles",
     "prebuild": "cd ..; npm run build --workspace=shared",
     "stryker": "stryker run",

@@ -94,6 +94,22 @@
   gap: 10px;
 }
 
+.media-file-info {
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.infoChip {
+  background: #f1f1f1;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  color: #007bff;
+  border: none;
+  margin: 2px;
+}
+
 .tagChip {
   background: #f1f1f1;
   padding: 5px 10px;

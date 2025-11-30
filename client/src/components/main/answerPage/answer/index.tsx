@@ -54,6 +54,10 @@ const AnswerView = ({
   setTranslationSetting,
   glbMedia,
 }: AnswerProps) => {
+  /**
+   * Logic to convert cameraRef to set rotationSettings and translationSettings of the 3D viewport
+   * @param cameraRef that is being clicked
+   */
   const handleCameraRefClick = (cameraRef: string) => {
     // Remove leading "#camera-" prefix
     const ref = cameraRef.replace(/^#camera-/, '');
@@ -103,6 +107,7 @@ const AnswerView = ({
                         cursor: 'pointer',
                         textDecoration: 'underline',
                       }}
+                      id='answer-camref-link'
                       onClick={() => handleCameraRefClick(cleanRef)}>
                       {children}
                     </span>
