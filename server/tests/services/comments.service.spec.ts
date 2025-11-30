@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import QuestionModel from '../../models/questions.model';
-import { saveComment, addComment, downloadCommentMedia } from '../../services/comment.service';
+import { saveComment, addComment, downloadCommentMedia, toggleCommentMediaPermission } from '../../services/comment.service';
 import { DatabaseComment, DatabaseQuestion, DatabaseAnswer } from '../../types/types';
 import AnswerModel from '../../models/answers.model';
 import {
@@ -151,78 +151,300 @@ describe('Comment model', () => {
       expect(result).toBe('/uploads/media/test-file.jpg');
       expect(CommentModel.findById).toHaveBeenCalledWith('68f0589f28fdad025905af9b');
     });
+
+    test('downloadCommentMedia should return error object when id is not provided', async () => {
+      const result = await downloadCommentMedia('');
+
+      expect(result).toEqual({ error: 'Error when downloading comment media' });
+    });
+
+    test('downloadCommentMedia should return error object when comment is not found', async () => {
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(null);
+      
+      const result = await downloadCommentMedia('32234');
+
+      expect(result).toEqual({ error: 'Error when downloading comment media' });
+    });
+
+    test('downloadCommentMedia should return error object when comment has no mediaPath', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: undefined,
+        permitDownload: true,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading comment media' });
+    });
+
+    test('downloadCommentMedia should return error object when permitDownload is undefined', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: undefined,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading comment media' });
+    });
+
+    test('downloadCommentMedia should return error object when permitDownload is false', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: false,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading comment media' });
+    });
+
+    test('downloadCommentMedia should return error object when findById throws an error', async () => {
+      jest.spyOn(CommentModel, 'findById').mockRejectedValue(new Error('Database error'));
+
+      const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+
+      expect(result).toEqual({ error: 'Error when downloading comment media' });
+    });
   })
 
-  test('downloadCommentMedia should return error object when id is not provided', async () => {
-    const result = await downloadCommentMedia('');
+  describe('toggleCommentMediaPermission', () => {
+    test('toggleCommentMediaPermission should return true when toggling from false to true', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: false,
+      };
 
-    expect(result).toEqual({ error: 'Error when downloading comment media' });
-  });
+      const mockUpdatedComment = {
+        ...mockComment,
+        permitDownload: true,
+      };
 
-  test('downloadCommentMedia should return error object when comment is not found', async () => {
-    jest.spyOn(CommentModel, 'findById').mockResolvedValue(null);
-    
-    const result = await downloadCommentMedia('32234');
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+      jest.spyOn(CommentModel, 'findByIdAndUpdate').mockResolvedValue(mockUpdatedComment);
 
-    expect(result).toEqual({ error: 'Error when downloading comment media' });
-  });
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
 
-  test('downloadCommentMedia should return error object when comment has no mediaPath', async () => {
-    const mockComment = {
-      _id: '68f0589f28fdad025905af9b',
-      text: 'Test comment',
-      commentBy: 'testuser',
-      commentDateTime: new Date(),
-      mediaPath: undefined,
-      permitDownload: true,
-    };
+      expect(result).toBe(true);
+      expect(CommentModel.findById).toHaveBeenCalledWith('68f0589f28fdad025905af9b');
+      expect(CommentModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        { _id: '68f0589f28fdad025905af9b' },
+        { permitDownload: true },
+        { new: true }
+      );
+    });
 
-    jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+    test('toggleCommentMediaPermission should return false when toggling from true to false', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: true,
+      };
 
-    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+      const mockUpdatedComment = {
+        ...mockComment,
+        permitDownload: false,
+      };
 
-    expect(result).toEqual({ error: 'Error when downloading comment media' });
-  });
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+      jest.spyOn(CommentModel, 'findByIdAndUpdate').mockResolvedValue(mockUpdatedComment);
 
-  test('downloadCommentMedia should return error object when permitDownload is undefined', async () => {
-    const mockComment = {
-      _id: '68f0589f28fdad025905af9b',
-      text: 'Test comment',
-      commentBy: 'testuser',
-      commentDateTime: new Date(),
-      mediaPath: '/uploads/media/test-file.jpg',
-      permitDownload: undefined,
-    };
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
 
-    jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+      expect(result).toBe(false);
+      expect(CommentModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        { _id: '68f0589f28fdad025905af9b' },
+        { permitDownload: false },
+        { new: true }
+      );
+    });
 
-    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+    test('toggleCommentMediaPermission should return error object when id is not provided', async () => {
+      const result = await toggleCommentMediaPermission('', 'testuser');
 
-    expect(result).toEqual({ error: 'Error when downloading comment media' });
-  });
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
 
-  test('downloadCommentMedia should return error object when permitDownload is false', async () => {
-    const mockComment = {
-      _id: '68f0589f28fdad025905af9b',
-      text: 'Test comment',
-      commentBy: 'testuser',
-      commentDateTime: new Date(),
-      mediaPath: '/uploads/media/test-file.jpg',
-      permitDownload: false,
-    };
+    test('toggleCommentMediaPermission should return error object when username is not provided', async () => {
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', '');
 
-    jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
 
-    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+    test('toggleCommentMediaPermission should return error object when both id and username are not provided', async () => {
+      const result = await toggleCommentMediaPermission('', '');
 
-    expect(result).toEqual({ error: 'Error when downloading comment media' });
-  });
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
 
-  test('downloadCommentMedia should return error object when findById throws an error', async () => {
-    jest.spyOn(CommentModel, 'findById').mockRejectedValue(new Error('Database error'));
+    test('toggleCommentMediaPermission should return error object when comment is not found', async () => {
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(null);
 
-    const result = await downloadCommentMedia('68f0589f28fdad025905af9b');
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
 
-    expect(result).toEqual({ error: 'Error when downloading comment media' });
-  });
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
+
+    test('toggleCommentMediaPermission should return error object when username does not match commentBy', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'originaluser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: true,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'differentuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
+
+    test('toggleCommentMediaPermission should return error object when comment has no mediaPath', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: undefined,
+        permitDownload: true,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+      expect(CommentModel.findByIdAndUpdate).not.toHaveBeenCalled();
+    });
+
+    test('toggleCommentMediaPermission should return error object when comment has no permitDownload', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: undefined,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
+
+    test('toggleCommentMediaPermission should return error object when both mediaPath and permitDownload are undefined', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: undefined,
+        permitDownload: undefined,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+      expect(CommentModel.findByIdAndUpdate).not.toHaveBeenCalled();
+    });
+
+    test('toggleCommentMediaPermission should return error object when findByIdAndUpdate returns null', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: true,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+      jest.spyOn(CommentModel, 'findByIdAndUpdate').mockResolvedValue(null);
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
+
+    test('toggleCommentMediaPermission should return error object when updatedComment has undefined permitDownload', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: true,
+      };
+
+      const mockUpdatedComment = {
+        ...mockComment,
+        permitDownload: undefined,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+      jest.spyOn(CommentModel, 'findByIdAndUpdate').mockResolvedValue(mockUpdatedComment);
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
+
+    test('toggleCommentMediaPermission should return error object when findById throws an error', async () => {
+      jest.spyOn(CommentModel, 'findById').mockRejectedValue(new Error('Database error'));
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
+
+    test('toggleCommentMediaPermission should return error object when findByIdAndUpdate throws an error', async () => {
+      const mockComment = {
+        _id: '68f0589f28fdad025905af9b',
+        text: 'Test comment',
+        commentBy: 'testuser',
+        commentDateTime: new Date(),
+        mediaPath: '/uploads/media/test-file.jpg',
+        permitDownload: true,
+      };
+
+      jest.spyOn(CommentModel, 'findById').mockResolvedValue(mockComment);
+      jest.spyOn(CommentModel, 'findByIdAndUpdate').mockRejectedValue(new Error('Update failed'));
+
+      const result = await toggleCommentMediaPermission('68f0589f28fdad025905af9b', 'testuser');
+
+      expect(result).toEqual({ error: 'Error when toggling commment media download permissions' });
+    });
+  })
 });
