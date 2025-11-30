@@ -15,6 +15,7 @@ const useUsersListPage = () => {
 
   const [userFilter, setUserFilter] = useState<string>('');
   const [userList, setUserList] = useState<SafeDatabaseUser[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     /**
@@ -25,8 +26,7 @@ const useUsersListPage = () => {
         const res = await getUsers();
         setUserList(res || []);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
+        setError('Error fetching users data');
       }
     };
 
@@ -87,7 +87,7 @@ const useUsersListPage = () => {
   }, [socket]);
 
   const filteredUserlist = userList.filter(user => user.username.includes(userFilter));
-  return { userList: filteredUserlist, setUserFilter };
+  return { userList: filteredUserlist, setUserFilter, error, setError };
 };
 
 export default useUsersListPage;

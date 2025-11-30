@@ -8,20 +8,6 @@
   padding: 20px;
 }
 
-.mediaWrapper {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.mediaWrapper iframe,
-.mediaWrapper video,
-.mediaWrapper img {
-  max-height: 600px;
-  max-width: 300%;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
 .postInfo {
   width: 100%;
   width: 100%;
@@ -221,4 +207,63 @@
 .relatedPostsSidebar {
   width: 250px;
   flex-shrink: 0;
+}
+
+.postContentWrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 25px;
+  flex-wrap: wrap;
+}
+
+.mainPostWrapper {
+  flex: 1 1 600px;
+  border-right: #ccc 1px solid;
+  padding-right: 25px;
+  box-sizing: border-box;
+}
+
+.relatedPostsSidebar {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 900px) {
+  .mainPostWrapper {
+    border-right: none;
+    padding-right: 0;
+  }
+  .relatedPostsSidebar {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+.mediaWrapper {
+  width: 100%;
+  margin-bottom: 20px;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: left;
+}
+
+.mediaWrapper iframe,
+.mediaWrapper video,
+.mediaWrapper img,
+.mediaWrapper canvas {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 600px;
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
+  margin: 0;
+}
+
+.mediaWrapper canvas {
+  max-height: 600px;
 }
