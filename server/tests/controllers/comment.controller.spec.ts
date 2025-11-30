@@ -6,6 +6,7 @@ import * as databaseUtil from '../../utils/database.util';
 
 const saveCommentSpy = jest.spyOn(commentUtil, 'saveComment');
 const addCommentSpy = jest.spyOn(commentUtil, 'addComment');
+const downloadCommentMediaSpy = jest.spyOn(commentUtil, 'downloadCommentMedia');
 const popDocSpy = jest.spyOn(databaseUtil, 'populateDocument');
 
 describe('POST /addComment', () => {
@@ -719,5 +720,46 @@ describe('POST /addComment', () => {
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error when adding comment: Error when populating document');
+  });
+});
+
+describe("GET /downloadCommentMedia/:id", () => {
+  it('should return 400 if ID format is invalid', async () => {
+    const response = await supertest(app)
+      .get('/api/comment/downloadCommentMedia/invalid-id');
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Invalid ID format');
+    expect(commentUtil.downloadCommentMedia).not.toHaveBeenCalled();
+  });
+
+  it('should return media link when download is successful', async () => {
+    const mockMediaLink = 'https://example.com/media.jpg';
+    downloadCommentMediaSpy.mockResolvedValueOnce(mockMediaLink);
+
+    const response = await supertest(app)
+      .get('/api/comment/downloadCommentMedia/68f0589f28fdad025905af9b');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBe(mockMediaLink);
+    expect(commentUtil.downloadCommentMedia).toHaveBeenCalledWith('68f0589f28fdad025905af9b');
+  });
+
+  it('should return database error with 500 error if "downloadCommentMedia" method throws an error', async () => { 
+    downloadCommentMediaSpy.mockRejectedValueOnce(new Error('Error when downloading comment media'));
+
+    const response = await supertest(app)
+      .get('/api/comment/downloadCommentMedia/68f0589f28fdad025905af9b');
+    expect(response.status).toBe(500);
+    expect(response.text).toBe('Error while download media from comment: Error when downloading comment media');
+  });
+
+  it('should return 500 with generic message when non-Error is thrown', async () => {
+    downloadCommentMediaSpy.mockRejectedValueOnce({error: 'Something went wrong'});
+
+    const response = await supertest(app)
+      .get('/api/comment/downloadCommentMedia/68f0589f28fdad025905af9b');
+    expect(response.status).toBe(500);
+    expect(response.text).toBe('Error while download media from comment');
   });
 });
