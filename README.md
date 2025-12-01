@@ -21,6 +21,9 @@ A class diagram for the schema definition is shown below:
 
 ![Class Diagram](class-diagram.png)
 
+> [!NOTE]
+> Due to contraints around third party databases such as AWS requiring payment, files on Render are stored ephemerally and only lasts per session. Please keep this in mind when testing on Render!
+
 ### ENV Files
 
 Please ensure you have these exact .env file setups in each of the following directories:
