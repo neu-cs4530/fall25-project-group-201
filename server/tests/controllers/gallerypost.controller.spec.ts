@@ -44,6 +44,7 @@ const incrementDownloadsSpy = jest.spyOn(
   'fetchAndIncrementGalleryPostDownloadsById',
 );
 const toggleLikesSpy = jest.spyOn(gallerypostService, 'toggleGalleryPostLikeById');
+const downloadGalleryPostMediaSpy = jest.spyOn(gallerypostService, 'downloadGalleryPostMedia');
 
 describe('Gallery Post Controller', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -559,6 +560,46 @@ describe('Gallery Post Controller', () => {
 
       expect(res.status).toBe(500);
       expect(res.text).toContain('File size exceeds maximum');
+    });
+  });
+
+  describe('GET /downloadGalleryPostMedia/:galleryPostID', () => {
+    it('should return media link when download is successful', async () => {
+      const mockMediaLink = 'https://example.com/media.jpg';
+      downloadGalleryPostMediaSpy.mockResolvedValueOnce(mockMediaLink);
+
+      const response = await supertest(app).get(
+        '/api/gallery/downloadGalleryPostMedia/68f0589f28fdad025905af9b',
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBe(mockMediaLink);
+    });
+
+    it('should return database error with 500 error if "downloadGalleryPostMedia" method throws an error', async () => {
+      downloadGalleryPostMediaSpy.mockRejectedValueOnce(
+        new Error('Error when downloading gallery post media'),
+      );
+
+      const response = await supertest(app).get(
+        '/api/gallery/downloadGalleryPostMedia/68f0589f28fdad025905af9b',
+      );
+
+      expect(response.status).toBe(500);
+      expect(response.text).toBe(
+        'Error while download media from question: Error when downloading gallery post media',
+      );
+    });
+
+    it('should return 500 with generic message when non-Error is thrown', async () => {
+      downloadGalleryPostMediaSpy.mockRejectedValueOnce({ error: 'Something went wrong' });
+
+      const response = await supertest(app).get(
+        '/api/gallery/downloadGalleryPostMedia/68f0589f28fdad025905af9b',
+      );
+
+      expect(response.status).toBe(500);
+      expect(response.text).toBe('Error while download media from question');
     });
   });
 });
