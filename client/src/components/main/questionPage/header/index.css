@@ -15,7 +15,7 @@
 .leftSection {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .orderWrapper {
@@ -56,9 +56,7 @@
 .askButtonWrapper {
   margin-left: auto;
   display: inline-block;
-  white-space: nowrap;
 }
-
 
 .askButtonWrapper button {
   width: auto;
@@ -71,57 +69,5 @@
   justify-content: flex-start;
   align-items: flex-start;
   gap: 16px;
-  flex-wrap: wrap;
-}
-
-.tagWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.tagWrapper label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding-top: 10px;
-}
-
-.orderWrapper label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding-top: 10px;
-}
-
-.tagDropdown {
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #ffffff;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.tagDropdown:hover {
-  border-color: #007bff;
-}
-
-.tagDropdown option {
-  padding: 4px 8px;
-}
-
-.filterRow {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  align-items: flex-end;
   flex-wrap: wrap;
 }

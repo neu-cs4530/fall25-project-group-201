@@ -26,11 +26,6 @@ const WriteTestimonialButton: React.FC<WriteTestimonialButtonProps> = ({
     return null;
   }
 
-  const handleOpen = () => {
-    setContent(existingTestimonial?.content || '');
-    setShowModal(true);
-  };
-
   const handleSubmit = async () => {
     if (content.trim().length === 0) {
       return;
@@ -70,7 +65,7 @@ const WriteTestimonialButton: React.FC<WriteTestimonialButtonProps> = ({
     <>
       <button
         className='button button-primary'
-        onClick={handleOpen}
+        onClick={() => setShowModal(true)}
         style={{ marginBottom: '1rem' }}>
         {existingTestimonial ? '✏️ Edit Your Testimonial' : '💬 Write a Testimonial'}
       </button>

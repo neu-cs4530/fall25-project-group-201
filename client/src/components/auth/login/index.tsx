@@ -20,10 +20,8 @@ const Login = () => {
 
   return (
     <div className='container'>
-      <img src='public/logo.png' alt='RenderStack Logo' className='login-logo' />
-
+      <h2>Welcome to RenderStack!</h2>
       <h3>Please login to continue.</h3>
-
       <button className='login-button' onClick={handleLogin} disabled={isLoading}>
         Log In or Sign Up
       </button>

@@ -2,8 +2,6 @@ import MediaModel from '../../models/media.model';
 import mediaService from '../../services/media.service';
 import { Media, DatabaseMedia } from '../../types/types';
 import mongoose from 'mongoose';
-import fs from 'fs';
-jest.mock('fs');
 
 describe('Media Service', () => {
   beforeEach(() => {
@@ -54,46 +52,6 @@ describe('Media Service', () => {
       jest.spyOn(MediaModel.prototype, 'save').mockRejectedValue(new Error('Error from db query'));
       const result = await mediaService.addMedia(mockMediaInput);
       expect(result).toEqual({ error: 'Error from db query' });
-    });
-
-    it('should create the directory if it does not exist', async () => {
-      // Mock directory does NOT exist
-      (fs.existsSync as jest.Mock).mockReturnValue(false);
-
-      // Mock DB save
-      jest.spyOn(MediaModel.prototype, 'save').mockResolvedValue({
-        ...mockMediaInput,
-        _id: '123',
-        filepathLocation: `/userData/test_user/test.png`,
-      });
-
-      await mediaService.addMedia(mockMediaInput);
-
-      expect(fs.existsSync).toHaveBeenCalled();
-      expect(fs.mkdirSync).toHaveBeenCalledWith(expect.any(String), { recursive: true });
-    });
-  });
-
-  describe('formatFileSize', () => {
-    it('should format bytes less than 1024 as B', () => {
-      expect(mediaService.formatFileSize(500)).toBe('500 B');
-    });
-
-    it('should format bytes less than 1 MB as KB', () => {
-      expect(mediaService.formatFileSize(1024)).toBe('1.00 KB');
-      expect(mediaService.formatFileSize(2048)).toBe('2.00 KB');
-    });
-
-    it('should format bytes less than 1 GB as MB', () => {
-      expect(mediaService.formatFileSize(1024 * 1024)).toBe('1.00 MB');
-    });
-
-    it('should format bytes 1 GB or greater as GB', () => {
-      expect(mediaService.formatFileSize(1024 * 1024 * 1024)).toBe('1.00 GB');
-    });
-
-    it('should handle decimal conversion correctly', () => {
-      expect(mediaService.formatFileSize(1536)).toBe('1.50 KB');
     });
   });
 

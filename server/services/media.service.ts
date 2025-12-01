@@ -82,4 +82,4 @@ const deleteMedia = async (filepathLocation: string): Promise<MediaResponse> => 
   }
 };
 
-export default { addMedia, deleteMedia, formatFileSize };
+export default { addMedia, deleteMedia };

@@ -423,26 +423,14 @@ const useThreeViewport = (
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
-      if (keysPressed.current.a) {
+      if (keysPressed.current.a || keysPressed.current.ArrowLeft) {
         cam.position.addScaledVector(right, moveSpeed);
         if (setTranslationSettingRef.current) {
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
       }
-      if (keysPressed.current.d) {
+      if (keysPressed.current.d || keysPressed.current.ArrowRight) {
         cam.position.addScaledVector(right, -moveSpeed);
-        if (setTranslationSettingRef.current) {
-          setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
-        }
-      }
-      if (keysPressed.current.ArrowLeft) {
-        cam.position.addScaledVector(right, -moveSpeed);
-        if (setTranslationSettingRef.current) {
-          setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
-        }
-      }
-      if (keysPressed.current.ArrowRight) {
-        cam.position.addScaledVector(right, moveSpeed);
         if (setTranslationSettingRef.current) {
           setTranslationSettingRef.current([cam.position.x, cam.position.y, cam.position.z]);
         }
@@ -685,14 +673,6 @@ const useThreeViewport = (
       camera.position.copy(orthoInit.position);
       camera.rotation.copy(orthoInit.rotation);
       targetZRef.current = orthoInit.position.z;
-    }
-
-    if (setRotationSettingRef.current) {
-      setRotationSettingRef.current([0, 0, 0]);
-    }
-
-    if (setTranslationSettingRef.current) {
-      setTranslationSettingRef.current([0, 0.77, 3.02]);
     }
   };
 

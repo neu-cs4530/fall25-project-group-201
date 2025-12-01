@@ -70,10 +70,6 @@ export const addComment = async (
 
 export const downloadCommentMedia = async (id: string): Promise<string | { error: string }> => {
   try {
-    if (!id) {
-      throw new Error('Invalid request');
-    }
-
     const comment = await CommentModel.findById(id);
 
     if (!comment) {
@@ -99,10 +95,6 @@ export const toggleCommentMediaPermission = async (
   username: string,
 ): Promise<boolean | { error: string }> => {
   try {
-    if (!id || !username) {
-      throw new Error('Invalid request');
-    }
-
     const comment = await CommentModel.findById(id);
 
     if (!comment) {

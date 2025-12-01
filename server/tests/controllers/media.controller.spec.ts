@@ -104,8 +104,7 @@ describe('DELETE /delete/:filepathLocation', () => {
   test('should return 400 when missing filepathLocation', async () => {
     const response = await supertest(app).delete('/api/media/delete/');
 
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: 'Filepath missing' });
+    expect(response.status).toBe(404);
   });
 
   test('should return 500 when service throws error', async () => {
