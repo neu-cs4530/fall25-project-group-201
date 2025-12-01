@@ -305,73 +305,6 @@ const userController = (socket: FakeSOSocket) => {
   };
 
   /**
-   * Updates a user's portfolio media arrays (for deletion).
-   * @param req The request containing username, portfolioModels, and portfolioThumbnails arrays.
-   * @param res The response, either confirming the update or returning an error.
-   * @returns A promise resolving to void.
-   */
-  const updatePortfolioMedia = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { username, portfolioModels, portfolioThumbnails } = req.body;
-
-      const updatedUser = await updateUser(username, {
-        portfolioModels,
-        portfolioThumbnails,
-      });
-
-      if ('error' in updatedUser) {
-        throw new Error(updatedUser.error);
-      }
-
-      socket.emit('userUpdate', {
-        user: updatedUser,
-        type: 'updated',
-      });
-
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      res.status(500).send(`Error when updating portfolio media: ${error}`);
-    }
-  };
-
-  /**
-   * Deletes portfolio items by indices.
-   */
-  const deletePortfolioItems = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { username, indices } = req.body;
-
-      const user = await getUserByUsername(username);
-      if ('error' in user) {
-        throw new Error('User not found');
-      }
-
-      // Filter out items at specified indices
-      const updatedModels = user.portfolioModels?.filter((_, i) => !indices.includes(i)) || [];
-      const updatedThumbnails =
-        user.portfolioThumbnails?.filter((_, i) => !indices.includes(i)) || [];
-
-      const updatedUser = await updateUser(username, {
-        portfolioModels: updatedModels,
-        portfolioThumbnails: updatedThumbnails,
-      });
-
-      if ('error' in updatedUser) {
-        throw new Error(updatedUser.error);
-      }
-
-      socket.emit('userUpdate', {
-        user: updatedUser,
-        type: 'updated',
-      });
-
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      res.status(500).send(`Error deleting portfolio items: ${error}`);
-    }
-  };
-
-  /**
    * Uploads a profile picture for a user.
    */
   const uploadProfilePicture = async (req: Request, res: Response): Promise<void> => {
@@ -951,11 +884,9 @@ const userController = (socket: FakeSOSocket) => {
   router.patch('/updateExternalLinks', updateExternalLinks);
   router.patch('/updateCustomColors', updateCustomColors);
   router.patch('/updateCustomFont', updateCustomFont);
-  router.patch('/updatePortfolioMedia', updatePortfolioMedia);
   router.post('/migratePortfolio', migratePortfolioData);
   router.patch('/reorderPortfolioItems', reorderPortfolioItems);
   router.delete('/deleteSinglePortfolioItem', deleteSinglePortfolioItem);
-  router.delete('/deletePortfolioItems', deletePortfolioItems);
   router.post('/uploadProfilePicture', upload.single('file'), uploadProfilePicture);
   router.post('/uploadBannerImage', upload.single('file'), uploadBannerImage);
   router.post('/uploadResume', upload.single('file'), uploadResume);

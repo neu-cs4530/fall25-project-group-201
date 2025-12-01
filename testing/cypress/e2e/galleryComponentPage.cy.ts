@@ -87,10 +87,8 @@ describe("Gallery Component Page", () => {
   it("1 | Renders the gallery page and loads posts", () => {
     cy.contains("SORT BY").should("exist");
 
-    // loading cells appear initially
     cy.get(".grid-container .grid-cell").should("have.length", 6);
 
-    // wait for gallery posts
     cy.get(".galleryCard", { timeout: 10000 }).should("exist");
   });
 
@@ -105,6 +103,50 @@ describe("Gallery Component Page", () => {
 
     cy.get("@sortSelect").select("Most Liked");
     cy.get("@sortSelect").should("have.value", "highestRated");
+  });
+  
+  it("2b | Verifies sorting order works", () => {
+    cy.get(".sortSelect").eq(0).as("sortSelect");
+
+    // Sort by newest
+    cy.get("@sortSelect").select("Newest");
+    cy.get(".galleryCard").then(($cards) => {
+      const dates = [...$cards].map((card) =>
+        new Date(card.dataset.postedAt || "").getTime()
+      );
+      const sorted = [...dates].sort((a, b) => b - a);
+      expect(dates).to.deep.equal(sorted);
+    });
+
+    // Sort by oldest
+    cy.get("@sortSelect").select("Oldest");
+    cy.get(".galleryCard").then(($cards) => {
+      const dates = [...$cards].map((card) =>
+        new Date(card.dataset.postedAt || "").getTime()
+      );
+      const sorted = [...dates].sort((a, b) => a - b);
+      expect(dates).to.deep.equal(sorted);
+    });
+
+    // Sort by most viewed
+    cy.get("@sortSelect").select("Most Viewed");
+    cy.get(".galleryCard").then(($cards) => {
+      const views = [...$cards].map((card) =>
+        Number(card.dataset.views || 0)
+      );
+      const sorted = [...views].sort((a, b) => b - a);
+      expect(views).to.deep.equal(sorted);
+    });
+
+    // Sort by most liked
+    cy.get("@sortSelect").select("Most Liked");
+    cy.get(".galleryCard").then(($cards) => {
+      const likes = [...$cards].map((card) =>
+        Number(card.dataset.likes || 0)
+      );
+      const sorted = [...likes].sort((a, b) => b - a);
+      expect(likes).to.deep.equal(sorted);
+    });
   });
 
   it("3 | Filters by media type", () => {
@@ -132,10 +174,8 @@ describe("Gallery Component Page", () => {
     cy.get("@categorySelect").select("all");
     cy.get("@categorySelect").should("have.value", "all");
 
-    // categories come from the database; verify at least one option
     cy.get("@categorySelect").find("option").should("have.length.greaterThan", 1);
 
-    // select the first real tag (index 1)
     cy.get("@categorySelect")
       .find("option")
       .eq(1)
@@ -150,30 +190,29 @@ describe("Gallery Component Page", () => {
     cy.get(".searchInput").as("search");
 
     cy.get("@search").type("image");
-    cy.get(".galleryCard").should("exist");
+    cy.get('[data-cy*="image"]').should("exist");
 
-    cy.get("@search").clear();
-    cy.get(".galleryCard").should("exist");
-  });
-
-  it("6 | Supports pagination (carousel next/prev)", () => {
-    cy.get("body").then(($body) => {
-      const hasPagination = $body.find(".carouselArrow.right").length > 0;
-
-      if (!hasPagination) {
-        cy.log("Not enough items for pagination — skipping.");
-        return;
-      }
-
-      cy.get(".carouselArrow.right").click();
-      cy.get(".carouselPageIndicator").should("contain.text", "Page");
-
-      cy.get(".carouselArrow.left").click();
-      cy.get(".carouselPageIndicator").should("contain.text", "Page");
+    cy.get("@search").clear().type("video example");
+    cy.get(".galleryCard").each(($card) => {
+      cy.wrap($card)
+        .invoke("attr", "data-cy")
+        .should("match", /video/i);
     });
+
+    // Search by tag
+    cy.get("@search").clear().type("modeling");
+    cy.get(".galleryCard").each(($card) => {
+      cy.wrap($card)
+        .invoke("attr", "data-cy")
+        .should("match", /image|another-image/i); // matches cards tagged with "modeling"
+    });
+
+    // Clear search should show all cards again
+    cy.get("@search").clear();
+    cy.get(".galleryCard").should("have.length.greaterThan", 0);
   });
 
-  it("7 | Resets filters", () => {
+  it("6 | Resets filters", () => {
     cy.get(".sortSelect").eq(0).select("oldest");
     cy.get(".sortSelect").eq(1).select("video");
     cy.get(".sortSelect").eq(2)
@@ -188,5 +227,82 @@ describe("Gallery Component Page", () => {
     cy.get(".sortSelect").eq(0).should("have.value", "newest");
     cy.get(".sortSelect").eq(1).should("have.value", "all");
     cy.get(".sortSelect").eq(2).should("have.value", "all");
+  });
+
+  it("7 | Displays loading placeholders before posts load", () => {
+    cy.contains("SORT BY").should("exist");
+    cy.get(".grid-cell").should("have.length", 6);
+  });
+
+  it("8 | Pagination - next and previous buttons work", () => {
+    cy.get(".galleryCard")
+      .then($cards => [...$cards].map(c => c.dataset.id))
+      .as("firstPage");
+
+    cy.get(".carouselArrow.right").click();
+
+    cy.get(".galleryCard")
+      .then($cards => [...$cards].map(c => c.dataset.id))
+      .then(cardIds => {
+        cy.get("@firstPage").then(firstPageIds => {
+          expect(cardIds).to.not.deep.equal(firstPageIds);
+        });
+      });
+
+    cy.get(".carouselArrow.left").click();
+
+    cy.get(".galleryCard")
+      .then($cards => [...$cards].map(c => c.dataset.id))
+      .then(idsAfter => {
+        cy.get("@firstPage").then(first => {
+          expect(idsAfter).to.deep.equal(first);
+        });
+      });
+  });
+
+  it("9 | Shows all tags in category dropdown", () => {
+    cy.get(".galleryCard", { timeout: 10000 }).should("exist");
+
+    cy.get(".sortSelect").eq(2).find("option").then($options => {
+      const optionTexts = [...$options].map(o => o.textContent?.trim());
+      expect(optionTexts).to.include("3d art");   // matches display text
+      expect(optionTexts).to.include("modeling");
+    });
+  });
+
+  it("10 | Shows correct media preview for images and videos", () => {
+    cy.get('[data-cy="gallery-card-image-post"]')
+      .find("img")
+      .should("exist");
+
+    cy.get('[data-cy="gallery-card-video-post"]')
+      .find("video")
+      .should("exist");
+  });
+
+  it("11 | Search filters down to zero results when nothing matches", () => {
+    cy.get(".searchInput").type("THISWILLNOTMATCHANYTHING");
+    cy.get(".galleryCard").should("have.length", 0);
+
+    cy.get(".noGalleryPosts").should("exist");
+  });
+
+  it("12 | Reset search returns all posts", () => {
+    cy.get(".searchInput").clear().type("image");
+    cy.get(".galleryCard").should("have.length.greaterThan", 0);
+
+    cy.get(".searchInput").clear();
+    cy.get(".galleryCard").should("have.length.greaterThan", 2);
+  });
+
+  it("13 | Items per page changes with screen size", () => {
+    cy.viewport(1600, 900);
+    cy.get(".galleryCard").should("have.length", 4);
+
+    cy.viewport(1200, 900);
+    cy.get(".galleryCard").should("have.length", 4);
+
+    cy.viewport(800, 900);
+    cy.get(".galleryCard").should("have.length", 4);
   });
 });
