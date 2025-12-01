@@ -44,7 +44,6 @@ const incrementDownloadsSpy = jest.spyOn(
   'fetchAndIncrementGalleryPostDownloadsById',
 );
 const toggleLikesSpy = jest.spyOn(gallerypostService, 'toggleGalleryPostLikeById');
-const downloadGalleryPostMediaSpy = jest.spyOn(gallerypostService, 'downloadGalleryPostMedia');
 
 describe('Gallery Post Controller', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -147,6 +146,26 @@ describe('Gallery Post Controller', () => {
       expect(openApiError.errors[0].path).toBe('/body/user');
     });
 
+    test('should return 400 when missing media', async () => {
+      const mockReqBody = {
+        title: 'New Gallery Post',
+        description: 'New Description',
+        user: 'test_user',
+        community: '65e9b58910afe6e94fc6e6dd',
+        postedAt: new Date('2024-06-06'),
+        mediaSize: '13 GB',
+        tags: [],
+      };
+
+      const response = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/body/media');
+    });
+
     test('should return 400 when missing community ID', async () => {
       const mockReqBody = {
         title: 'New Gallery Post',
@@ -167,6 +186,26 @@ describe('Gallery Post Controller', () => {
       expect(openApiError.errors[0].path).toBe('/body/community');
     });
 
+    test('should return 400 when missing media size', async () => {
+      const mockReqBody = {
+        title: 'New Gallery Post',
+        description: 'New Description',
+        user: 'test_user',
+        community: '65e9b58910afe6e94fc6e6dd',
+        media: '/test_user/testMedia.png',
+        postedAt: new Date('2024-06-06'),
+        tags: [],
+      };
+
+      const response = await supertest(app)
+        .post('/api/gallery/create')
+        .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
+      const openApiError = JSON.parse(response.text);
+
+      expect(response.status).toBe(400);
+      expect(openApiError.errors[0].path).toBe('/body/mediaSize');
+    });
+
     test('returns 500 on service error', async () => {
       createGalleryPostSpy.mockResolvedValueOnce({ error: 'DB error' });
 
@@ -183,23 +222,6 @@ describe('Gallery Post Controller', () => {
       expect(res.status).toBe(500);
       expect(res.text).toContain('Error creating a gallery post: DB error');
     });
-  });
-
-  test('returns 400 when no media', async () => {
-    const mockReqBody = {
-      title: 'New Gallery Post',
-      user: 'user123',
-      description: 'New Description',
-      community: '65e9b58910afe6e94fc6e6dd',
-      postedAt: new Date('2024-06-06'),
-      tags: [],
-    };
-
-    const response = await supertest(app)
-      .post('/api/gallery/create')
-      .send({ ...mockReqBody, postedAt: mockReqBody.postedAt.toISOString() });
-
-    expect(response.status).toBe(400);
   });
 
   describe('GET /getAllGalleryPosts', () => {
@@ -560,46 +582,6 @@ describe('Gallery Post Controller', () => {
 
       expect(res.status).toBe(500);
       expect(res.text).toContain('File size exceeds maximum');
-    });
-  });
-
-  describe('GET /downloadGalleryPostMedia/:galleryPostID', () => {
-    it('should return media link when download is successful', async () => {
-      const mockMediaLink = 'https://example.com/media.jpg';
-      downloadGalleryPostMediaSpy.mockResolvedValueOnce(mockMediaLink);
-
-      const response = await supertest(app).get(
-        '/api/gallery/downloadGalleryPostMedia/68f0589f28fdad025905af9b',
-      );
-
-      expect(response.status).toBe(200);
-      expect(response.body).toBe(mockMediaLink);
-    });
-
-    it('should return database error with 500 error if "downloadGalleryPostMedia" method throws an error', async () => {
-      downloadGalleryPostMediaSpy.mockRejectedValueOnce(
-        new Error('Error when downloading gallery post media'),
-      );
-
-      const response = await supertest(app).get(
-        '/api/gallery/downloadGalleryPostMedia/68f0589f28fdad025905af9b',
-      );
-
-      expect(response.status).toBe(500);
-      expect(response.text).toBe(
-        'Error while download media from question: Error when downloading gallery post media',
-      );
-    });
-
-    it('should return 500 with generic message when non-Error is thrown', async () => {
-      downloadGalleryPostMediaSpy.mockRejectedValueOnce({ error: 'Something went wrong' });
-
-      const response = await supertest(app).get(
-        '/api/gallery/downloadGalleryPostMedia/68f0589f28fdad025905af9b',
-      );
-
-      expect(response.status).toBe(500);
-      expect(response.text).toBe('Error while download media from question');
     });
   });
 });

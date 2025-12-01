@@ -56,29 +56,10 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
    * @returns
    */
   const handleDownload = async (mediaSize: string, extension: string, cid: string) => {
-    // Extract number + unit (e.g., "20 MB" → 20 + "MB")
-    const [valueStr, unit] = mediaSize.split(' ');
-    const value = parseFloat(valueStr);
-
-    // Convert to bytes for consistent comparison
-    const sizeInBytes =
-      unit.toUpperCase() === 'KB'
-        ? value * 1024
-        : unit.toUpperCase() === 'MB'
-          ? value * 1024 * 1024
-          : unit.toUpperCase() === 'GB'
-            ? value * 1024 * 1024 * 1024
-            : value; // assume already bytes if no unit
-
-    // Threshold (example: 10 MB)
-    const thresholdBytes = 10 * 1024 * 1024;
-
-    if (sizeInBytes > thresholdBytes) {
-      const confirmed = window.confirm(
-        `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
-      );
-      if (!confirmed) return;
-    }
+    const confirmed = window.confirm(
+      `This file is ${mediaSize}. Are you sure you want to download this .${extension} file?`,
+    );
+    if (!confirmed) return;
 
     try {
       const mediaPath = await getCommentMedia(cid);
@@ -105,7 +86,7 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
 
   return (
     <>
-      {isAuthor && comment.mediaSize && (
+      {isAuthor && (
         <button
           type='button'
           className={`download-permission-comment-btn ${downloadQuestionPermission ? 'enabled' : 'disabled'}`}
@@ -116,28 +97,22 @@ const CommentPermissionButton = ({ comment }: CommentPermissionButtonProps) => {
         </button>
       )}
       {downloadQuestionPermission && comment.mediaPath && comment.mediaSize && (
-        <>
-          <div className='download-actions'>
-            Download file
-            <Download
-              className='comment-download-icon'
-              size={20}
-              onClick={() =>
-                handleDownload(
-                  comment.mediaSize!,
-                  getExtension(comment.mediaPath!),
-                  String(comment._id),
-                )
-              }
-              style={{ cursor: 'pointer' }}
-              color='#007BFF'
-            />
-          </div>
-          <div className='media-file-info'>
-            <span className='infoChip'>{getExtension(comment.mediaPath!)}</span>
-            <span className='infoChip'>{comment.mediaSize}</span>
-          </div>
-        </>
+        <div className='download-actions'>
+          Download model
+          <Download
+            className='comment-download-icon'
+            size={20}
+            onClick={() =>
+              handleDownload(
+                comment.mediaSize!,
+                getExtension(comment.mediaPath!),
+                String(comment._id),
+              )
+            }
+            style={{ cursor: 'pointer' }}
+            color='#007BFF'
+          />
+        </div>
       )}
       {!downloadQuestionPermission && comment.mediaPath && comment.mediaSize && (
         <div className='download-disabled'>Download disabled</div>

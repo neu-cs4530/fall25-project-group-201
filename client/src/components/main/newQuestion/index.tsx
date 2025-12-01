@@ -39,7 +39,6 @@ const NewQuestion = () => {
     communityList,
     handleDropdownChange,
     handleFileChange,
-    handleDragOver,
     downloadPermission,
     setDownloadPermission,
   } = useNewQuestion();
@@ -71,7 +70,6 @@ const NewQuestion = () => {
   };
 
   /**
-   * Handles adding the camera reference to the question.
    * Converts translationSettings and rotationSettings to a cameraRef format
    */
   const handleAddCameraRef = () => {
@@ -141,35 +139,6 @@ const NewQuestion = () => {
     } catch (err) {
       setMediaErr('Error uploading file');
     }
-  };
-
-  /**
-   * Handles a file being dropped into the drag-and-drop area.
-   * Converts the dropped file into a fake input change event and
-   * triggers the existing file handling logic.
-   *
-   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dropped.
-   */
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    setUploadedMediaPath(undefined);
-    setMediaSize(undefined);
-    setMediaErr(null);
-
-    // Create preview URL for the dropped file
-    const tempFileUrl = URL.createObjectURL(file);
-    setPreviewFilePath(tempFileUrl);
-
-    const fakeEvent = {
-      target: {
-        files: [file],
-      },
-    } as unknown as ChangeEvent<HTMLInputElement>;
-
-    handleFileChange(fakeEvent);
   };
 
   return (
@@ -253,9 +222,9 @@ const NewQuestion = () => {
           </button>
         </div>
 
-        <div className='file-upload drag-drop-area' onDrop={handleDrop} onDragOver={handleDragOver}>
+        <div className='file-upload'>
           <label className='file-label'>
-            {fileInputRef.current?.files?.[0]?.name || 'Drag & drop a file or click to choose'}
+            {fileInputRef.current?.files?.[0]?.name || 'Choose a file'}
             <input
               ref={fileInputRef}
               type='file'

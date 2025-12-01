@@ -38,7 +38,17 @@ export default function PortfolioViewerPage() {
       hasRecordedView.current = true;
 
       await incrementPortfolioViews(username, parseInt(index), user.username);
+
+      // Update local state to reflect new view
+      setItem(prevItem => {
+        if (!prevItem) return prevItem;
+        return {
+          ...prevItem,
+          views: [...(prevItem.views || []), user.username],
+        };
+      });
     };
+
     recordView();
   }, [username, index, user.username]);
 

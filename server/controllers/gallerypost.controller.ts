@@ -65,7 +65,7 @@ const galleryPostController = (socket: FakeSOSocket) => {
       return;
     }
 
-    if (!media) {
+    if (!media && !link) {
       res.status(400).send('You must provide either a media file or a media link.');
       return;
     }
