@@ -9,17 +9,26 @@ const MEDIA_API_URL = '/api/media';
  * @param user - The author of the media who is uploading it.
  * @param formData - form data related to the media, including file location and file buffer
  */
-export const addMedia = async (user: string, formData: FormData): Promise<DatabaseMedia> => {
-  const file = formData.get('file') as File;
-  formData.append('user', user);
+export const addMedia = async (formData: FormData): Promise<DatabaseMedia> => {
+  // const file = formData.get('file') as File;
+  // formData.append('user', user);
+  // formData.append('file', file);
 
-  if (file && !formData.has('filepathLocation')) {
-    formData.append('filepathLocation', file.name);
-  }
+  // for (const [key, value] of formData.entries()) {
+  //   console.log(`${key}: ${value}`);
+  // }
 
-  const res = await axios.post(`${MEDIA_API_URL}/create`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  // if (file && !formData.has('filepathLocation')) {
+  //   formData.append('filepathLocation', file.name);
+  // }
+
+  const res = await axios.post(
+    `${import.meta.env.VITE_SERVER_URL}${MEDIA_API_URL}/create`,
+    formData, // formdata should be: user, then file
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    },
+  );
 
   if (res.status !== 200) {
     throw new Error('Error while adding media');

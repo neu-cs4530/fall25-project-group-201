@@ -134,11 +134,11 @@ const NewQuestion = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', currentUser.username);
-      formData.append('filepathLocation', sanitizedFilename);
+      formData.append('file', file);
+      // formData.append('filepathLocation', file.name);
 
-      const res = await fetch('/api/media/create', {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
         body: formData,
       });
@@ -150,8 +150,9 @@ const NewQuestion = () => {
 
       const data = await res.json();
 
-      if (data?.filepathLocation) {
-        setUploadedMediaPath(data.filepathLocation);
+      if (data?.filepathLocationClient) {
+        setUploadedMediaPath(data.filepathLocationClient);
+        // console.log('saved filepath is:', data.filepathLocationClient);
         if (data.fileSize) {
           setMediaSize(data.fileSize);
         }
@@ -302,7 +303,7 @@ const NewQuestion = () => {
                   setMediaSize(undefined);
                 } else if (isUploadedImgOrVid) {
                   try {
-                    await fetch('/api/media/delete', {
+                    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/delete`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ filepathLocation: mediaPath }),

@@ -2,31 +2,35 @@ import express, { Response, Request } from 'express';
 import multer from 'multer';
 import mediaService from '../services/media.service';
 import { Media, FakeSOSocket } from '../types/types';
+import path from 'path';
+import fs from 'fs';
 
-// const allowedMimeTypes = [
-//   'image/gif',
-//   'image/jpeg',
-//   'image/png',
-//   'audio/mpeg',
-//   'video/mp4',
-//   'model/gltf-binary',
-//   'application/octet-stream',
-// ];
-
-// const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-//   if (allowedMimeTypes.includes(file.mimetype)) {
-//     cb(null, true);
-//   } else {
-//     cb(new Error(`Invalid file type: ${file.mimetype}`));
-//   }
-// };
+const STORAGE_PATH = 'public/userData';
 
 const upload = multer({
-  storage: multer.memoryStorage(),
-  // fileFilter,
-  // limits: {
-  //   fileSize: 50 * 1024 * 1024, // 50MB
-  // }
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      const user = req.body.user; // Should be available now
+      // console.log('User:', req.body.user);
+
+      if (!user) {
+        // console.error('User not found in req.body');
+        return cb(new Error('User is required'), '');
+      }
+
+      const userDir = `${STORAGE_PATH}/${user}`;
+
+      if (!fs.existsSync(userDir)) {
+        fs.mkdirSync(userDir, { recursive: true });
+      }
+
+      cb(null, userDir);
+    },
+    filename: function (req, file, cb) {
+      const ext = path.extname(file.originalname);
+      cb(null, `${Date.now()}${ext}`);
+    },
+  }),
 }); // memory storage
 
 const mediaController = (socket: FakeSOSocket) => {
@@ -38,23 +42,32 @@ const mediaController = (socket: FakeSOSocket) => {
   router.post('/create', upload.single('file'), async (req: Request, res: Response) => {
     try {
       const file = req.file;
-      const { user, filepathLocation } = req.body;
+      const { user } = req.body;
+
+      // console.log('req file:', file);
+      // console.log('req user:', user);
 
       if (!file) {
         return res.status(400).json({ error: 'File missing' });
       } else if (!user) {
         return res.status(400).json({ error: 'User missing' });
-      } else if (!filepathLocation) {
-        return res.status(400).json({ error: 'Filepath missing' });
+        // } else if (!filepathLocation) {
+        //   return res.status(400).json({ error: 'Filepath missing' });
+      } else if (!req.file?.path) {
+        return res.status(400).json({ error: 'Path missing' });
       }
 
-      // const uniqueFilepath = await mediaService.getUniqueFilepath(user, filepathLocation);
+      const replacedPath = req.file.path.replaceAll('\\', '/');
+      // console.log('req.file.path replaced:', replacedPath);
 
       const media: Media = {
-        filepathLocation, // replace with uniqueFilepath if get working
-        fileBuffer: file.buffer,
+        filepathLocation: replacedPath,
+        filepathLocationClient: `${process.env.SERVER_URL}/userData/${user}/${file.filename}`,
+        // fileBuffer: file.buffer,
         user,
       };
+
+      // console.log('saved for client filepath:', media.filepathLocationClient);
 
       const newMedia = await mediaService.addMedia(media);
 

@@ -13,13 +13,15 @@ describe('Media Service', () => {
   // Mock media data
   const mockMediaInput: Media = {
     filepathLocation: '/test/hogwarts-example.png',
+    filepathLocationClient: '../test/hogwarts-example.png',
     user: 'media1_uploader',
-    fileBuffer: 'dummy_file_buffer',
+    // fileBuffer: 'dummy_file_buffer',
   };
 
   const mockMedia: DatabaseMedia = {
     _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dd'),
     filepathLocation: 'dummy/filepath',
+    filepathLocationClient: 'dummy/filepath',
     user: 'test_user',
     fileSize: '13 KB',
   };
@@ -30,7 +32,13 @@ describe('Media Service', () => {
         ...mockMediaInput,
         _id: '68ffe20ccbc370b3e921c07b',
         filepathLocation: `/userData/${mockMediaInput.user}/${mockMediaInput.filepathLocation}`,
+        filepathLocationClient: mockMediaInput.filepathLocationClient,
+        fileSize: '1.5 MB',
       };
+
+      (fs.statSync as jest.Mock).mockReturnValueOnce({
+        size: 1572864, // 1.5 MB in bytes
+      });
 
       // Mock the save() method on the MediaModel instance
       const saveMock = jest.fn().mockResolvedValueOnce(savedMedia);
@@ -45,33 +53,42 @@ describe('Media Service', () => {
     test('should return error when save returns null', async () => {
       jest.spyOn(MediaModel.prototype, 'save').mockResolvedValueOnce(null);
 
+      (fs.statSync as jest.Mock).mockReturnValueOnce({
+        size: 1572864, // 1.5 MB in bytes
+      });
+
       const result = await mediaService.addMedia(mockMediaInput);
 
       expect(result).toEqual({ error: 'Failed to add media' });
     });
 
     test('addMedia should return an object with error if create throws an error', async () => {
+      (fs.statSync as jest.Mock).mockReturnValueOnce({
+        size: 1572864, // 1.5 MB in bytes
+      });
+
       jest.spyOn(MediaModel.prototype, 'save').mockRejectedValue(new Error('Error from db query'));
       const result = await mediaService.addMedia(mockMediaInput);
       expect(result).toEqual({ error: 'Error from db query' });
     });
 
-    it('should create the directory if it does not exist', async () => {
-      // Mock directory does NOT exist
-      (fs.existsSync as jest.Mock).mockReturnValue(false);
+    // shouldn't need this test anymore since multer handles the directory creation
+    // it('should create the directory if it does not exist', async () => {
+    //   // Mock directory does NOT exist
+    //   (fs.existsSync as jest.Mock).mockReturnValue(false);
 
-      // Mock DB save
-      jest.spyOn(MediaModel.prototype, 'save').mockResolvedValue({
-        ...mockMediaInput,
-        _id: '123',
-        filepathLocation: `/userData/test_user/test.png`,
-      });
+    //   // Mock DB save
+    //   jest.spyOn(MediaModel.prototype, 'save').mockResolvedValue({
+    //     ...mockMediaInput,
+    //     _id: '123',
+    //     filepathLocation: `/userData/test_user/test.png`,
+    //   });
 
-      await mediaService.addMedia(mockMediaInput);
+    //   await mediaService.addMedia(mockMediaInput);
 
-      expect(fs.existsSync).toHaveBeenCalled();
-      expect(fs.mkdirSync).toHaveBeenCalledWith(expect.any(String), { recursive: true });
-    });
+    //   expect(fs.existsSync).toHaveBeenCalled();
+    //   expect(fs.mkdirSync).toHaveBeenCalledWith(expect.any(String), { recursive: true });
+    // });
   });
 
   describe('formatFileSize', () => {

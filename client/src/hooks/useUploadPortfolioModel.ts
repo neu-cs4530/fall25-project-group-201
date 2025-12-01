@@ -85,10 +85,13 @@ const useUploadPortfolioModel = () => {
         formData.append('description', description);
         formData.append('thumbnail', thumbnailPath || '');
 
-        const res = await fetch('/api/user/uploadPortfolioModel', {
-          method: 'POST',
-          body: formData,
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/user/uploadPortfolioModel`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
 
         if (res.ok) {
           toast.success('Portfolio media uploaded successfully!');
@@ -101,38 +104,42 @@ const useUploadPortfolioModel = () => {
 
       // If it's a file
       if (modelPath) {
-        const modelResponse = await fetch(modelPath);
-        const modelBlob = await modelResponse.blob();
+        // console.log('modelPath', modelPath);
+        // const modelResponse = await fetch(`${import.meta.env.VITE_SERVER_URL}/${modelPath}`);
+        // const modelBlob = await modelResponse.blob();
 
-        const ext = modelPath.slice(modelPath.lastIndexOf('.')).toLowerCase();
-        let mimeType = 'model/gltf-binary';
-        let fileName = 'model.glb';
+        // const ext = modelPath.slice(modelPath.lastIndexOf('.')).toLowerCase();
+        // let mimeType = 'model/gltf-binary';
+        // let fileName = 'model.glb';
 
-        if (['.jpg', '.jpeg'].includes(ext)) {
-          mimeType = 'image/jpeg';
-          fileName = 'image.jpg';
-        } else if (ext === '.png') {
-          mimeType = 'image/png';
-          fileName = 'image.png';
-        } else if (ext === '.mp4') {
-          mimeType = 'video/mp4';
-          fileName = 'video.mp4';
-        }
+        // if (['.jpg', '.jpeg'].includes(ext)) {
+        //   mimeType = 'image/jpeg';
+        //   fileName = 'image.jpg';
+        // } else if (ext === '.png') {
+        //   mimeType = 'image/png';
+        //   fileName = 'image.png';
+        // } else if (ext === '.mp4') {
+        //   mimeType = 'video/mp4';
+        //   fileName = 'video.mp4';
+        // }
 
-        const modelFile = new File([modelBlob], fileName, { type: mimeType });
+        // const modelFile = new File([modelBlob], fileName, { type: mimeType });
 
         // Create FormData with all fields
         const formData = new FormData();
-        formData.append('file', modelFile);
         formData.append('username', user.username);
+        formData.append('thumbnail', thumbnailPath || '');
+        formData.append('file', modelPath);
         formData.append('title', title);
         formData.append('description', description);
-        formData.append('thumbnail', thumbnailPath || '');
 
-        const res = await fetch('/api/user/uploadPortfolioModel', {
-          method: 'POST',
-          body: formData,
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/user/uploadPortfolioModel`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
 
         if (res.ok) {
           toast.success('Portfolio media uploaded successfully!');
@@ -180,18 +187,18 @@ const useUploadPortfolioModel = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', user.username);
-      formData.append('filepathLocation', file.name);
+      formData.append('file', file);
+      // formData.append('filepathLocation', file.name);
 
-      const res = await fetch('/api/media/create', {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
 
-      if (data?.filepathLocation) {
-        setModelPath(data.filepathLocation);
+      if (data?.filepathLocationClient) {
+        setModelPath(data.filepathLocationClient);
         const tempFileUrl = URL.createObjectURL(file);
         setPreviewFilePath(tempFileUrl);
         setModelErr(null);
@@ -229,18 +236,18 @@ const useUploadPortfolioModel = () => {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('user', user.username);
-      formData.append('filepathLocation', file.name);
+      formData.append('file', file);
+      // formData.append('filepathLocation', file.name);
 
-      const res = await fetch('/api/media/create', {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/media/create`, {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
 
-      if (data?.filepathLocation) {
-        setThumbnailPath(data.filepathLocation);
+      if (data?.filepathLocationClient) {
+        setThumbnailPath(data.filepathLocationClient);
         setThumbnailErr(null);
         toast.success('Thumbnail uploaded!');
       } else {

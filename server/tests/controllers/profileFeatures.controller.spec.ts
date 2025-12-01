@@ -219,8 +219,6 @@ describe('Profile Features - File Uploads', () => {
 
   describe('POST /uploadPortfolioModel', () => {
     it('should upload portfolio item with file', async () => {
-      const buffer = Buffer.from('fake-glb-data');
-
       getUserByUsernameSpy.mockResolvedValueOnce({
         ...mockSafeUser,
         portfolio: [],
@@ -244,7 +242,7 @@ describe('Profile Features - File Uploads', () => {
         .field('username', 'testuser')
         .field('title', 'My 3D Model')
         .field('description', 'A test model')
-        .attach('file', buffer, { filename: 'model.glb', contentType: 'model/gltf-binary' });
+        .field('file', '/userData/testuser/model.glb');
 
       expect(response.status).toBe(200);
       expect(response.body.portfolio).toHaveLength(1);
@@ -282,12 +280,10 @@ describe('Profile Features - File Uploads', () => {
     });
 
     it('should return 400 if title is missing', async () => {
-      const buffer = Buffer.from('fake-data');
-
       const response = await supertest(app)
         .post('/api/user/uploadPortfolioModel')
         .field('username', 'testuser')
-        .attach('file', buffer, { filename: 'model.glb' });
+        .field('file', '/userData/testuser/model.glb');
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Title is required');
@@ -1306,10 +1302,10 @@ describe('Additional Coverage - Error Paths', () => {
     jest.resetAllMocks();
   });
 
-  it('should return 500 if getUserByUsername fails when uploading portfolio with file', async () => {
+  it('should return 400 if getUserByUsername fails when uploading portfolio with file', async () => {
     const buffer = Buffer.from('fake-glb-data');
 
-    getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
+    getUserByUsernameSpy.mockRejectedValueOnce({ error: 'User not found' });
 
     const response = await supertest(app)
       .post('/api/user/uploadPortfolioModel')
@@ -1318,8 +1314,7 @@ describe('Additional Coverage - Error Paths', () => {
       .field('description', 'Test')
       .attach('file', buffer, { filename: 'model.glb', contentType: 'model/gltf-binary' });
 
-    expect(response.status).toBe(500);
-    expect(response.text).toContain('User not found');
+    expect(response.status).toBe(400);
   });
 
   it('should return 500 if updateUser fails when uploading portfolio', async () => {

@@ -85,10 +85,11 @@ const useAnswerPage = () => {
 
     try {
       const formData = new FormData();
+      formData.append('user', user.username);
       formData.append('file', file);
-      formData.append('filepathLocation', file.name);
+      // formData.append('filepathLocation', file.name);
 
-      const newMedia = await mediaService.addMedia(user.username, formData);
+      const newMedia = await mediaService.addMedia(formData);
       return newMedia;
     } catch (err) {
       return undefined;

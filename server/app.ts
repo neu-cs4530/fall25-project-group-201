@@ -27,18 +27,31 @@ import communityController from './controllers/community.controller';
 import mediaController from './controllers/media.controller';
 import galleryPostController from './controllers/gallerypost.controller';
 import { auth } from 'express-openid-connect';
+import cors from 'cors';
 
 const MONGO_URL = `${process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017'}/fake_so`;
 const PORT = parseInt(process.env.PORT || '8000');
 
 const app = express();
 const server = http.createServer(app);
+
+app.use(
+  cors({
+    origin: `${process.env.CLIENT_URL || `http://localhost:4530`}`,
+    // origin: '*',
+    credentials: true,
+    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
+  }),
+);
+
 // allow requests from the local dev client or the production client only
 const socket: FakeSOSocket = new Server(server, {
   path: '/socket.io',
   cors: {
     origin: `${process.env.CLIENT_URL || `http://localhost:4530`}`,
+    // origin: '*',
     credentials: true,
+    methods: ['GET', 'PATCH', 'POST', 'DELETE'],
   },
 });
 
@@ -72,6 +85,7 @@ process.on('SIGINT', async () => {
 });
 
 app.use(express.json());
+app.use(express.static('public'));
 
 try {
   app.use(
