@@ -307,7 +307,8 @@ const CommentSection = ({
                 className='add-comment-button'
                 id='add-comment-button'
                 onClick={async () => {
-                  await handleAddCommentClick()}}>
+                  await handleAddCommentClick();
+                }}>
                 Post
               </button>
             </div>
