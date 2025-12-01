@@ -40,8 +40,8 @@ SERVER_URL="http://localhost:8000/"
 
 ### `/client`
 VITE_AUTH0_DOMAIN="dev-yipqv2u1k7drpppn.us.auth0.com"  
-VITE_AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk" 
-VITE_AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"  
+VITE_AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk"                             
+VITE_AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"    
 VITE_SERVER_URL="http://localhost:8000/"  
 
 ### `/testing`
