@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DatabaseMedia } from '../types/types';
 
-const MEDIA_API_URL = '/api/media';
+const MEDIA_API_URL = 'api/media';
 
 /**
  * Creates a media document.
@@ -46,7 +46,7 @@ export const deleteMedia = async (filepathLocation: string): Promise<DatabaseMed
   // Encode entire path so Express reads it as one param
   const encoded = encodeURIComponent(filepathLocation);
 
-  const res = await axios.delete(`${MEDIA_API_URL}/delete/${encoded}`);
+  const res = await axios.delete(`/${MEDIA_API_URL}/delete/${encoded}`);
 
   if (res.status !== 200) {
     throw new Error('Error while deleting media');
