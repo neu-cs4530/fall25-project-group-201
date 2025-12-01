@@ -443,16 +443,16 @@ describe('Chat Controller', () => {
         _id: new mongoose.Types.ObjectId(),
         participants: ['user1', 'user2'],
         messages: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date('2025-01-01T00:00:00Z'),
+        updatedAt: new Date('2025-01-01T00:00:00Z'),
       };
 
       const populatedUpdatedChat: PopulatedDatabaseChat = {
         _id: updatedChat._id,
         participants: ['user1', 'user2'],
         messages: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date('2025-01-01T00:00:00Z'),
+        updatedAt: new Date('2025-01-01T00:00:00Z'),
       };
 
       addParticipantSpy.mockResolvedValue(updatedChat);
