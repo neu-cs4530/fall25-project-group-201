@@ -427,9 +427,18 @@ describe('Profile Settings — editing', () => {
         cy.get('input[placeholder*="Give your piece a name"]').type('Test 3D Model');
         cy.get('textarea[placeholder*="Describe your project"]').type('Testing 3D viewport info button');
         cy.get('input[type="file"]').first().selectFile('cypress/fixtures/test.glb', { force: true });
-        cy.wait(1000);
+        cy.wait(2000); // Wait for model upload
 
         cy.get('canvas', { timeout: 10000 }).should('be.visible');
+
+        // Now upload thumbnail - wait for it to process
+        cy.get('input[type="file"]').last().selectFile('cypress/fixtures/profileTestImage.jpg', { force: true });
+        cy.wait(2000); // Wait for thumbnail upload
+
+        // Button should be enabled after both uploads
+        cy.contains('button', 'Add to Portfolio').should('not.be.disabled');
+
+        // Test viewport BEFORE submitting
         cy.get('canvas').scrollIntoView();
         cy.wait(500);
 
