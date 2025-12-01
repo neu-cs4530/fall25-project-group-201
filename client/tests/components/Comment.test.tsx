@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import QuestionBody from '../../src/components/main/answerPage/questionBody/index';
 
