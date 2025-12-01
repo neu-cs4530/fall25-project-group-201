@@ -60,12 +60,6 @@ const NewQuestion = () => {
     setMediaUrl(e.target.value);
   };
 
-  // const getFilenameWithoutExt = (filename: string): string => {
-  //   const lastDotIndex = filename.lastIndexOf('.');
-  //   if (lastDotIndex === -1) return filename; // No extension
-  //   return filename.substring(0, lastDotIndex);
-  // };
-
   /**
    * Handles adding the camera reference to the question.
    * Converts translationSettings and rotationSettings to a cameraRef format
