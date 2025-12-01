@@ -287,15 +287,15 @@ const NewQuestion = () => {
           />
         </div>
 
-        <div 
+        <div
           className={`file-upload drag-drop-area ${isDragging ? 'drag-over' : ''}`}
-          onDrop={handleDrop} 
+          onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}>
-          <div 
+          <div
             className='file-label'
             onClick={() => fileInputRef.current?.click()}
-            style={{cursor: 'pointer'}}>
+            style={{ cursor: 'pointer' }}>
             {fileInputRef.current?.files?.[0]?.name || 'Drag & drop a file or click to choose'}
           </div>
 
