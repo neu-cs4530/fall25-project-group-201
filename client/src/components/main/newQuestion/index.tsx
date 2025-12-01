@@ -34,6 +34,8 @@ const NewQuestion = () => {
     setMediaUrl,
     mediaPath,
     setUploadedMediaPath,
+    isDragging,
+    setIsDragging,
     setMediaSize,
     postQuestion,
     communityList,
@@ -169,6 +171,9 @@ const NewQuestion = () => {
    */
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
     const file = e.dataTransfer.files[0];
     if (!file) return;
 
@@ -180,13 +185,28 @@ const NewQuestion = () => {
     const tempFileUrl = URL.createObjectURL(file);
     setPreviewFilePath(tempFileUrl);
 
+    // Set file to the file input element
+    if (fileInputRef.current) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInputRef.current.files = dataTransfer.files;
+    }
+
     const fakeEvent = {
       target: {
         files: [file],
       },
     } as unknown as ChangeEvent<HTMLInputElement>;
 
-    handleFileChange(fakeEvent);
+    handleFileUpload(fakeEvent);
+  };
+
+  /**
+   * Handles when a dragged file leaves the drop area.
+   */
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
   };
 
   return (
@@ -267,17 +287,25 @@ const NewQuestion = () => {
           />
         </div>
 
-        <div className='file-upload drag-drop-area' onDrop={handleDrop} onDragOver={handleDragOver}>
-          <label className='file-label'>
+        <div 
+          className={`file-upload drag-drop-area ${isDragging ? 'drag-over' : ''}`}
+          onDrop={handleDrop} 
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}>
+          <div 
+            className='file-label'
+            onClick={() => fileInputRef.current?.click()}
+            style={{cursor: 'pointer'}}>
             {fileInputRef.current?.files?.[0]?.name || 'Drag & drop a file or click to choose'}
-            <input
-              ref={fileInputRef}
-              type='file'
-              accept='image/*,video/*,.glb'
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-          </label>
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type='file'
+            accept='image/*,video/*,.glb'
+            onChange={handleFileUpload}
+            style={{ display: 'none' }}
+          />
 
           {(mediaUrl || mediaPath) && (
             <button

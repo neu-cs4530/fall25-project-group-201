@@ -31,6 +31,7 @@ const useNewQuestion = () => {
   const [mediaPath, setUploadedMediaPath] = useState<string | undefined>(undefined);
   const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
   const [downloadPermission, setDownloadPermission] = useState<boolean>(true);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [fileName, setFileName] = useState<string>('');
 
@@ -155,6 +156,8 @@ const useNewQuestion = () => {
    */
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
   };
 
   /**
@@ -209,6 +212,8 @@ const useNewQuestion = () => {
     mediaSize,
     setMediaSize,
     setUploadedMediaPath,
+    isDragging,
+    setIsDragging,
     postQuestion,
     communityList,
     handleDropdownChange,
