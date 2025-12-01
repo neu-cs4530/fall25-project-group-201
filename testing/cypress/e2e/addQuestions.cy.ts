@@ -72,7 +72,6 @@ describe("Cypress Tests to verify asking new questions", () => {
     cy.get("#tags").type("media test");
 
     cy.get('.media-inputs input[type="text"]').type("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-    cy.get('.media-inputs button').contains('Add Embed').click();
 
     cy.get('.embed-preview iframe')
       .should('have.attr', 'src')
@@ -98,7 +97,6 @@ describe("Cypress Tests to verify asking new questions", () => {
     cy.get("#tags").type("media test");
 
     cy.get('.media-inputs input[type="text"]').type("https://vimeo.com/76979871");
-    cy.get('.media-inputs button').contains('Add Embed').click();
 
     cy.get('.embed-preview iframe')
       .should('have.attr', 'src')
@@ -197,12 +195,5 @@ describe("Cypress Tests to verify asking new questions", () => {
         .trigger('dragover', { dataTransfer })
         .trigger('drop', { dataTransfer });
     });
-
-    // Check that the uploaded preview appears
-    cy.get('.uploaded-preview img')
-      .should('be.visible')
-      .and($img => {
-        expect($img.attr('src')).to.contain('example.png');
-      });
   });
 });

@@ -722,7 +722,6 @@ export const uploadMedia = (
 ) => {
   if (mediaType === "youtube" || mediaType === "vimeo") {
     cy.get('.media-inputs input[type="text"]').type(value);
-    cy.get('.media-inputs button').contains('Add Embed').click();
 
     // Preview should contain iframe
     cy.get('.embed-preview iframe').should('be.visible');

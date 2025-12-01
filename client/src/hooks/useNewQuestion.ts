@@ -5,6 +5,8 @@ import { addQuestion } from '../services/questionService';
 import useUserContext from './useUserContext';
 import { DatabaseCommunity, Question } from '../types/types';
 import { getCommunities } from '../services/communityService';
+import xss from 'xss';
+import validator from 'validator';
 
 /**
  * Custom hook for managing a new question form, including state, validation,
@@ -30,6 +32,8 @@ const useNewQuestion = () => {
   const [mediaSize, setMediaSize] = useState<string | undefined>(undefined);
   const [downloadPermission, setDownloadPermission] = useState<boolean>(true);
 
+  const [fileName, setFileName] = useState<string>('');
+
   const [communityList, setCommunityList] = useState<DatabaseCommunity[]>([]);
 
   /**
@@ -39,6 +43,9 @@ const useNewQuestion = () => {
    */
   const validateForm = (): boolean => {
     let isValid = true;
+
+    const sanitizedTitle = xss(validator.trim(title));
+    setTitle(sanitizedTitle);
 
     if (!title) {
       setTitleErr('Title cannot be empty');
@@ -50,6 +57,9 @@ const useNewQuestion = () => {
       setTitleErr('');
     }
 
+    const sanitizedText = xss(validator.trim(text));
+    setText(sanitizedText);
+
     if (!text) {
       setTextErr('Question text cannot be empty');
       isValid = false;
@@ -60,6 +70,10 @@ const useNewQuestion = () => {
       setTextErr('');
     }
 
+    if (!validator.isAlphanumeric(tagNames)) {
+      setTagErr('Invalid tag; check your format');
+      isValid = false;
+    }
     const tagnames = tagNames.split(' ').filter(tagName => tagName.trim() !== '');
     if (tagnames.length === 0) {
       setTagErr('Should have at least 1 tag');
@@ -79,6 +93,15 @@ const useNewQuestion = () => {
       }
     }
 
+    // sanitize URL if provided
+    if (mediaUrl) {
+      const trimmedUrl = validator.trim(mediaUrl);
+      if (!validator.isURL(trimmedUrl, { protocols: ['http', 'https'] })) {
+        setMediaErr('Invalid url');
+      }
+      setMediaUrl(trimmedUrl);
+    }
+
     return isValid;
   };
 
@@ -92,7 +115,7 @@ const useNewQuestion = () => {
 
     const tagnames = tagNames.split(' ').filter(tagName => tagName.trim() !== '');
     const tags = tagnames.map(tagName => ({
-      name: tagName,
+      name: xss(tagName),
       description: 'user added tag',
     }));
 
@@ -125,6 +148,16 @@ const useNewQuestion = () => {
   };
 
   /**
+   * Handles the drag-over event to allow dropping a file.
+   * Prevents the default behavior to enable dropping.
+   *
+   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dragged over the drop zone.
+   */
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  /**
    * Handles changes to the community select dropdown
    *
    * @param {ChangeEvent<HTMLSelectElement>} event - The change event
@@ -141,18 +174,6 @@ const useNewQuestion = () => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setUploadedMediaPath(`/userData/${user.username}/${file.name}`);
-  };
-
-  /**
-   * Handles the drag-over event to allow dropping a file.
-   * Prevents the default behavior to enable dropping.
-   *
-   * @param {React.DragEvent<HTMLDivElement>} e - The drag event triggered when a file is dragged over the drop zone.
-   */
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
   };
 
   /**
@@ -195,6 +216,8 @@ const useNewQuestion = () => {
     handleDragOver,
     downloadPermission,
     setDownloadPermission,
+    fileName,
+    setFileName,
   };
 };
 
