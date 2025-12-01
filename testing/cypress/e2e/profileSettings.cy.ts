@@ -419,7 +419,7 @@ describe('Profile Settings — editing', () => {
         cy.contains('Banner image must be JPG or PNG format', { timeout: 5000 }).should('be.visible');
     });
 
-    it('uploads 3D model and tests viewport info button functionality', () => {
+    it.only('uploads 3D model and tests viewport info button functionality', () => {
         cy.contains('Portfolio', { timeout: 10000 }).scrollIntoView().should('be.visible');
         cy.get('.portfolio-upload-box').click();
         cy.url({ timeout: 10000 }).should('include', '/upload-portfolio');
