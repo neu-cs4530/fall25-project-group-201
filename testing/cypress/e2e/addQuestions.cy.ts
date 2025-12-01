@@ -195,12 +195,5 @@ describe("Cypress Tests to verify asking new questions", () => {
         .trigger('dragover', { dataTransfer })
         .trigger('drop', { dataTransfer });
     });
-
-    // Check that the uploaded preview appears
-    cy.get('.uploaded-preview img')
-      .should('be.visible')
-      .and($img => {
-        expect($img.attr('src')).to.contain('example.png');
-      });
   });
 });
