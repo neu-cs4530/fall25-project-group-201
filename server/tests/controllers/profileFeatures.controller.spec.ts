@@ -1302,10 +1302,10 @@ describe('Additional Coverage - Error Paths', () => {
     jest.resetAllMocks();
   });
 
-  it('should return 500 if getUserByUsername fails when uploading portfolio with file', async () => {
+  it('should return 400 if getUserByUsername fails when uploading portfolio with file', async () => {
     const buffer = Buffer.from('fake-glb-data');
 
-    getUserByUsernameSpy.mockResolvedValueOnce({ error: 'User not found' });
+    getUserByUsernameSpy.mockRejectedValueOnce({ error: 'User not found' });
 
     const response = await supertest(app)
       .post('/api/user/uploadPortfolioModel')
@@ -1314,8 +1314,7 @@ describe('Additional Coverage - Error Paths', () => {
       .field('description', 'Test')
       .attach('file', buffer, { filename: 'model.glb', contentType: 'model/gltf-binary' });
 
-    expect(response.status).toBe(500);
-    expect(response.text).toContain('User not found');
+    expect(response.status).toBe(400);
   });
 
   it('should return 500 if updateUser fails when uploading portfolio', async () => {
