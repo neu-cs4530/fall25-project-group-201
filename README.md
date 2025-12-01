@@ -29,19 +29,20 @@ A class diagram for the schema definition is shown below:
 Please ensure you have these exact .env file setups in each of the following directories:
 
 ### `/server`
-AUTH0_ISSUER_BASE_URL="dev-yipqv2u1k7drpppn.us.auth0.com"
-AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk"
-AUTH0_SECRET="240203b3d17649ecd2365756b62c046cd3b8f7904849dfb50d3e5bc138cd778a"
-MONGODB_URI="mongodb+srv://azelbycatherine_db_user:7hWhzDeIpV31iv70@db-cs4530-fall25-201.dh81ren.mongodb.net"
+AUTH0_ISSUER_BASE_URL="dev-yipqv2u1k7drpppn.us.auth0.com"  
+AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk" 
+AUTH0_SECRET="240203b3d17649ecd2365756b62c046cd3b8f7904849dfb50d3e5bc138cd778a"  
+MONGODB_URI="mongodb+srv://azelbycatherine_db_user:7hWhzDeIpV31iv70@db-cs4530-fall25-201.dh81ren.mongodb.net"  
 
-AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"
-AUTH0_DOMAIN="dev-yipqv2u1k7drpppn.us.auth0.com"
-SERVER_URL="http://localhost:8000/"
+AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"  
+AUTH0_DOMAIN="dev-yipqv2u1k7drpppn.us.auth0.com"  
+SERVER_URL="http://localhost:8000/"  
 
 ### `/client`
-VITE_AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk"
-VITE_AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"
-VITE_SERVER_URL="http://localhost:8000/"
+VITE_AUTH0_DOMAIN="dev-yipqv2u1k7drpppn.us.auth0.com"  
+VITE_AUTH0_CLIENT_ID="EM2LUFQm7vU6qkTTLtjQvd1C6LLHOFNk" 
+VITE_AUTH0_AUDIENCE="https://dev-yipqv2u1k7drpppn.us.auth0.com/api/v2/"  
+VITE_SERVER_URL="http://localhost:8000/"  
 
 ### `/testing`
 MONGODB_URI="mongodb+srv://azelbycatherine_db_user:7hWhzDeIpV31iv70@db-cs4530-fall25-201.dh81ren.mongodb.net"
