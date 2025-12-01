@@ -39,13 +39,6 @@ const NewGalleryPostPage = () => {
   const { user: currentUser } = useUserContext();
   const [previewFilePath, setPreviewFilePath] = useState<string | undefined>();
 
-  const handleAddMedia = () => {
-    if (form.mediaUrl) {
-      handleInputChange('mediaPath')({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
-      handleInputChange('mediaSize')({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
-    }
-  };
-
   /**
    * Resets mediaPath and mediaSize when an embed URL is added.
    */
@@ -193,9 +186,6 @@ const NewGalleryPostPage = () => {
             value={form.mediaUrl}
             onChange={handleInputChange('mediaUrl')}
           />
-          <button type='button' onClick={handleAddMedia}>
-            Add Embed
-          </button>
         </div>
 
         <div className='file-upload' data-cy='media-file'>
