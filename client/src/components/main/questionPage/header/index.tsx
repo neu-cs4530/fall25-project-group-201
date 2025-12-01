@@ -1,7 +1,7 @@
 import './index.css';
 import AskQuestionButton from '../../askQuestionButton';
 import { OrderType } from '../../../../types/types';
-import { orderTypeDisplayName } from '../../../../types/constants';
+import orderTypeDisplayName from '../../../../types/constants';
 
 interface QuestionHeaderProps {
   titleText: string;

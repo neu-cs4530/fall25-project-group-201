@@ -1,6 +1,6 @@
 import './index.css';
 import { OrderType } from '../../../../../types/types';
-import { orderTypeDisplayName } from '../../../../../types/constants';
+import orderTypeDisplayName from '../../../../../types/constants';
 
 /**
  * Interface representing the props for the OrderButton component.
