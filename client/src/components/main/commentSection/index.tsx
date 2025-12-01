@@ -118,7 +118,6 @@ const CommentSection = ({
       }
 
       tempMediaPath = resMedia.filepathLocationClient;
-      // console.log('media path for comment:', tempMediaPath);
 
       if (!resMedia.fileSize) {
         setMediaError('Media size is undefined');
@@ -307,7 +306,8 @@ const CommentSection = ({
               <button
                 className='add-comment-button'
                 id='add-comment-button'
-                onClick={handleAddCommentClick}>
+                onClick={async () => {
+                  await handleAddCommentClick()}}>
                 Post
               </button>
             </div>

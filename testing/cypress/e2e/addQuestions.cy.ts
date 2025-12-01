@@ -69,7 +69,7 @@ describe("Cypress Tests to verify asking new questions", () => {
 
     cy.get("#title").type("Question with YouTube");
     cy.get("#text").type("This question has a YouTube video");
-    cy.get("#tags").type("media test");
+    cy.get("#tags").type("react");
 
     cy.get('.media-inputs input[type="text"]').type("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 
@@ -94,7 +94,7 @@ describe("Cypress Tests to verify asking new questions", () => {
 
     cy.get("#title").type("Question with Vimeo");
     cy.get("#text").type("This question has a Vimeo video");
-    cy.get("#tags").type("media test");
+    cy.get("#tags").type("react");
 
     cy.get('.media-inputs input[type="text"]').type("https://vimeo.com/76979871");
 
@@ -119,7 +119,7 @@ describe("Cypress Tests to verify asking new questions", () => {
 
     cy.get("#title").type("Question with Image");
     cy.get("#text").type("This question has an image");
-    cy.get("#tags").type("media test");
+    cy.get("#tags").type("react");
 
     cy.get('input[type="file"]').attachFile('example.png');
 
@@ -139,7 +139,7 @@ describe("Cypress Tests to verify asking new questions", () => {
 
     cy.get("#title").type("Question with Video");
     cy.get("#text").type("This question has a video");
-    cy.get("#tags").type("media test");
+    cy.get("#tags").type("react");
 
     cy.get('input[type="file"]').attachFile('example.mp4');
 
@@ -162,7 +162,7 @@ describe("Cypress Tests to verify asking new questions", () => {
 
     cy.get("#title").type("Question with 3D Model");
     cy.get("#text").type("This question has a GLB 3D model");
-    cy.get("#tags").type("media test");
+    cy.get("#tags").type("react");
 
     cy.get('input[type="file"]').attachFile('example.glb');
 
@@ -177,7 +177,7 @@ describe("Cypress Tests to verify asking new questions", () => {
     cy.get('.question_author').contains('user123');
   });
 
-  it.only("2.9 | Drag & Drop file into media area", () => {
+  it("2.9 | Drag & Drop file into media area", () => {
     loginUser('user123');
     goToAskQuestion();
 

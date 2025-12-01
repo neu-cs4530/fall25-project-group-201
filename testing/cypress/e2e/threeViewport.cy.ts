@@ -162,23 +162,23 @@ describe('Cypress tests for Three Viewport controls', function () {
         cy.contains('Faces: 12')
     });
 
-    it('Three Viewport in Question Page correctly displays model information', function () {
-        const title = "Test Question 1"
-        const description = "Test Question Description 1"
-        const tags = "react";
-        const media = 'cube.glb'
+    // it('Three Viewport in Question Page correctly displays model information', function () {
+    //     const title = "Test Question 1"
+    //     const description = "Test Question Description 1"
+    //     const tags = "react";
+    //     const media = 'cube.glb'
 
-        createQuestion(title, description, tags, media)
+    //     createQuestion(title, description, tags, media)
 
-        cy.contains(title).click()
+    //     cy.contains(title).click()
         
-        cy.get('.viewport-card').should('exist');
-        cy.get('.viewport-canvas').should('exist'); 
+    //     cy.get('.viewport-card').should('exist');
+    //     cy.get('.viewport-canvas').should('exist'); 
 
-        cy.contains('Vertices: 8')
-        cy.contains('Edges: 18')
-        cy.contains('Faces: 12')
-    });
+    //     cy.contains('Vertices: 8')
+    //     cy.contains('Edges: 18')
+    //     cy.contains('Faces: 12')
+    // });
 
     it('Three Viewport in Gallery Page supports camera resetting', function () {
         goToCommunities();

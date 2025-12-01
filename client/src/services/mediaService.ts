@@ -21,14 +21,19 @@ export const addMedia = async (formData: FormData): Promise<DatabaseMedia> => {
   // if (file && !formData.has('filepathLocation')) {
   //   formData.append('filepathLocation', file.name);
   // }
+  console.log('inside addMedia service')
+  console.log(`${import.meta.env.VITE_SERVER_URL}/${MEDIA_API_URL}/create`)
 
   const res = await axios.post(
-    `${import.meta.env.VITE_SERVER_URL}${MEDIA_API_URL}/create`,
+    `${import.meta.env.VITE_SERVER_URL}/${MEDIA_API_URL}/create`,
     formData, // formdata should be: user, then file
     {
       headers: { 'Content-Type': 'multipart/form-data' },
     },
   );
+
+  console.log('res.status', res.status)
+  console.log('res.data', res.data)
 
   if (res.status !== 200) {
     throw new Error('Error while adding media');

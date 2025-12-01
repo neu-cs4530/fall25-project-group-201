@@ -34,6 +34,7 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
 
     it('Error message shown if no title entered in gallery post form', function () {
         goToCommunities();
+        cy.wait(200);
         viewCommunityCard('React Enthusiasts');
         cy.get('.gallery-upload-button').click()
 
@@ -116,6 +117,7 @@ describe('Cypress tests for Creating a New Gallery Post', function () {
 
     it('Error message shown if no media entered in gallery post form', function () {
         goToCommunities();
+        cy.wait(200);
         viewCommunityCard('React Enthusiasts');
         cy.get('.gallery-upload-button').click()
 

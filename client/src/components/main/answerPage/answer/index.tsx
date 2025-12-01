@@ -131,7 +131,7 @@ const AnswerView = ({
       <CommentSection
         comments={comments}
         handleAddComment={handleAddComment}
-        handleAddMedia={handleAddMedia}
+        handleAddMedia={(file: File) => handleAddMedia(file)}
         handleAddMediaError={handleAddMediaError}
       />
     </div>

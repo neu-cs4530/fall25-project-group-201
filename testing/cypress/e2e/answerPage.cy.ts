@@ -15,6 +15,7 @@ describe('Cypress tests for Answer Page', function () {
     });
 
     it('Adding comments without media where text is required', function () {
+        cy.wait(200);
         cy.contains('All Questions')
         goToQuestion('Preventing memory leaks in React applications')
         goToComments();

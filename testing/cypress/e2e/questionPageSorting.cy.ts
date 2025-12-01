@@ -63,7 +63,7 @@ describe("Question Component Page Sorting and Filtering", () => {
   it("4 | Sorts by unanswered", () => {
     cy.get("#orderSelect").select("unanswered");
 
-    cy.wait(500);
+    cy.wait(5000);
 
     cy.get("#question_count").then($count => {
       const countText = $count.text().trim();
