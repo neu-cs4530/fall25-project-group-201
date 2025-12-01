@@ -61,7 +61,7 @@ describe("Question Component Page Sorting and Filtering", () => {
  });
 
   it("4 | Sorts by unanswered", () => {
-    cy.get("#orderSelect").select("Unanswered");
+    cy.get("#orderSelect").select("unanswered");
 
     cy.wait(500);
 
@@ -73,7 +73,7 @@ describe("Question Component Page Sorting and Filtering", () => {
   });
 
   it("5 | Sorts by active", () => {
-    cy.get("#orderSelect").select("Active");
+    cy.get("#orderSelect").select("active");
 
     cy.wait(500);
 
@@ -97,7 +97,7 @@ describe("Question Component Page Sorting and Filtering", () => {
   });
 
   it("6 | Sorts by most viewed", () => {
-    cy.get("#orderSelect").select("Most Viewed");
+    cy.get("#orderSelect").select("mostViewed");
 
     cy.wait(500);
 

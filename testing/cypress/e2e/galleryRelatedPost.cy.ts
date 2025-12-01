@@ -29,7 +29,6 @@ describe("Gallery Component Page", () => {
   };
 
   before(() => {
-    // Log in and navigate to the community
     setupTest();
     auth0Login();
     goToCommunities();
@@ -69,16 +68,27 @@ describe("Gallery Component Page", () => {
       cy.wrap(null).then(() => {
         cy.log(`Creating gallery post: ${post.title}`);
         createGalleryPost(post);
+
+        cy.wait(500);
       });
     }
   });
 
   beforeEach(() => {
-    // Log in and navigate to the community
     auth0Login();
+    cy.wait(300);
+
     goToCommunities();
+    cy.wait(300);
+
     viewCommunityCard("Backend Masters");
+    cy.wait(500);
+
+    cy.get(".galleryCard", { timeout: 8000 }).should("exist");
+
     cy.get('[data-cy="gallery-card-image-post"]').first().click();
+
+    cy.get(".relatedPostsSidebar", { timeout: 8000 }).should("exist");
   });
 
   after(() => {
@@ -87,22 +97,34 @@ describe("Gallery Component Page", () => {
 
   it("1 | Displays related posts sidebar if related posts exist", () => {
     cy.get(".relatedPostsSidebar").should("exist");
-    cy.get(".relatedPostsSidebar .relatedCard").should("have.length.greaterThan", 0);
+
+    cy.wait(300);
+
+    cy.get(".relatedPostsSidebar .relatedCard")
+      .should("have.length.greaterThan", 0);
   });
 
   it("2 | Each related post shows thumbnail, title, and author", () => {
-    cy.get(".relatedPostsSidebar .relatedCard").each(($card) => {
-      cy.wrap($card).find(".relatedThumb").should("exist");
-      cy.wrap($card).find(".relatedPostTitle").should("exist").and("not.be.empty");
-      cy.wrap($card).find(".relatedPostUser").should("exist").and("not.be.empty");
-    });
+    cy.get(".relatedPostsSidebar .relatedCard")
+      .should("have.length.greaterThan", 0)
+      .each(($card) => {
+        cy.wrap($card).find(".relatedThumb").should("exist");
+        cy.wrap($card).find(".relatedPostTitle").should("exist").and("not.be.empty");
+        cy.wrap($card).find(".relatedPostUser").should("exist").and("not.be.empty");
+      });
   });
 
   it("3 | Clicking a related post navigates to its gallery post page", () => {
-    cy.get(".relatedPostsSidebar .relatedCard").first().then(($card) => {
-      const href = $card.prop("href");
-      cy.wrap($card).click();
-      cy.url().should("eq", href);
-    });
+    cy.get(".relatedPostsSidebar .relatedCard")
+      .first()
+      .then(($card) => {
+        const href = $card.prop("href");
+
+        cy.wrap($card).click();
+
+        cy.wait(500);
+
+        cy.get('.postInfo').should('exist').contains("Another Image Post")
+      });
   });
 });
