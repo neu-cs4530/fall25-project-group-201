@@ -16,7 +16,6 @@ const UploadPortfolioModel = () => {
     mediaUrl,
     setMediaUrl,
     modelPath,
-    setModelPath,
     thumbnailPath,
     previewFilePath,
     submitPortfolioModel,
