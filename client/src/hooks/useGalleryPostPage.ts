@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   getGalleryPosts,
-  incrementGalleryPostViews,
   incrementGalleryPostDownloads,
   toggleGalleryPostLikes,
   deleteGalleryPost,
@@ -60,27 +59,13 @@ const useGalleryPostPage = () => {
   }, [postId]);
 
   /**
-   * Effect to increment post views once per session and fetch the post.
+   * Effect to fetch the post.
    */
   useEffect(() => {
-    if (!postId || !user.username) return;
+    if (!postId) return;
 
-    const sessionKey = `viewed_${postId}_${user.username}`;
-    const incrementAndFetch = async () => {
-      try {
-        if (!sessionStorage.getItem(sessionKey)) {
-          await incrementGalleryPostViews(postId, user.username);
-          sessionStorage.setItem(sessionKey, 'true');
-        }
-      } catch {
-        setError('Failed to increment views.');
-      } finally {
-        await fetchPost();
-      }
-    };
-
-    incrementAndFetch();
-  }, [fetchPost, postId, user.username]);
+    fetchPost();
+  }, [fetchPost, postId]);
 
   /**
    * Increment download count for the post and open the media in a new tab.

@@ -35,7 +35,11 @@ const NewAnswerPage = () => {
         setState={setText}
         err={textErr}
       />
-      {isGLBMedia && <button onClick={handleUpdateText}>Add Camera Reference</button>}
+      {isGLBMedia && (
+        <button onClick={handleUpdateText} id='cameraRefButtonAnswerForm'>
+          Add Camera Reference
+        </button>
+      )}
       <h5>
         <i>Markdown formatting is supported.</i>
       </h5>
