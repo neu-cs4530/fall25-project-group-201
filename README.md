@@ -55,3 +55,4 @@ The schemas for the database are documented in the directory `server/models/sche
 A class diagram for the schema definition is shown below:
 
 ![Class Diagram](media/uml.png)
+
